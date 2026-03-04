@@ -279,38 +279,131 @@ Standard Monthly Due Dates
 
 <script>
 
-const taxEvents={
+const taxEvents = {
 
 "April 2026":[
-
-{date:"18 Apr",title:"GST CMP-08",description:"Quarterly return Jan-Mar 2026",category:"GST"},
-
-{date:"22 Apr",title:"GSTR-3B QRMP",description:"Quarterly return Jan-Mar 2026",category:"GST"},
-
-{date:"30 Apr",title:"GSTR-4 Annual Return",description:"FY 2025-26",category:"GST"},
-
-{date:"30 Apr",title:"TDS Payment",description:"March TDS Payment",category:"TDS"}
-
+{date:"07 Apr",title:"TDS/TCS Payment",description:"March 2026 (Non-Govt Deductors)",category:"TDS"},
+{date:"11 Apr",title:"GSTR-1",description:"March 2026 Return",category:"GST"},
+{date:"13 Apr",title:"GSTR-1 IFF",description:"March 2026 (QRMP)",category:"GST"},
+{date:"15 Apr",title:"EPF & ESI Payment",description:"March 2026",category:"Compliance"},
+{date:"18 Apr",title:"GST CMP-08",description:"Jan–Mar 2026 Quarter",category:"GST"},
+{date:"20 Apr",title:"GSTR-3B",description:"March 2026",category:"GST"},
+{date:"22 Apr",title:"GSTR-3B QRMP",description:"Jan–Mar 2026 Quarter",category:"GST"},
+{date:"25 Apr",title:"GST PMT-06",description:"March 2026 (QRMP)",category:"GST"},
+{date:"30 Apr",title:"TDS Return Q4",description:"Jan–Mar 2026 (24Q/26Q/27Q)",category:"TDS"},
+{date:"30 Apr",title:"GSTR-4",description:"Annual Return FY 2025-26",category:"GST"}
 ],
 
 "May 2026":[
-
-{date:"15 May",title:"TCS Return 27EQ",description:"Quarter Jan-Mar 2026",category:"TCS"},
-
-{date:"31 May",title:"TDS Returns",description:"24Q 26Q 27Q",category:"TDS"}
-
+{date:"07 May",title:"TDS/TCS Payment",description:"April 2026",category:"TDS"},
+{date:"11 May",title:"GSTR-1",description:"April 2026",category:"GST"},
+{date:"13 May",title:"GSTR-1 IFF",description:"April 2026 (QRMP)",category:"GST"},
+{date:"15 May",title:"EPF & ESI Payment",description:"April 2026",category:"Compliance"},
+{date:"20 May",title:"GSTR-3B",description:"April 2026",category:"GST"},
+{date:"25 May",title:"GST PMT-06",description:"April 2026 (QRMP)",category:"GST"},
+{date:"31 May",title:"SFT Filing",description:"Form 61A",category:"Income Tax"}
 ],
 
 "June 2026":[
-
-{date:"15 Jun",title:"1st Advance Tax",description:"15% Advance Tax",category:"Income Tax"}
-
+{date:"07 Jun",title:"TDS/TCS Payment",description:"May 2026",category:"TDS"},
+{date:"11 Jun",title:"GSTR-1",description:"May 2026",category:"GST"},
+{date:"13 Jun",title:"GSTR-1 IFF",description:"May 2026 (QRMP)",category:"GST"},
+{date:"15 Jun",title:"1st Advance Tax",description:"15% Installment FY 26-27",category:"Income Tax"},
+{date:"15 Jun",title:"EPF & ESI Payment",description:"May 2026",category:"Compliance"},
+{date:"20 Jun",title:"GSTR-3B",description:"May 2026",category:"GST"},
+{date:"25 Jun",title:"GST PMT-06",description:"May 2026 (QRMP)",category:"GST"}
 ],
 
 "July 2026":[
+{date:"07 Jul",title:"TDS/TCS Payment",description:"June 2026",category:"TDS"},
+{date:"11 Jul",title:"GSTR-1",description:"June 2026",category:"GST"},
+{date:"13 Jul",title:"GSTR-1 IFF",description:"June 2026 (QRMP)",category:"GST"},
+{date:"15 Jul",title:"EPF & ESI Payment",description:"June 2026",category:"Compliance"},
+{date:"20 Jul",title:"GSTR-3B",description:"June 2026",category:"GST"},
+{date:"25 Jul",title:"GST PMT-06",description:"June 2026 (QRMP)",category:"GST"},
+{date:"31 Jul",title:"ITR Filing",description:"Non-Audit Cases AY 27-28",category:"Income Tax"},
+{date:"31 Jul",title:"TDS Return Q1",description:"Apr–Jun 2026",category:"TDS"}
+],
 
-{date:"31 Jul",title:"ITR Filing",description:"Non Audit Cases",category:"Income Tax"}
+"August 2026":[
+{date:"07 Aug",title:"TDS/TCS Payment",description:"July 2026",category:"TDS"},
+{date:"11 Aug",title:"GSTR-1",description:"July 2026",category:"GST"},
+{date:"13 Aug",title:"GSTR-1 IFF",description:"July 2026 (QRMP)",category:"GST"},
+{date:"15 Aug",title:"EPF & ESI Payment",description:"July 2026",category:"Compliance"},
+{date:"20 Aug",title:"GSTR-3B",description:"July 2026",category:"GST"},
+{date:"25 Aug",title:"GST PMT-06",description:"July 2026 (QRMP)",category:"GST"}
+],
 
+"September 2026":[
+{date:"07 Sep",title:"TDS/TCS Payment",description:"August 2026",category:"TDS"},
+{date:"11 Sep",title:"GSTR-1",description:"August 2026",category:"GST"},
+{date:"13 Sep",title:"GSTR-1 IFF",description:"August 2026 (QRMP)",category:"GST"},
+{date:"15 Sep",title:"2nd Advance Tax",description:"45% Cumulative",category:"Income Tax"},
+{date:"15 Sep",title:"EPF & ESI Payment",description:"August 2026",category:"Compliance"},
+{date:"20 Sep",title:"GSTR-3B",description:"August 2026",category:"GST"},
+{date:"25 Sep",title:"GST PMT-06",description:"August 2026 (QRMP)",category:"GST"},
+{date:"30 Sep",title:"Tax Audit Report",description:"FY 2025-26",category:"Income Tax"},
+{date:"30 Sep",title:"ITR Filing",description:"Audit Cases",category:"Income Tax"}
+],
+
+"October 2026":[
+{date:"07 Oct",title:"TDS/TCS Payment",description:"September 2026",category:"TDS"},
+{date:"11 Oct",title:"GSTR-1",description:"September 2026",category:"GST"},
+{date:"13 Oct",title:"GSTR-1 IFF",description:"September 2026 (QRMP)",category:"GST"},
+{date:"15 Oct",title:"EPF & ESI Payment",description:"September 2026",category:"Compliance"},
+{date:"20 Oct",title:"GSTR-3B",description:"September 2026",category:"GST"},
+{date:"25 Oct",title:"GST PMT-06",description:"September 2026 (QRMP)",category:"GST"},
+{date:"31 Oct",title:"TDS Return Q2",description:"Jul–Sep 2026",category:"TDS"}
+],
+
+"November 2026":[
+{date:"07 Nov",title:"TDS/TCS Payment",description:"October 2026",category:"TDS"},
+{date:"11 Nov",title:"GSTR-1",description:"October 2026",category:"GST"},
+{date:"13 Nov",title:"GSTR-1 IFF",description:"October 2026 (QRMP)",category:"GST"},
+{date:"15 Nov",title:"EPF & ESI Payment",description:"October 2026",category:"Compliance"},
+{date:"20 Nov",title:"GSTR-3B",description:"October 2026",category:"GST"},
+{date:"25 Nov",title:"GST PMT-06",description:"October 2026 (QRMP)",category:"GST"},
+{date:"30 Nov",title:"ITR Filing",description:"Transfer Pricing Cases",category:"Income Tax"}
+],
+
+"December 2026":[
+{date:"07 Dec",title:"TDS/TCS Payment",description:"November 2026",category:"TDS"},
+{date:"11 Dec",title:"GSTR-1",description:"November 2026",category:"GST"},
+{date:"13 Dec",title:"GSTR-1 IFF",description:"November 2026 (QRMP)",category:"GST"},
+{date:"15 Dec",title:"3rd Advance Tax",description:"75% Cumulative",category:"Income Tax"},
+{date:"15 Dec",title:"EPF & ESI Payment",description:"November 2026",category:"Compliance"},
+{date:"20 Dec",title:"GSTR-3B",description:"November 2026",category:"GST"},
+{date:"25 Dec",title:"GST PMT-06",description:"November 2026 (QRMP)",category:"GST"}
+],
+
+"January 2027":[
+{date:"07 Jan",title:"TDS/TCS Payment",description:"December 2026",category:"TDS"},
+{date:"11 Jan",title:"GSTR-1",description:"December 2026",category:"GST"},
+{date:"13 Jan",title:"GSTR-1 IFF",description:"December 2026 (QRMP)",category:"GST"},
+{date:"15 Jan",title:"EPF & ESI Payment",description:"December 2026",category:"Compliance"},
+{date:"20 Jan",title:"GSTR-3B",description:"December 2026",category:"GST"},
+{date:"25 Jan",title:"GST PMT-06",description:"December 2026 (QRMP)",category:"GST"},
+{date:"31 Jan",title:"TDS Return Q3",description:"Oct–Dec 2026",category:"TDS"}
+],
+
+"February 2027":[
+{date:"07 Feb",title:"TDS/TCS Payment",description:"January 2027",category:"TDS"},
+{date:"11 Feb",title:"GSTR-1",description:"January 2027",category:"GST"},
+{date:"13 Feb",title:"GSTR-1 IFF",description:"January 2027 (QRMP)",category:"GST"},
+{date:"15 Feb",title:"EPF & ESI Payment",description:"January 2027",category:"Compliance"},
+{date:"20 Feb",title:"GSTR-3B",description:"January 2027",category:"GST"},
+{date:"25 Feb",title:"GST PMT-06",description:"January 2027 (QRMP)",category:"GST"}
+],
+
+"March 2027":[
+{date:"07 Mar",title:"TDS/TCS Payment",description:"February 2027",category:"TDS"},
+{date:"11 Mar",title:"GSTR-1",description:"February 2027",category:"GST"},
+{date:"13 Mar",title:"GSTR-1 IFF",description:"February 2027 (QRMP)",category:"GST"},
+{date:"15 Mar",title:"4th Advance Tax",description:"100% Cumulative",category:"Income Tax"},
+{date:"15 Mar",title:"EPF & ESI Payment",description:"February 2027",category:"Compliance"},
+{date:"20 Mar",title:"GSTR-3B",description:"February 2027",category:"GST"},
+{date:"25 Mar",title:"GST PMT-06",description:"February 2027 (QRMP)",category:"GST"},
+{date:"31 Mar",title:"Year-End Tax Planning",description:"80C / 80D Investments",category:"Income Tax"}
 ]
 
 };
