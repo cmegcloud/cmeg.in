@@ -1,204 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CM Experts Group - Secure Payment</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-        .payment-card {
-            background: white;
-            width: 100%;
-            max-width: 400px;
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
-        }
+<title>CM Experts Group Payment</title>
 
-        /* LOGO */
-        .logo-img {
-            max-height: 60px;
-            margin-bottom: 15px;
-            object-fit: contain;
-        }
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
-        .title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
+<style>
 
-        .subtitle {
-            font-size: 13px;
-            color: #777;
-            margin-bottom: 25px;
-            border-bottom: 1px dashed #eee;
-            padding-bottom: 15px;
-        }
+body{
+margin:0;
+font-family:Segoe UI,Arial;
+background:#0e0e0e;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+color:#C8B28A;
+}
 
-        /* AMOUNT BOX */
-        .amount-container {
-            background: #e3f2fd; /* Light Blue Background */
-            border: 1px solid #bbdefb;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
+.card{
 
-        .label {
-            font-size: 12px;
-            font-weight: 700;
-            color: #1565c0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+width:92%;
+max-width:420px;
 
-        .amount {
-            font-size: 36px;
-            font-weight: 700;
-            color: #0d47a1;
-            margin-top: 5px;
-        }
+background:#161616;
 
-        /* CLIENT INFO */
-        .client-info {
-            text-align: left;
-            background: #fafafa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #eee;
-        }
+border-radius:20px;
 
-        .client-label { font-size: 11px; color: #888; text-transform: uppercase; }
-        .client-value { font-size: 15px; font-weight: 600; color: #333; margin-bottom: 8px; }
-        .client-value:last-child { margin-bottom: 0; }
+padding:30px;
 
-        /* QR CODE */
-        .qr-wrapper {
-            background: white;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-        
-        #qrcode img {
-            margin: 0 auto;
-        }
+box-shadow:
+0 15px 40px rgba(0,0,0,0.7);
 
-        /* PAY BUTTON (For Mobile Users) */
-        .btn-pay {
-            display: block;
-            width: 50%; /* CHANGED FROM 100% TO 50% */
-            background: #2962ff;
-            color: white;
-            padding: 15px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 16px;
-            box-shadow: 0 4px 15px rgba(41, 98, 255, 0.3);
-            margin: 10px auto; /* CHANGED TO CENTER THE BUTTON */
-            transition: transform 0.2s;
-        }
-        .btn-pay:active { transform: scale(0.98); }
+text-align:center;
 
-        .footer {
-            margin-top: 25px;
-            font-size: 11px;
-            color: #999;
-        }
-        
-        /* Loading State */
-        .loading { color: #888; font-style: italic; }
+}
 
-    </style>
+.logo{
+width:85px;
+margin-bottom:10px;
+}
+
+.title{
+font-size:20px;
+font-weight:600;
+color:#B08D57;
+}
+
+.subtitle{
+font-size:13px;
+color:#8c7a55;
+margin-bottom:20px;
+}
+
+.amountbox{
+
+background:linear-gradient(145deg,#5C4520,#8B6A2F);
+
+border-radius:12px;
+
+padding:18px;
+
+color:white;
+
+margin-bottom:20px;
+
+}
+
+.amount{
+
+font-size:38px;
+font-weight:700;
+
+}
+
+.info{
+
+background:#1f1f1f;
+
+padding:12px;
+
+border-radius:10px;
+
+margin-bottom:10px;
+
+}
+
+.info b{
+color:#B08D57;
+}
+
+.qr{
+
+background:white;
+
+padding:12px;
+
+border-radius:12px;
+
+display:inline-block;
+
+margin:20px 0;
+
+}
+
+.paybtn{
+
+display:block;
+
+text-decoration:none;
+
+background:linear-gradient(145deg,#8B6A2F,#B08D57);
+
+color:#0e0e0e;
+
+font-weight:600;
+
+padding:14px;
+
+border-radius:10px;
+
+}
+
+.footer{
+
+font-size:11px;
+
+margin-top:20px;
+
+color:#7a6a4c;
+
+}
+
+</style>
 </head>
+
 <body>
 
-    <div class="payment-card">
-        <img src="logopay.png" alt="CM Experts Group" class="logo-img" onerror="this.style.display='none'">
-        <div class="title">CM Experts Group</div>
-        <div class="subtitle">Secure Payment Portal</div>
 
-        <div class="amount-container">
-            <div class="label">Total Payable</div>
-            <div class="amount" id="displayAmount">₹ 0</div>
-        </div>
+<div class="card">
 
-        <div class="client-info">
-            <div class="client-label">Invoice For</div>
-            <div class="client-value" id="displayClient" style="color: #000;">Loading...</div>
-            
-            <div class="client-label" style="margin-top: 10px;">Paying To</div>
-            <div class="client-value" id="displayUpi" style="font-family: monospace; color: #555;">Loading...</div>
-        </div>
+<img src="logocmeg.png" class="logo">
 
-        <div style="font-size: 13px; font-weight: bold; color: #444; margin-bottom: 10px;">Scan QR to Pay</div>
-        <div class="qr-wrapper" id="qrcode"></div>
+<div class="title">CM Experts Group</div>
+<div class="subtitle">Secure Payment Portal</div>
 
-        <a href="#" id="deepLinkBtn" class="btn-pay">
-            <i class="fa-solid fa-mobile-screen-button"></i> Tap to Pay via UPI
-        </a>
+<div class="amountbox">
 
-        <div class="footer">
-            <i class="fa-solid fa-lock"></i> 100% Secure Transaction via CM Experts
-        </div>
-    </div>
+TOTAL PAYABLE
 
-    <script>
-        // 1. GET DATA FROM URL
-        const params = new URLSearchParams(window.location.search);
-        
-        // Defaults if data is missing
-        const clientName = params.get('client') || 'Client';
-        const amount = params.get('amt') || '0';
-        const upiID = params.get('upi') || 'cmexperts@upi';
+<div class="amount" id="amt">₹0</div>
 
-        // 2. AUTO-FILL HTML
-        document.getElementById('displayClient').innerText = clientName;
-        document.getElementById('displayAmount').innerText = '₹ ' + amount;
-        document.getElementById('displayUpi').innerText = upiID;
+</div>
 
-        // 3. GENERATE UPI STRING
-        // Format: upi://pay?pa=ADDRESS&pn=NAME&am=AMOUNT&tn=NOTE
-        // We remove spaces from Client Name for the 'tn' (Transaction Note) to avoid link errors
-        const cleanName = clientName.replace(/[^a-zA-Z0-9]/g, ''); 
-        const upiString = `upi://pay?pa=${upiID}&pn=CMExpertsGroup&am=${amount}&tn=Bill-${cleanName}`;
+<div class="info">
+Invoice For<br>
+<b id="client"></b>
+</div>
 
-        // 4. GENERATE QR CODE AUTOMATICALLY
-        new QRCode(document.getElementById("qrcode"), {
-            text: upiString,
-            width: 160,
-            height: 160,
-            colorDark : "#000000",
-            colorLight : "#ffffff",
-            correctLevel : QRCode.CorrectLevel.M
-        });
+<div class="info">
+Paying To<br>
+<b id="upi">cmtaxexperts@ybl</b>
+</div>
 
-        // 5. ACTIVATE "TAP TO PAY" BUTTON
-        document.getElementById('deepLinkBtn').href = upiString;
+<div class="qr">
+<canvas id="qrcode"></canvas>
+</div>
 
-    </script>
+<a id="paybtn" class="paybtn">Tap to Pay via UPI</a>
+
+<div class="footer">
+CM Experts Group<br>
+Count • Connect • Grow<br>
+www.cmeg.in
+</div>
+
+</div>
+
+<script>
+
+const params = new URLSearchParams(window.location.search)
+
+const client = params.get("client") || "Client"
+const amount = params.get("amt") || "0"
+const upi = params.get("upi") || "cmtaxexperts@ybl"
+
+document.getElementById("client").innerText = client
+document.getElementById("amt").innerText = "₹ " + amount
+document.getElementById("upi").innerText = upi
+
+const upilink =
+`upi://pay?pa=${upi}&pn=CM Experts Group&am=${amount}&cu=INR&tn=${client}`
+
+document.getElementById("paybtn").href = upilink
+
+QRCode.toCanvas(document.getElementById("qrcode"), upilink,{width:200})
+
+</script>
 
 </body>
 </html>
