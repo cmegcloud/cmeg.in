@@ -1,54 +1,647 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>CM Experts Group</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #fdf2f0;
-      color: #333;
-      text-align: center;
-    }
-    header {
-      background: #d60000;
-      color: #fff;
-      padding: 40px 20px;
-    }
-    section {
-      padding: 40px 20px;
-    }
-    .tagline {
-      color: #5e6665;
-      font-size: 18px;
-      margin-top: 10px;
-    }
-    .btn {
-      display: inline-block;
-      margin: 10px;
-      padding: 12px 20px;
-      background: #d60000;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 6px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CM Experts Group | Count • Connect • Grow</title>
+    <style>
+        :root {
+            --primary: #8B6F47;
+            --primary-dark: #705836;
+            --primary-light: #f9f7f4;
+            --bg-color: #f4f5f7;
+            --surface: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --border-focus: #d4a574;
+            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--surface);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--surface);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .nav-logo {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+
+        .nav-brand {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--primary);
+            color: white !important;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(139, 111, 71, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(139, 111, 71, 0.3);
+        }
+
+        /* Layout Utility */
+        section {
+            padding: 100px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 50px auto;
+        }
+
+        .title-underline {
+            width: 60px;
+            height: 3px;
+            background: var(--primary);
+            margin: 0 auto 20px auto;
+            border-radius: 2px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--surface) 0%, var(--primary-light) 100%);
+            padding: 180px 20px 120px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero h1 span {
+            color: var(--primary);
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+        }
+
+        /* About Section */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .about-text p {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .about-image-placeholder {
+            background: var(--primary-light);
+            border-radius: 20px;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px dashed var(--border-focus);
+        }
+
+        .about-image-placeholder img {
+            width: 60%;
+            opacity: 0.8;
+        }
+
+        /* Divisions Section */
+        .bg-light {
+            background-color: var(--bg-color);
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--surface);
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-focus);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px auto;
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            color: var(--text-main);
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Reviews Section */
+        .review-card {
+            background: var(--surface);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        
+        .review-card::before {
+            content: '"';
+            font-size: 60px;
+            color: var(--primary-light);
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-family: serif;
+            line-height: 1;
+        }
+
+        .review-text {
+            font-style: italic;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .reviewer {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .reviewer-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Contact Section */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 50px;
+        }
+
+        .contact-info-card {
+            background: var(--primary);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+        }
+
+        .info-item {
+            margin-bottom: 25px;
+        }
+
+        .info-item h4 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .info-item p {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .form-group input, .form-group textarea {
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.1);
+        }
+
+        /* Footer */
+        footer {
+            background: #111;
+            color: #888;
+            padding: 60px 20px 30px 20px;
+            text-align: center;
+        }
+
+        .footer-logo {
+            filter: grayscale(1) brightness(2);
+            width: 60px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none; /* Hide default nav on mobile */
+                flex-direction: column;
+                position: absolute;
+                top: 75px;
+                left: 0;
+                width: 100%;
+                background: var(--surface);
+                padding: 20px;
+                box-shadow: 0 10px 10px rgba(0,0,0,0.05);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .about-content, .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            section {
+                padding: 60px 20px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<header>
-  <h1>CM Experts Group</h1>
-  <div class="tagline">Count · Connect · Grow</div>
-</header>
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo-container">
+                <img src="logocmeg.png" alt="CM Experts Group" class="nav-logo">
+                <span class="nav-brand">CM Experts Group</span>
+            </a>
+            
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            
+            <div class="nav-links" id="navLinks">
+                <a href="#home">Home</a>
+                <a href="#about">About Us</a>
+                <a href="#divisions">Our Divisions</a>
+                <a href="#reviews">Reviews</a>
+                <a href="#contact" class="btn-primary" style="color: white;">Contact Us</a>
+            </div>
+        </div>
+    </nav>
 
-<section>
-  <h2>Our Platforms</h2>
-  <a class="btn" href="#">CM Tax Experts</a>
-  <a class="btn" href="#">cmBooks</a>
-  <a class="btn" href="#">Accountree</a>
-</section>
+    <section id="home" class="hero">
+        <div class="container">
+            <h1>Count • Connect • <span>Grow</span></h1>
+            <p>Your trusted partner in comprehensive tax planning, professional bookkeeping, and custom enterprise software solutions. We build the foundation for your business success.</p>
+            <a href="#divisions" class="btn-primary">Explore Our Services</a>
+        </div>
+    </section>
 
+    <section id="about">
+        <div class="container">
+            <div class="section-title">About Us</div>
+            <div class="title-underline"></div>
+            
+            <div class="about-content">
+                <div class="about-image-placeholder">
+                    <img src="logocmeg.png" alt="CM Experts Group Emblem">
+                </div>
+                <div class="about-text">
+                    <h3 style="font-size: 24px; margin-bottom: 15px; color: var(--text-main);">Empowering Businesses Across India & Globally</h3>
+                    <p>At CM Experts Group, we understand that managing the financial and operational complexities of a business can be overwhelming. That's why we have structured our expertise into dedicated divisions to handle your specific needs seamlessly.</p>
+                    <p>Whether you are a startup needing accurate bookkeeping, a growing enterprise requiring strategic tax advisory, or a corporation looking for a custom ERP solution, our team of dedicated professionals is here to ensure you stay compliant, organized, and ready for growth.</p>
+                    <a href="#contact" style="color: var(--primary); font-weight: 600; text-decoration: none;">Get in touch with our experts →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="divisions" class="bg-light">
+        <div class="container">
+            <div class="section-title">Our Divisions</div>
+            <div class="title-underline"></div>
+            <p class="section-subtitle">Three specialized branches working together to provide end-to-end solutions for your business operations.</p>
+            
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <h3>1. CM Tax Experts</h3>
+                    <p>Comprehensive tax planning, GST filing, corporate taxation, and dedicated advisory services. We ensure your business remains 100% compliant while maximizing your tax efficiency.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">📒</div>
+                    <h3>2. Accountree</h3>
+                    <p>Professional bookkeeping, payroll processing, and deep financial accounting. We keep your ledgers flawless so you have real-time visibility into your business's financial health.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">💻</div>
+                    <h3>3. CMB ERP</h3>
+                    <p>Custom enterprise software, billing systems, and overall business management solutions. Tailor-made tech to streamline your workflow and connect your operations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="reviews">
+        <div class="container">
+            <div class="section-title">Client Reviews</div>
+            <div class="title-underline"></div>
+            <p class="section-subtitle">See what our partners have to say about working with CM Experts Group.</p>
+            
+            <div class="grid-3">
+                <div class="review-card">
+                    <p class="review-text">"CM Tax Experts completely streamlined our GST filings. Their attention to detail and proactive advisory has saved us both time and money."</p>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar">S</div>
+                        <div>
+                            <h4 style="font-size: 14px;">Sarah M.</h4>
+                            <p style="font-size: 12px; color: var(--text-muted);">Retail Director</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="review-card">
+                    <p class="review-text">"Outsourcing our payroll and bookkeeping to Accountree was the best decision we made this year. Highly professional and always on time."</p>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar">R</div>
+                        <div>
+                            <h4 style="font-size: 14px;">Rahul K.</h4>
+                            <p style="font-size: 12px; color: var(--text-muted);">Startup Founder</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-card">
+                    <p class="review-text">"The CMB ERP system they built for our warehouse integrated perfectly with our existing flow. Truly a full-service tech and finance group."</p>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar">J</div>
+                        <div>
+                            <h4 style="font-size: 14px;">James L.</h4>
+                            <p style="font-size: 12px; color: var(--text-muted);">Operations Manager</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="bg-light">
+        <div class="container">
+            <div class="section-title">Contact Us</div>
+            <div class="title-underline"></div>
+            
+            <div class="contact-grid">
+                <div class="contact-info-card">
+                    <h3 style="font-size: 24px; margin-bottom: 30px;">Let's Talk</h3>
+                    
+                    <div class="info-item">
+                        <h4>Phone</h4>
+                        <p>+91 99461 51111</p>
+                        <p>+91 98954 70148</p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <h4>Email</h4>
+                        <p>Support@cmeg.in</p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <h4>Website</h4>
+                        <p>www.cmeg.in</p>
+                    </div>
+                </div>
+
+                <div style="background: var(--surface); padding: 40px; border-radius: 16px; border: 1px solid var(--border);">
+                    <h3 style="font-size: 20px; margin-bottom: 20px;">Send us a message</h3>
+                    <form class="contact-form" onsubmit="event.preventDefault(); alert('Thank you for reaching out! We will contact you soon.');">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" placeholder="john@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Interested In</label>
+                            <select style="padding: 12px 15px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 15px;">
+                                <option>CM Tax Experts (Tax & Advisory)</option>
+                                <option>Accountree (Bookkeeping & Payroll)</option>
+                                <option>CMB ERP (Software Solutions)</option>
+                                <option>Other Inquiry</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea rows="4" placeholder="How can we help you?" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary" style="margin-top: 10px; width: 100%;">Submit Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <img src="logocmeg.png" alt="CMEG Logo" class="footer-logo">
+            <div class="footer-links">
+                <a href="#home">Home</a>
+                <a href="#about">About Us</a>
+                <a href="#divisions">Divisions</a>
+                <a href="invoice.html">Client Portal</a> 
+            </div>
+            <p>&copy; 2026 CM Experts Group. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple script to toggle the mobile menu
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Close mobile menu when a link is clicked
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('navLinks').classList.remove('active');
+            });
+        });
+    </script>
 </body>
 </html>
