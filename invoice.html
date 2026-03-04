@@ -525,7 +525,7 @@
 
         <button class="action-btn btn-primary client-only" onclick="payViaUPI()">
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            Pay Now via UPI
+            Pay Now via UPI App
         </button>
 
         <button class="action-btn btn-secondary" onclick="downloadInvoice()">
@@ -715,8 +715,6 @@
 
         const invoiceContent = document.createElement('div');
         
-        // By removing 'flex: 1' and 'height: 296mm', the mobile browser bug is bypassed.
-        // I kept the text exactly the same size, but reduced the spacing between sections!
         invoiceContent.innerHTML = `
             <div style="width: 210mm; padding: 12mm; background: white; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
                 
@@ -807,8 +805,8 @@
                 <div style="background: #fcfbf9; padding: 12px 15px; border-radius: 12px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
                     <div style="flex: 1; padding-right: 20px;">
                         <p style="color: #1a1a1a; font-size: 12px; margin: 0 0 6px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Our Divisions</p>
-                        <div style="font-size: 10px; color: #555; margin-bottom: 3px;"><strong style="color: #8B6F47;">1. CM Tax Experts:</strong> Comprehensive tax planning, filing, and advisory.</div>
-                        <div style="font-size: 10px; color: #555; margin-bottom: 3px;"><strong style="color: #8B6F47;">2. Accountree:</strong> Professional bookkeeping, payroll, and financial accounting.</div>
+                        <div style="font-size: 10px; color: #555; margin-bottom: 4px;"><strong style="color: #8B6F47;">1. CM Tax Experts:</strong> Comprehensive tax planning, filing, and advisory.</div>
+                        <div style="font-size: 10px; color: #555; margin-bottom: 4px;"><strong style="color: #8B6F47;">2. Accountree:</strong> Professional bookkeeping, payroll, and financial accounting.</div>
                         <div style="font-size: 10px; color: #555; margin-bottom: 0;"><strong style="color: #8B6F47;">3. CMB ERP:</strong> Custom enterprise software and business management solutions.</div>
                     </div>
                     
@@ -822,11 +820,12 @@
             </div>
         `;
         
+        // ADDED scrollY: 0 AND scrollX: 0 to fix the massive white blank space bug on mobile!
         const opt = {
             margin: 0,
             filename: `Invoice-${invoiceId}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
+            html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 }, 
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
         
@@ -854,7 +853,8 @@
         
         const clientPortalUrl = `${baseUrl}?mode=client&client=${encodeURIComponent(client)}&clientId=${encodeURIComponent(clientId)}&id=${encodeURIComponent(invoiceId)}&date=${dateStr}&upi=${encodeURIComponent(upiId)}&snames=${sNames}&samts=${sAmts}`;
         
-        const message = `Hi ${client},\n\nPlease find your invoice details below:\n\n*Invoice ID:* ${invoiceId}\n*Amount:* ₹${total.toLocaleString('en-IN')}\n\n*View & Download your Invoice here:*\n${clientPortalUrl}\n\nOr contact us at: 9946151111\n\nThank you for your business!\nCM Experts Group`;
+        // UPDATED WhatsApp message: Removed the raw unclickable upi:// text, directly guiding them to the portal
+        const message = `Hi ${client},\n\nPlease find your invoice details below:\n\n*Invoice ID:* ${invoiceId}\n*Amount:* ₹${total.toLocaleString('en-IN')}\n\n*👉 Click the link below to Pay directly via UPI App or Download your PDF:*\n${clientPortalUrl}\n\nOr contact us at: 9946151111\n\nThank you for your business!\nCM Experts Group`;
         
         const whatsappUrl = `https://api.whatsapp.com/send?phone=91${clientMobile}&text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
