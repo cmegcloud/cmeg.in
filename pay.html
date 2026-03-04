@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>CM Experts Group Payment</title>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<style>
+
+body{
+margin:0;
+font-family:Segoe UI,Arial;
+background:#f6f5f2;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+color:#5C4520;
+}
+
+.card{
+
+width:92%;
+max-width:420px;
+
+background:white;
+
+border-radius:20px;
+
+padding:30px;
+
+box-shadow:
+0 15px 40px rgba(0,0,0,0.08);
+
+text-align:center;
+
+}
+
+.logo{
+width:90px;
+margin-bottom:10px;
+}
+
+.title{
+font-size:20px;
+font-weight:600;
+color:#8B6A2F;
+}
+
+.subtitle{
+font-size:13px;
+color:#9a875e;
+margin-bottom:20px;
+}
+
+.amountbox{
+
+background:linear-gradient(145deg,#8B6A2F,#B08D57);
+
+border-radius:12px;
+
+padding:18px;
+
+color:white;
+
+margin-bottom:20px;
+
+}
+
+.amount{
+
+font-size:38px;
+font-weight:700;
+
+}
+
+.info{
+
+background:#f5f2ea;
+
+padding:12px;
+
+border-radius:10px;
+
+margin-bottom:10px;
+
+}
+
+.info b{
+color:#8B6A2F;
+}
+
+.qr{
+
+background:white;
+
+padding:12px;
+
+border-radius:12px;
+
+display:inline-block;
+
+margin:20px 0;
+
+box-shadow:0 4px 10px rgba(0,0,0,0.05);
+
+}
+
+.paybtn{
+
+display:block;
+
+text-decoration:none;
+
+background:linear-gradient(145deg,#8B6A2F,#B08D57);
+
+color:white;
+
+font-weight:600;
+
+padding:14px;
+
+border-radius:10px;
+
+}
+
+.footer{
+
+font-size:11px;
+
+margin-top:20px;
+
+color:#9a875e;
+
+}
+
+</style>
+</head>
+
+<body>
+
+
+<div class="card">
+
+<img src="logocmeg.png" class="logo">
+
+<div class="title">CM Experts Group</div>
+<div class="subtitle">Secure Payment Portal</div>
+
+<div class="amountbox">
+
+TOTAL PAYABLE
+
+<div class="amount" id="amt">₹0</div>
+
+</div>
+
+<div class="info">
+Invoice For<br>
+<b id="client"></b>
+</div>
+
+<div class="info">
+Paying To<br>
+<b id="upi">cmtaxexperts@ybl</b>
+</div>
+
+<div class="qr">
+<canvas id="qrcode"></canvas>
+</div>
+
+<a id="paybtn" class="paybtn">Tap to Pay via UPI</a>
+
+<div class="footer">
+CM Experts Group<br>
+Count • Connect • Grow<br>
+www.cmeg.in
+</div>
+
+</div>
+
+
+<script>
+
+const params = new URLSearchParams(window.location.search)
+
+const client = params.get("client") || "Client"
+const amount = params.get("amt") || "0"
+const upi = params.get("upi") || "cmtaxexperts@ybl"
+
+document.getElementById("client").innerText = client
+document.getElementById("amt").innerText = "₹ " + amount
+document.getElementById("upi").innerText = upi
+
+const upilink =
+`upi://pay?pa=${upi}&pn=CM Experts Group&am=${amount}&cu=INR&tn=${client}`
+
+document.getElementById("paybtn").href = upilink
+
+QRCode.toCanvas(document.getElementById("qrcode"), upilink,{width:200})
+
+</script>
+
+</body>
+</html>
