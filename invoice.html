@@ -543,11 +543,9 @@
 
 <script>
     // ==========================================
-    // CONFIGURATION - CHANGE THIS LINK!
+    // THE LIVE HOSTED PORTAL URL
     // ==========================================
-    // Since you are testing this locally, the browser generates an invalid "about:srcdoc" link.
-    // Replace this string with the actual URL where you plan to host this HTML file.
-    const HOSTED_PORTAL_URL = "https://www.cmeg.in/invoice.html"; 
+    const HOSTED_PORTAL_URL = "https://cmeg.in/invoice.html"; 
     // ==========================================
 
     const params = new URLSearchParams(window.location.search);
@@ -716,7 +714,6 @@
 
         const invoiceContent = document.createElement('div');
         
-        // Tighter padding and margins to easily fit on one page
         invoiceContent.innerHTML = `
             <div style="font-family: Arial, sans-serif; padding: 12px; background: white; position: relative;">
                 
@@ -809,10 +806,10 @@
         `;
         
         const opt = {
-            margin: 5, // Tighter margin so it fits beautifully
+            margin: 5,
             filename: `Invoice-${invoiceId}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true }, // useCORS added to help fix blank images
+            html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
         
@@ -833,11 +830,8 @@
 
         const total = services.reduce((sum, s) => sum + s.amount, 0);
         
-        // This is the fix for the broken "about:srcdoc" link
-        let baseUrl = window.location.href.split('?')[0];
-        if (baseUrl.startsWith('about:') || baseUrl.startsWith('file:')) {
-            baseUrl = HOSTED_PORTAL_URL; 
-        }
+        // Use the hardcoded live website URL
+        let baseUrl = HOSTED_PORTAL_URL;
 
         const sNames = services.map(s => encodeURIComponent(s.name)).join('|');
         const sAmts = services.map(s => s.amount).join('|');
