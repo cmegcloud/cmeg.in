@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tax Compliance Calendar</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'DM Sans', sans-serif; }
+    .calendar-day:hover { transform: translateY(-2px); }
+    .event-dot { animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .sync-btn:hover { box-shadow: 0 4px 20px rgba(66, 133, 244, 0.3); }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full overflow-auto">
+  <div id="app" class="min-h-full w-full bg-slate-50"><!-- Brand Section -->
+   <div class="bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-6 py-6">
+     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+      <div class="flex items-center gap-4">
+       <div class="w-14 h-14 bg-gradient-to-br from-amber-700 to-yellow-600 rounded-xl flex items-center justify-center flex-shrink-0">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>
+       </div>
+       <div>
+        <h1 id="company-name" class="text-2xl font-bold text-slate-800">CM Experts Group</h1>
+        <p id="tagline" class="text-sm text-amber-700 font-semibold">Count • Connect • Grow</p>
+       </div>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3">
+       <button id="whatsapp-btn" class="flex items-center justify-center gap-2 bg-amber-700 hover:bg-amber-800 text-white font-medium py-2.5 px-6 rounded-xl transition-all duration-300 shadow-sm">
+        <svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-9.746 9.798c0 2.734.732 5.41 2.124 7.738L2.71 22.77l8.278-2.71c2.267 1.234 4.818 1.888 7.532 1.888 9.696 0 17.577-7.884 17.577-17.592S21.432 2.581 11.736 2.581c-4.691 0-9.092 1.784-12.358 4.69" />
+        </svg>WhatsApp </button> <button id="contact-btn" class="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 px-6 rounded-xl transition-all duration-300 shadow-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>Talk to Experts </button>
+      </div>
+     </div>
+    </div>
+   </div><!-- Header Section -->
+   <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
+    <div class="max-w-7xl mx-auto px-6 py-8">
+     <h2 id="page-title" class="text-3xl md:text-4xl font-bold mb-2">Compliance Calendar</h2>
+     <p class="text-amber-100 text-lg mb-4">FY 2026-27</p>
+     <p id="header-description" class="text-amber-50 max-w-2xl">Select a date below to view statutory filing deadlines and seamlessly sync them to your personal calendar.</p>
+    </div>
+   </div><!-- Main Content -->
+   <main class="max-w-7xl mx-auto px-6 py-8"><!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+     <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+      <div class="flex items-center gap-3">
+       <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
+        <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+       </div>
+       <div>
+        <p class="text-2xl font-bold text-slate-800" id="urgent-count">3</p>
+        <p class="text-sm text-slate-500">Urgent (7 days)</p>
+       </div>
+      </div>
+     </div>
+     <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+      <div class="flex items-center gap-3">
+       <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center">
+        <svg class="w-6 h-6 text-amber-700" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+       </div>
+       <div>
+        <p class="text-2xl font-bold text-slate-800" id="upcoming-count">5</p>
+        <p class="text-sm text-slate-500">This Month</p>
+       </div>
+      </div>
+     </div>
+     <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+      <div class="flex items-center gap-3">
+       <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center">
+        <svg class="w-6 h-6 text-amber-700" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+       </div>
+       <div>
+        <p class="text-2xl font-bold text-slate-800" id="completed-count">12</p>
+        <p class="text-sm text-slate-500">Completed</p>
+       </div>
+      </div>
+     </div>
+     <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+      <div class="flex items-center gap-3">
+       <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+       </div>
+       <div>
+        <p class="text-2xl font-bold text-slate-800" id="total-count">20</p>
+        <p class="text-sm text-slate-500">Total Events</p>
+       </div>
+      </div>
+     </div>
+    </div><!-- Calendar Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><!-- Calendar -->
+     <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"><!-- Calendar Header -->
+      <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between"><button id="prev-month" class="p-2 hover:bg-slate-200 rounded-lg transition-colors">
+        <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg></button>
+       <h2 id="current-month" class="text-lg font-semibold text-slate-800">January 2025</h2><button id="next-month" class="p-2 hover:bg-slate-200 rounded-lg transition-colors">
+        <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg></button>
+      </div><!-- Calendar Grid -->
+      <div class="p-4"><!-- Weekday Headers -->
+       <div class="grid grid-cols-7 gap-1 mb-2">
+        <div class="text-center text-xs font-semibold text-slate-400 py-2">
+         SUN
+        </div>
+        <div class="text-center text-xs font-semibold text-slate-400 py-2">
+         MON
+        </div>
+        <div class="text-center text-xs font-semibold text-slate-400 py-2">
+         TUE
+        </div>
+        <div class="text-center text-xs font-semibold text-slate-400 py-2">
+         WED
+        </div>
+        <div class="text-center text-xs font-semibold text-slate-400 py-2">
+         THU
+        </div>
+        <div class="text-center text-xs font-semibold text-slate-400 py-2">
+         FRI
+        </div>
+        <div class="text-center text-xs font-semibold text-slate-400 py-2">
+         SAT
+        </div>
+       </div><!-- Calendar Days -->
+       <div id="calendar-grid" class="grid grid-cols-7 gap-1"><!-- Days will be populated by JavaScript -->
+       </div>
+      </div><!-- Legend -->
+      <div class="px-6 py-4 border-t border-slate-100 bg-slate-50">
+       <div class="flex flex-wrap gap-4 text-sm">
+        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-700"></span> <span class="text-slate-600">Urgent</span>
+        </div>
+        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-500"></span> <span class="text-slate-600">Due Soon</span>
+        </div>
+        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-yellow-600"></span> <span class="text-slate-600">Upcoming</span>
+        </div>
+        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-slate-300"></span> <span class="text-slate-600">Completed</span>
+        </div>
+       </div>
+      </div>
+     </div><!-- Upcoming Events Panel -->
+     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="bg-slate-50 px-5 py-4 border-b border-slate-200">
+       <h3 class="font-semibold text-slate-800">Upcoming Deadlines</h3>
+      </div>
+      <div id="events-list" class="divide-y divide-slate-100 max-h-96 overflow-y-auto"><!-- Events will be populated by JavaScript -->
+      </div>
+     </div>
+    </div><!-- Event Detail Modal -->
+    <div id="event-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+     <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl">
+      <div class="p-6">
+       <div class="flex items-start justify-between mb-4">
+        <div id="modal-priority" class="px-3 py-1 rounded-full text-xs font-semibold">
+         Priority
+        </div><button id="close-modal" class="p-1 hover:bg-slate-100 rounded-lg transition-colors">
+         <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+         </svg></button>
+       </div>
+       <h3 id="modal-title" class="text-xl font-bold text-slate-800 mb-2">Event Title</h3>
+       <p id="modal-description" class="text-slate-600 mb-4">Event description goes here.</p>
+       <div class="flex items-center gap-2 text-sm text-slate-500 mb-4">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg><span id="modal-date">Due Date</span>
+       </div>
+       <div class="flex gap-3"><button id="add-to-google" class="flex-1 flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 px-4 rounded-xl transition-colors">
+         <svg class="w-4 h-4" viewbox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z" />
+         </svg> Add to Google </button> <button id="mark-complete" class="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 px-4 rounded-xl transition-colors">
+         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg></button>
+       </div>
+      </div>
+     </div>
+    </div><!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-slate-800 text-white px-5 py-3 rounded-xl shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+     <div class="flex items-center gap-3">
+      <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg><span id="toast-message">Event added to Google Calendar</span>
+     </div>
+    </div>
+   </main><!-- Footer -->
+   <footer class="bg-slate-800 text-slate-300 border-t border-slate-700 mt-12">
+    <div class="max-w-7xl mx-auto px-6 py-12">
+     <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      <!-- Brand Info -->
+      <div>
+       <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
+         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+         </svg>
+        </div>
+        <div>
+         <h3 class="font-bold text-white">CM Experts Group</h3>
+         <p class="text-xs text-amber-300">Count • Connect • Grow</p>
+        </div>
+       </div>
+       <p id="footer-description" class="text-sm leading-relaxed">Your trusted partner in comprehensive tax planning, professional bookkeeping, and custom enterprise software solutions.</p>
+      </div><!-- Our Divisions -->
+      <div>
+       <h4 class="font-semibold text-white mb-4">Our Divisions</h4>
+       <ul class="space-y-2 text-sm">
+        <li><a href="#" class="hover:text-emerald-400 transition-colors">Accountree</a></li>
+        <li><a href="#" class="hover:text-emerald-400 transition-colors">CM Tax Experts</a></li>
+        <li><a href="#" class="hover:text-emerald-400 transition-colors">CMB ERP</a></li>
+       </ul>
+      </div><!-- Contact Info -->
+      <div>
+       <h4 class="font-semibold text-white mb-4">Contact</h4>
+       <ul class="space-y-3 text-sm">
+        <li class="flex items-center gap-2">
+         <svg class="w-4 h-4 text-amber-300 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+         </svg><a id="contact-email" href="mailto:Support@cmeg.in" class="hover:text-amber-300 transition-colors">Support@cmeg.in</a></li>
+        <li class="flex items-center gap-2">
+         <svg class="w-4 h-4 text-amber-300 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+         </svg><a id="contact-phone" href="tel:+919946151111" class="hover:text-emerald-400 transition-colors">+91 9946151111</a></li>
+        <li class="flex items-center gap-2">
+         <svg class="w-4 h-4 text-amber-300 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.658 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+         </svg><a id="contact-website" href="#" class="hover:text-emerald-400 transition-colors">www.cmeg.in</a></li>
+       </ul>
+      </div><!-- Quick Links -->
+      <div>
+       <h4 class="font-semibold text-white mb-4">Quick Links</h4>
+       <ul class="space-y-2 text-sm">
+        <li><a href="#" class="hover:text-emerald-400 transition-colors">Compliance Calendar</a></li>
+        <li><a href="#" class="hover:text-emerald-400 transition-colors">Client Invoice Portal</a></li>
+        <li><a href="#" class="hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
+       </ul>
+      </div>
+     </div><!-- Copyright -->
+     <div class="border-t border-slate-700 pt-8">
+      <p class="text-center text-sm text-slate-400">© 2026 CM Experts Group. All Rights Reserved.</p>
+     </div>
+    </div>
+   </footer>
+  </div>
+  <script>
+    // Default configuration
+    const defaultConfig = {
+      page_title: 'Compliance Calendar',
+      company_name: 'CM Experts Group',
+      tagline: 'Count • Connect • Grow',
+      header_description: 'Select a date below to view statutory filing deadlines and seamlessly sync them to your personal calendar.',
+      footer_description: 'Your trusted partner in comprehensive tax planning, professional bookkeeping, and custom enterprise software solutions.',
+      contact_email: 'Support@cmeg.in',
+      contact_phone: '+91 9946151111',
+      contact_website: 'www.cmeg.in',
+      primary_color: '#8B6F47',
+      secondary_color: '#D4A574'
+    };
+
+    // Tax compliance events data - FY 2026-27
+    const taxEvents = [
+      // April 2026
+      { id: 1, title: 'TDS Payment (March Month)', date: new Date(2026, 3, 7), description: 'Deposit tax deducted in March 2026 for non-salaried payments.', priority: 'upcoming', completed: false },
+      { id: 2, title: 'GSTR-1 Filing (March)', date: new Date(2026, 3, 11), description: 'Monthly GST return for outward supplies in March 2026.', priority: 'upcoming', completed: false },
+      { id: 3, title: 'EPF & ESI Payment (March)', date: new Date(2026, 3, 15), description: 'March 2026 Provident Fund and Employee State Insurance contribution.', priority: 'upcoming', completed: false },
+      { id: 4, title: 'GSTR-3B Filing (March)', date: new Date(2026, 3, 20), description: 'Monthly GST summary return for March 2026.', priority: 'upcoming', completed: false },
+      { id: 5, title: 'GST CMP-08 (Jan-Mar Q4)', date: new Date(2026, 3, 18), description: 'Quarterly return for Q4 FY 2025-26 under QRMP Scheme.', priority: 'upcoming', completed: false },
+      { id: 6, title: 'GSTR-4 Annual Return', date: new Date(2026, 3, 30), description: 'GST annual return for FY 2025-26 for composition dealers.', priority: 'upcoming', completed: false },
+      { id: 7, title: 'TDS Return Q4 (Jan-Mar)', date: new Date(2026, 3, 30), description: 'Quarterly TDS return filing for January-March 2026 (Form 24Q/26Q).', priority: 'urgent', completed: false },
+      
+      // May 2026
+      { id: 8, title: 'TDS Payment (April Month)', date: new Date(2026, 4, 7), description: 'April 2026 TDS deposit for non-salaried payments.', priority: 'upcoming', completed: false },
+      { id: 9, title: 'GSTR-1 Filing (April)', date: new Date(2026, 4, 11), description: 'Monthly outward supplies return for April 2026.', priority: 'upcoming', completed: false },
+      { id: 10, title: 'EPF & ESI (April)', date: new Date(2026, 4, 15), description: 'April 2026 PF and ESI contribution deadline.', priority: 'upcoming', completed: false },
+      { id: 11, title: 'GSTR-3B Filing (April)', date: new Date(2026, 4, 20), description: 'April 2026 GST summary return.', priority: 'upcoming', completed: false },
+      { id: 12, title: 'SFT Filing (Form 61A)', date: new Date(2026, 4, 31), description: 'Scientific/Technical submission for FY 2025-26.', priority: 'upcoming', completed: false },
+      
+      // June 2026
+      { id: 13, title: 'TDS Payment (May Month)', date: new Date(2026, 5, 7), description: 'May 2026 TDS deposit.', priority: 'upcoming', completed: false },
+      { id: 14, title: 'GSTR-1 Filing (May)', date: new Date(2026, 5, 11), description: 'May 2026 outward supplies return.', priority: 'upcoming', completed: false },
+      { id: 15, title: 'EPF & ESI (May)', date: new Date(2026, 5, 15), description: 'May 2026 PF and ESI contribution.', priority: 'upcoming', completed: false },
+      { id: 16, title: 'GSTR-3B Filing (May)', date: new Date(2026, 5, 20), description: 'May 2026 GST summary return.', priority: 'upcoming', completed: false },
+      { id: 17, title: '1st Advance Tax (15%)', date: new Date(2026, 5, 15), description: 'First installment of advance tax for FY 2026-27 (15% of total estimated liability).', priority: 'urgent', completed: false },
+      
+      // July 2026
+      { id: 18, title: 'TDS Payment (June Month)', date: new Date(2026, 6, 7), description: 'June 2026 TDS deposit.', priority: 'upcoming', completed: false },
+      { id: 19, title: 'GSTR-1 Filing (June)', date: new Date(2026, 6, 11), description: 'June 2026 outward supplies return.', priority: 'upcoming', completed: false },
+      { id: 20, title: 'EPF & ESI (June)', date: new Date(2026, 6, 15), description: 'June 2026 PF and ESI contribution.', priority: 'upcoming', completed: false },
+      { id: 21, title: 'GSTR-3B Filing (June)', date: new Date(2026, 6, 20), description: 'June 2026 GST summary return.', priority: 'upcoming', completed: false },
+      { id: 22, title: 'ITR Filing (Non-Audit)', date: new Date(2026, 6, 31), description: 'Income Tax Return filing for AY 2026-27 (non-audit cases).', priority: 'upcoming', completed: false },
+      { id: 23, title: 'TDS Return Q1 (Apr-Jun)', date: new Date(2026, 6, 31), description: 'Quarterly TDS return for Q1 FY 2026-27.', priority: 'upcoming', completed: false },
+      
+      // August 2026
+      { id: 24, title: 'TDS Payment (July Month)', date: new Date(2026, 7, 7), description: 'July 2026 TDS deposit.', priority: 'upcoming', completed: false },
+      { id: 25, title: 'GSTR-1 Filing (July)', date: new Date(2026, 7, 11), description: 'July 2026 outward supplies return.', priority: 'upcoming', completed: false },
+      { id: 26, title: 'EPF & ESI (July)', date: new Date(2026, 7, 15), description: 'July 2026 PF and ESI contribution.', priority: 'upcoming', completed: false },
+      { id: 27, title: 'GSTR-3B Filing (July)', date: new Date(2026, 7, 20), description: 'July 2026 GST summary return.', priority: 'upcoming', completed: false },
+      
+      // September 2026
+      { id: 28, title: 'TDS Payment (August Month)', date: new Date(2026, 8, 7), description: 'August 2026 TDS deposit.', priority: 'upcoming', completed: false },
+      { id: 29, title: 'GSTR-1 Filing (August)', date: new Date(2026, 8, 11), description: 'August 2026 outward supplies return.', priority: 'upcoming', completed: false },
+      { id: 30, title: 'EPF & ESI (August)', date: new Date(2026, 8, 15), description: 'August 2026 PF and ESI contribution.', priority: 'upcoming', completed: false },
+      { id: 31, title: 'GSTR-3B Filing (August)', date: new Date(2026, 8, 20), description: 'August 2026 GST summary return.', priority: 'upcoming', completed: false },
+      { id: 32, title: '2nd Advance Tax (45%)', date: new Date(2026, 8, 15), description: 'Second installment of advance tax for FY 2026-27 (45% cumulative).', priority: 'urgent', completed: false },
+      { id: 33, title: 'Tax Audit Report Filing', date: new Date(2026, 8, 30), description: 'Tax audit report filing deadline for FY 2025-26.', priority: 'urgent', completed: false },
+      { id: 34, title: 'ITR Filing (Audit Cases)', date: new Date(2026, 8, 30), description: 'Income Tax Return for AY 2026-27 for cases requiring tax audit.', priority: 'urgent', completed: false },
+      
+      // October 2026
+      { id: 35, title: 'TDS Payment (September Month)', date: new Date(2026, 9, 7), description: 'September 2026 TDS deposit.', priority: 'upcoming', completed: false },
+      { id: 36, title: 'GSTR-1 Filing (September)', date: new Date(2026, 9, 11), description: 'September 2026 outward supplies return.', priority: 'upcoming', completed: false },
+      { id: 37, title: 'EPF & ESI (September)', date: new Date(2026, 9, 15), description: 'September 2026 PF and ESI contribution.', priority: 'upcoming', completed: false },
+      { id: 38, title: 'GSTR-3B Filing (September)', date: new Date(2026, 9, 20), description: 'September 2026 GST summary return.', priority: 'upcoming', completed: false },
+      { id: 39, title: 'TDS Return Q2 (Jul-Sep)', date: new Date(2026, 9, 31), description: 'Quarterly TDS return for Q2 FY 2026-27.', priority: 'upcoming', completed: false },
+      
+      // November 2026
+      { id: 40, title: 'TDS Payment (October Month)', date: new Date(2026, 10, 7), description: 'October 2026 TDS deposit.', priority: 'upcoming', completed: false },
+      { id: 41, title: 'GSTR-1 Filing (October)', date: new Date(2026, 10, 11), description: 'October 2026 outward supplies return.', priority: 'upcoming', completed: false },
+      { id: 42, title: 'EPF & ESI (October)', date: new Date(2026, 10, 15), description: 'October 2026 PF and ESI contribution.', priority: 'upcoming', completed: false },
+      { id: 43, title: 'GSTR-3B Filing (October)', date: new Date(2026, 10, 20), description: 'October 2026 GST summary return.', priority: 'upcoming', completed: false },
+      { id: 44, title: 'ITR Filing (Transfer Pricing)', date: new Date(2026, 10, 30), description: 'Income Tax Return for Transfer Pricing cases for AY 2026-27.', priority: 'upcoming', completed: false },
+      
+      // December 2026
+      { id: 45, title: 'TDS Payment (November Month)', date: new Date(2026, 11, 7), description: 'November 2026 TDS deposit.', priority: 'upcoming', completed: false },
+      { id: 46, title: 'GSTR-1 Filing (November)', date: new Date(2026, 11, 11), description: 'November 2026 outward supplies return.', priority: 'upcoming', completed: false },
+      { id: 47, title: 'EPF & ESI (November)', date: new Date(2026, 11, 15), description: 'November 2026 PF and ESI contribution.', priority: 'upcoming', completed: false },
+      { id: 48, title: 'GSTR-3B Filing (November)', date: new Date(2026, 11, 20), description: 'November 2026 GST summary return.', priority: 'upcoming', completed: false },
+      { id: 49, title: '3rd Advance Tax (75%)', date: new Date(2026, 11, 15), description: 'Third installment of advance tax for FY 2026-27 (75% cumulative).', priority: 'upcoming', completed: false },
+      
+      // January 2027
+      { id: 50, title: 'TDS Payment (December Month)', date: new Date(2027, 0, 7), description: 'December 2026 TDS deposit.', priority: 'upcoming', completed: false },
+      { id: 51, title: 'GSTR-1 Filing (December)', date: new Date(2027, 0, 11), description: 'December 2026 outward supplies return.', priority: 'upcoming', completed: false },
+      { id: 52, title: 'EPF & ESI (December)', date: new Date(2027, 0, 15), description: 'December 2026 PF and ESI contribution.', priority: 'upcoming', completed: false },
+      { id: 53, title: 'GSTR-3B Filing (December)', date: new Date(2027, 0, 20), description: 'December 2026 GST summary return.', priority: 'upcoming', completed: false },
+      { id: 54, title: 'TDS Return Q3 (Oct-Dec)', date: new Date(2027, 0, 31), description: 'Quarterly TDS return for Q3 FY 2026-27.', priority: 'upcoming', completed: false },
+      
+      // February 2027
+      { id: 55, title: 'TDS Payment (January Month)', date: new Date(2027, 1, 7), description: 'January 2027 TDS deposit.', priority: 'upcoming', completed: false },
+      { id: 56, title: 'GSTR-1 Filing (January)', date: new Date(2027, 1, 11), description: 'January 2027 outward supplies return.', priority: 'upcoming', completed: false },
+      { id: 57, title: 'EPF & ESI (January)', date: new Date(2027, 1, 15), description: 'January 2027 PF and ESI contribution.', priority: 'upcoming', completed: false },
+      { id: 58, title: 'GSTR-3B Filing (January)', date: new Date(2027, 1, 20), description: 'January 2027 GST summary return.', priority: 'upcoming', completed: false },
+      
+      // March 2027
+      { id: 59, title: 'TDS Payment (February Month)', date: new Date(2027, 2, 7), description: 'February 2027 TDS deposit.', priority: 'upcoming', completed: false },
+      { id: 60, title: 'GSTR-1 Filing (February)', date: new Date(2027, 2, 11), description: 'February 2027 outward supplies return.', priority: 'upcoming', completed: false },
+      { id: 61, title: 'EPF & ESI (February)', date: new Date(2027, 2, 15), description: 'February 2027 PF and ESI contribution.', priority: 'upcoming', completed: false },
+      { id: 62, title: 'GSTR-3B Filing (February)', date: new Date(2027, 2, 20), description: 'February 2027 GST summary return.', priority: 'upcoming', completed: false },
+      { id: 63, title: '4th Advance Tax (100%)', date: new Date(2027, 2, 15), description: 'Fourth installment of advance tax for FY 2026-27 (100% cumulative).', priority: 'upcoming', completed: false },
+      { id: 64, title: 'Year-End Tax Planning', date: new Date(2027, 2, 31), description: 'Finalize tax planning strategies including 80C, 80D and other deductions for FY 2026-27.', priority: 'upcoming', completed: false },
+      { id: 65, title: 'TDS Payment (March Month)', date: new Date(2027, 3, 7), description: 'March 2027 TDS deposit for year-end transactions.', priority: 'upcoming', completed: false },
+      { id: 66, title: 'GSTR-1 Filing (March)', date: new Date(2027, 3, 11), description: 'March 2027 outward supplies return.', priority: 'upcoming', completed: false },
+      { id: 67, title: 'EPF & ESI (March)', date: new Date(2027, 3, 15), description: 'Final PF and ESI contribution for FY 2026-27.', priority: 'upcoming', completed: false },
+      { id: 68, title: 'GSTR-3B Filing (March)', date: new Date(2027, 3, 20), description: 'March 2027 GST summary return.', priority: 'upcoming', completed: false },
+      { id: 69, title: 'TDS Return Q4 (Jan-Mar)', date: new Date(2027, 3, 30), description: 'Final quarterly TDS return for Q4 FY 2026-27.', priority: 'upcoming', completed: false }
+    ];
+
+    let currentDate = new Date(2026, 3, 1); // Start from April 2026
+    let currentMonth = currentDate.getMonth();
+    let currentYear = currentDate.getFullYear();
+    let selectedEvent = null;
+
+    // Initialize Element SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          document.getElementById('page-title').textContent = config.page_title || defaultConfig.page_title;
+          document.getElementById('company-name').textContent = config.company_name || defaultConfig.company_name;
+          document.getElementById('tagline').textContent = config.tagline || defaultConfig.tagline;
+          document.getElementById('header-description').textContent = config.header_description || defaultConfig.header_description;
+          document.getElementById('footer-description').textContent = config.footer_description || defaultConfig.footer_description;
+          document.getElementById('contact-email').textContent = config.contact_email || defaultConfig.contact_email;
+          document.getElementById('contact-email').href = `mailto:${config.contact_email || defaultConfig.contact_email}`;
+          document.getElementById('contact-phone').textContent = config.contact_phone || defaultConfig.contact_phone;
+          document.getElementById('contact-phone').href = `tel:${(config.contact_phone || defaultConfig.contact_phone).replace(/\s/g, '')}`;
+          document.getElementById('contact-website').textContent = config.contact_website || defaultConfig.contact_website;
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['page_title', config.page_title || defaultConfig.page_title],
+          ['company_name', config.company_name || defaultConfig.company_name],
+          ['tagline', config.tagline || defaultConfig.tagline],
+          ['header_description', config.header_description || defaultConfig.header_description],
+          ['footer_description', config.footer_description || defaultConfig.footer_description],
+          ['contact_email', config.contact_email || defaultConfig.contact_email],
+          ['contact_phone', config.contact_phone || defaultConfig.contact_phone],
+          ['contact_website', config.contact_website || defaultConfig.contact_website]
+        ])
+      });
+    }
+
+    // Render calendar
+    function renderCalendar() {
+      const grid = document.getElementById('calendar-grid');
+      const monthLabel = document.getElementById('current-month');
+      
+      const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                      'July', 'August', 'September', 'October', 'November', 'December'];
+      monthLabel.textContent = `${months[currentMonth]} ${currentYear}`;
+
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const today = new Date();
+
+      let html = '';
+
+      // Empty cells before first day
+      for (let i = 0; i < firstDay; i++) {
+        html += '<div class="p-2"></div>';
+      }
+
+      // Days of the month
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(currentYear, currentMonth, day);
+        const isToday = date.toDateString() === today.toDateString();
+        const dayEvents = taxEvents.filter(e => 
+          e.date.getDate() === day && 
+          e.date.getMonth() === currentMonth && 
+          e.date.getFullYear() === currentYear
+        );
+
+        const hasUrgent = dayEvents.some(e => e.priority === 'urgent' && !e.completed);
+        const hasDueSoon = dayEvents.some(e => e.priority === 'due-soon' && !e.completed);
+        const hasUpcoming = dayEvents.some(e => e.priority === 'upcoming' && !e.completed);
+        const hasCompleted = dayEvents.some(e => e.completed);
+
+        let bgClass = 'bg-white hover:bg-slate-50';
+        if (isToday) bgClass = 'bg-emerald-50 ring-2 ring-emerald-500';
+
+        html += `
+          <div class="calendar-day ${bgClass} rounded-xl p-2 min-h-[60px] cursor-pointer transition-all duration-200 border border-slate-100" data-date="${date.toISOString()}">
+            <span class="text-sm font-medium ${isToday ? 'text-emerald-600' : 'text-slate-700'}">${day}</span>
+            ${dayEvents.length > 0 ? `
+              <div class="flex flex-wrap gap-1 mt-1">
+                ${hasUrgent ? '<span class="event-dot w-2 h-2 rounded-full bg-red-500"></span>' : ''}
+                ${hasDueSoon ? '<span class="w-2 h-2 rounded-full bg-amber-500"></span>' : ''}
+                ${hasUpcoming ? '<span class="w-2 h-2 rounded-full bg-emerald-500"></span>' : ''}
+                ${hasCompleted ? '<span class="w-2 h-2 rounded-full bg-slate-300"></span>' : ''}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      grid.innerHTML = html;
+
+      // Add click handlers to days
+      grid.querySelectorAll('.calendar-day').forEach(dayEl => {
+        dayEl.addEventListener('click', () => {
+          const date = new Date(dayEl.dataset.date);
+          const dayEvents = taxEvents.filter(e => 
+            e.date.toDateString() === date.toDateString()
+          );
+          if (dayEvents.length > 0) {
+            showEventModal(dayEvents[0]);
+          }
+        });
+      });
+    }
+
+    // Render events list
+    function renderEventsList() {
+      const list = document.getElementById('events-list');
+      const sortedEvents = [...taxEvents]
+        .filter(e => !e.completed)
+        .sort((a, b) => a.date - b.date)
+        .slice(0, 8);
+
+      list.innerHTML = sortedEvents.map(event => {
+        const priorityColors = {
+          'urgent': 'bg-red-100 text-red-700 border-red-200',
+          'due-soon': 'bg-amber-100 text-amber-700 border-amber-200',
+          'upcoming': 'bg-emerald-100 text-emerald-700 border-emerald-200'
+        };
+        const dotColors = {
+          'urgent': 'bg-red-500',
+          'due-soon': 'bg-amber-500',
+          'upcoming': 'bg-emerald-500'
+        };
+
+        const daysUntil = Math.ceil((event.date - new Date()) / (1000 * 60 * 60 * 24));
+        const daysText = daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : `${daysUntil} days`;
+
+        return `
+          <div class="p-4 hover:bg-slate-50 cursor-pointer transition-colors" data-event-id="${event.id}">
+            <div class="flex items-start gap-3">
+              <div class="w-2 h-2 rounded-full ${dotColors[event.priority]} mt-2 flex-shrink-0"></div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-medium text-slate-800 text-sm truncate">${event.title}</h4>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-xs text-slate-500">${event.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                  <span class="text-xs px-2 py-0.5 rounded-full ${priorityColors[event.priority]} border">${daysText}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Add click handlers
+      list.querySelectorAll('[data-event-id]').forEach(el => {
+        el.addEventListener('click', () => {
+          const event = taxEvents.find(e => e.id === parseInt(el.dataset.eventId));
+          if (event) showEventModal(event);
+        });
+      });
+
+      // Update stats
+      const today = new Date();
+      const sevenDaysLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+      const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+      document.getElementById('urgent-count').textContent = taxEvents.filter(e => 
+        !e.completed && e.date <= sevenDaysLater && e.date >= today
+      ).length;
+      document.getElementById('upcoming-count').textContent = taxEvents.filter(e => 
+        !e.completed && e.date.getMonth() === today.getMonth() && e.date.getFullYear() === today.getFullYear()
+      ).length;
+      document.getElementById('completed-count').textContent = taxEvents.filter(e => e.completed).length;
+      document.getElementById('total-count').textContent = taxEvents.length;
+    }
+
+    // Show event modal
+    function showEventModal(event) {
+      selectedEvent = event;
+      const modal = document.getElementById('event-modal');
+      const priorityLabel = document.getElementById('modal-priority');
+      
+      const priorityStyles = {
+        'urgent': 'bg-red-100 text-red-700',
+        'due-soon': 'bg-amber-100 text-amber-700',
+        'upcoming': 'bg-emerald-100 text-emerald-700'
+      };
+      const priorityTexts = {
+        'urgent': '🚨 Urgent',
+        'due-soon': '⏰ Due Soon',
+        'upcoming': '📅 Upcoming'
+      };
+
+      priorityLabel.className = `px-3 py-1 rounded-full text-xs font-semibold ${priorityStyles[event.priority]}`;
+      priorityLabel.textContent = priorityTexts[event.priority];
+      
+      document.getElementById('modal-title').textContent = event.title;
+      document.getElementById('modal-description').textContent = event.description;
+      document.getElementById('modal-date').textContent = event.date.toLocaleDateString('en-US', { 
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+      });
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    // Close modal
+    function closeModal() {
+      const modal = document.getElementById('event-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      selectedEvent = null;
+    }
+
+    // Show toast
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').textContent = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    // Add to Google Calendar
+    function addToGoogleCalendar(event) {
+      const startDate = event.date.toISOString().replace(/-|:|\.\d+/g, '');
+      const endDate = new Date(event.date.getTime() + 60 * 60 * 1000).toISOString().replace(/-|:|\.\d+/g, '');
+      
+      const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&details=${encodeURIComponent(event.description)}&dates=${startDate}/${endDate}`;
+      
+      window.open(url, '_blank', 'noopener,noreferrer');
+      showToast('Opening Google Calendar...');
+      closeModal();
+    }
+
+    // Sync all events to Google Calendar
+    function syncAllToGoogle() {
+      const upcomingEvents = taxEvents.filter(e => !e.completed && e.date >= new Date());
+      if (upcomingEvents.length === 0) {
+        showToast('No upcoming events to sync');
+        return;
+      }
+
+      // Create a combined calendar link for the first upcoming event
+      // (Google Calendar doesn't support batch adding via URL)
+      const event = upcomingEvents[0];
+      addToGoogleCalendar(event);
+      showToast(`Opening Google Calendar - add ${upcomingEvents.length} events individually`);
+    }
+
+    // Mark event as complete
+    function markComplete() {
+      if (selectedEvent) {
+        const event = taxEvents.find(e => e.id === selectedEvent.id);
+        if (event) {
+          event.completed = true;
+          renderCalendar();
+          renderEventsList();
+          showToast('Event marked as complete!');
+          closeModal();
+        }
+      }
+    }
+
+    // Event listeners
+    document.getElementById('prev-month').addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar();
+    });
+
+    document.getElementById('next-month').addEventListener('click', () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar();
+    });
+
+    document.getElementById('close-modal').addEventListener('click', closeModal);
+    document.getElementById('event-modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+
+    document.getElementById('add-to-google').addEventListener('click', () => {
+      if (selectedEvent) addToGoogleCalendar(selectedEvent);
+    });
+
+    document.getElementById('mark-complete').addEventListener('click', markComplete);
+    
+    // Contact button handlers
+    document.getElementById('whatsapp-btn').addEventListener('click', () => {
+      window.open('https://wa.me/919946151111', '_blank', 'noopener,noreferrer');
+    });
+    
+    document.getElementById('contact-btn').addEventListener('click', () => {
+      window.location.href = 'mailto:Support@cmeg.in';
+    });
+
+    // Initialize
+    renderCalendar();
+    renderEventsList();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d738fe2e4483d2c',t:'MTc3MjY1NTQyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
