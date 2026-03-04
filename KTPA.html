@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kerala Tax Compliance Calendar</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #ffffff;
+      color: #333333;
+      line-height: 1.6;
+    }
+
+    .app-wrapper {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #0f2027 100%);
+      padding: 35px 20px 30px;
+      text-align: center;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      flex-shrink: 0;
+      border-bottom: 3px solid #00d4ff;
+    }
+
+    .header-logo {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 14px;
+      background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .org-name {
+      font-size: 26px;
+      font-weight: 800;
+      color: #00d4ff;
+      margin-bottom: 6px;
+      letter-spacing: 0.8px;
+    }
+
+    .district-info {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 10px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .tagline {
+      font-size: 12px;
+      color: rgba(0, 212, 255, 0.9);
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      font-style: italic;
+    }
+
+    .year-badge {
+      display: inline-block;
+      background: rgba(0, 212, 255, 0.15);
+      color: #00d4ff;
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      margin-top: 12px;
+      font-weight: 700;
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      letter-spacing: 0.5px;
+    }
+
+    .calendar-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .calendar-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .calendar-container::-webkit-scrollbar-track {
+      background: rgba(0, 212, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .calendar-container::-webkit-scrollbar-thumb {
+      background: rgba(0, 212, 255, 0.4);
+      border-radius: 10px;
+    }
+
+    .calendar-container::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 212, 255, 0.6);
+    }
+
+    .standard-section {
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.08) 0%, rgba(0, 153, 204, 0.05) 100%);
+      border: 1.5px solid rgba(0, 212, 255, 0.25);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 10px;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    .standard-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #00d4ff;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .standard-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 10px;
+    }
+
+    .standard-item {
+      background: rgba(0, 212, 255, 0.05);
+      border-left: 3px solid #00d4ff;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #1e1e1e;
+      transition: all 0.3s ease;
+    }
+
+    .standard-item:hover {
+      background: rgba(0, 212, 255, 0.12);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15);
+      border-left-color: #0099cc;
+    }
+
+    .month-section {
+      animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .month-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #00d4ff;
+      margin-bottom: 12px;
+      padding-left: 12px;
+      border-left: 4px solid #00d4ff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .tax-event {
+      background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+      border-left: 4px solid #00d4ff;
+      padding: 14px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 1px solid rgba(0, 212, 255, 0.15);
+    }
+
+    .tax-event:hover {
+      transform: translateX(6px);
+      background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+      border-left-color: #0099cc;
+      box-shadow: 0 8px 24px rgba(0, 212, 255, 0.2);
+    }
+
+    .event-date {
+      font-size: 12px;
+      color: #ffffff;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+      padding: 8px 12px;
+      border-radius: 6px;
+      display: inline-block;
+      box-shadow: 0 4px 12px rgba(0, 212, 255, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .event-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0066cc;
+      margin-bottom: 6px;
+    }
+
+    .event-description {
+      font-size: 12px;
+      color: #555555;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .event-category {
+      display: inline-block;
+      background: rgba(0, 212, 255, 0.15);
+      color: #0099cc;
+      padding: 4px 9px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      border: 1px solid rgba(0, 212, 255, 0.25);
+    }
+
+    .tax-event.next-due {
+      background: linear-gradient(135deg, #fff9e6 0%, #fffef2 100%);
+      border-left: 4px solid #ff6b35;
+      border: 2px solid #ff6b35;
+      box-shadow: 0 0 20px rgba(255, 107, 53, 0.3), inset 0 0 15px rgba(255, 107, 53, 0.1);
+      position: relative;
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    .tax-event.next-due::before {
+      content: "🔔 NEXT DUE";
+      position: absolute;
+      top: -12px;
+      left: 12px;
+      background: linear-gradient(135deg, #ff6b35 0%, #ff8c5a 100%);
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(255, 107, 53, 0.3), inset 0 0 15px rgba(255, 107, 53, 0.1);
+      }
+      50% {
+        box-shadow: 0 0 30px rgba(255, 107, 53, 0.5), inset 0 0 20px rgba(255, 107, 53, 0.15);
+      }
+    }
+
+    .footer {
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, rgba(0, 153, 204, 0.03) 100%);
+      padding: 14px 20px;
+      text-align: center;
+      font-size: 11px;
+      color: #666666;
+      border-top: 2px solid rgba(0, 212, 255, 0.2);
+      flex-shrink: 0;
+    }
+
+    .footer-text {
+      margin: 3px 0;
+      font-weight: 600;
+      color: #1e1e1e;
+    }
+
+    .footer-contact {
+      color: #00d4ff;
+      margin-top: 6px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .footer-credit {
+      margin-top: 6px;
+      font-size: 9px;
+      color: #999999;
+      font-weight: 400;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 25px 15px 20px;
+      }
+
+      .org-name {
+        font-size: 20px;
+      }
+
+      .district-info {
+        font-size: 12px;
+      }
+
+      .calendar-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .standard-items {
+        grid-template-columns: 1fr;
+      }
+
+      .month-title {
+        font-size: 16px;
+      }
+
+      .calendar-container {
+        padding: 15px;
+        gap: 14px;
+      }
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="app-wrapper">
+   <div class="header">
+    <div class="header-logo">
+     📅
+    </div>
+    <div class="org-name" id="orgName">
+     Tax Calendar FY 2026-27
+    </div>
+    <div class="district-info" id="districtInfo">
+     Kerala Tax Practitioners Association
+    </div>
+    <div class="tagline" id="tagline">
+     Kannur District Committee
+    </div>
+   </div>
+   <div class="calendar-container" id="calendarContainer">
+    <div class="standard-section">
+     <div class="standard-title">
+      🔄 Standard Monthly Due Dates
+     </div>
+     <div class="standard-items">
+      <div class="standard-item"><strong>7th:</strong> TDS / TCS Payment (March TDS: 30 Apr)
+      </div>
+      <div class="standard-item"><strong>11th:</strong> GSTR-1 (Regular taxpayers)
+      </div>
+      <div class="standard-item"><strong>13th:</strong> GSTR-1 IFF (QRMP taxpayers)
+      </div>
+      <div class="standard-item"><strong>15th:</strong> EPF &amp; ESI Contributions
+      </div>
+      <div class="standard-item"><strong>20th:</strong> GSTR-3B (Regular taxpayers)
+      </div>
+      <div class="standard-item"><strong>25th:</strong> GST PMT-06 (1st &amp; 2nd month QRMP)
+      </div>
+     </div>
+    </div>
+   </div>
+   <div class="footer">
+    <div class="footer-contact">
+     📧 <span id="emailFooter">info@cmeg.in</span> | 📞 <span id="phoneFooter">9946151111</span> | 🌐 <span id="websiteFooter">www.cmeg.in</span>
+    </div>
+    <div class="footer-credit">
+     Prepared by CM Experts Group
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      organization_name: "Kerala Tax Practitioners Association",
+      district: "Kannur District Committee",
+      tagline: "We stronger with commitment and Updation",
+      phone: "9946151111",
+      email: "info@cmeg.in",
+      website: "www.cmeg.in"
+    };
+
+    let config = { ...defaultConfig };
+
+    const taxEvents = {
+      "April 2026": [
+        { date: "18 Apr", title: "GST CMP-08", description: "Quarterly return filing (Jan-Mar 2026)", category: "GST" },
+        { date: "22 Apr", title: "GSTR-3B QRMP", description: "Quarterly return for Kerala (Jan-Mar 2026)", category: "GST" },
+        { date: "30 Apr", title: "GSTR-4 Annual Return", description: "Composition scheme annual return (FY 2025-26)", category: "GST Annual" },
+        { date: "30 Apr", title: "TDS Payment", description: "Pay TDS collected in March 2026", category: "TDS" }
+      ],
+      "May 2026": [
+        { date: "15 May", title: "TCS Return Form 27EQ", description: "TCS quarterly return (Jan-Mar 2026)", category: "TCS" },
+        { date: "31 May", title: "TDS Returns 24Q/26Q/27Q", description: "Quarterly TDS returns (Jan-Mar 2026)", category: "TDS" }
+      ],
+      "June 2026": [
+        { date: "15 Jun", title: "1st Advance Tax Installment", description: "15% of advance tax for FY 2026-27", category: "Income Tax" }
+      ],
+      "July 2026": [
+        { date: "15 Jul", title: "TCS Return Form 27EQ", description: "TCS quarterly return (Apr-Jun 2026)", category: "TCS" },
+        { date: "18 Jul", title: "GST CMP-08", description: "Quarterly return filing (Apr-Jun 2026)", category: "GST" },
+        { date: "22 Jul", title: "GSTR-3B QRMP", description: "Quarterly return for Kerala (Apr-Jun 2026)", category: "GST" },
+        { date: "31 Jul", title: "ITR Filing (Non-Audit)", description: "Income tax return filing for individuals/non-audit cases (FY 2025-26)", category: "Income Tax Annual" },
+        { date: "31 Jul", title: "TDS Returns 24Q/26Q", description: "Quarterly TDS returns (Apr-Jun 2026)", category: "TDS" }
+      ],
+      "September 2026": [
+        { date: "15 Sep", title: "2nd Advance Tax Installment", description: "45% of advance tax for FY 2026-27", category: "Income Tax" },
+        { date: "30 Sep", title: "Tax Audit Report Filing", description: "File tax audit report for FY 2025-26 (if applicable)", category: "Audit" }
+      ],
+      "October 2026": [
+        { date: "15 Oct", title: "TCS Return Form 27EQ", description: "TCS quarterly return (Jul-Sep 2026)", category: "TCS" },
+        { date: "18 Oct", title: "GST CMP-08", description: "Quarterly return filing (Jul-Sep 2026)", category: "GST" },
+        { date: "22 Oct", title: "GSTR-3B QRMP", description: "Quarterly return for Kerala (Jul-Sep 2026)", category: "GST" },
+        { date: "31 Oct", title: "ITR Filing (Audit Cases)", description: "Income tax return filing for audit cases/corporate (FY 2025-26)", category: "Income Tax Annual" },
+        { date: "31 Oct", title: "TDS Returns 24Q/26Q", description: "Quarterly TDS returns (Jul-Sep 2026)", category: "TDS" }
+      ],
+      "November 2026": [
+        { date: "30 Nov", title: "ITR Filing (TP Report)", description: "ITR filing for cases requiring Transfer Pricing Report (FY 2025-26)", category: "Income Tax Annual" }
+      ],
+      "December 2026": [
+        { date: "15 Dec", title: "3rd Advance Tax Installment", description: "75% of advance tax for FY 2026-27", category: "Income Tax" },
+        { date: "31 Dec", title: "GSTR-9 & GSTR-9C Filing", description: "Annual GST return and reconciliation statement (FY 2025-26)", category: "GST Annual" },
+        { date: "31 Dec", title: "Belated/Revised ITR Deadline", description: "Last date for filing belated/revised income tax return (FY 2025-26)", category: "Income Tax Annual" }
+      ],
+      "January 2027": [
+        { date: "15 Jan", title: "TCS Return Form 27EQ", description: "TCS quarterly return (Oct-Dec 2026)", category: "TCS" },
+        { date: "18 Jan", title: "GST CMP-08", description: "Quarterly return filing (Oct-Dec 2026)", category: "GST" },
+        { date: "22 Jan", title: "GSTR-3B QRMP", description: "Quarterly return for Kerala (Oct-Dec 2026)", category: "GST" },
+        { date: "31 Jan", title: "TDS Returns 24Q/26Q", description: "Quarterly TDS returns (Oct-Dec 2026)", category: "TDS" }
+      ],
+      "March 2027": [
+        { date: "15 Mar", title: "4th & Final Advance Tax", description: "100% final installment of advance tax for FY 2026-27", category: "Income Tax" },
+        { date: "31 Mar", title: "ITR-U Update Deadline", description: "Last date for updating income tax return (ITR-U) for AY 2024-25", category: "Income Tax Annual" }
+      ]
+    };
+
+    function renderCalendar() {
+      const container = document.getElementById("calendarContainer");
+      const standardSection = container.querySelector(".standard-section");
+      
+      const months = Object.keys(taxEvents);
+      const today = new Date();
+      let nextDueFound = false;
+
+      months.forEach((month, index) => {
+        const monthSection = document.createElement("div");
+        monthSection.className = "month-section";
+        monthSection.style.animationDelay = `${(index + 1) * 0.05}s`;
+
+        const monthTitle = document.createElement("div");
+        monthTitle.className = "month-title";
+        monthTitle.textContent = month;
+
+        const calendarGrid = document.createElement("div");
+        calendarGrid.className = "calendar-grid";
+
+        taxEvents[month].forEach(event => {
+          const eventCard = document.createElement("div");
+          eventCard.className = "tax-event";
+
+          // Parse event date
+          const eventDateStr = event.date;
+          const eventDate = parseEventDate(eventDateStr);
+          
+          // Check if this is the next due date
+          if (!nextDueFound && eventDate >= today) {
+            eventCard.classList.add("next-due");
+            nextDueFound = true;
+          }
+
+          eventCard.innerHTML = `
+            <div class="event-date">${event.date}</div>
+            <div class="event-title">${event.title}</div>
+            <div class="event-description">${event.description}</div>
+            <div class="event-category">${event.category}</div>
+          `;
+
+          calendarGrid.appendChild(eventCard);
+        });
+
+        monthSection.appendChild(monthTitle);
+        monthSection.appendChild(calendarGrid);
+        container.appendChild(monthSection);
+      });
+    }
+
+    function parseEventDate(dateStr) {
+      // Parse dates like "18 Apr", "15 May", etc.
+      const parts = dateStr.split(' ');
+      const day = parseInt(parts[0]);
+      const month = parts[1];
+      
+      const monthMap = {
+        'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+        'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+      };
+      
+      const monthIndex = monthMap[month];
+      let year = 2026;
+      
+      // Adjust year for months after current date in the fiscal year
+      if (monthIndex < 3) { // Jan, Feb, Mar are in 2027
+        year = 2027;
+      }
+      
+      return new Date(year, monthIndex, day);
+    }
+
+    async function onConfigChange(newConfig) {
+      document.getElementById("orgName").textContent = newConfig.organization_name || defaultConfig.organization_name;
+      document.getElementById("districtInfo").textContent = newConfig.district || defaultConfig.district;
+      document.getElementById("tagline").textContent = newConfig.tagline || defaultConfig.tagline;
+      document.getElementById("emailFooter").textContent = newConfig.email || defaultConfig.email;
+      document.getElementById("phoneFooter").textContent = newConfig.phone || defaultConfig.phone;
+      document.getElementById("websiteFooter").textContent = newConfig.website || defaultConfig.website;
+    }
+
+    function mapToCapabilities(cfg) {
+      return {
+        recolorables: [],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+
+    function mapToEditPanelValues(cfg) {
+      return new Map([
+        ["organization_name", cfg.organization_name || defaultConfig.organization_name],
+        ["district", cfg.district || defaultConfig.district],
+        ["tagline", cfg.tagline || defaultConfig.tagline],
+        ["email", cfg.email || defaultConfig.email],
+        ["phone", cfg.phone || defaultConfig.phone],
+        ["website", cfg.website || defaultConfig.website]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+      config = window.elementSdk.config;
+    }
+
+    renderCalendar();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d714739c6703d2c',t:'MTc3MjYzMTQ3NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
