@@ -703,8 +703,8 @@
         services.forEach(service => {
             servicesHTML += `
                 <tr style="border-bottom: 1px solid #e0e0e0;">
-                    <td style="padding: 12px 15px; color: #1a1a1a; font-size: 13px;">${service.name}</td>
-                    <td style="text-align: right; padding: 12px 15px; color: #1a1a1a; font-weight: 600; font-size: 13px;">₹${service.amount.toLocaleString('en-IN')}</td>
+                    <td style="padding: 10px 12px; color: #1a1a1a; font-size: 13px;">${service.name}</td>
+                    <td style="text-align: right; padding: 10px 12px; color: #1a1a1a; font-weight: 600; font-size: 13px;">₹${service.amount.toLocaleString('en-IN')}</td>
                 </tr>
             `;
         });
@@ -715,113 +715,110 @@
 
         const invoiceContent = document.createElement('div');
         
-        // By reducing the bottom margins in this block, the content pulls upward perfectly.
-        // The container is locked to exactly 296mm (A4 height) and hides overflow.
+        // By removing 'flex: 1' and 'height: 296mm', the mobile browser bug is bypassed.
+        // I kept the text exactly the same size, but reduced the spacing between sections!
         invoiceContent.innerHTML = `
-            <div style="width: 210mm; height: 296mm; max-height: 296mm; overflow: hidden; padding: 15mm; background: white; display: flex; flex-direction: column; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+            <div style="width: 210mm; padding: 12mm; background: white; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
                 
-                <div style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 3px solid #8B6F47; padding-bottom: 15px;">
-                        <div style="flex-shrink: 0;">
-                            <img src="logocmeg.png" onerror="this.style.display='none'" crossorigin="anonymous" style="width: 100px; height: 100px; object-fit: contain; display: block;" />
-                        </div>
-                        <div style="text-align: right;">
-                            <h1 style="color: #8B6F47; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: 0.5px;">CM EXPERTS GROUP</h1>
-                            <p style="color: #666; margin: 5px 0 0 0; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Count • Connect • Grow</p>
-                            <p style="color: #888; font-size: 11px; margin: 10px 0 0 0;">www.cmeg.in</p>
-                            <p style="color: #888; font-size: 11px; margin: 3px 0 0 0;">Email: Support@cmeg.in</p>
-                            <p style="color: #888; font-size: 11px; margin: 3px 0 0 0;">Ph: 9946151111</p>
-                        </div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 3px solid #8B6F47; padding-bottom: 15px;">
+                    <div style="flex-shrink: 0;">
+                        <img src="logocmeg.png" onerror="this.style.display='none'" crossorigin="anonymous" style="width: 90px; height: 90px; object-fit: contain; display: block;" />
                     </div>
-                    
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
-                        <div>
-                            <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px;">PROFORMA INVOICE</h2>
-                            <p style="color: #666; font-size: 11px; margin: 0; text-transform: uppercase;">Invoice Number:</p>
-                            <p style="font-weight: 700; font-size: 13px; margin: 3px 0 10px 0; color: #1a1a1a;">${invoiceId}</p>
-                            <p style="color: #666; font-size: 11px; margin: 0; text-transform: uppercase;">Client ID:</p>
-                            <p style="font-weight: 700; font-size: 13px; margin: 3px 0 0 0; color: #1a1a1a;">${clientId}</p>
-                        </div>
-                        <div style="text-align: right;">
-                            <p style="color: #666; font-size: 11px; margin: 0; text-transform: uppercase;">Date Issued:</p>
-                            <p style="font-weight: 700; font-size: 13px; margin: 3px 0 0 0; color: #1a1a1a;">${formattedDate}</p>
-                        </div>
+                    <div style="text-align: right;">
+                        <h1 style="color: #8B6F47; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: 0.5px;">CM EXPERTS GROUP</h1>
+                        <p style="color: #666; margin: 5px 0 0 0; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Count • Connect • Grow</p>
+                        <p style="color: #888; font-size: 11px; margin: 8px 0 0 0;">www.cmeg.in</p>
+                        <p style="color: #888; font-size: 11px; margin: 3px 0 0 0;">Email: Support@cmeg.in</p>
+                        <p style="color: #888; font-size: 11px; margin: 3px 0 0 0;">Ph: 9946151111</p>
                     </div>
-                    
-                    <div style="background: #fcfbf9; padding: 12px 15px; border-radius: 8px; border-left: 4px solid #8B6F47; margin-bottom: 25px;">
-                        <p style="color: #666; font-size: 11px; margin: 0; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Bill To:</p>
-                        <p style="font-weight: 700; font-size: 16px; margin: 6px 0 0 0; color: #1a1a1a;">${client}</p>
-                        <p style="color: #555; font-size: 12px; margin: 4px 0 0 0;">Mobile: ${clientMobile}</p>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                    <div>
+                        <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 0.5px;">PROFORMA INVOICE</h2>
+                        <p style="color: #666; font-size: 11px; margin: 0; text-transform: uppercase;">Invoice Number:</p>
+                        <p style="font-weight: 700; font-size: 13px; margin: 3px 0 8px 0; color: #1a1a1a;">${invoiceId}</p>
+                        <p style="color: #666; font-size: 11px; margin: 0; text-transform: uppercase;">Client ID:</p>
+                        <p style="font-weight: 700; font-size: 13px; margin: 3px 0 0 0; color: #1a1a1a;">${clientId}</p>
                     </div>
-                    
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                        <thead>
-                            <tr style="background: #f4f5f7; border-bottom: 2px solid #8B6F47;">
-                                <th style="text-align: left; padding: 12px 15px; color: #1a1a1a; font-size: 11px; text-transform: uppercase; font-weight: 700;">Description</th>
-                                <th style="text-align: right; padding: 12px 15px; color: #1a1a1a; font-size: 11px; text-transform: uppercase; font-weight: 700;">Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${servicesHTML}
-                        </tbody>
-                    </table>
-                    
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
-                        <div style="flex: 1;"></div>
-                        <div style="width: 300px; background: #fcfbf9; padding: 15px 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
-                            <p style="color: #666; font-size: 11px; margin: 0 0 4px 0; text-transform: uppercase; font-weight: 700;">Total Amount Due</p>
-                            <p style="font-size: 26px; font-weight: 700; color: #8B6F47; margin: 0;">₹${total.toLocaleString('en-IN')}</p>
-                            <p style="color: #888; font-size: 10px; margin: 6px 0 0 0; font-style: italic;">${numberToWords(total)}</p>
-                        </div>
+                    <div style="text-align: right;">
+                        <p style="color: #666; font-size: 11px; margin: 0; text-transform: uppercase;">Date Issued:</p>
+                        <p style="font-weight: 700; font-size: 13px; margin: 3px 0 0 0; color: #1a1a1a;">${formattedDate}</p>
+                    </div>
+                </div>
+                
+                <div style="background: #fcfbf9; padding: 12px 15px; border-radius: 8px; border-left: 4px solid #8B6F47; margin-bottom: 20px;">
+                    <p style="color: #666; font-size: 11px; margin: 0; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Bill To:</p>
+                    <p style="font-weight: 700; font-size: 16px; margin: 4px 0 0 0; color: #1a1a1a;">${client}</p>
+                    <p style="color: #555; font-size: 12px; margin: 4px 0 0 0;">Mobile: ${clientMobile}</p>
+                </div>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    <thead>
+                        <tr style="background: #f4f5f7; border-bottom: 2px solid #8B6F47;">
+                            <th style="text-align: left; padding: 10px 12px; color: #1a1a1a; font-size: 11px; text-transform: uppercase; font-weight: 700;">Description</th>
+                            <th style="text-align: right; padding: 10px 12px; color: #1a1a1a; font-size: 11px; text-transform: uppercase; font-weight: 700;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${servicesHTML}
+                    </tbody>
+                </table>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
+                    <div style="flex: 1;"></div>
+                    <div style="width: 300px; background: #fcfbf9; padding: 12px 15px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                        <p style="color: #666; font-size: 11px; margin: 0 0 4px 0; text-transform: uppercase; font-weight: 700;">Total Amount Due</p>
+                        <p style="font-size: 26px; font-weight: 700; color: #8B6F47; margin: 0;">₹${total.toLocaleString('en-IN')}</p>
+                        <p style="color: #888; font-size: 10px; margin: 6px 0 0 0; font-style: italic;">${numberToWords(total)}</p>
                     </div>
                 </div>
 
-                <div>
-                    <div style="margin-bottom: 20px;">
-                        <p style="font-size: 12px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; text-transform: uppercase;">Terms & Conditions</p>
-                        <ul style="font-size: 11px; color: #555; padding-left: 18px; margin: 0; line-height: 1.5;">
-                            <li>Payment is due upon receipt of this proforma invoice.</li>
-                            <li>This is a proforma invoice. A final tax invoice will be issued upon receipt of full payment.</li>
-                            <li>Please include the Invoice Number in your payment remarks for faster processing.</li>
-                            <li>All payments are non-refundable. Subject to local jurisdiction.</li>
-                        </ul>
-                    </div>
+                <div style="margin-bottom: 20px;">
+                    <p style="font-size: 12px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; text-transform: uppercase;">Terms & Conditions</p>
+                    <ul style="font-size: 11px; color: #555; padding-left: 18px; margin: 0; line-height: 1.5;">
+                        <li>Payment is due upon receipt of this proforma invoice.</li>
+                        <li>This is a proforma invoice. A final tax invoice will be issued upon receipt of full payment.</li>
+                        <li>Please include the Invoice Number in your payment remarks for faster processing.</li>
+                        <li>All payments are non-refundable. Subject to local jurisdiction.</li>
+                    </ul>
+                </div>
 
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 2px solid #e0e0e0; padding-top: 15px; margin-bottom: 15px;">
-                        <div style="flex: 1; color: #555; font-size: 11px;">
-                            <p style="margin: 0 0 6px 0; font-weight: 700; color: #1a1a1a;">Payment Instructions:</p>
-                            <p style="margin: 0;">UPI ID: <strong style="color: #1a1a1a;">${upiId}</strong></p>
-                            <p style="margin: 6px 0 0 0; font-style: italic; color: #8B6F47; font-weight: 600;">Thank you for your business!</p>
-                        </div>
-                        
-                        <div style="text-align: center; flex-shrink: 0; min-width: 150px;">
-                            <p style="color: #1a1a1a; font-size: 10px; margin: 0 0 35px 0; text-transform: uppercase; font-weight: 700;">Authorised Signatory</p>
-                            <div style="width: 120px; height: 1px; background: #1a1a1a; margin: 0 auto;"></div>
-                            <p style="color: #666; font-size: 10px; margin: 6px 0 0 0; font-weight: 600;">CM Experts Group</p>
-                        </div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 2px solid #e0e0e0; padding-top: 15px; margin-bottom: 15px;">
+                    <div style="flex: 1; color: #555; font-size: 11px;">
+                        <p style="margin: 0 0 4px 0; font-weight: 700; color: #1a1a1a;">Payment Instructions:</p>
+                        <p style="margin: 0;">UPI ID: <strong style="color: #1a1a1a;">${upiId}</strong></p>
+                        <p style="margin: 4px 0 0 0; font-style: italic; color: #8B6F47; font-weight: 600;">Thank you for your business!</p>
                     </div>
                     
-                    <div style="margin-bottom: 10px; text-align: center;">
-                        <p style="color: #999; font-size: 9px; margin: 0; font-style: italic;">
-                            This is a Computer Generated Proforma Invoice. Hence no signature is required.
-                        </p>
-                    </div>
-
-                    <div style="background: #fcfbf9; padding: 12px 15px; border-radius: 12px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
-                        <div style="flex: 1; padding-right: 20px;">
-                            <p style="color: #1a1a1a; font-size: 12px; margin: 0 0 6px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Our Divisions</p>
-                            <div style="font-size: 10px; color: #555; margin-bottom: 4px;"><strong style="color: #8B6F47;">1. CM Tax Experts:</strong> Comprehensive tax planning, filing, and advisory.</div>
-                            <div style="font-size: 10px; color: #555; margin-bottom: 4px;"><strong style="color: #8B6F47;">2. Accountree:</strong> Professional bookkeeping, payroll, and financial accounting.</div>
-                            <div style="font-size: 10px; color: #555; margin-bottom: 0;"><strong style="color: #8B6F47;">3. CMB ERP:</strong> Custom enterprise software and business management solutions.</div>
-                        </div>
-                        
-                        <div style="text-align: center; flex-shrink: 0; border-left: 1px dashed #d4a574; padding-left: 20px;">
-                            <p style="color: #666; font-size: 9px; margin: 0 0 5px 0; font-style: italic;">Scan to visit:</p>
-                            <img src="qrcmeg.png" onerror="this.style.display='none'" crossorigin="anonymous" style="width: 60px; height: 60px; border-radius: 6px; border: 1px solid #e0e0e0; padding: 4px; background: white; margin: 0 auto; display: block;" />
-                            <p style="color: #8B6F47; font-size: 10px; font-weight: 700; margin: 5px 0 0 0;">www.cmeg.in</p>
-                        </div>
+                    <div style="text-align: center; flex-shrink: 0; min-width: 150px;">
+                        <p style="color: #1a1a1a; font-size: 10px; margin: 0 0 30px 0; text-transform: uppercase; font-weight: 700;">Authorised Signatory</p>
+                        <div style="width: 120px; height: 1px; background: #1a1a1a; margin: 0 auto;"></div>
+                        <p style="color: #666; font-size: 10px; margin: 6px 0 0 0; font-weight: 600;">CM Experts Group</p>
                     </div>
                 </div>
+                
+                <div style="margin-bottom: 10px; text-align: center;">
+                    <p style="color: #999; font-size: 9px; margin: 0; font-style: italic;">
+                        This is a Computer Generated Proforma Invoice. Hence no signature is required.
+                    </p>
+                </div>
+
+                <div style="background: #fcfbf9; padding: 12px 15px; border-radius: 12px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="flex: 1; padding-right: 20px;">
+                        <p style="color: #1a1a1a; font-size: 12px; margin: 0 0 6px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Our Divisions</p>
+                        <div style="font-size: 10px; color: #555; margin-bottom: 3px;"><strong style="color: #8B6F47;">1. CM Tax Experts:</strong> Comprehensive tax planning, filing, and advisory.</div>
+                        <div style="font-size: 10px; color: #555; margin-bottom: 3px;"><strong style="color: #8B6F47;">2. Accountree:</strong> Professional bookkeeping, payroll, and financial accounting.</div>
+                        <div style="font-size: 10px; color: #555; margin-bottom: 0;"><strong style="color: #8B6F47;">3. CMB ERP:</strong> Custom enterprise software and business management solutions.</div>
+                    </div>
+                    
+                    <div style="text-align: center; flex-shrink: 0; border-left: 1px dashed #d4a574; padding-left: 20px;">
+                        <p style="color: #666; font-size: 9px; margin: 0 0 4px 0; font-style: italic;">Scan to visit:</p>
+                        <img src="qrcmeg.png" onerror="this.style.display='none'" crossorigin="anonymous" style="width: 65px; height: 65px; border-radius: 6px; border: 1px solid #e0e0e0; padding: 4px; background: white; margin: 0 auto; display: block;" />
+                        <p style="color: #8B6F47; font-size: 10px; font-weight: 700; margin: 4px 0 0 0;">www.cmeg.in</p>
+                    </div>
+                </div>
+
             </div>
         `;
         
