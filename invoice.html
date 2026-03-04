@@ -441,18 +441,14 @@
     </div>
 
     <div class="login-input-group">
-        <div class="detail-group" style="margin-bottom: 16px;">
-            <span class="detail-label">Access ID</span>
-            <input type="text" inputmode="numeric" pattern="[0-9]*" id="usernameInput" class="detail-value" placeholder="Enter ID" autocomplete="off">
-        </div>
         <div class="detail-group">
-            <span class="detail-label">PIN Code</span>
-            <input type="password" inputmode="numeric" pattern="[0-9]*" id="passwordInput" class="detail-value" placeholder="Enter PIN" onkeypress="handleLoginKeyPress(event)">
+            <span class="detail-label" style="text-align: center; margin-bottom: 12px;">Enter 4-Digit PIN</span>
+            <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" id="passwordInput" class="detail-value" placeholder="••••" onkeypress="handleLoginKeyPress(event)" style="text-align: center; font-size: 28px; letter-spacing: 12px; padding: 12px 0;">
         </div>
-        <div id="loginError">Invalid ID or PIN.</div>
+        <div id="loginError">Invalid PIN Code.</div>
     </div>
 
-    <button class="action-btn btn-primary" onclick="processLogin()">Secure Login</button>
+    <button class="action-btn btn-primary" onclick="processLogin()">Unlock</button>
 </div>
 
 <div class="container" id="appContainer" style="display: none;">
@@ -525,7 +521,7 @@
 
         <button class="action-btn btn-primary client-only" onclick="payViaUPI()">
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            Pay Now via UPI App
+            Pay Now via UPI
         </button>
 
         <button class="action-btn btn-secondary" onclick="downloadInvoice()">
@@ -580,11 +576,11 @@
     }
 
     function processLogin() {
-        const user = document.getElementById('usernameInput').value;
         const pass = document.getElementById('passwordInput').value;
         const errorDiv = document.getElementById('loginError');
 
-        if (user === '3655' && pass === '3655') {
+        // Only checking PIN now
+        if (pass === '3655') {
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('appContainer').style.display = 'block';
             errorDiv.style.display = 'none';
@@ -813,14 +809,13 @@
                     <div style="text-align: center; flex-shrink: 0; border-left: 1px dashed #d4a574; padding-left: 20px;">
                         <p style="color: #666; font-size: 9px; margin: 0 0 4px 0; font-style: italic;">Scan to visit:</p>
                         <img src="qrcmeg.png" onerror="this.style.display='none'" crossorigin="anonymous" style="width: 65px; height: 65px; border-radius: 6px; border: 1px solid #e0e0e0; padding: 4px; background: white; margin: 0 auto; display: block;" />
-                        <p style="color: #8B6F47; font-size: 10px; font-weight: 700; margin: 4px 0 0 0;">www.cmeg.in</p>
+                        <p style="color: #8B6F47; font-size: 10px; font-weight: 700; margin: 5px 0 0 0;">www.cmeg.in</p>
                     </div>
                 </div>
 
             </div>
         `;
         
-        // ADDED scrollY: 0 AND scrollX: 0 to fix the massive white blank space bug on mobile!
         const opt = {
             margin: 0,
             filename: `Invoice-${invoiceId}.pdf`,
@@ -845,6 +840,7 @@
         }
 
         const total = services.reduce((sum, s) => sum + s.amount, 0);
+        const upiLink = `upi://pay?pa=${upiId}&pn=Invoice%20Payment&am=${total}&cu=INR&tn=Invoice%20${invoiceId}`;
         
         let baseUrl = HOSTED_PORTAL_URL;
 
@@ -853,7 +849,6 @@
         
         const clientPortalUrl = `${baseUrl}?mode=client&client=${encodeURIComponent(client)}&clientId=${encodeURIComponent(clientId)}&id=${encodeURIComponent(invoiceId)}&date=${dateStr}&upi=${encodeURIComponent(upiId)}&snames=${sNames}&samts=${sAmts}`;
         
-        // UPDATED WhatsApp message: Removed the raw unclickable upi:// text, directly guiding them to the portal
         const message = `Hi ${client},\n\nPlease find your invoice details below:\n\n*Invoice ID:* ${invoiceId}\n*Amount:* ₹${total.toLocaleString('en-IN')}\n\n*👉 Click the link below to Pay directly via UPI App or Download your PDF:*\n${clientPortalUrl}\n\nOr contact us at: 9946151111\n\nThank you for your business!\nCM Experts Group`;
         
         const whatsappUrl = `https://api.whatsapp.com/send?phone=91${clientMobile}&text=${encodeURIComponent(message)}`;
