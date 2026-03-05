@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Registration Services | CM Experts Group</title>
+    
+    <meta name="theme-color" content="#A67C52">
+    <link rel="apple-touch-icon" href="logocmeg.png">
+
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --brand-main: #A67C52;
+            --brand-dark: #856341;
+            --brand-support: #fefbed;
+        }
+
+        * {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #fafafa;
+            color: #0f172a;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Background Glows */
+        .ambient-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(166, 124, 82, 0.12) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .glow-1 { top: -200px; left: -100px; }
+        .glow-2 { top: 20%; right: -200px; width: 800px; height: 800px; background: radial-gradient(circle, rgba(166, 124, 82, 0.08) 0%, rgba(255,255,255,0) 70%); }
+
+        /* Sleek Navbar Blur */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* Card Styles */
+        .service-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--brand-main), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -15px rgba(166, 124, 82, 0.15);
+            border-color: transparent;
+        }
+
+        .service-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-arrow {
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover .card-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Slide-Over Drawer Animation */
+        .drawer-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+        }
+        
+        .drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .drawer-panel {
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .drawer-overlay.active .drawer-panel {
+            transform: translateX(0);
+        }
+
+        /* Custom Scrollbar for Drawer */
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        /* Form Inputs */
+        .modern-input {
+            width: 100%;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #0f172a;
+            transition: all 0.2s;
+        }
+        .modern-input:focus {
+            background: #ffffff;
+            border-color: var(--brand-main);
+            box-shadow: 0 0 0 4px rgba(166, 124, 82, 0.1);
+            outline: none;
+        }
+
+        /* Animated Checkmark List */
+        .doc-item {
+            animation: slideUp 0.3s ease forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+ 
+<body class="antialiased relative min-h-screen flex flex-col">
+
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <header class="glass-nav sticky top-0 z-40 w-full transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="https://cmeg.in" class="flex items-center gap-3 no-underline group">
+                <div class="w-10 h-10 bg-white border border-[#A67C52]/20 rounded-xl shadow-sm flex items-center justify-center p-1 group-hover:shadow-md transition-all">
+                    <img src="logocmeg.png" alt="CM" onerror="this.style.display='none';">
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900 tracking-tight">CM Experts Group</h1>
+                </div>
+            </a>
+            <a href="tel:+919946151111" class="hidden md:flex items-center gap-2 text-sm font-semibold text-[#A67C52] bg-[#fefbed] px-4 py-2 rounded-full border border-[#A67C52]/20 hover:bg-[#A67C52] hover:text-white transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                Support Hub
+            </a>
+        </div>
+    </header>
+
+    <section class="relative pt-20 pb-16 px-6 text-center z-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#fefbed] border border-[#A67C52]/20 text-[#A67C52] text-xs font-bold uppercase tracking-widest mb-6">
+            <span class="w-2 h-2 rounded-full bg-[#A67C52] animate-pulse"></span>
+            Registration Portal
+        </div>
+        <h2 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight mb-6">
+            Effortless setup for <br class="hidden md:block" />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#A67C52] to-[#cba379]">modern businesses.</span>
+        </h2>
+        <p class="text-slate-500 text-base md:text-lg max-w-2xl mx-auto font-medium">
+            Select a service below to view documentation requirements and securely initiate your application in seconds.
+        </p>
+    </section>
+
+    <main class="max-w-7xl mx-auto px-6 pb-24 z-10 flex-1">
+        <div id="services-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            </div>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-white mt-auto">
+        <div class="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p class="text-sm font-semibold text-slate-900">© 2026 CM Experts Group.</p>
+            <p class="text-xs text-slate-500">Count • Connect • Grow</p>
+        </div>
+    </footer>
+
+    <div id="drawer-overlay" class="drawer-overlay fixed inset-0 z-50 flex justify-end">
+        <div class="absolute inset-0" onclick="closeDrawer()"></div>
+        
+        <div class="drawer-panel relative w-full max-w-md h-full bg-white shadow-2xl flex flex-col border-l border-slate-200">
+            
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-white/80 backdrop-blur z-10 sticky top-0">
+                <div class="flex items-center gap-3">
+                    <div id="drawer-icon" class="w-10 h-10 rounded-full bg-[#fefbed] text-[#A67C52] flex items-center justify-center border border-[#A67C52]/20">
+                        </div>
+                    <div>
+                        <h3 id="drawer-title" class="font-bold text-slate-900 text-lg leading-tight">Service Name</h3>
+                        <p class="text-xs text-slate-500 font-medium">Application Details</p>
+                    </div>
+                </div>
+                <button onclick="closeDrawer()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto custom-scroll p-6 bg-[#fafafa]">
+                
+                <div class="mb-6 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <h4 class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-4">Required Documents</h4>
+                    <ul id="drawer-docs" class="space-y-3 mb-2">
+                        </ul>
+                </div>
+
+                <div>
+                    <form id="drawer-form" class="space-y-5" onsubmit="handleFormSubmit(event)">
+                        <input type="hidden" id="service-id-input">
+                        
+                        <div class="space-y-3">
+                            <h4 class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-2">Step 1: Provide Details</h4>
+                            
+                            <a href="https://drive.google.com/drive/folders/1CBBlrTbc5IKVx_zks7Z7BnZudoXIQ3mo" target="_blank" class="w-full bg-white hover:bg-[#fefbed] border border-slate-200 hover:border-[#A67C52] text-slate-700 font-semibold py-3 px-4 rounded-xl transition-all flex items-center justify-between group shadow-sm">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-[#A67C52]/10 text-[#A67C52] flex items-center justify-center">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                    </div>
+                                    <span class="text-[13px]">Upload Required Docs to Drive</span>
+                                </div>
+                                <svg class="w-4 h-4 text-slate-400 group-hover:text-[#A67C52] group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </a>
+
+                            <a href="https://docs.google.com/spreadsheets/d/11SNBP6qn4UMEvO0B2z5HsE-QxbltFv6zm-D4b6AYezo/edit?usp=drivesdk" target="_blank" class="w-full bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-500 text-slate-700 font-semibold py-3 px-4 rounded-xl transition-all flex items-center justify-between group shadow-sm">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    </div>
+                                    <span class="text-[13px]">Note Details in Sheet</span>
+                                </div>
+                                <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </a>
+                        </div>
+
+                        <div class="pt-2">
+                            <label class="block text-[13px] font-semibold text-slate-700 mb-1.5">Business / Applicant Name</label>
+                            <input type="text" required class="modern-input" placeholder="e.g. Acme Corporation">
+                        </div>
+
+                        <div class="mt-6 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                            <h4 class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-3">Step 2: Proceed</h4>
+                            
+                            <label class="block text-[13px] font-semibold text-slate-700 mb-1.5">Select Amount Type</label>
+                            <select id="fee-type" class="modern-input py-3 cursor-pointer" required onchange="document.getElementById('pay-btn').disabled = false;">
+                                <option value="" disabled selected>Choose type...</option>
+                                </select>
+                        </div>
+
+                        <div class="pt-6 mt-6 border-t border-slate-200">
+                            <button type="submit" id="pay-btn" disabled class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed">
+                                Pay Now
+                                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-full shadow-2xl transform -translate-y-24 opacity-0 transition-all duration-400 z-[100] flex items-center gap-3">
+        <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+        <span class="font-semibold text-sm">Redirecting to secure gateway...</span>
+    </div>
+
+    <script>
+        // Data Structure (Amounts removed, Types remain)
+        const services = [
+            {
+                id: 'gst', title: 'GST Registration', 
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"></path>',
+                desc: 'End-to-end GST registration and certification for your business entity.',
+                docs: ['PAN Card of Business / Applicant', 'Aadhar Card of Proprietors / Directors', 'Passport Size Photograph', 'Business Address Proof (Rent Agreement / Light Bill)', 'Bank Statement / Cancelled Cheque'],
+                types: ['Proprietorship', 'Partnership', 'Company']
+            },
+            {
+                id: 'trademark', title: 'Trademark Registration', 
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>',
+                desc: 'Protect your brand identity, logo, and intellectual property.',
+                docs: ['Logo / Brand Name Image', 'Applicant PAN & Aadhar', 'Certificate of Incorporation (If Company)', 'MSME Certificate', 'Signed Authorization Form-48'],
+                types: ['Individual / MSME / Startup', 'Company / Others']
+            },
+            {
+                id: 'partnership', title: 'Partnership Firm', 
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>',
+                desc: 'Legal drafting and registration of your business partnership deed.',
+                docs: ['PAN Card of all Partners', 'Aadhar Card of all Partners', 'Passport Size Photos', 'Drafted Partnership Deed', 'Principal Place of Business Proof'],
+                types: ['Deed Drafting Only', 'Deed + Registration']
+            },
+            {
+                id: 'udhog', title: 'Udyam / MSME', 
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>',
+                desc: 'Register as an MSME to access government subsidies and bank loans.',
+                docs: ['Aadhar Card of Applicant', 'PAN Card of Business/Applicant', 'Bank Details (IFSC & A/c No)', 'Business Address Details', 'Main Business Activity code'],
+                types: ['Standard Registration']
+            },
+            {
+                id: 'kswift', title: 'K-SWIFT License', 
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>',
+                desc: 'Kerala Single Window Interface for Fast & Transparent Clearance.',
+                docs: ['Details of Business Entity', 'Applicant Aadhar & PAN', 'Local Body License (If applicable)', 'Building Ownership/Lease Proof', 'Plant Machinery Details'],
+                types: ['Basic Registration', 'With PCB / Fire NOC']
+            },
+            {
+                id: 'iec', title: 'Import Export Code', 
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>',
+                desc: 'Mandatory IEC registration for cross-border trading businesses.',
+                docs: ['Applicant PAN Card', 'Banker’s Certificate / Cancelled Cheque', 'Aadhar Card', 'Address Proof of Business Entity'],
+                types: ['Standard IEC']
+            },
+            {
+                id: 'epf', title: 'EPF Registration', 
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>',
+                desc: 'Employee Provident Fund statutory registration for your workforce.',
+                docs: ['Company PAN Card', 'Certificate of Incorporation', 'Cancelled Cheque', 'Directors/Partners ID Proofs', 'Digital Signature Certificate (DSC)'],
+                types: ['EPF Registration Only', 'EPF + ESI Combo']
+            },
+            {
+                id: 'esi', title: 'ESI Registration', 
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>',
+                desc: 'Employee State Insurance registration for staff health welfare.',
+                docs: ['Establishment Registration Certificate', 'PAN Card of Entity', 'Bank Statement', 'List of Employees with Details', 'Address Proof'],
+                types: ['ESI Registration']
+            },
+            {
+                id: 'tan', title: 'TAN Registration', 
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>',
+                desc: 'Tax Deduction and Collection Account Number application.',
+                docs: ['Incorporation Certificate / Partnership Deed', 'PAN Card of the Entity', 'Details of Authorized Signatory', 'Digital Signature (if applicable)'],
+                types: ['Standard TAN']
+            },
+            {
+                id: 'pan', title: 'PAN Application', 
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>',
+                desc: 'Permanent Account Number creation for individuals or new firms.',
+                docs: ['Aadhar Card (for Individuals)', 'Date of Birth Proof', 'Identity Proof', 'Certificate of Incorporation (for Companies)'],
+                types: ['Individual PAN', 'Company / Firm PAN']
+            },
+            {
+                id: 'others', title: 'Other Licenses', 
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>',
+                desc: 'FSSAI, Trade License, ISO, Labour License, and custom requests.',
+                docs: ['Basic Identity Proofs (PAN, Aadhar)', 'Business Registration Proof', 'Specific documents will be advised based on exact license.'],
+                types: ['FSSAI Basic', 'Trade License', 'Consultation']
+            }
+        ];
+
+        // Render the Grid
+        const grid = document.getElementById('services-grid');
+        grid.innerHTML = services.map((s, index) => `
+            <div onclick="openDrawer('${s.id}')" class="service-card cursor-pointer p-6 group h-full flex flex-col justify-between" style="animation: slideUp 0.5s ease forwards; animation-delay: ${index * 0.05}s; opacity: 0;">
+                <div>
+                    <div class="w-12 h-12 rounded-full bg-[#f8fafc] text-[#A67C52] flex items-center justify-center mb-5 group-hover:bg-[#fefbed] transition-colors border border-slate-100 group-hover:border-[#A67C52]/30">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">${s.icon}</svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2 tracking-tight">${s.title}</h3>
+                    <p class="text-[13px] text-slate-500 font-medium leading-relaxed">${s.desc}</p>
+                </div>
+                <div class="mt-6 flex items-center text-[#A67C52] text-sm font-bold tracking-wide">
+                    Apply Now 
+                    <svg class="w-4 h-4 ml-1 card-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </div>
+            </div>
+        `).join('');
+
+        // Slide-Over Logic
+        const overlay = document.getElementById('drawer-overlay');
+        
+        function openDrawer(id) {
+            const service = services.find(s => s.id === id);
+            if(!service) return;
+
+            document.getElementById('service-id-input').value = service.id;
+            document.getElementById('drawer-title').textContent = service.title;
+            document.getElementById('drawer-icon').innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">${service.icon}</svg>`;
+            
+            // Render Document List
+            const docList = document.getElementById('drawer-docs');
+            docList.innerHTML = service.docs.map((doc, i) => `
+                <li class="doc-item flex items-start gap-3 p-3 bg-white rounded-xl border border-slate-100 shadow-sm" style="animation-delay: ${i * 0.08}s">
+                    <div class="mt-0.5 w-5 h-5 rounded-full bg-[#A67C52]/10 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-3.5 h-3.5 text-[#A67C52]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <span class="text-[13px] text-slate-700 font-semibold leading-snug">${doc}</span>
+                </li>
+            `).join('');
+
+            // Populate Amount Types (No specific prices)
+            const feeSelect = document.getElementById('fee-type');
+            feeSelect.innerHTML = '<option value="" disabled selected>Choose type...</option>' + 
+                service.types.map(t => `<option value="${t}">${t}</option>`).join('');
+            
+            document.getElementById('pay-btn').disabled = true;
+
+            document.body.style.overflow = 'hidden'; 
+            overlay.classList.add('active');
+        }
+
+        function closeDrawer() {
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+            setTimeout(() => document.getElementById('drawer-form').reset(), 300);
+        }
+
+        // Form Submit Simulation
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const toast = document.getElementById('toast');
+            
+            // Show toast 
+            toast.classList.remove('-translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            closeDrawer();
+
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('-translate-y-24', 'opacity-0');
+                // Real world: redirect to payment gateway
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
