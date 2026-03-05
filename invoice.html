@@ -1,210 +1,370 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>CM Experts Group Payment</title>
-
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-
-<style>
-
-body{
-margin:0;
-font-family:Segoe UI,Arial;
-background:#f6f5f2;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-color:#5C4520;
-}
-
-.card{
-
-width:92%;
-max-width:420px;
-
-background:white;
-
-border-radius:20px;
-
-padding:30px;
-
-box-shadow:
-0 15px 40px rgba(0,0,0,0.08);
-
-text-align:center;
-
-}
-
-.logo{
-width:90px;
-margin-bottom:10px;
-}
-
-.title{
-font-size:20px;
-font-weight:600;
-color:#8B6A2F;
-}
-
-.subtitle{
-font-size:13px;
-color:#9a875e;
-margin-bottom:20px;
-}
-
-.amountbox{
-
-background:linear-gradient(145deg,#8B6A2F,#B08D57);
-
-border-radius:12px;
-
-padding:18px;
-
-color:white;
-
-margin-bottom:20px;
-
-}
-
-.amount{
-
-font-size:38px;
-font-weight:700;
-
-}
-
-.info{
-
-background:#f5f2ea;
-
-padding:12px;
-
-border-radius:10px;
-
-margin-bottom:10px;
-
-}
-
-.info b{
-color:#8B6A2F;
-}
-
-.qr{
-
-background:white;
-
-padding:12px;
-
-border-radius:12px;
-
-display:inline-block;
-
-margin:20px 0;
-
-box-shadow:0 4px 10px rgba(0,0,0,0.05);
-
-}
-
-.paybtn{
-
-display:block;
-
-text-decoration:none;
-
-background:linear-gradient(145deg,#8B6A2F,#B08D57);
-
-color:white;
-
-font-weight:600;
-
-padding:14px;
-
-border-radius:10px;
-
-}
-
-.footer{
-
-font-size:11px;
-
-margin-top:20px;
-
-color:#9a875e;
-
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Portal | CM Experts Group</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --brand: #A67C52;
+            --brand-dark: #856341;
+        }
+        .text-brand { color: var(--brand); }
+        .bg-brand { background-color: var(--brand); }
+        .border-brand { border-color: var(--brand); }
+        
+        /* Print/PDF styles to ensure it looks perfect on one A4 page */
+        @media print {
+            body { background: white !important; }
+            .no-print { display: none !important; }
+            .print-border { border: 1px solid #e2e8f0; }
+        }
+        .a4-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
+<body class="bg-slate-50 min-h-screen text-slate-800 font-sans">
 
-<body>
+    <div id="login-view" class="hidden flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white p-8 rounded-2xl shadow-lg max-w-sm w-full text-center border-t-4 border-brand">
+            <img src="logocmeg.png" alt="CM Experts Group" class="h-16 mx-auto mb-4" onerror="this.style.display='none'">
+            <h2 class="text-2xl font-bold mb-2">Admin Access</h2>
+            <p class="text-sm text-slate-500 mb-6">Enter PIN to generate invoices</p>
+            <input type="password" id="admin-pin" class="w-full text-center text-2xl tracking-widest p-3 border border-slate-300 rounded-xl focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand mb-4" placeholder="****" maxlength="4">
+            <button onclick="checkPin()" class="w-full bg-brand hover:bg-[#856341] text-white font-bold py-3 rounded-xl transition-all">Unlock Portal</button>
+            <p id="login-error" class="text-red-500 text-sm mt-2 hidden">Invalid PIN</p>
+        </div>
+    </div>
 
+    <div id="admin-view" class="hidden max-w-3xl mx-auto p-4 sm:p-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6 mt-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-slate-800">Generate Proforma Invoice</h2>
+                <button onclick="logout()" class="text-sm text-slate-500 hover:text-red-500">Lock</button>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Client Name</label>
+                    <input type="text" id="client-name" value="AJWA" class="w-full p-2.5 border rounded-lg focus:border-brand focus:ring-1 focus:ring-brand outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Mobile Number</label>
+                    <input type="text" id="client-mobile" value="9895470148" class="w-full p-2.5 border rounded-lg focus:border-brand focus:ring-1 focus:ring-brand outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Client ID</label>
+                    <input type="text" id="client-id" value="C40001" class="w-full p-2.5 border rounded-lg focus:border-brand focus:ring-1 focus:ring-brand outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Invoice ID</label>
+                    <input type="text" id="invoice-id" value="PI4260001" class="w-full p-2.5 border rounded-lg focus:border-brand focus:ring-1 focus:ring-brand outline-none">
+                </div>
+            </div>
 
-<div class="card">
+            <div class="mb-6">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Services / Items</label>
+                <div id="items-container" class="space-y-2">
+                    <div class="flex gap-2 item-row">
+                        <input type="text" placeholder="Description" value="Professional Services" class="item-desc flex-1 p-2.5 border rounded-lg outline-none">
+                        <input type="number" placeholder="Amount" value="1500" class="item-amount w-32 p-2.5 border rounded-lg outline-none">
+                    </div>
+                </div>
+                <button onclick="addItem()" class="text-sm text-brand font-semibold mt-2 hover:underline">+ Add another item</button>
+            </div>
 
-<img src="logocmeg.png" class="logo">
+            <div class="mb-6">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Additional Notes</label>
+                <textarea id="additional-notes" rows="2" class="w-full p-2.5 border rounded-lg focus:border-brand focus:ring-1 focus:ring-brand outline-none" placeholder="E.g., Advance payment required..."></textarea>
+            </div>
 
-<div class="title">CM Experts Group</div>
-<div class="subtitle">Secure Payment Portal</div>
+            <button onclick="generateInvoiceLink()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl transition-all shadow-md">
+                Generate Invoice & WhatsApp Link
+            </button>
 
-<div class="amountbox">
+            <div id="share-section" class="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl hidden">
+                <p class="text-sm font-semibold text-emerald-800 mb-2">Invoice Generated Successfully!</p>
+                <button onclick="shareWhatsApp()" class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-2.5 rounded-lg transition-all flex justify-center items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-9.746 9.798c0 2.734.732 5.41 2.124 7.738L2.71 22.77l8.278-2.71c2.267 1.234 4.818 1.888 7.532 1.888 9.696 0 17.577-7.884 17.577-17.592S21.432 2.581 11.736 2.581c-4.691 0-9.092 1.784-12.358 4.69"/></svg>
+                    Send via WhatsApp
+                </button>
+                <button onclick="previewInvoice()" class="w-full mt-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-2.5 rounded-lg transition-all">
+                    Preview Client View
+                </button>
+            </div>
+        </div>
+    </div>
 
-TOTAL PAYABLE
+    <div id="client-view" class="hidden">
+        
+        <div class="no-print bg-slate-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-md">
+            <div class="text-sm font-semibold truncate px-2">Invoice <span id="display-inv-top"></span></div>
+            <div class="flex gap-2">
+                <button onclick="payUPI()" class="bg-[#25D366] hover:bg-[#128C7E] text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors">
+                    Pay Now
+                </button>
+                <button onclick="downloadPDF()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                    Download PDF
+                </button>
+            </div>
+        </div>
 
-<div class="amount" id="amt">₹0</div>
+        <div class="p-4 sm:p-8 flex justify-center">
+            <div id="invoice-pdf-content" class="a4-container w-full bg-white p-6 sm:p-10 border border-slate-200">
+                
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-2 border-brand pb-6 mb-6 gap-4">
+                    <div class="flex items-center gap-3">
+                        <img src="logocmeg.png" alt="CM Experts" class="h-16 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <h1 class="text-2xl font-bold text-slate-900 hidden">CM Experts Group</h1>
+                    </div>
+                    <div class="text-left sm:text-right">
+                        <h2 class="text-2xl sm:text-3xl font-black text-brand uppercase tracking-widest mb-1">Proforma Invoice</h2>
+                        <p class="text-sm text-slate-600"><span class="font-semibold">Invoice No:</span> <span id="display-inv-id"></span></p>
+                        <p class="text-sm text-slate-600"><span class="font-semibold">Date:</span> <span id="display-date"></span></p>
+                    </div>
+                </div>
 
-</div>
+                <div class="flex flex-col sm:flex-row justify-between gap-6 mb-8">
+                    <div class="flex-1">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Billed To:</p>
+                        <h3 class="text-lg font-bold text-slate-800" id="display-client-name"></h3>
+                        <p class="text-sm text-slate-600">Client ID: <span id="display-client-id"></span></p>
+                        <p class="text-sm text-slate-600">Mobile: <span id="display-client-mobile"></span></p>
+                    </div>
+                    <div class="flex-1 sm:text-right">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">From:</p>
+                        <h3 class="text-lg font-bold text-slate-800">CM Experts Group</h3>
+                        <p class="text-sm text-slate-600">Count • Connect • Grow</p>
+                        <p class="text-sm text-slate-600">Support@cmeg.in | +91 9946151111</p>
+                    </div>
+                </div>
 
-<div class="info">
-Invoice For<br>
-<b id="client"></b>
-</div>
+                <div class="mb-8 overflow-hidden rounded-xl border print-border">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b print-border">
+                                <th class="p-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Description</th>
+                                <th class="p-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right w-32">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="display-items">
+                            </tbody>
+                        <tfoot>
+                            <tr class="bg-slate-50 border-t print-border">
+                                <td class="p-3 text-right font-bold text-slate-700">Total Amount</td>
+                                <td class="p-3 text-right font-bold text-brand text-lg">₹<span id="display-total"></span></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
 
-<div class="info">
-Paying To<br>
-<b id="upi">cmtaxexperts@ybl</b>
-</div>
+                <div class="flex flex-col sm:flex-row justify-between gap-6 items-start">
+                    <div class="flex-1 w-full">
+                        <div id="notes-container" class="mb-4 hidden">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Additional Notes:</p>
+                            <p class="text-sm text-slate-700 bg-slate-50 p-3 rounded-lg print-border" id="display-notes"></p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Payment Instructions:</p>
+                            <p class="text-sm text-slate-600">Pay securely via UPI to: <span class="font-bold">cmtaxexperts@ybl</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col items-center justify-center print-border w-full sm:w-auto">
+                        <p class="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Scan to Pay</p>
+                        <img src="qrcmeg.png" alt="UPI QR Code" class="h-24 w-24 object-cover mix-blend-multiply" onerror="this.style.display='none'; document.getElementById('qr-fallback').style.display='block';">
+                        <div id="qr-fallback" class="hidden text-xs text-slate-400 border border-dashed border-slate-300 p-4 rounded text-center">QR Code Image</div>
+                    </div>
+                </div>
 
-<div class="qr">
-<canvas id="qrcode"></canvas>
-</div>
+                <div class="mt-12 pt-6 border-t border-slate-200">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Terms & Conditions</h4>
+                    <ul class="text-[10px] sm:text-xs text-slate-500 list-disc list-inside space-y-1">
+                        <li>This is a computer-generated proforma invoice and does not require a signature.</li>
+                        <li>Payment is due upon receipt. Standard government fees and professional charges are included unless specified otherwise.</li>
+                        <li>All disputes are subject to Kerala jurisdiction.</li>
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+    </div>
 
-<a id="paybtn" class="paybtn">Tap to Pay via UPI</a>
+    <script>
+        const PIN = "3655";
+        const UPI_ID = "cmtaxexperts@ybl";
+        const PAYEE_NAME = "CM%20Experts%20Group";
+        let invoiceData = {};
 
-<div class="footer">
-CM Experts Group<br>
-Count • Connect • Grow<br>
-www.cmeg.in
-</div>
+        // 1. Check URL on Load (Are we Admin or Client?)
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const view = urlParams.get('view');
+            const dataStr = urlParams.get('data');
 
-</div>
+            if (view === 'client' && dataStr) {
+                try {
+                    // Decode base64 data to show to client
+                    invoiceData = JSON.parse(decodeURIComponent(atob(dataStr)));
+                    renderClientView();
+                } catch (e) {
+                    alert("Invalid invoice data link.");
+                    document.getElementById('login-view').classList.remove('hidden');
+                }
+            } else {
+                // Show Admin Login
+                document.getElementById('login-view').classList.remove('hidden');
+            }
+        };
 
+        // 2. Admin Logic
+        function checkPin() {
+            const input = document.getElementById('admin-pin').value;
+            if (input === PIN) {
+                document.getElementById('login-view').classList.add('hidden');
+                document.getElementById('admin-view').classList.remove('hidden');
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
 
-<script>
+        // Enter key support for PIN
+        document.getElementById('admin-pin').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkPin();
+        });
 
-const params = new URLSearchParams(window.location.search)
+        function logout() {
+            document.getElementById('admin-view').classList.add('hidden');
+            document.getElementById('login-view').classList.remove('hidden');
+            document.getElementById('admin-pin').value = '';
+            document.getElementById('share-section').classList.add('hidden');
+        }
 
-const client = params.get("client") || "Client"
-const amount = params.get("amt") || "0"
-const upi = params.get("upi") || "cmtaxexperts@ybl"
+        function addItem() {
+            const container = document.getElementById('items-container');
+            const row = document.createElement('div');
+            row.className = 'flex gap-2 item-row mt-2';
+            row.innerHTML = `
+                <input type="text" placeholder="Description" class="item-desc flex-1 p-2.5 border rounded-lg outline-none focus:border-brand">
+                <input type="number" placeholder="Amount" class="item-amount w-32 p-2.5 border rounded-lg outline-none focus:border-brand">
+                <button onclick="this.parentElement.remove()" class="text-red-500 font-bold px-2 hover:bg-red-50 rounded-lg">×</button>
+            `;
+            container.appendChild(row);
+        }
 
-document.getElementById("client").innerText = client
-document.getElementById("amt").innerText = "₹ " + amount
-document.getElementById("upi").innerText = upi
+        let generatedClientUrl = "";
+        let generatedTotal = 0;
 
-const upilink =
-`upi://pay?pa=${upi}&pn=CM Experts Group&am=${amount}&cu=INR&tn=${client}`
+        function generateInvoiceLink() {
+            const name = document.getElementById('client-name').value;
+            const mobile = document.getElementById('client-mobile').value;
+            const cid = document.getElementById('client-id').value;
+            const invId = document.getElementById('invoice-id').value;
+            const notes = document.getElementById('additional-notes').value;
 
-document.getElementById("paybtn").href = upilink
+            const items = [];
+            let total = 0;
+            document.querySelectorAll('.item-row').forEach(row => {
+                const desc = row.querySelector('.item-desc').value;
+                const amt = parseFloat(row.querySelector('.item-amount').value) || 0;
+                if (desc && amt > 0) {
+                    items.push({ desc, amt });
+                    total += amt;
+                }
+            });
 
-QRCode.toCanvas(document.getElementById("qrcode"), upilink,{width:200})
+            if (items.length === 0) {
+                alert("Please add at least one valid item with an amount.");
+                return;
+            }
 
-</script>
+            const data = {
+                name, mobile, cid, invId, notes, items, total,
+                date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+            };
 
+            invoiceData = data;
+            generatedTotal = total;
+
+            // Encode payload into URL
+            const encodedData = btoa(encodeURIComponent(JSON.stringify(data)));
+            const baseUrl = window.location.href.split('?')[0];
+            generatedClientUrl = `${baseUrl}?view=client&data=${encodedData}`;
+
+            document.getElementById('share-section').classList.remove('hidden');
+        }
+
+        function shareWhatsApp() {
+            const mobile = invoiceData.mobile.replace(/\D/g, ''); // Strip non-numeric
+            const upiLink = `upi://pay?pa=${UPI_ID}&pn=${PAYEE_NAME}&am=${generatedTotal}&cu=INR&tn=Inv_${invoiceData.invId}`;
+            
+            const message = `Dear ${invoiceData.name},\n\nYour Proforma Invoice (${invoiceData.invId}) from CM Experts Group is ready.\n\nTotal Amount: ₹${generatedTotal.toLocaleString('en-IN')}\n\n*View & Download Invoice PDF here:*\n${generatedClientUrl}\n\n*Pay Securely via UPI:* \n${upiLink}\n\nThank you for choosing CM Experts Group.`;
+            
+            window.open(`https://wa.me/91${mobile}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        function previewInvoice() {
+            window.open(generatedClientUrl, '_blank');
+        }
+
+        // 3. Client Logic
+        function renderClientView() {
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('admin-view').classList.add('hidden');
+            document.getElementById('client-view').classList.remove('hidden');
+
+            document.getElementById('display-inv-top').textContent = invoiceData.invId;
+            document.getElementById('display-client-name').textContent = invoiceData.name;
+            document.getElementById('display-client-id').textContent = invoiceData.cid;
+            document.getElementById('display-client-mobile').textContent = invoiceData.mobile;
+            document.getElementById('display-inv-id').textContent = invoiceData.invId;
+            document.getElementById('display-date').textContent = invoiceData.date;
+            document.getElementById('display-total').textContent = invoiceData.total.toLocaleString('en-IN');
+
+            // Render Notes
+            if (invoiceData.notes && invoiceData.notes.trim() !== '') {
+                document.getElementById('display-notes').textContent = invoiceData.notes;
+                document.getElementById('notes-container').classList.remove('hidden');
+            }
+
+            // Render Items
+            const tbody = document.getElementById('display-items');
+            tbody.innerHTML = invoiceData.items.map(item => `
+                <tr class="border-b border-slate-100 last:border-0 print-border">
+                    <td class="p-3 text-sm text-slate-700">${item.desc}</td>
+                    <td class="p-3 text-sm text-slate-800 font-semibold text-right">₹${item.amt.toLocaleString('en-IN')}</td>
+                </tr>
+            `).join('');
+        }
+
+        function payUPI() {
+            const upiLink = `upi://pay?pa=${UPI_ID}&pn=${PAYEE_NAME}&am=${invoiceData.total}&cu=INR&tn=Invoice_${invoiceData.invId}`;
+            window.location.href = upiLink;
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('invoice-pdf-content');
+            const opt = {
+                margin:       [10, 10, 10, 10],
+                filename:     `${invoiceData.name}_Invoice_${invoiceData.invId}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            element.classList.add('pdf-rendering');
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.classList.remove('pdf-rendering');
+            });
+        }
+    </script>
 </body>
 </html>
