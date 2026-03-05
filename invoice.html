@@ -127,6 +127,21 @@
             border-bottom: 1px solid var(--primary);
             background: rgba(139, 111, 71, 0.03);
         }
+        
+        textarea.detail-value {
+            border: 1px solid var(--border);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        textarea.detail-value:focus {
+            border: 1px solid var(--primary);
+            background: rgba(139, 111, 71, 0.03);
+        }
 
         /* Services Section */
         .section-title {
@@ -392,6 +407,11 @@
             padding-left: 0;
             padding-right: 0;
         }
+        
+        body.client-mode textarea.detail-value {
+            resize: none;
+            min-height: auto;
+        }
 
         body.client-mode .btn-add-service,
         body.client-mode .service-remove,
@@ -483,6 +503,10 @@
             <span class="detail-label">Client Mobile</span>
             <input type="tel" id="clientMobile" value="9895470148" placeholder="e.g. 9876543210" class="detail-value">
         </div>
+        <div class="detail-group" style="grid-column: 1 / -1;">
+            <span class="detail-label">Additional Notes (Optional)</span>
+            <textarea id="invoiceNotes" class="detail-value" placeholder="Enter custom notes or payment terms here..."></textarea>
+        </div>
     </div>
 
     <div class="services-section">
@@ -521,7 +545,7 @@
 
         <button class="action-btn btn-primary client-only" onclick="payViaUPI()">
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            Pay Now via UPI
+            Pay Now via UPI App
         </button>
 
         <button class="action-btn btn-secondary" onclick="downloadInvoice()">
@@ -579,7 +603,6 @@
         const pass = document.getElementById('passwordInput').value;
         const errorDiv = document.getElementById('loginError');
 
-        // Only checking PIN now
         if (pass === '3655') {
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('appContainer').style.display = 'block';
@@ -627,13 +650,14 @@
         return result.join(' ').trim();
     }
 
-    // Default Values
+    // Capture fields
     let client = params.get("client") || "AJWA";
     let clientId = params.get("clientId") || "C40001";
     let invoiceId = params.get("id") || "PI4260001";
     let upiId = params.get("upi") || "cmtaxexperts@ybl";
     let clientMobile = params.get("mobile") || "9895470148";
     let dateStr = params.get("date") || new Date().toISOString().split('T')[0];
+    let invoiceNotes = params.get("notes") ? decodeURIComponent(params.get("notes")) : "";
 
     document.getElementById("client").value = client;
     document.getElementById("clientId").value = clientId;
@@ -641,6 +665,7 @@
     document.getElementById("invoiceDate").value = dateStr;
     document.getElementById("upiId").value = upiId;
     document.getElementById("clientMobile").value = clientMobile;
+    document.getElementById("invoiceNotes").value = invoiceNotes;
 
     document.getElementById("client").addEventListener("change", (e) => { client = e.target.value; });
     document.getElementById("clientId").addEventListener("change", (e) => { clientId = e.target.value; });
@@ -648,6 +673,7 @@
     document.getElementById("invoiceDate").addEventListener("change", (e) => { dateStr = e.target.value; });
     document.getElementById("upiId").addEventListener("change", (e) => { upiId = e.target.value; });
     document.getElementById("clientMobile").addEventListener("change", (e) => { clientMobile = e.target.value; });
+    document.getElementById("invoiceNotes").addEventListener("change", (e) => { invoiceNotes = e.target.value; });
 
     function renderServices() {
         const servicesList = document.getElementById("servicesList");
@@ -695,6 +721,9 @@
     renderServices();
 
     function downloadInvoice() {
+        // Fix for Mobile scrolling bug (Massive white space fix)
+        window.scrollTo(0, 0);
+        
         let servicesHTML = '';
         services.forEach(service => {
             servicesHTML += `
@@ -708,6 +737,17 @@
         const total = services.reduce((sum, s) => sum + s.amount, 0);
         const dateObj = new Date(dateStr);
         const formattedDate = dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+        // Compile HTML for Notes section if it exists
+        let notesHTML = '';
+        if (invoiceNotes && invoiceNotes.trim() !== '') {
+            notesHTML = `
+                <div style="margin-bottom: 15px; background: #fcfbf9; padding: 12px 15px; border-radius: 8px; border-left: 4px solid #8B6F47;">
+                    <p style="font-size: 11px; font-weight: 700; color: #1a1a1a; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px;">Additional Notes</p>
+                    <p style="font-size: 11px; color: #555; margin: 0; line-height: 1.5; white-space: pre-wrap;">${invoiceNotes}</p>
+                </div>
+            `;
+        }
 
         const invoiceContent = document.createElement('div');
         
@@ -759,7 +799,7 @@
                     </tbody>
                 </table>
                 
-                <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
                     <div style="flex: 1;"></div>
                     <div style="width: 300px; background: #fcfbf9; padding: 12px 15px; border-radius: 8px; border: 1px solid #e5e7eb;">
                         <p style="color: #666; font-size: 11px; margin: 0 0 4px 0; text-transform: uppercase; font-weight: 700;">Total Amount Due</p>
@@ -767,6 +807,8 @@
                         <p style="color: #888; font-size: 10px; margin: 6px 0 0 0; font-style: italic;">${numberToWords(total)}</p>
                     </div>
                 </div>
+
+                ${notesHTML}
 
                 <div style="margin-bottom: 20px;">
                     <p style="font-size: 12px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; text-transform: uppercase;">Terms & Conditions</p>
@@ -840,14 +882,13 @@
         }
 
         const total = services.reduce((sum, s) => sum + s.amount, 0);
-        const upiLink = `upi://pay?pa=${upiId}&pn=Invoice%20Payment&am=${total}&cu=INR&tn=Invoice%20${invoiceId}`;
-        
         let baseUrl = HOSTED_PORTAL_URL;
 
         const sNames = encodeURIComponent(services.map(s => s.name).join('|'));
         const sAmts = encodeURIComponent(services.map(s => s.amount).join('|'));
         
-        const clientPortalUrl = `${baseUrl}?mode=client&client=${encodeURIComponent(client)}&clientId=${encodeURIComponent(clientId)}&id=${encodeURIComponent(invoiceId)}&date=${dateStr}&upi=${encodeURIComponent(upiId)}&snames=${sNames}&samts=${sAmts}`;
+        // Added the optional notes to the URL packet
+        const clientPortalUrl = `${baseUrl}?mode=client&client=${encodeURIComponent(client)}&clientId=${encodeURIComponent(clientId)}&id=${encodeURIComponent(invoiceId)}&date=${dateStr}&upi=${encodeURIComponent(upiId)}&snames=${sNames}&samts=${sAmts}&notes=${encodeURIComponent(invoiceNotes)}`;
         
         const message = `Hi ${client},\n\nPlease find your invoice details below:\n\n*Invoice ID:* ${invoiceId}\n*Amount:* ₹${total.toLocaleString('en-IN')}\n\n*👉 Click the link below to Pay directly via UPI App or Download your PDF:*\n${clientPortalUrl}\n\nOr contact us at: 9946151111\n\nThank you for your business!\nCM Experts Group`;
         
