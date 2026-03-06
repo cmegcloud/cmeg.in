@@ -4,11 +4,16 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>CMEG Admin</title>
 
 <link rel="manifest" href="/manifest.json">
+
+<meta name="theme-color" content="#A67C52">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -29,268 +34,212 @@ brand:{primary:'#A67C52',dark:'#856341'}
 
 <style>
 *{font-family:'Plus Jakarta Sans',sans-serif}
-.page{display:none}
-.active{display:block}
 </style>
 
 </head>
 
-<body class="bg-slate-900 text-gray-200 min-h-screen">
+<body class="bg-slate-900 text-gray-200 min-h-screen p-5">
 
-<!-- LOGIN -->
+<h1 class="text-xl font-bold mb-4">
+CMEG Client Master
+</h1>
 
-<div id="login" class="flex items-center justify-center min-h-screen">
+<select
+id="clientSelect"
+class="w-full p-3 bg-slate-800 rounded mb-4"
+onchange="loadClient()">
 
-<div class="bg-slate-800 p-8 rounded-xl w-80 text-center">
-
-<h2 class="text-xl font-bold mb-4">CMEG Admin</h2>
-
-<input
-id="pin"
-type="password"
-inputmode="numeric"
-maxlength="4"
-placeholder="Enter PIN"
-class="w-full text-center text-2xl p-3 bg-slate-900 rounded mb-4">
-
-<button onclick="unlock()"
-class="bg-[#A67C52] w-full py-3 rounded">
-
-Unlock
-
-</button>
-
-</div>
-
-</div>
-
-<!-- APP -->
-
-<div id="app" class="hidden">
-
-<header class="bg-slate-800 px-4 py-3 flex justify-between items-center">
-
-<h1 class="font-bold text-lg">CMEG Admin</h1>
-
-<button onclick="toggleTheme()" class="bg-slate-700 px-3 py-1 rounded">
-
-🌙 / ☀
-
-</button>
-
-</header>
-
-<!-- DASHBOARD -->
-
-<div id="dashboard" class="page active p-5">
-
-<h2 class="text-lg mb-4 font-semibold">Main Dashboard</h2>
-
-<div class="bg-slate-800 p-4 rounded-xl mb-5">
-
-<h3 class="font-semibold">Pending Compliance</h3>
-<p class="text-sm text-gray-400">No pending items</p>
-
-</div>
-
-<div class="grid grid-cols-2 gap-4">
-
-<button onclick="openPage('client')" class="bg-slate-800 p-5 rounded-xl">
-👥 Client Master
-</button>
-
-<button onclick="openPage('compliance')" class="bg-slate-800 p-5 rounded-xl">
-📅 Compliance
-</button>
-
-<button onclick="openPage('estimate')" class="bg-slate-800 p-5 rounded-xl">
-🧾 Estimate
-</button>
-
-<button onclick="openPage('invoice')" class="bg-slate-800 p-5 rounded-xl">
-💰 Proforma
-</button>
-
-<button onclick="openPage('credentials')" class="bg-slate-800 p-5 rounded-xl">
-🔑 Credentials
-</button>
-
-<button onclick="openPage('erp')" class="bg-slate-800 p-5 rounded-xl">
-⚙ ERP
-</button>
-
-</div>
-
-</div>
-
-<!-- CLIENT MASTER -->
-
-<div id="client" class="page p-5">
-
-<button onclick="openPage('dashboard')" class="mb-4 text-sm text-amber-400">
-← Back
-</button>
-
-<h2 class="text-lg font-semibold mb-4">
-Client Master
-</h2>
-
-<select id="clientSelect" class="w-full p-3 bg-slate-800 rounded mb-4">
-
-<option>Select Client</option>
-<option>Truewell</option>
-<option>Fi Bites Chicken</option>
+<option value="">Select Client</option>
 
 </select>
 
-<div class="bg-slate-800 p-4 rounded">
+<div id="clientInfo" class="bg-slate-800 p-4 rounded space-y-2">
 
 <p>GST: -</p>
 <p>PAN: -</p>
+<p>Mobile: -</p>
 <p>Email: -</p>
 
 </div>
 
-</div>
+<div id="complianceList"
+class="bg-slate-800 p-4 rounded mt-4">
 
-<!-- COMPLIANCE -->
-
-<div id="compliance" class="page p-5">
-
-<button onclick="openPage('dashboard')" class="mb-4 text-sm text-amber-400">
-← Back
-</button>
-
-<h2 class="text-lg font-semibold mb-4">
-
-Compliance / Tasks
-
-</h2>
-
-<p class="text-gray-400">
-
-Calendar + pending list coming next step.
-
-</p>
+Compliance list
 
 </div>
 
-<!-- ESTIMATE -->
+<div id="credentialsBox"
+class="bg-slate-800 p-4 rounded mt-4">
 
-<div id="estimate" class="page p-5">
-
-<button onclick="openPage('dashboard')" class="mb-4 text-sm text-amber-400">
-← Back
-</button>
-
-<h2 class="text-lg font-semibold mb-4">
-
-Estimate Portal
-
-</h2>
-
-<p class="text-gray-400">
-
-Estimate generator will connect with selected client.
-
-</p>
-
-</div>
-
-<!-- PROFORMA -->
-
-<div id="invoice" class="page p-5">
-
-<button onclick="openPage('dashboard')" class="mb-4 text-sm text-amber-400">
-← Back
-</button>
-
-<h2 class="text-lg font-semibold mb-4">
-
-Proforma Invoice
-
-</h2>
-
-<p class="text-gray-400">
-
-Invoice generator coming soon.
-
-</p>
-
-</div>
-
-<!-- CREDENTIALS -->
-
-<div id="credentials" class="page p-5">
-
-<button onclick="openPage('dashboard')" class="mb-4 text-sm text-amber-400">
-← Back
-</button>
-
-<h2 class="text-lg font-semibold mb-4">
-
-Client Credentials
-
-</h2>
-
-<p class="text-gray-400">
-
-Store GST portal, MCA, Income Tax login etc.
-
-</p>
-
-</div>
-
-<!-- ERP -->
-
-<div id="erp" class="page p-5">
-
-<button onclick="openPage('dashboard')" class="mb-4 text-sm text-amber-400">
-← Back
-</button>
-
-<h2 class="text-lg font-semibold mb-4">
-
-ERP
-
-</h2>
-
-<p class="text-gray-400">
-
-Future accounting & task system.
-
-</p>
-
-</div>
+Credentials
 
 </div>
 
 <script>
 
-function unlock(){
+/* SERVICE WORKER */
 
-if(document.getElementById("pin").value==="3655"){
+if ("serviceWorker" in navigator) {
 
-document.getElementById("login").style.display="none"
-document.getElementById("app").style.display="block"
+navigator.serviceWorker.register("/sw.js")
 
-}
+.then(() => console.log("CMEG Service Worker Registered"))
 
-}
-
-function openPage(id){
-
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
-
-document.getElementById(id).classList.add("active")
+.catch(err => console.log(err));
 
 }
 
-function toggleTheme(){
 
-document.documentElement.classList.toggle("dark")
+/* CLIENT DATABASE */
+
+const clients = [
+
+{
+id:"CL001",
+name:"Truewell Healthcare",
+gst:"32ABCDE1234F1Z5",
+pan:"ABCDE1234F",
+mobile:"9895470148",
+email:"truewell@gmail.com",
+
+credentials:{
+gst_portal_user:"truewell_gst",
+income_tax_user:"truewell_it",
+mca_user:"truewell_mca"
+},
+
+compliance:[
+
+{
+type:"GST Return",
+period:"Feb 2026",
+due_date:"20-03-2026",
+status:"Pending"
+},
+
+{
+type:"TDS Return",
+period:"Q4 2025",
+due_date:"31-03-2026",
+status:"Completed"
+}
+
+]
+
+},
+
+{
+id:"CL002",
+name:"Fi Bites Chicken",
+gst:"32ABCDE5678F1Z5",
+pan:"ABCDE5678F",
+mobile:"9895000000",
+email:"fibites@gmail.com",
+
+credentials:{
+gst_portal_user:"fibites_gst",
+income_tax_user:"fibites_it"
+},
+
+compliance:[
+
+{
+type:"GST Return",
+period:"Feb 2026",
+due_date:"20-03-2026",
+status:"Pending"
+}
+
+]
 
 }
+
+]
+
+
+/* LOAD CLIENTS */
+
+function initClients(){
+
+const select=document.getElementById("clientSelect")
+
+clients.forEach(c=>{
+
+let option=document.createElement("option")
+
+option.value=c.id
+option.textContent=c.name
+
+select.appendChild(option)
+
+})
+
+}
+
+
+/* SHOW CLIENT DETAILS */
+
+function loadClient(){
+
+const id=document.getElementById("clientSelect").value
+
+const client=clients.find(c=>c.id===id)
+
+if(!client)return
+
+
+document.getElementById("clientInfo").innerHTML=`
+
+<p><b>GST:</b> ${client.gst}</p>
+<p><b>PAN:</b> ${client.pan}</p>
+<p><b>Mobile:</b> ${client.mobile}</p>
+<p><b>Email:</b> ${client.email}</p>
+
+`
+
+
+let complianceHTML="<h3 class='font-semibold mb-2'>Compliance</h3>"
+
+client.compliance.forEach(c=>{
+
+let color=c.status==="Pending"?"text-red-400":"text-green-400"
+
+complianceHTML+=`
+
+<p>
+
+${c.type} (${c.period})  
+Due: ${c.due_date}  
+<span class="${color}">${c.status}</span>
+
+</p>
+
+`
+
+})
+
+document.getElementById("complianceList").innerHTML=complianceHTML
+
+
+document.getElementById("credentialsBox").innerHTML=`
+
+<h3 class="font-semibold mb-2">Credentials</h3>
+
+<p>GST Portal: ${client.credentials.gst_portal_user || "-"}</p>
+
+<p>Income Tax: ${client.credentials.income_tax_user || "-"}</p>
+
+<p>MCA: ${client.credentials.mca_user || "-"}</p>
+
+`
+
+}
+
+
+/* INIT */
+
+initClients()
 
 </script>
 
