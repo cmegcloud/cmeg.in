@@ -1,29 +1,26 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>CMEG Admin</title>
 
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#A67C52">
-
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <script src="https://cdn.tailwindcss.com"></script>
 
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
 <script>
-tailwind.config = {
-darkMode: 'class',
+tailwind.config={
+darkMode:'class',
 theme:{
 extend:{
 colors:{
-brand:{
-primary:'#A67C52',
-dark:'#856341'
-}
+brand:{primary:'#A67C52',dark:'#856341'}
 }
 }
 }
@@ -32,79 +29,50 @@ dark:'#856341'
 
 <style>
 *{font-family:'Plus Jakarta Sans',sans-serif}
+.page{display:none}
+.active{display:block}
 </style>
 
 </head>
 
 <body class="bg-slate-900 text-gray-200 min-h-screen">
 
-<!-- LOGIN SCREEN -->
+<!-- LOGIN -->
 
-<div id="loginScreen" class="flex items-center justify-center min-h-screen">
+<div id="login" class="flex items-center justify-center min-h-screen">
 
-<div class="bg-slate-800 p-8 rounded-xl w-80 text-center shadow-lg">
+<div class="bg-slate-800 p-8 rounded-xl w-80 text-center">
 
-<img src="https://raw.githubusercontent.com/cmegcloud/cmeg.in/main/logocmeg.png"
-class="w-16 mx-auto mb-4">
-
-<h2 class="text-xl font-bold mb-2">CMEG Admin</h2>
-
-<p class="text-sm text-gray-400 mb-5">
-Enter PIN to continue
-</p>
+<h2 class="text-xl font-bold mb-4">CMEG Admin</h2>
 
 <input
-id="pinInput"
+id="pin"
 type="password"
 inputmode="numeric"
-pattern="[0-9]*"
 maxlength="4"
-class="w-full text-center text-2xl tracking-widest p-3 rounded bg-slate-900 border border-slate-700 mb-4">
+placeholder="Enter PIN"
+class="w-full text-center text-2xl p-3 bg-slate-900 rounded mb-4">
 
-<button onclick="checkPin()"
-class="bg-[#A67C52] hover:bg-[#856341] w-full py-3 rounded font-semibold">
+<button onclick="unlock()"
+class="bg-[#A67C52] w-full py-3 rounded">
 
 Unlock
 
 </button>
 
-<p id="errorMsg" class="text-red-400 text-sm mt-3 hidden">
-Wrong PIN
-</p>
-
 </div>
 
 </div>
 
-<!-- MAIN APP -->
+<!-- APP -->
 
 <div id="app" class="hidden">
 
-<!-- HEADER -->
+<header class="bg-slate-800 px-4 py-3 flex justify-between items-center">
 
-<header class="bg-slate-800 border-b border-slate-700 px-4 py-3 flex justify-between items-center">
+<h1 class="font-bold text-lg">CMEG Admin</h1>
 
-<div class="flex items-center gap-3">
-
-<img src="https://raw.githubusercontent.com/cmegcloud/cmeg.in/main/logocmeg.png"
-class="w-9">
-
-<div>
-
-<h1 class="font-bold text-lg">
-CMEG Admin
-</h1>
-
-<p class="text-xs text-gray-400">
-Personal Business App
-</p>
-
-</div>
-
-</div>
-
-<button onclick="toggleTheme()"
-class="text-sm px-3 py-1 bg-slate-700 rounded">
+<button onclick="toggleTheme()" class="bg-slate-700 px-3 py-1 rounded">
 
 🌙 / ☀
 
@@ -114,85 +82,184 @@ class="text-sm px-3 py-1 bg-slate-700 rounded">
 
 <!-- DASHBOARD -->
 
-<div class="p-5">
+<div id="dashboard" class="page active p-5">
 
-<h2 class="text-lg font-semibold mb-4">
-Main Dashboard
-</h2>
-
-<!-- COMPLIANCE SUMMARY -->
+<h2 class="text-lg mb-4 font-semibold">Main Dashboard</h2>
 
 <div class="bg-slate-800 p-4 rounded-xl mb-5">
 
-<h3 class="font-semibold mb-2">
-Pending Compliance
-</h3>
+<h3 class="font-semibold">Pending Compliance</h3>
+<p class="text-sm text-gray-400">No pending items</p>
 
-<p class="text-sm text-gray-400">
-No pending items
+</div>
+
+<div class="grid grid-cols-2 gap-4">
+
+<button onclick="openPage('client')" class="bg-slate-800 p-5 rounded-xl">
+👥 Client Master
+</button>
+
+<button onclick="openPage('compliance')" class="bg-slate-800 p-5 rounded-xl">
+📅 Compliance
+</button>
+
+<button onclick="openPage('estimate')" class="bg-slate-800 p-5 rounded-xl">
+🧾 Estimate
+</button>
+
+<button onclick="openPage('invoice')" class="bg-slate-800 p-5 rounded-xl">
+💰 Proforma
+</button>
+
+<button onclick="openPage('credentials')" class="bg-slate-800 p-5 rounded-xl">
+🔑 Credentials
+</button>
+
+<button onclick="openPage('erp')" class="bg-slate-800 p-5 rounded-xl">
+⚙ ERP
+</button>
+
+</div>
+
+</div>
+
+<!-- CLIENT MASTER -->
+
+<div id="client" class="page p-5">
+
+<button onclick="openPage('dashboard')" class="mb-4 text-sm text-amber-400">
+← Back
+</button>
+
+<h2 class="text-lg font-semibold mb-4">
+Client Master
+</h2>
+
+<select id="clientSelect" class="w-full p-3 bg-slate-800 rounded mb-4">
+
+<option>Select Client</option>
+<option>Truewell</option>
+<option>Fi Bites Chicken</option>
+
+</select>
+
+<div class="bg-slate-800 p-4 rounded">
+
+<p>GST: -</p>
+<p>PAN: -</p>
+<p>Email: -</p>
+
+</div>
+
+</div>
+
+<!-- COMPLIANCE -->
+
+<div id="compliance" class="page p-5">
+
+<button onclick="openPage('dashboard')" class="mb-4 text-sm text-amber-400">
+← Back
+</button>
+
+<h2 class="text-lg font-semibold mb-4">
+
+Compliance / Tasks
+
+</h2>
+
+<p class="text-gray-400">
+
+Calendar + pending list coming next step.
+
 </p>
 
 </div>
 
-<!-- GRID -->
+<!-- ESTIMATE -->
 
-<div class="grid grid-cols-2 gap-4">
+<div id="estimate" class="page p-5">
 
-<a href="#"
-class="bg-slate-800 p-5 rounded-xl hover:bg-slate-700">
+<button onclick="openPage('dashboard')" class="mb-4 text-sm text-amber-400">
+← Back
+</button>
 
-<div class="text-3xl mb-2">👥</div>
+<h2 class="text-lg font-semibold mb-4">
 
-Client Master
+Estimate Portal
 
-</a>
+</h2>
 
-<a href="#"
-class="bg-slate-800 p-5 rounded-xl hover:bg-slate-700">
+<p class="text-gray-400">
 
-<div class="text-3xl mb-2">📅</div>
+Estimate generator will connect with selected client.
 
-Compliance / Tasks
+</p>
 
-</a>
+</div>
 
-<a href="#"
-class="bg-slate-800 p-5 rounded-xl hover:bg-slate-700">
+<!-- PROFORMA -->
 
-<div class="text-3xl mb-2">🧾</div>
+<div id="invoice" class="page p-5">
 
-Estimate
+<button onclick="openPage('dashboard')" class="mb-4 text-sm text-amber-400">
+← Back
+</button>
 
-</a>
-
-<a href="#"
-class="bg-slate-800 p-5 rounded-xl hover:bg-slate-700">
-
-<div class="text-3xl mb-2">💰</div>
+<h2 class="text-lg font-semibold mb-4">
 
 Proforma Invoice
 
-</a>
+</h2>
 
-<a href="#"
-class="bg-slate-800 p-5 rounded-xl hover:bg-slate-700">
+<p class="text-gray-400">
 
-<div class="text-3xl mb-2">🔑</div>
+Invoice generator coming soon.
+
+</p>
+
+</div>
+
+<!-- CREDENTIALS -->
+
+<div id="credentials" class="page p-5">
+
+<button onclick="openPage('dashboard')" class="mb-4 text-sm text-amber-400">
+← Back
+</button>
+
+<h2 class="text-lg font-semibold mb-4">
 
 Client Credentials
 
-</a>
+</h2>
 
-<a href="#"
-class="bg-slate-800 p-5 rounded-xl hover:bg-slate-700">
+<p class="text-gray-400">
 
-<div class="text-3xl mb-2">⚙</div>
+Store GST portal, MCA, Income Tax login etc.
+
+</p>
+
+</div>
+
+<!-- ERP -->
+
+<div id="erp" class="page p-5">
+
+<button onclick="openPage('dashboard')" class="mb-4 text-sm text-amber-400">
+← Back
+</button>
+
+<h2 class="text-lg font-semibold mb-4">
 
 ERP
 
-</a>
+</h2>
 
-</div>
+<p class="text-gray-400">
+
+Future accounting & task system.
+
+</p>
 
 </div>
 
@@ -200,23 +267,22 @@ ERP
 
 <script>
 
-const PIN="3655"
+function unlock(){
 
-function checkPin(){
+if(document.getElementById("pin").value==="3655"){
 
-const input=document.getElementById("pinInput").value
-
-if(input===PIN){
-
-document.getElementById("loginScreen").style.display="none"
-
+document.getElementById("login").style.display="none"
 document.getElementById("app").style.display="block"
 
-}else{
-
-document.getElementById("errorMsg").classList.remove("hidden")
+}
 
 }
+
+function openPage(id){
+
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
+
+document.getElementById(id).classList.add("active")
 
 }
 
