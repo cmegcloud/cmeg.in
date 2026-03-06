@@ -24,14 +24,22 @@
 CMEG Client Master
 </h1>
 
-<select
-id="clientSelect"
-class="w-full p-3 bg-slate-800 rounded mb-4"
-onchange="loadClient()">
+<h1 class="text-xl font-bold mb-4">
+CMEG Client Master
+</h1>
 
-<option value="">Select Client</option>
+<input
+id="clientSearch"
+type="text"
+placeholder="Search client..."
+class="w-full p-3 bg-slate-800 rounded mb-2"
+oninput="searchClient()"
+/>
 
-</select>
+<div
+id="clientResults"
+class="bg-slate-800 rounded mb-4 max-h-48 overflow-y-auto">
+</div>
 
 <div id="clientInfo" class="bg-slate-800 p-4 rounded space-y-2">
 
