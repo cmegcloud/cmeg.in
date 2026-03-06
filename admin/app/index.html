@@ -18,9 +18,11 @@
 
 </head>
 
-<body class="bg-slate-900 text-gray-200 min-h-screen p-5">
+<body class="bg-gradient-to-b from-[#0f172a] to-[#020617] text-gray-200 min-h-screen">
 
-<h1 class="text-xl font-bold mb-4">
+<div class="max-w-xl mx-auto p-5">
+
+<h1 class="text-2xl font-bold text-[#ED6EBB] mb-6">
 CMEG Client Master
 </h1>
 
@@ -28,40 +30,44 @@ CMEG Client Master
 id="clientSearch"
 type="text"
 placeholder="Search client..."
-class="w-full p-3 bg-slate-800 rounded mb-2"
+class="w-full p-4 bg-[#1e293b] rounded-xl border border-gray-700 focus:border-[#ED6EBB] outline-none mb-4"
 oninput="searchClient()"
 />
 
-  <div
-id="clientResults"
-class="bg-slate-800 rounded mb-4 max-h-48 overflow-y-auto">
-</div>
-  
 <div
 id="clientResults"
-class="bg-slate-800 rounded mb-4 max-h-48 overflow-y-auto">
+class="bg-[#1e293b] rounded-xl mb-5 overflow-hidden">
 </div>
 
-<div id="clientInfo" class="bg-slate-800 p-4 rounded space-y-2">
+<div id="clientInfo"
+class="bg-[#1e293b] p-5 rounded-xl mb-4 shadow-lg">
 
-<p>GST: -</p>
-<p>PAN: -</p>
-<p>Mobile: -</p>
-<p>Email: -</p>
+<p><span class="text-gray-400">GST</span><br>-</p>
+<p><span class="text-gray-400">PAN</span><br>-</p>
+<p><span class="text-gray-400">Mobile</span><br>-</p>
+<p><span class="text-gray-400">Email</span><br>-</p>
 
 </div>
 
 <div id="complianceList"
-class="bg-slate-800 p-4 rounded mt-4">
-Compliance list
+class="bg-[#1e293b] p-5 rounded-xl mb-4 shadow-lg">
+
+<h3 class="text-[#ED6EBB] font-semibold mb-2">
+Compliance
+</h3>
+
 </div>
 
 <div id="credentialsBox"
-class="bg-slate-800 p-4 rounded mt-4">
+class="bg-[#1e293b] p-5 rounded-xl shadow-lg">
+
+<h3 class="text-[#ED6EBB] font-semibold mb-2">
 Credentials
+</h3>
+
 </div>
 
-<script src="js/app.js"></script>
+</div>
 
 </body>
 </html>
