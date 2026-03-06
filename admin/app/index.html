@@ -11,30 +11,10 @@
 <link rel="manifest" href="/manifest.json">
 
 <meta name="theme-color" content="#A67C52">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
 <script src="https://cdn.tailwindcss.com"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-
-<script>
-tailwind.config={
-darkMode:'class',
-theme:{
-extend:{
-colors:{
-brand:{primary:'#A67C52',dark:'#856341'}
-}
-}
-}
-}
-</script>
-
-<style>
-*{font-family:'Plus Jakarta Sans',sans-serif}
-</style>
 
 </head>
 
@@ -64,184 +44,15 @@ onchange="loadClient()">
 
 <div id="complianceList"
 class="bg-slate-800 p-4 rounded mt-4">
-
 Compliance list
-
 </div>
 
 <div id="credentialsBox"
 class="bg-slate-800 p-4 rounded mt-4">
-
 Credentials
-
 </div>
 
-<script>
-
-/* SERVICE WORKER */
-
-if ("serviceWorker" in navigator) {
-
-navigator.serviceWorker.register("/sw.js")
-
-.then(() => console.log("CMEG Service Worker Registered"))
-
-.catch(err => console.log(err));
-
-}
-
-
-/* CLIENT DATABASE */
-
-const clients = [
-
-{
-id:"CL001",
-name:"Truewell Healthcare",
-gst:"32ABCDE1234F1Z5",
-pan:"ABCDE1234F",
-mobile:"9895470148",
-email:"truewell@gmail.com",
-
-credentials:{
-gst_portal_user:"truewell_gst",
-income_tax_user:"truewell_it",
-mca_user:"truewell_mca"
-},
-
-compliance:[
-
-{
-type:"GST Return",
-period:"Feb 2026",
-due_date:"20-03-2026",
-status:"Pending"
-},
-
-{
-type:"TDS Return",
-period:"Q4 2025",
-due_date:"31-03-2026",
-status:"Completed"
-}
-
-]
-
-},
-
-{
-id:"CL002",
-name:"Fi Bites Chicken",
-gst:"32ABCDE5678F1Z5",
-pan:"ABCDE5678F",
-mobile:"9895000000",
-email:"fibites@gmail.com",
-
-credentials:{
-gst_portal_user:"fibites_gst",
-income_tax_user:"fibites_it"
-},
-
-compliance:[
-
-{
-type:"GST Return",
-period:"Feb 2026",
-due_date:"20-03-2026",
-status:"Pending"
-}
-
-]
-
-}
-
-]
-
-
-/* LOAD CLIENTS */
-
-function initClients(){
-
-const select=document.getElementById("clientSelect")
-
-clients.forEach(c=>{
-
-let option=document.createElement("option")
-
-option.value=c.id
-option.textContent=c.name
-
-select.appendChild(option)
-
-})
-
-}
-
-
-/* SHOW CLIENT DETAILS */
-
-function loadClient(){
-
-const id=document.getElementById("clientSelect").value
-
-const client=clients.find(c=>c.id===id)
-
-if(!client)return
-
-
-document.getElementById("clientInfo").innerHTML=`
-
-<p><b>GST:</b> ${client.gst}</p>
-<p><b>PAN:</b> ${client.pan}</p>
-<p><b>Mobile:</b> ${client.mobile}</p>
-<p><b>Email:</b> ${client.email}</p>
-
-`
-
-
-let complianceHTML="<h3 class='font-semibold mb-2'>Compliance</h3>"
-
-client.compliance.forEach(c=>{
-
-let color=c.status==="Pending"?"text-red-400":"text-green-400"
-
-complianceHTML+=`
-
-<p>
-
-${c.type} (${c.period})  
-Due: ${c.due_date}  
-<span class="${color}">${c.status}</span>
-
-</p>
-
-`
-
-})
-
-document.getElementById("complianceList").innerHTML=complianceHTML
-
-
-document.getElementById("credentialsBox").innerHTML=`
-
-<h3 class="font-semibold mb-2">Credentials</h3>
-
-<p>GST Portal: ${client.credentials.gst_portal_user || "-"}</p>
-
-<p>Income Tax: ${client.credentials.income_tax_user || "-"}</p>
-
-<p>MCA: ${client.credentials.mca_user || "-"}</p>
-
-`
-
-}
-
-
-/* INIT */
-
-initClients()
-
-</script>
+<script src="js/app.js"></script>
 
 </body>
 </html>
