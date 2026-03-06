@@ -6,7 +6,7 @@
     <title>Estimate Portal | CM Experts Group</title>
     
     <meta name="theme-color" content="#A67C52">
-    <link rel="apple-touch-icon" href="logocmeg.png">
+    <link rel="apple-touch-icon" href="logonamecmeg.png">
 
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -71,12 +71,12 @@
             padding-right: 2.5rem;
         }
 
-        /* Print/PDF styles */
+        /* Print/PDF styles - tightly formatted to fit on 1 page */
         @media print {
             body { background: white !important; }
             .no-print, .ambient-glow { display: none !important; }
             .print-border { border: 1px solid #e2e8f0 !important; }
-            #estimate-pdf-content { box-shadow: none !important; border: none !important; }
+            #estimate-pdf-content { box-shadow: none !important; border: none !important; padding: 0 !important; }
         }
         
         .a4-container {
@@ -103,12 +103,12 @@
         <div class="bg-white p-8 rounded-[24px] shadow-2xl shadow-[#A67C52]/10 border border-slate-100 max-w-sm w-full text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#A67C52] to-[#cba379]"></div>
             
-            <div class="w-16 h-16 mx-auto bg-[#fefbed] rounded-2xl flex items-center justify-center mb-6 border border-[#A67C52]/20">
-                <img src="logocmeg.png" alt="CM" class="w-10 h-10 object-contain" onerror="this.style.display='none'">
+            <div class="mx-auto flex items-center justify-center mb-4">
+                <img src="logonamecmeg.png" alt="CM Experts Group" class="w-24 h-24 object-contain" onerror="this.style.display='none'">
             </div>
             
             <h2 class="text-2xl font-bold text-slate-900 tracking-tight mb-2">Estimate Portal</h2>
-            <p class="text-sm text-slate-500 font-medium mb-8">Enter secure PIN to generate estimates</p>
+            <p class="text-sm text-slate-500 font-medium mb-8">Enter secure PIN to access</p>
             
             <input type="password" id="admin-pin" class="modern-input text-center text-3xl tracking-[0.5em] py-4 font-bold mb-6" placeholder="****" maxlength="4">
             
@@ -122,14 +122,9 @@
 
     <div id="admin-view" class="hidden flex-1 w-full max-w-3xl mx-auto p-4 sm:p-8 z-10">
         
-        <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-white border border-[#A67C52]/20 rounded-xl shadow-sm flex items-center justify-center p-1">
-                    <img src="logocmeg.png" alt="CM" onerror="this.style.display='none';">
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold text-slate-900 tracking-tight">Estimate Generator</h1>
-                </div>
+                <img src="logonamecmeg.png" alt="CM Experts Group" class="w-14 h-14 object-contain" onerror="this.style.display='none';">
             </div>
             <button onclick="logout()" class="text-sm font-bold text-slate-400 hover:text-red-500 flex items-center gap-1 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
@@ -232,86 +227,84 @@
             </div>
         </div>
 
-        <div class="p-4 sm:p-8 pt-8 flex justify-center">
-            <div id="estimate-pdf-content" class="a4-container w-full p-8 sm:p-12 border border-slate-200 relative">
+        <div class="p-4 sm:p-8 pt-4 flex justify-center">
+            <div id="estimate-pdf-content" class="a4-container w-full p-6 sm:p-10 border border-slate-200 relative">
                 
                 <div class="absolute top-0 left-0 w-full h-2 bg-[#A67C52] no-print"></div>
 
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-200 pb-8 mb-8 gap-6 mt-4">
+                <div class="flex justify-between items-end border-b border-slate-200 pb-4 mb-6 mt-2">
                     <div class="flex flex-col">
-                        <img src="logocmeg.png" alt="CM Experts" class="h-14 object-contain mb-3" onerror="this.style.display='none';">
-                        <h1 class="text-xl font-bold text-slate-900 leading-tight">CM Experts Group</h1>
-                        <p class="text-[11px] font-bold text-[#A67C52] uppercase tracking-widest mt-1">Count • Connect • Grow</p>
+                        <img src="logonamecmeg.png" alt="CM Experts Group" class="h-20 w-24 object-contain mb-1" crossorigin="anonymous" onerror="this.style.display='none';">
                     </div>
-                    <div class="text-left sm:text-right">
-                        <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">ESTIMATE</h2>
-                        <p class="text-sm text-slate-600 mt-2"><span class="font-semibold text-slate-400 uppercase text-xs tracking-wider">Estimate No:</span> <span id="display-est-id" class="font-bold text-slate-800 ml-1"></span></p>
-                        <p class="text-sm text-slate-600 mt-1"><span class="font-semibold text-slate-400 uppercase text-xs tracking-wider">Date:</span> <span id="display-date" class="font-bold text-slate-800 ml-1"></span></p>
+                    <div class="text-right">
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-1">ESTIMATE</h2>
+                        <p class="text-xs text-slate-600 mt-1"><span class="font-semibold text-slate-400 uppercase tracking-wider">Estimate No:</span> <span id="display-est-id" class="font-bold text-slate-800 ml-1"></span></p>
+                        <p class="text-xs text-slate-600 mt-0.5"><span class="font-semibold text-slate-400 uppercase tracking-wider">Date:</span> <span id="display-date" class="font-bold text-slate-800 ml-1"></span></p>
                     </div>
                 </div>
 
-                <div class="flex flex-col sm:flex-row justify-between gap-8 mb-10">
-                    <div class="flex-1 bg-slate-50 p-5 rounded-xl border border-slate-100 print-border">
-                        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">Prepared For:</p>
-                        <h3 class="text-lg font-bold text-slate-900 mb-1" id="display-client-name"></h3>
-                        <p class="text-sm text-slate-600 font-medium">Ph: <span id="display-client-mobile" class="text-slate-800"></span></p>
+                <div class="flex justify-between gap-4 mb-6">
+                    <div class="flex-1 bg-slate-50 p-4 rounded-xl border border-slate-100 print-border">
+                        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Prepared For:</p>
+                        <h3 class="text-base font-bold text-slate-900 mb-0.5" id="display-client-name"></h3>
+                        <p class="text-xs text-slate-600 font-medium">Ph: <span id="display-client-mobile" class="text-slate-800"></span></p>
                     </div>
-                    <div class="flex-1 sm:text-right flex flex-col justify-center">
+                    <div class="flex-1 text-right flex flex-col justify-center">
                         <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">From:</p>
-                        <p class="text-sm font-semibold text-slate-800">Support@cmeg.in</p>
-                        <p class="text-sm font-semibold text-slate-800">+91 99461 51111</p>
-                        <p class="text-sm font-semibold text-slate-800">www.cmeg.in</p>
+                        <p class="text-xs font-semibold text-slate-800">Support@cmeg.in</p>
+                        <p class="text-xs font-semibold text-slate-800">+91 99461 51111</p>
+                        <p class="text-xs font-semibold text-slate-800">www.cmeg.in</p>
                     </div>
                 </div>
 
-                <div class="mb-8 overflow-hidden rounded-xl border border-slate-200 print-border">
+                <div class="mb-6 overflow-hidden rounded-xl border border-slate-200 print-border">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-50 border-b border-slate-200 print-border">
-                                <th class="p-4 text-xs font-extrabold text-slate-500 uppercase tracking-wider">Service Description</th>
-                                <th class="p-4 text-xs font-extrabold text-slate-500 uppercase tracking-wider text-right w-40">Est. Amount</th>
+                                <th class="p-3 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Service Description</th>
+                                <th class="p-3 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider text-right w-32">Est. Amount</th>
                             </tr>
                         </thead>
                         <tbody id="display-items" class="divide-y divide-slate-100">
                             </tbody>
                         <tfoot>
                             <tr class="bg-[#fafafa] border-t border-slate-200 print-border">
-                                <td class="p-4 text-right text-sm font-extrabold text-slate-600 uppercase tracking-wider">Total Estimate</td>
-                                <td class="p-4 text-right font-black text-[#A67C52] text-xl">₹<span id="display-total"></span></td>
+                                <td class="p-3 text-right text-[11px] font-extrabold text-slate-600 uppercase tracking-wider">Total Estimate</td>
+                                <td class="p-3 text-right font-black text-[#A67C52] text-lg">₹<span id="display-total"></span></td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
 
-                <div id="client-docs-container" class="mb-8 hidden">
-                    <h4 class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2 border-b border-slate-200 pb-2">
-                        <svg class="w-4 h-4 text-[#A67C52]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <div id="client-docs-container" class="mb-6 hidden">
+                    <h4 class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1 border-b border-slate-200 pb-1">
+                        <svg class="w-3.5 h-3.5 text-[#A67C52]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         Required Documents for Processing
                     </h4>
-                    <ul id="display-docs-list" class="text-xs text-slate-600 list-disc list-inside space-y-1.5 ml-2"></ul>
+                    <ul id="display-docs-list" class="text-[11px] text-slate-600 list-disc list-inside space-y-1 ml-1 leading-snug"></ul>
                 </div>
 
-                <div class="flex flex-col sm:flex-row justify-between gap-8 items-start">
+                <div class="flex justify-between gap-6 items-start">
                     <div class="flex-1 w-full">
-                        <div id="notes-container" class="mb-6 hidden">
-                            <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">Remarks / Notes:</p>
-                            <p class="text-sm font-medium text-slate-700 bg-[#fefbed] p-4 rounded-xl border border-[#A67C52]/20 print-border" id="display-notes"></p>
+                        <div id="notes-container" class="mb-4 hidden">
+                            <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Remarks / Notes:</p>
+                            <p class="text-xs font-medium text-slate-700 bg-[#fefbed] p-3 rounded-lg border border-[#A67C52]/20 print-border" id="display-notes"></p>
                         </div>
                         <div>
-                            <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">To Proceed (Pay Advance):</p>
-                            <p class="text-sm font-medium text-slate-600">Scan QR or use UPI ID: <span id="display-upi-id" class="font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded"></span></p>
+                            <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">To Proceed (Pay Advance):</p>
+                            <p class="text-xs font-medium text-slate-600">Scan QR or use UPI ID: <span id="display-upi-id" class="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded"></span></p>
                         </div>
                     </div>
                     
-                    <div class="bg-white p-4 rounded-2xl border-2 border-slate-100 shadow-sm flex flex-col items-center justify-center print-border w-full sm:w-auto">
-                        <img src="qrcmeg.png" alt="UPI QR Code" class="h-28 w-28 object-contain mix-blend-multiply" onerror="this.style.display='none'; document.getElementById('qr-fallback').style.display='block';">
-                        <div id="qr-fallback" class="hidden text-xs font-medium text-slate-400 border-2 border-dashed border-slate-200 p-6 rounded-xl text-center">Place QR Code<br>Image Here</div>
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center print-border flex-shrink-0">
+                        <img src="qrcmeg.png" alt="UPI QR Code" class="h-20 w-20 object-contain mix-blend-multiply" crossorigin="anonymous" onerror="this.style.display='none'; document.getElementById('qr-fallback').style.display='block';">
+                        <div id="qr-fallback" class="hidden text-[10px] font-medium text-slate-400 border border-dashed border-slate-200 p-4 rounded-lg text-center">QR Code</div>
                     </div>
                 </div>
 
-                <div class="mt-10 pt-5 border-t border-slate-200">
-                    <h4 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">Terms & Conditions</h4>
-                    <ul class="text-[11px] text-slate-500 font-medium list-disc list-inside space-y-1 opacity-90">
+                <div class="mt-6 pt-4 border-t border-slate-200">
+                    <h4 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Terms & Conditions</h4>
+                    <ul class="text-[10px] text-slate-500 font-medium list-disc list-inside space-y-0.5 opacity-90">
                         <li>This is an estimate. Final billing may vary slightly based on government fees at processing time.</li>
                         <li>Work will commence strictly upon receipt of the advance payment and required documents.</li>
                         <li>This estimate is valid for 15 days from the date of issue.</li>
@@ -348,6 +341,20 @@
 
         const serviceOptions = Object.keys(serviceDocsMap);
 
+        // URL-Safe Base64 Encoding/Decoding to prevent WhatsApp + symbol bugs
+        function encodeData(obj) {
+            const jsonStr = JSON.stringify(obj);
+            const base64Str = btoa(encodeURIComponent(jsonStr));
+            return base64Str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+
+        function decodeData(str) {
+            let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+            while (base64.length % 4) { base64 += '='; }
+            const decodedStr = atob(base64);
+            return JSON.parse(decodeURIComponent(decodedStr));
+        }
+
         // 1. Check URL on Load
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -356,8 +363,7 @@
 
             if (view === 'client' && dataStr) {
                 try {
-                    // CRITICAL FIX: Ensure the string is decoded safely to preserve '+'
-                    estimateData = JSON.parse(decodeURIComponent(atob(decodeURIComponent(dataStr))));
+                    estimateData = decodeData(dataStr);
                     renderClientView();
                 } catch (e) {
                     alert("Invalid estimate data link.");
@@ -420,7 +426,6 @@
             updateAdminDocsPreview();
         }
 
-        // Live preview of required documents in Admin Panel
         function updateAdminDocsPreview() {
             const selects = document.querySelectorAll('.item-desc');
             let allDocs = new Set();
@@ -488,8 +493,8 @@
             estimateData = data;
             generatedTotal = total;
 
-            // CRITICAL FIX: Added double encodeURIComponent to prevent '+' from becoming space in WhatsApp
-            const encodedData = encodeURIComponent(btoa(encodeURIComponent(JSON.stringify(data))));
+            // URL Safe Encoding
+            const encodedData = encodeData(data);
             const baseUrl = window.location.href.split('?')[0];
             generatedClientUrl = `${baseUrl}?view=client&data=${encodedData}`;
 
@@ -535,12 +540,11 @@
             const tbody = document.getElementById('display-items');
             tbody.innerHTML = estimateData.items.map(item => `
                 <tr class="print-border hover:bg-slate-50 transition-colors">
-                    <td class="p-4 text-sm font-medium text-slate-800">${item.desc}</td>
-                    <td class="p-4 text-sm font-bold text-slate-900 text-right">₹${item.amt.toLocaleString('en-IN')}</td>
+                    <td class="p-3 text-[11px] font-medium text-slate-800">${item.desc}</td>
+                    <td class="p-3 text-[11px] font-bold text-slate-900 text-right">₹${item.amt.toLocaleString('en-IN')}</td>
                 </tr>
             `).join('');
 
-            // Render Required Documents
             if (estimateData.docs && estimateData.docs.length > 0) {
                 document.getElementById('client-docs-container').classList.remove('hidden');
                 document.getElementById('display-docs-list').innerHTML = estimateData.docs.map(doc => `<li>${doc}</li>`).join('');
@@ -554,11 +558,13 @@
 
         function downloadPDF() {
             const element = document.getElementById('estimate-pdf-content');
+            
+            // Adjust options to strictly fit one page
             const opt = {
-                margin:       [10, 10, 10, 10],
+                margin:       [5, 5, 5, 5], 
                 filename:     `${estimateData.name}_Estimate_${estimateData.estId}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
+                html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             
