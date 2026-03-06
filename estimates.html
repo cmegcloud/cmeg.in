@@ -94,7 +94,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col relative">
+<body class="min-h-screen flex flex-col relative pb-20 md:pb-0">
 
     <div class="ambient-glow glow-1"></div>
     <div class="ambient-glow glow-2"></div>
@@ -356,7 +356,8 @@
 
             if (view === 'client' && dataStr) {
                 try {
-                    estimateData = JSON.parse(decodeURIComponent(atob(dataStr)));
+                    // CRITICAL FIX: Ensure the string is decoded safely to preserve '+'
+                    estimateData = JSON.parse(decodeURIComponent(atob(decodeURIComponent(dataStr))));
                     renderClientView();
                 } catch (e) {
                     alert("Invalid estimate data link.");
@@ -487,7 +488,8 @@
             estimateData = data;
             generatedTotal = total;
 
-            const encodedData = btoa(encodeURIComponent(JSON.stringify(data)));
+            // CRITICAL FIX: Added double encodeURIComponent to prevent '+' from becoming space in WhatsApp
+            const encodedData = encodeURIComponent(btoa(encodeURIComponent(JSON.stringify(data))));
             const baseUrl = window.location.href.split('?')[0];
             generatedClientUrl = `${baseUrl}?view=client&data=${encodedData}`;
 
