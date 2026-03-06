@@ -24,10 +24,6 @@
 CMEG Client Master
 </h1>
 
-<h1 class="text-xl font-bold mb-4">
-CMEG Client Master
-</h1>
-
 <input
 id="clientSearch"
 type="text"
@@ -36,6 +32,11 @@ class="w-full p-3 bg-slate-800 rounded mb-2"
 oninput="searchClient()"
 />
 
+  <div
+id="clientResults"
+class="bg-slate-800 rounded mb-4 max-h-48 overflow-y-auto">
+</div>
+  
 <div
 id="clientResults"
 class="bg-slate-800 rounded mb-4 max-h-48 overflow-y-auto">
