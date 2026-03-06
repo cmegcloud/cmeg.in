@@ -61,7 +61,6 @@
             outline: none;
         }
 
-        /* Dropdown Styling */
         select.modern-input {
             appearance: none;
             background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
@@ -70,28 +69,44 @@
             background-size: 1.5em 1.5em;
             padding-right: 2.5rem;
         }
-        
-        .a4-container {
-            max-width: 800px;
-            margin: 0 auto;
+
+        /* Hide elements during native printing */
+        @media print {
+            .no-print { display: none !important; }
+        }
+
+        /* * ==========================================
+         * STRICT PDF RENDERING TEMPLATES
+         * These hidden divs guarantee perfect A4 
+         * alignment regardless of mobile screen size.
+         * ==========================================
+         */
+        .pdf-hidden-engine {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 800px; /* Forces exact desktop scaling */
             background: white;
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
-            border-radius: 16px;
-            overflow: hidden;
+            z-index: -100;
+        }
+        .pdf-page-content {
+            padding: 40px;
+            font-family: Arial, Helvetica, sans-serif; /* Web-safe font for instant PDF rendering */
+            color: #1e293b;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col relative pb-20 md:pb-0">
+<body class="min-h-screen flex flex-col relative pb-24 md:pb-0">
 
-    <div class="ambient-glow glow-1"></div>
-    <div class="ambient-glow glow-2"></div>
+    <div class="ambient-glow glow-1 no-print"></div>
+    <div class="ambient-glow glow-2 no-print"></div>
 
-    <div id="login-view" class="hidden flex-1 flex items-center justify-center p-4 z-10">
+    <div id="login-view" class="hidden flex-1 flex items-center justify-center p-4 z-10 no-print">
         <div class="bg-white p-8 rounded-[24px] shadow-2xl shadow-[#A67C52]/10 border border-slate-100 max-w-sm w-full text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#A67C52] to-[#cba379]"></div>
             
             <div class="mx-auto flex items-center justify-center mb-6">
-                <img src="logonamecmeg.png" alt="CM Experts Group" class="w-48 object-contain" onerror="this.style.display='none'">
+                <img src="logonamecmeg.png" alt="CM Experts Group" class="w-56 object-contain" onerror="this.style.display='none'">
             </div>
             
             <h2 class="text-2xl font-bold text-slate-900 tracking-tight mb-2">Estimate Portal</h2>
@@ -107,12 +122,10 @@
         </div>
     </div>
 
-    <div id="admin-view" class="hidden flex-1 w-full max-w-3xl mx-auto p-4 sm:p-8 z-10">
+    <div id="admin-view" class="hidden flex-1 w-full max-w-3xl mx-auto p-4 sm:p-8 z-10 no-print">
         
         <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center gap-3">
-                <img src="logonamecmeg.png" alt="CM Experts Group" class="w-40 object-contain" onerror="this.style.display='none';">
-            </div>
+            <img src="logonamecmeg.png" alt="CM Experts Group" class="w-48 object-contain" onerror="this.style.display='none';">
             <button onclick="logout()" class="text-sm font-bold text-slate-400 hover:text-red-500 flex items-center gap-1 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                 Lock
@@ -146,21 +159,13 @@
 
             <h3 class="text-sm font-extrabold text-slate-400 uppercase tracking-wider mb-5">Registration Services</h3>
             
-            <div class="mb-4">
+            <div class="mb-8">
                 <div id="items-container" class="space-y-3">
                     </div>
                 <button onclick="addItem()" class="inline-flex items-center gap-1.5 text-sm text-[#A67C52] font-bold mt-4 hover:bg-[#fefbed] px-3 py-1.5 rounded-lg transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     Add Service
                 </button>
-            </div>
-
-            <div id="admin-docs-container" class="mb-8 p-4 bg-slate-50 border border-slate-200 rounded-xl hidden">
-                <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Required Documents (Auto-Compiled)
-                </h4>
-                <ul id="admin-docs-list" class="text-[13px] text-slate-600 list-disc list-inside space-y-1 ml-1"></ul>
             </div>
 
             <div class="w-full h-px bg-slate-100 mb-8"></div>
@@ -185,7 +190,7 @@
                 
                 <div class="flex flex-col sm:flex-row gap-3">
                     <button onclick="shareWhatsApp()" class="flex-1 bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-3 px-4 rounded-xl transition-all flex justify-center items-center gap-2 shadow-sm">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-9.746 9.798c0 2.734.732 5.41 2.124 7.738L2.71 22.77l8.278-2.71c2.267 1.234 4.818 1.888 7.532 1.888 9.696 0 17.577-7.884 17.577-17.592S21.432 2.581 11.736 2.581c-4.691 0-9.092 1.784-12.358 4.69"/></svg>
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
                         Send via WhatsApp
                     </button>
                     <button onclick="previewEstimate()" class="flex-1 bg-white border border-slate-200 hover:border-[#A67C52] hover:bg-[#fefbed] text-slate-700 font-bold py-3 px-4 rounded-xl transition-all shadow-sm">
@@ -196,54 +201,62 @@
         </div>
     </div>
 
-    <div id="client-view" class="hidden flex-1 pb-24">
+    <div id="client-view" class="hidden flex-1 no-print">
         
-        <div class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-slate-200 p-4 z-50 flex justify-between items-center shadow-[0_-4px_20px_rgba(0,0,0,0.05)] px-4 sm:px-8">
-            <div class="hidden sm:block text-sm font-bold text-slate-800">
+        <div class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 sm:p-4 z-50 flex flex-col sm:flex-row justify-between items-center shadow-[0_-4px_20px_rgba(0,0,0,0.05)] gap-3">
+            <div class="hidden lg:block text-sm font-bold text-slate-800 ml-4">
                 Estimate <span id="display-est-top" class="text-[#A67C52]"></span>
             </div>
-            <div class="flex gap-3 w-full sm:w-auto">
-                <button onclick="triggerDownload()" class="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-3 rounded-xl text-sm font-bold transition-colors flex justify-center items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    Download PDF
+            
+            <div class="flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto justify-center">
+                <button onclick="downloadEstimatePDF()" class="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2.5 rounded-xl text-[12px] sm:text-sm font-bold transition-colors flex justify-center items-center gap-1.5 shadow-sm border border-slate-200">
+                    <svg class="w-4 h-4 text-[#A67C52]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span class="whitespace-nowrap">Estimate PDF</span>
                 </button>
-                <button onclick="payUPI()" class="flex-1 sm:flex-none bg-[#A67C52] hover:bg-[#856341] text-white px-8 py-3 rounded-xl text-sm font-bold shadow-lg transition-all flex justify-center items-center gap-2">
+
+                <button onclick="downloadDocsPDF()" class="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2.5 rounded-xl text-[12px] sm:text-sm font-bold transition-colors flex justify-center items-center gap-1.5 shadow-sm border border-slate-200">
+                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                    <span class="whitespace-nowrap">Checklist PDF</span>
+                </button>
+
+                <button onclick="payUPI()" class="w-full sm:w-auto bg-[#A67C52] hover:bg-[#856341] text-white px-6 py-2.5 rounded-xl text-[12px] sm:text-sm font-bold shadow-md transition-all flex justify-center items-center gap-1.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                     Pay Advance
                 </button>
             </div>
         </div>
 
-        <div class="p-2 sm:p-8 flex justify-center">
-            <div class="a4-container w-full p-6 sm:p-10 border border-slate-200 relative bg-white">
-                <div class="absolute top-0 left-0 w-full h-2 bg-[#A67C52]"></div>
+        <div class="p-4 sm:p-8 pt-4 flex justify-center">
+            <div class="w-full max-w-[800px] p-6 sm:p-10 border border-slate-200 relative bg-white rounded-2xl shadow-sm">
+                
+                <div class="absolute top-0 left-0 w-full h-2 bg-[#A67C52] rounded-t-2xl"></div>
 
-                <div class="flex justify-between items-end border-b border-slate-200 pb-4 mb-6 mt-2">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end border-b border-slate-200 pb-4 mb-6 mt-2 gap-4">
                     <div class="flex flex-col">
-                        <img src="logonamecmeg.png" alt="CM Experts Group" class="w-40 sm:w-48 object-contain mb-2" onerror="this.style.display='none';">
+                        <img src="logonamecmeg.png" alt="CM Experts Group" class="w-48 sm:w-56 object-contain mb-2">
                     </div>
-                    <div class="text-right">
+                    <div class="text-left sm:text-right">
                         <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-1">ESTIMATE</h2>
-                        <p class="text-[11px] text-slate-600 mt-1"><span class="font-semibold text-slate-400 uppercase tracking-wider">No:</span> <span id="display-est-id" class="font-bold text-slate-800 ml-1"></span></p>
-                        <p class="text-[11px] text-slate-600 mt-0.5"><span class="font-semibold text-slate-400 uppercase tracking-wider">Date:</span> <span id="display-date" class="font-bold text-slate-800 ml-1"></span></p>
+                        <p class="text-sm text-slate-600 mt-1"><span class="font-semibold text-slate-400 uppercase tracking-wider text-xs">No:</span> <span id="ui-est-id" class="font-bold text-slate-800 ml-1"></span></p>
+                        <p class="text-sm text-slate-600 mt-0.5"><span class="font-semibold text-slate-400 uppercase tracking-wider text-xs">Date:</span> <span id="ui-date" class="font-bold text-slate-800 ml-1"></span></p>
                     </div>
                 </div>
 
-                <div class="flex justify-between gap-4 mb-6">
+                <div class="flex flex-col sm:flex-row justify-between gap-6 mb-8">
                     <div class="flex-1 bg-slate-50 p-4 rounded-xl border border-slate-100">
                         <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Prepared For:</p>
-                        <h3 class="text-base font-bold text-slate-900 mb-0.5" id="display-client-name"></h3>
-                        <p class="text-xs text-slate-600 font-medium">Ph: <span id="display-client-mobile" class="text-slate-800"></span></p>
+                        <h3 class="text-lg font-bold text-slate-900 mb-0.5" id="ui-client-name"></h3>
+                        <p class="text-sm text-slate-600 font-medium">Ph: <span id="ui-client-mobile" class="text-slate-800"></span></p>
                     </div>
-                    <div class="flex-1 text-right flex flex-col justify-center">
+                    <div class="flex-1 sm:text-right flex flex-col justify-center">
                         <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">From:</p>
-                        <p class="text-xs font-semibold text-slate-800">Support@cmeg.in</p>
-                        <p class="text-xs font-semibold text-slate-800">+91 99461 51111</p>
-                        <p class="text-xs font-semibold text-slate-800">www.cmeg.in</p>
+                        <p class="text-sm font-semibold text-slate-800">Support@cmeg.in</p>
+                        <p class="text-sm font-semibold text-slate-800">+91 99461 51111</p>
+                        <p class="text-sm font-semibold text-slate-800">www.cmeg.in</p>
                     </div>
                 </div>
 
-                <div class="mb-6 overflow-hidden rounded-xl border border-slate-200">
+                <div class="mb-8 overflow-hidden rounded-xl border border-slate-200">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-50 border-b border-slate-200">
@@ -251,64 +264,68 @@
                                 <th class="p-3 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider text-right w-32">Est. Amount</th>
                             </tr>
                         </thead>
-                        <tbody id="display-items" class="divide-y divide-slate-100"></tbody>
+                        <tbody id="ui-items" class="divide-y divide-slate-100"></tbody>
                         <tfoot>
                             <tr class="bg-[#fafafa] border-t border-slate-200">
-                                <td class="p-3 text-right text-[11px] font-extrabold text-slate-600 uppercase tracking-wider">Total Estimate</td>
-                                <td class="p-3 text-right font-black text-[#A67C52] text-lg">₹<span id="display-total"></span></td>
+                                <td class="p-3 text-right text-[12px] font-extrabold text-slate-600 uppercase tracking-wider">Total Estimate</td>
+                                <td class="p-3 text-right font-black text-[#A67C52] text-xl">₹<span id="ui-total"></span></td>
                             </tr>
                         </tfoot>
                     </table>
-                    <div class="bg-white px-3 py-2 border-t border-slate-200 text-right">
-                        <p class="text-[11px] font-bold text-slate-500 italic" id="display-total-words"></p>
+                    <div class="bg-white px-4 py-3 border-t border-slate-200 text-right">
+                        <p class="text-xs font-bold text-slate-500 italic" id="ui-total-words"></p>
                     </div>
                 </div>
 
-                <div id="client-docs-container" class="mb-6 hidden">
-                    <h4 class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1 border-b border-slate-200 pb-1">
-                        <svg class="w-3.5 h-3.5 text-[#A67C52]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        Required Documents for Processing
-                    </h4>
-                    <ul id="display-docs-list" class="text-[11px] text-slate-600 list-disc list-inside space-y-1 ml-1 leading-snug"></ul>
-                </div>
-
-                <div class="flex justify-between gap-6 items-start mb-4">
+                <div class="flex flex-col sm:flex-row justify-between gap-6 items-start mb-8">
                     <div class="flex-1 w-full">
-                        <div id="notes-container" class="mb-3 hidden">
+                        <div id="ui-notes-container" class="mb-4 hidden">
                             <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Remarks / Notes:</p>
-                            <p class="text-xs font-medium text-slate-700 bg-[#fefbed] p-2 rounded-lg border border-[#A67C52]/20" id="display-notes"></p>
+                            <p class="text-sm font-medium text-slate-700 bg-[#fefbed] p-3 rounded-lg border border-[#A67C52]/20" id="ui-notes"></p>
                         </div>
                         <div>
                             <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">To Proceed (Pay Advance):</p>
-                            <p class="text-xs font-medium text-slate-600">Scan QR or use UPI ID: <span id="display-upi-id" class="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded"></span></p>
+                            <p class="text-sm font-medium text-slate-600">Scan QR or use UPI ID: <span id="ui-upi-id" class="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded"></span></p>
                         </div>
                     </div>
                     
-                    <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm flex flex-col items-center justify-center flex-shrink-0">
-                        <img src="qrcmeg.png" alt="UPI QR Code" class="h-16 w-16 object-contain mix-blend-multiply" onerror="this.style.display='none';">
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center flex-shrink-0">
+                        <img src="qrcmeg.png" alt="UPI QR Code" class="h-20 w-20 object-contain mix-blend-multiply" onerror="this.style.display='none';">
                     </div>
                 </div>
-
-                <div class="pt-3 border-t border-slate-200">
-                    <h4 class="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Terms & Conditions</h4>
-                    <ul class="text-[9px] text-slate-500 font-medium list-disc list-inside opacity-90 leading-tight">
-                        <li>This is an estimate. Final billing may vary based on government fees. Valid for 15 days.</li>
-                        <li>Work commences strictly upon receipt of advance payment and required documents.</li>
-                    </ul>
-                </div>
                 
+                <div id="ui-docs-container" class="mb-6 hidden border-t border-slate-200 pt-6">
+                    <h4 class="text-sm font-extrabold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-[#A67C52]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Service-Wise Required Documents
+                    </h4>
+                    <div id="ui-docs-list" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
+                </div>
+
             </div>
         </div>
     </div>
+
+    <div id="pdf-engine-estimate" class="pdf-hidden-engine">
+        <div class="pdf-page-content" id="pdf-estimate-content">
+            </div>
+    </div>
+
+    <div id="pdf-engine-docs" class="pdf-hidden-engine">
+        <div class="pdf-page-content" id="pdf-docs-content">
+            </div>
+    </div>
+
 
     <script>
         const PIN = "3655";
         const PAYEE_NAME = "CM%20Experts%20Group";
         let estimateData = {};
 
+        // Document Mapping Dictionary
         const serviceDocsMap = {
             "GST Registration": ['PAN Card of Business / Applicant', 'Aadhar Card of Proprietors / Directors', 'Passport Size Photograph', 'Business Address Proof (Rent Agreement / Light Bill)', 'Bank Statement / Cancelled Cheque'],
-            "Trademark Registration": ['Logo / Brand Name Image', 'Applicant PAN & Aadhar', 'Certificate of Incorporation (If Company)', 'MSME Certificate', 'Signed Authorization Form-48'],
+            "Trademark Registration": ['Logo / Brand Name Image', 'Applicant PAN & Aadhar', 'Certificate of Incorporation (If Company)', 'MSME Certificate', 'Signed Form-48'],
             "Partnership Firm Registration": ['PAN Card of all Partners', 'Aadhar Card of all Partners', 'Passport Size Photos', 'Drafted Partnership Deed', 'Principal Place of Business Proof'],
             "Udyam / MSME Registration": ['Aadhar Card of Applicant', 'PAN Card of Business/Applicant', 'Bank Details (IFSC & A/c No)', 'Business Address Details', 'Main Business Activity code'],
             "K-SWIFT License": ['Details of Business Entity', 'Applicant Aadhar & PAN', 'Local Body License (If applicable)', 'Building Ownership/Lease Proof', 'Plant Machinery Details'],
@@ -326,7 +343,7 @@
 
         const serviceOptions = Object.keys(serviceDocsMap);
 
-        // Indian Number to Words 
+        // Indian Number to Words Logic
         const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
         const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
         const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
@@ -361,6 +378,7 @@
             return result.join(' ').trim();
         }
 
+        // Bulletproof URL-Safe Base64 Encoding
         function encodeData(obj) {
             const jsonStr = JSON.stringify(obj);
             const base64Str = btoa(encodeURIComponent(jsonStr));
@@ -480,12 +498,19 @@
 
             const items = [];
             let total = 0;
+            let docsByService = {}; // Store docs structured by service name
+
             document.querySelectorAll('.item-row').forEach(row => {
                 const desc = row.querySelector('.item-desc').value;
                 const amt = parseFloat(row.querySelector('.item-amount').value) || 0;
                 if (desc && desc !== "" && amt > 0) {
                     items.push({ desc, amt });
                     total += amt;
+                    
+                    // Map docs to this specific service
+                    if(serviceDocsMap[desc]) {
+                        docsByService[desc] = serviceDocsMap[desc];
+                    }
                 }
             });
 
@@ -494,16 +519,9 @@
                 return;
             }
 
-            const selects = document.querySelectorAll('.item-desc');
-            let allDocs = new Set();
-            selects.forEach(select => {
-                const val = select.value;
-                if(val && serviceDocsMap[val]) serviceDocsMap[val].forEach(d => allDocs.add(d));
-            });
-
             const data = {
                 name, mobile, estId, upi: upiId, notes, items, total,
-                docs: Array.from(allDocs),
+                docsByService, // Passing the structured docs
                 date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
             };
 
@@ -521,7 +539,7 @@
             const mobile = estimateData.mobile.replace(/\D/g, ''); 
             const upiLink = `upi://pay?pa=${estimateData.upi}&pn=${PAYEE_NAME}&am=${generatedTotal}&cu=INR&tn=Est_${estimateData.estId}`;
             
-            const message = `Hi ${estimateData.name},\n\nHere is the Estimate (${estimateData.estId}) from CM Experts Group for your requested services.\n\n*Total Estimated Amount:* ₹${generatedTotal.toLocaleString('en-IN')}\n\n*View details, Required Docs & Download PDF here:*\n${generatedClientUrl}\n\n*To proceed, pay the advance securely via UPI:* \n${upiLink}\n\nLet us know if you have any questions.\nCM Experts Group`;
+            const message = `Hi ${estimateData.name},\n\nHere is the Estimate (${estimateData.estId}) from CM Experts Group for your requested services.\n\n*Total Estimated Amount:* ₹${generatedTotal.toLocaleString('en-IN')}\n\n*View details, Required Docs & Download PDFs here:*\n${generatedClientUrl}\n\n*To proceed, pay the advance securely via UPI:* \n${upiLink}\n\nLet us know if you have any questions.\nCM Experts Group`;
             
             if(mobile) {
                 window.open(`https://wa.me/91${mobile}?text=${encodeURIComponent(message)}`, '_blank');
@@ -534,37 +552,49 @@
             window.open(generatedClientUrl, '_blank');
         }
 
+        // Render the Web UI for the Client
         function renderClientView() {
             document.getElementById('login-view').classList.add('hidden');
             document.getElementById('admin-view').classList.add('hidden');
             document.getElementById('client-view').classList.remove('hidden');
 
-            document.getElementById('display-est-top').textContent = estimateData.estId;
-            document.getElementById('display-client-name').textContent = estimateData.name;
-            document.getElementById('display-client-mobile').textContent = estimateData.mobile;
-            document.getElementById('display-est-id').textContent = estimateData.estId;
-            document.getElementById('display-date').textContent = estimateData.date;
-            document.getElementById('display-upi-id').textContent = estimateData.upi;
-            document.getElementById('display-total').textContent = estimateData.total.toLocaleString('en-IN');
+            document.getElementById('ui-est-top').textContent = estimateData.estId;
+            document.getElementById('ui-client-name').textContent = estimateData.name;
+            document.getElementById('ui-client-mobile').textContent = estimateData.mobile;
+            document.getElementById('ui-est-id').textContent = estimateData.estId;
+            document.getElementById('ui-date').textContent = estimateData.date;
+            document.getElementById('ui-upi-id').textContent = estimateData.upi;
+            document.getElementById('ui-total').textContent = estimateData.total.toLocaleString('en-IN');
             
-            document.getElementById('display-total-words').textContent = numberToWords(estimateData.total);
+            document.getElementById('ui-total-words').textContent = numberToWords(estimateData.total);
 
             if (estimateData.notes && estimateData.notes.trim() !== '') {
-                document.getElementById('display-notes').textContent = estimateData.notes;
-                document.getElementById('notes-container').classList.remove('hidden');
+                document.getElementById('ui-notes').textContent = estimateData.notes;
+                document.getElementById('ui-notes-container').classList.remove('hidden');
             }
 
-            const tbody = document.getElementById('display-items');
+            const tbody = document.getElementById('ui-items');
             tbody.innerHTML = estimateData.items.map(item => `
-                <tr class="border-b border-slate-100">
-                    <td class="p-3 text-[12px] font-medium text-slate-800">${item.desc}</td>
-                    <td class="p-3 text-[12px] font-bold text-slate-900 text-right">₹${item.amt.toLocaleString('en-IN')}</td>
+                <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                    <td class="p-3 text-[13px] font-medium text-slate-800">${item.desc}</td>
+                    <td class="p-3 text-[13px] font-bold text-slate-900 text-right">₹${item.amt.toLocaleString('en-IN')}</td>
                 </tr>
             `).join('');
 
-            if (estimateData.docs && estimateData.docs.length > 0) {
+            // Render Service-wise docs in the UI
+            if (estimateData.docsByService && Object.keys(estimateData.docsByService).length > 0) {
                 document.getElementById('client-docs-container').classList.remove('hidden');
-                document.getElementById('display-docs-list').innerHTML = estimateData.docs.map(doc => `<li>${doc}</li>`).join('');
+                let uiDocsHtml = '';
+                for (const [serviceName, docs] of Object.entries(estimateData.docsByService)) {
+                    let liHtml = docs.map(d => `<li>${d}</li>`).join('');
+                    uiDocsHtml += `
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 border-b border-slate-200 pb-1">${serviceName}</p>
+                            <ul class="text-[12px] text-slate-700 list-disc list-inside space-y-1 ml-1">${liHtml}</ul>
+                        </div>
+                    `;
+                }
+                document.getElementById('ui-docs-list').innerHTML = uiDocsHtml;
             }
         }
 
@@ -573,84 +603,61 @@
             window.location.href = upiLink;
         }
 
-        // PERFECT PDF GENERATION LOGIC (Guaranteed styling)
-        function triggerDownload() {
-            // Scroll to top to prevent rendering blank spaces
-            window.scrollTo(0, 0);
-
-            // Construct Rows
+        // ==========================================
+        // PDF GENERATOR 1: ESTIMATE PDF (Fixed Layout)
+        // ==========================================
+        function downloadEstimatePDF() {
             let itemsHTML = '';
             estimateData.items.forEach(item => {
                 itemsHTML += `
                     <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 10px 12px; color: #1a1a1a; font-size: 12px;">${item.desc}</td>
-                        <td style="text-align: right; padding: 10px 12px; color: #1a1a1a; font-weight: 700; font-size: 12px;">₹${item.amt.toLocaleString('en-IN')}</td>
+                        <td style="padding: 12px 15px; color: #1e293b; font-size: 13px;">${item.desc}</td>
+                        <td style="text-align: right; padding: 12px 15px; color: #1e293b; font-weight: 700; font-size: 13px;">₹${item.amt.toLocaleString('en-IN')}</td>
                     </tr>
                 `;
             });
 
-            // Construct Documents (Forced to Page 2)
-            let docsHTML = '';
-            if (estimateData.docs && estimateData.docs.length > 0) {
-                let docsList = estimateData.docs.map(doc => `<li style="margin-bottom: 6px;">${doc}</li>`).join('');
-                docsHTML = `
-                    <div style="page-break-before: always; padding-top: 10mm;">
-                        <h4 style="font-size: 14px; font-weight: 700; color: #1a1a1a; border-bottom: 2px solid #8B6F47; padding-bottom: 5px; margin-bottom: 15px; text-transform: uppercase;">Required Documents for Processing</h4>
-                        <ul style="font-size: 12px; color: #475569; padding-left: 20px; line-height: 1.6; margin: 0;">
-                            ${docsList}
-                        </ul>
-                    </div>
-                `;
-            }
-
-            // Construct Notes
             let notesHTML = '';
             if (estimateData.notes) {
                 notesHTML = `
-                    <div style="margin-bottom: 15px;">
-                        <p style="font-size: 11px; font-weight: 700; color: #4b5563; margin-bottom: 4px; text-transform: uppercase;">Remarks / Notes:</p>
-                        <p style="font-size: 12px; background: #fefbed; padding: 10px; border-radius: 6px; border: 1px solid rgba(139, 111, 71, 0.2); color: #1f2937;">${estimateData.notes}</p>
+                    <div style="margin-bottom: 20px;">
+                        <p style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 5px; text-transform: uppercase;">Remarks / Notes:</p>
+                        <p style="font-size: 12px; background: #fefbed; padding: 12px; border-radius: 8px; border: 1px solid rgba(139, 111, 71, 0.2); color: #1e293b;">${estimateData.notes}</p>
                     </div>
                 `;
             }
 
-            // Build the absolute, un-breakable HTML Template
-            const pdfContent = document.createElement('div');
-            pdfContent.innerHTML = `
-                <div style="width: 210mm; padding: 15mm; background: white; box-sizing: border-box; font-family: Helvetica, Arial, sans-serif;">
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #8B6F47; padding-bottom: 15px; margin-bottom: 20px;">
-                        <div>
-                            <img src="logonamecmeg.png" crossorigin="anonymous" style="width: 192px; object-fit: contain; margin-bottom: 5px;" onerror="this.style.display='none'; document.getElementById('fb').style.display='block';" />
-                            <div id="fb" style="display:none;"><h1 style="margin:0; font-size:24px; color:#1a1a1a;">CM Experts Group</h1></div>
-                        </div>
+            const htmlContent = `
+                <div style="border-top: 8px solid #8B6F47; padding-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 25px;">
+                        <img src="logonamecmeg.png" crossorigin="anonymous" style="width: 240px; object-fit: contain;" onerror="this.style.display='none';" />
                         <div style="text-align: right;">
-                            <h2 style="margin: 0 0 5px 0; font-size: 28px; color: #1a1a1a; letter-spacing: 1px;">ESTIMATE</h2>
-                            <p style="margin: 0 0 2px 0; font-size: 12px; color: #4b5563;"><strong>No:</strong> ${estimateData.estId}</p>
-                            <p style="margin: 0; font-size: 12px; color: #4b5563;"><strong>Date:</strong> ${estimateData.date}</p>
+                            <h2 style="margin: 0 0 5px 0; font-size: 32px; font-weight: 800; color: #0f172a; letter-spacing: 1px;">ESTIMATE</h2>
+                            <p style="margin: 0 0 2px 0; font-size: 13px; color: #475569;"><strong>No:</strong> ${estimateData.estId}</p>
+                            <p style="margin: 0; font-size: 13px; color: #475569;"><strong>Date:</strong> ${estimateData.date}</p>
                         </div>
                     </div>
 
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
-                        <div style="flex: 1; background: #f8fafc; padding: 12px 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-right: 15px;">
-                            <p style="margin: 0 0 5px 0; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;">Prepared For:</p>
-                            <h3 style="margin: 0 0 3px 0; font-size: 16px; color: #0f172a;">${estimateData.name}</h3>
-                            <p style="margin: 0; font-size: 12px; color: #475569;">Ph: ${estimateData.mobile}</p>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+                        <div style="flex: 1; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-right: 20px;">
+                            <p style="margin: 0 0 5px 0; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">Prepared For:</p>
+                            <h3 style="margin: 0 0 3px 0; font-size: 18px; color: #0f172a;">${estimateData.name}</h3>
+                            <p style="margin: 0; font-size: 13px; color: #475569;">Ph: ${estimateData.mobile}</p>
                         </div>
                         <div style="flex: 1; text-align: right; display: flex; flex-direction: column; justify-content: center;">
-                            <p style="margin: 0 0 2px 0; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;">From:</p>
-                            <p style="margin: 0 0 2px 0; font-size: 12px; font-weight: 600; color: #1e293b;">Support@cmeg.in</p>
-                            <p style="margin: 0 0 2px 0; font-size: 12px; font-weight: 600; color: #1e293b;">+91 99461 51111</p>
-                            <p style="margin: 0; font-size: 12px; font-weight: 600; color: #1e293b;">www.cmeg.in</p>
+                            <p style="margin: 0 0 2px 0; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">From:</p>
+                            <p style="margin: 0 0 2px 0; font-size: 13px; font-weight: 700; color: #1e293b;">Support@cmeg.in</p>
+                            <p style="margin: 0 0 2px 0; font-size: 13px; font-weight: 700; color: #1e293b;">+91 99461 51111</p>
+                            <p style="margin: 0; font-size: 13px; font-weight: 700; color: #1e293b;">www.cmeg.in</p>
                         </div>
                     </div>
 
-                    <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; margin-bottom: 5px;">
+                    <div style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; margin-bottom: 5px;">
                         <table style="width: 100%; border-collapse: collapse;">
                             <thead style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
                                 <tr>
-                                    <th style="padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Service Description</th>
-                                    <th style="padding: 10px 12px; text-align: right; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; width: 120px;">Est. Amount</th>
+                                    <th style="padding: 12px 15px; text-align: left; font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase;">Service Description</th>
+                                    <th style="padding: 12px 15px; text-align: right; font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; width: 140px;">Est. Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -658,49 +665,108 @@
                             </tbody>
                             <tfoot style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
                                 <tr>
-                                    <td style="padding: 12px; text-align: right; font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase;">Total Estimate</td>
-                                    <td style="padding: 12px; text-align: right; font-size: 18px; font-weight: 800; color: #8B6F47;">₹${estimateData.total.toLocaleString('en-IN')}</td>
+                                    <td style="padding: 15px; text-align: right; font-size: 13px; font-weight: 800; color: #475569; text-transform: uppercase;">Total Estimate</td>
+                                    <td style="padding: 15px; text-align: right; font-size: 22px; font-weight: 900; color: #8B6F47;">₹${estimateData.total.toLocaleString('en-IN')}</td>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
-                    <div style="text-align: right; margin-bottom: 25px;">
-                        <p style="margin: 0; font-size: 11px; font-weight: 700; color: #64748b; font-style: italic;">${numberToWords(estimateData.total)}</p>
+                    
+                    <div style="text-align: right; margin-bottom: 30px;">
+                        <p style="margin: 0; font-size: 12px; font-weight: 700; color: #64748b; font-style: italic;">${numberToWords(estimateData.total)}</p>
                     </div>
 
                     ${notesHTML}
 
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px;">
                         <div>
-                            <p style="margin: 0 0 5px 0; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;">To Proceed (Pay Advance):</p>
-                            <p style="margin: 0; font-size: 12px; color: #475569;">Scan QR or use UPI ID: <strong style="color: #0f172a; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">${estimateData.upi}</strong></p>
+                            <p style="margin: 0 0 6px 0; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">To Proceed (Pay Advance):</p>
+                            <p style="margin: 0; font-size: 13px; color: #475569;">Scan QR or use UPI ID: <strong style="color: #0f172a; background: #f1f5f9; padding: 3px 8px; border-radius: 6px; border: 1px solid #e2e8f0;">${estimateData.upi}</strong></p>
                         </div>
-                        <img src="qrcmeg.png" crossorigin="anonymous" style="width: 80px; height: 80px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4px;" onerror="this.style.display='none';"/>
+                        <img src="qrcmeg.png" crossorigin="anonymous" style="width: 90px; height: 90px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 5px;" onerror="this.style.display='none';"/>
                     </div>
 
-                    <div style="border-top: 1px solid #e2e8f0; padding-top: 15px;">
-                        <h4 style="margin: 0 0 5px 0; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;">Terms & Conditions</h4>
-                        <ul style="margin: 0; padding-left: 15px; font-size: 10px; color: #64748b; line-height: 1.4;">
+                    <div style="border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                        <h4 style="margin: 0 0 6px 0; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">Terms & Conditions</h4>
+                        <ul style="margin: 0; padding-left: 18px; font-size: 11px; color: #64748b; line-height: 1.5;">
                             <li>This is an estimate. Final billing may vary based on government fees. Valid for 15 days.</li>
                             <li>Work commences strictly upon receipt of advance payment and required documents.</li>
                         </ul>
                     </div>
-
-                    ${docsHTML}
-
                 </div>
             `;
 
-            // Enforce standard A4 settings
+            const container = document.getElementById('pdf-estimate-content');
+            container.innerHTML = htmlContent;
+
             const opt = {
-                margin:       0,
+                margin:       10, 
                 filename:     `${estimateData.name}_Estimate_${estimateData.estId}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
+                html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             
-            html2pdf().set(opt).from(pdfContent).save();
+            html2pdf().set(opt).from(container).save();
+        }
+
+        // ==========================================
+        // PDF GENERATOR 2: DOCUMENTS CHECKLIST
+        // ==========================================
+        function downloadDocsPDF() {
+            if (!estimateData.docsByService || Object.keys(estimateData.docsByService).length === 0) {
+                alert("No documents required for this estimate.");
+                return;
+            }
+
+            let docsHtmlContent = '';
+            for (const [serviceName, docs] of Object.entries(estimateData.docsByService)) {
+                let liHtml = docs.map(d => `<li style="margin-bottom: 6px;">${d}</li>`).join('');
+                docsHtmlContent += `
+                    <div style="margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                        <h3 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 800; color: #A67C52; text-transform: uppercase;">${serviceName}</h3>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #1e293b; line-height: 1.5;">
+                            ${liHtml}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            const fullHtml = `
+                <div style="border-top: 8px solid #A67C52; padding-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 25px;">
+                        <img src="logonamecmeg.png" crossorigin="anonymous" style="width: 200px; object-fit: contain;" onerror="this.style.display='none';" />
+                        <div style="text-align: right;">
+                            <h2 style="margin: 0 0 5px 0; font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: 1px;">DOCUMENT CHECKLIST</h2>
+                            <p style="margin: 0 0 2px 0; font-size: 12px; color: #475569;"><strong>Estimate:</strong> ${estimateData.estId}</p>
+                            <p style="margin: 0; font-size: 12px; color: #475569;"><strong>Client:</strong> ${estimateData.name}</p>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 13px; color: #475569; margin-bottom: 20px; line-height: 1.5;">
+                        Please provide clear, scanned copies (PDF or JPG) of the following documents corresponding to your requested services to begin processing.
+                    </p>
+
+                    ${docsHtmlContent}
+
+                    <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                        CM Experts Group • Support@cmeg.in • +91 99461 51111
+                    </div>
+                </div>
+            `;
+
+            const container = document.getElementById('pdf-docs-content');
+            container.innerHTML = fullHtml;
+
+            const opt = {
+                margin:       10, 
+                filename:     `${estimateData.name}_DocChecklist_${estimateData.estId}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(container).save();
         }
     </script>
 </body>
