@@ -71,7 +71,7 @@
             padding-right: 2.5rem;
         }
 
-        /* Print/PDF styles - tightly formatted to fit on 1 page */
+        /* Print/PDF Layout Fixes */
         @media print {
             body { background: white !important; }
             .no-print, .ambient-glow { display: none !important; }
@@ -88,9 +88,22 @@
             overflow: hidden;
         }
         
+        /* Forces standard proportions during PDF rendering regardless of screen size */
         .pdf-rendering {
             border-radius: 0 !important;
             box-shadow: none !important;
+            width: 800px !important; 
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 30px !important;
+        }
+        
+        /* Container to temporarily hold scaled render for mobile devices */
+        #pdf-wrapper {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 800px;
         }
     </style>
 </head>
@@ -103,8 +116,8 @@
         <div class="bg-white p-8 rounded-[24px] shadow-2xl shadow-[#A67C52]/10 border border-slate-100 max-w-sm w-full text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#A67C52] to-[#cba379]"></div>
             
-            <div class="mx-auto flex items-center justify-center mb-4">
-                <img src="logonamecmeg.png" alt="CM Experts Group" class="w-24 h-24 object-contain" onerror="this.style.display='none'">
+            <div class="mx-auto flex items-center justify-center mb-6">
+                <img src="logonamecmeg.png" alt="CM Experts Group" class="w-48 object-contain" onerror="this.style.display='none'">
             </div>
             
             <h2 class="text-2xl font-bold text-slate-900 tracking-tight mb-2">Estimate Portal</h2>
@@ -124,7 +137,7 @@
         
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
-                <img src="logonamecmeg.png" alt="CM Experts Group" class="w-14 h-14 object-contain" onerror="this.style.display='none';">
+                <img src="logonamecmeg.png" alt="CM Experts Group" class="w-32 object-contain" onerror="this.style.display='none';">
             </div>
             <button onclick="logout()" class="text-sm font-bold text-slate-400 hover:text-red-500 flex items-center gap-1 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
@@ -216,7 +229,7 @@
                 Estimate <span id="display-est-top" class="text-[#A67C52]"></span>
             </div>
             <div class="flex gap-3 w-full sm:w-auto">
-                <button onclick="downloadPDF()" class="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-3 rounded-xl text-sm font-bold transition-colors flex justify-center items-center gap-2">
+                <button onclick="triggerDownload()" class="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-3 rounded-xl text-sm font-bold transition-colors flex justify-center items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                     Download
                 </button>
@@ -228,17 +241,21 @@
         </div>
 
         <div class="p-4 sm:p-8 pt-4 flex justify-center">
-            <div id="estimate-pdf-content" class="a4-container w-full p-6 sm:p-10 border border-slate-200 relative">
+            <div id="estimate-display-container" class="a4-container w-full p-6 sm:p-10 border border-slate-200 relative bg-white">
                 
                 <div class="absolute top-0 left-0 w-full h-2 bg-[#A67C52] no-print"></div>
 
                 <div class="flex justify-between items-end border-b border-slate-200 pb-4 mb-6 mt-2">
                     <div class="flex flex-col">
-                        <img src="logonamecmeg.png" alt="CM Experts Group" class="h-20 w-24 object-contain mb-1" crossorigin="anonymous" onerror="this.style.display='none';">
+                        <img src="logonamecmeg.png" alt="CM Experts Group" class="w-48 object-contain mb-1" crossorigin="anonymous" onerror="this.style.display='none'; document.getElementById('logo-fallback-display').style.display='block';">
+                        <div id="logo-fallback-display" class="hidden">
+                            <h1 class="text-xl font-bold text-slate-900">CM Experts Group</h1>
+                            <p class="text-[10px] font-bold text-[#A67C52] uppercase tracking-widest mt-1">Count • Connect • Grow</p>
+                        </div>
                     </div>
                     <div class="text-right">
-                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-1">ESTIMATE</h2>
-                        <p class="text-xs text-slate-600 mt-1"><span class="font-semibold text-slate-400 uppercase tracking-wider">Estimate No:</span> <span id="display-est-id" class="font-bold text-slate-800 ml-1"></span></p>
+                        <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-1">ESTIMATE</h2>
+                        <p class="text-xs text-slate-600 mt-1"><span class="font-semibold text-slate-400 uppercase tracking-wider">No:</span> <span id="display-est-id" class="font-bold text-slate-800 ml-1"></span></p>
                         <p class="text-xs text-slate-600 mt-0.5"><span class="font-semibold text-slate-400 uppercase tracking-wider">Date:</span> <span id="display-date" class="font-bold text-slate-800 ml-1"></span></p>
                     </div>
                 </div>
@@ -274,6 +291,9 @@
                             </tr>
                         </tfoot>
                     </table>
+                    <div class="bg-white px-3 py-2 border-t border-slate-200 text-right">
+                        <p class="text-[11px] font-bold text-slate-500 italic" id="display-total-words"></p>
+                    </div>
                 </div>
 
                 <div id="client-docs-container" class="mb-6 hidden">
@@ -284,30 +304,28 @@
                     <ul id="display-docs-list" class="text-[11px] text-slate-600 list-disc list-inside space-y-1 ml-1 leading-snug"></ul>
                 </div>
 
-                <div class="flex justify-between gap-6 items-start">
+                <div class="flex justify-between gap-6 items-start mb-4">
                     <div class="flex-1 w-full">
-                        <div id="notes-container" class="mb-4 hidden">
+                        <div id="notes-container" class="mb-3 hidden">
                             <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Remarks / Notes:</p>
-                            <p class="text-xs font-medium text-slate-700 bg-[#fefbed] p-3 rounded-lg border border-[#A67C52]/20 print-border" id="display-notes"></p>
+                            <p class="text-[11px] font-medium text-slate-700 bg-[#fefbed] p-2 rounded-lg border border-[#A67C52]/20 print-border" id="display-notes"></p>
                         </div>
                         <div>
                             <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">To Proceed (Pay Advance):</p>
-                            <p class="text-xs font-medium text-slate-600">Scan QR or use UPI ID: <span id="display-upi-id" class="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded"></span></p>
+                            <p class="text-xs font-medium text-slate-600">UPI ID: <span id="display-upi-id" class="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded"></span></p>
                         </div>
                     </div>
                     
-                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center print-border flex-shrink-0">
-                        <img src="qrcmeg.png" alt="UPI QR Code" class="h-20 w-20 object-contain mix-blend-multiply" crossorigin="anonymous" onerror="this.style.display='none'; document.getElementById('qr-fallback').style.display='block';">
-                        <div id="qr-fallback" class="hidden text-[10px] font-medium text-slate-400 border border-dashed border-slate-200 p-4 rounded-lg text-center">QR Code</div>
+                    <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm flex flex-col items-center justify-center print-border flex-shrink-0">
+                        <img src="qrcmeg.png" alt="UPI QR Code" class="h-16 w-16 object-contain mix-blend-multiply" crossorigin="anonymous" onerror="this.style.display='none';">
                     </div>
                 </div>
 
-                <div class="mt-6 pt-4 border-t border-slate-200">
-                    <h4 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Terms & Conditions</h4>
-                    <ul class="text-[10px] text-slate-500 font-medium list-disc list-inside space-y-0.5 opacity-90">
-                        <li>This is an estimate. Final billing may vary slightly based on government fees at processing time.</li>
-                        <li>Work will commence strictly upon receipt of the advance payment and required documents.</li>
-                        <li>This estimate is valid for 15 days from the date of issue.</li>
+                <div class="pt-3 border-t border-slate-200">
+                    <h4 class="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Terms & Conditions</h4>
+                    <ul class="text-[9px] text-slate-500 font-medium list-disc list-inside opacity-90 leading-tight">
+                        <li>This is an estimate. Final billing may vary based on government fees. Valid for 15 days.</li>
+                        <li>Work commences upon receipt of advance payment and required documents.</li>
                     </ul>
                 </div>
                 
@@ -315,12 +333,15 @@
         </div>
     </div>
 
+    <div id="pdf-wrapper">
+        <div id="estimate-pdf-content" class="pdf-rendering bg-white"></div>
+    </div>
+
     <script>
         const PIN = "3655";
         const PAYEE_NAME = "CM%20Experts%20Group";
         let estimateData = {};
 
-        // Document Mapping Dictionary
         const serviceDocsMap = {
             "GST Registration": ['PAN Card of Business / Applicant', 'Aadhar Card of Proprietors / Directors', 'Passport Size Photograph', 'Business Address Proof (Rent Agreement / Light Bill)', 'Bank Statement / Cancelled Cheque'],
             "Trademark Registration": ['Logo / Brand Name Image', 'Applicant PAN & Aadhar', 'Certificate of Incorporation (If Company)', 'MSME Certificate', 'Signed Authorization Form-48'],
@@ -341,7 +362,41 @@
 
         const serviceOptions = Object.keys(serviceDocsMap);
 
-        // URL-Safe Base64 Encoding/Decoding to prevent WhatsApp + symbol bugs
+        // Indian Number to Words Logic
+        const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+        const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+        const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+        function numberToWords(num) {
+            if (num === 0) return 'Zero Rupees Only';
+            let crores = Math.floor(num / 10000000);
+            let lakhs = Math.floor((num % 10000000) / 100000);
+            let thousands = Math.floor((num % 100000) / 1000);
+            let hundreds = num % 1000;
+            let result = [];
+            if (crores > 0) result.push(convertUpTo999(crores) + ' Crore');
+            if (lakhs > 0) result.push(convertUpTo999(lakhs) + ' Lakh');
+            if (thousands > 0) result.push(convertUpTo999(thousands) + ' Thousand');
+            if (hundreds > 0) result.push(convertUpTo999(hundreds));
+            return result.join(' ').trim() + ' Rupees Only';
+        }
+
+        function convertUpTo999(num) {
+            let result = [];
+            const hundreds = Math.floor(num / 100);
+            const remainder = num % 100;
+            if (hundreds > 0) result.push(ones[hundreds] + ' Hundred');
+            if (remainder >= 20) {
+                result.push(tens[Math.floor(remainder / 10)]);
+                if (remainder % 10 > 0) result.push(ones[remainder % 10]);
+            } else if (remainder >= 10) {
+                result.push(teens[remainder - 10]);
+            } else if (remainder > 0) {
+                result.push(ones[remainder]);
+            }
+            return result.join(' ').trim();
+        }
+
         function encodeData(obj) {
             const jsonStr = JSON.stringify(obj);
             const base64Str = btoa(encodeURIComponent(jsonStr));
@@ -355,7 +410,6 @@
             return JSON.parse(decodeURIComponent(decodedStr));
         }
 
-        // 1. Check URL on Load
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
             const view = urlParams.get('view');
@@ -371,7 +425,7 @@
                 }
             } else {
                 document.getElementById('login-view').classList.remove('hidden');
-                addItem(); // Add first row
+                addItem(); 
             }
         };
 
@@ -476,7 +530,6 @@
                 return;
             }
 
-            // Capture accumulated docs
             const selects = document.querySelectorAll('.item-desc');
             let allDocs = new Set();
             selects.forEach(select => {
@@ -493,7 +546,6 @@
             estimateData = data;
             generatedTotal = total;
 
-            // URL Safe Encoding
             const encodedData = encodeData(data);
             const baseUrl = window.location.href.split('?')[0];
             generatedClientUrl = `${baseUrl}?view=client&data=${encodedData}`;
@@ -531,6 +583,9 @@
             document.getElementById('display-date').textContent = estimateData.date;
             document.getElementById('display-upi-id').textContent = estimateData.upi;
             document.getElementById('display-total').textContent = estimateData.total.toLocaleString('en-IN');
+            
+            // Set Total Words
+            document.getElementById('display-total-words').textContent = numberToWords(estimateData.total);
 
             if (estimateData.notes && estimateData.notes.trim() !== '') {
                 document.getElementById('display-notes').textContent = estimateData.notes;
@@ -556,21 +611,28 @@
             window.location.href = upiLink;
         }
 
-        function downloadPDF() {
-            const element = document.getElementById('estimate-pdf-content');
+        function triggerDownload() {
+            // First, copy the visible content into the hidden PDF wrapper to ensure fixed layout
+            const sourceElement = document.getElementById('estimate-display-container');
+            const wrapperElement = document.getElementById('estimate-pdf-content');
+            wrapperElement.innerHTML = sourceElement.innerHTML;
             
-            // Adjust options to strictly fit one page
+            // Force the wrapper element to be block and visible for rendering
+            const outerWrapper = document.getElementById('pdf-wrapper');
+            outerWrapper.style.left = '0';
+            outerWrapper.style.zIndex = '-1';
+
             const opt = {
-                margin:       [5, 5, 5, 5], 
+                margin:       0, 
                 filename:     `${estimateData.name}_Estimate_${estimateData.estId}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                html2canvas:  { scale: 2, useCORS: true, letterRendering: true, windowWidth: 800 },
+                jsPDF:        { unit: 'px', format: [800, 1131], orientation: 'portrait' } // Exact A4 ratio locked to 800px width
             };
             
-            element.classList.add('pdf-rendering');
-            html2pdf().set(opt).from(element).save().then(() => {
-                element.classList.remove('pdf-rendering');
+            html2pdf().set(opt).from(wrapperElement).save().then(() => {
+                // Hide it again after generation
+                outerWrapper.style.left = '-9999px';
             });
         }
     </script>
