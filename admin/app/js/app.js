@@ -15,7 +15,7 @@ navigator.serviceWorker.register("/sw.js")
 
 let clients = [];
 
-fetch("data/clients.json")
+fetch("./data/clients.json")
 .then(res=>res.json())
 .then(data=>{
 
