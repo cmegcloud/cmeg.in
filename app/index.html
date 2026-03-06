@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CMEG Tools</title>
+
+<link rel="manifest" href="/manifest.json">
+
+<meta name="theme-color" content="#A67C52">
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+
+<script>
+tailwind.config = {
+darkMode: 'class',
+theme:{
+extend:{
+colors:{
+brand:{
+primary:'#A67C52',
+dark:'#856341'
+}
+}
+}
+}
+}
+</script>
+
+<style>
+*{
+font-family:'Plus Jakarta Sans',sans-serif
+}
+</style>
+
+</head>
+
+<body class="bg-slate-900 text-gray-200 min-h-screen">
+
+<!-- HEADER -->
+
+<header class="bg-slate-800 border-b border-slate-700 px-5 py-4 flex items-center gap-3">
+
+<img src="https://raw.githubusercontent.com/cmegcloud/cmeg.in/main/logocmeg.png"
+class="w-10 h-10">
+
+<div>
+
+<h1 class="font-bold text-lg">
+CMEG Tools
+</h1>
+
+<p class="text-xs text-slate-400">
+CM Experts Group
+</p>
+
+</div>
+
+</header>
+
+<!-- APP GRID -->
+
+<div class="p-6">
+
+<div class="grid grid-cols-2 gap-4">
+
+<!-- HTML VIEWER -->
+
+<a href="/htmlviewer"
+class="bg-slate-800 hover:bg-slate-700 p-5 rounded-xl shadow">
+
+<div class="text-3xl mb-3">💻</div>
+
+<h3 class="font-semibold">
+HTML Viewer
+</h3>
+
+<p class="text-xs text-slate-400">
+Live HTML editor
+</p>
+
+</a>
+
+<!-- COMPLIANCE CALENDAR -->
+
+<a href="/calendar"
+class="bg-slate-800 hover:bg-slate-700 p-5 rounded-xl shadow">
+
+<div class="text-3xl mb-3">📅</div>
+
+<h3 class="font-semibold">
+Compliance Calendar
+</h3>
+
+<p class="text-xs text-slate-400">
+GST & Tax due dates
+</p>
+
+</a>
+
+<!-- ESTIMATE PORTAL -->
+
+<a href="/estimate"
+class="bg-slate-800 hover:bg-slate-700 p-5 rounded-xl shadow">
+
+<div class="text-3xl mb-3">🧾</div>
+
+<h3 class="font-semibold">
+Estimate Portal
+</h3>
+
+<p class="text-xs text-slate-400">
+Generate client estimates
+</p>
+
+</a>
+
+<!-- TAX TOOLS -->
+
+<a href="/taxtools"
+class="bg-slate-800 hover:bg-slate-700 p-5 rounded-xl shadow">
+
+<div class="text-3xl mb-3">📊</div>
+
+<h3 class="font-semibold">
+Tax Tools
+</h3>
+
+<p class="text-xs text-slate-400">
+Business calculators
+</p>
+
+</a>
+
+<!-- ERP -->
+
+<a href="/erp"
+class="bg-slate-800 hover:bg-slate-700 p-5 rounded-xl shadow col-span-2">
+
+<div class="text-3xl mb-3">⚙️</div>
+
+<h3 class="font-semibold">
+ERP
+</h3>
+
+<p class="text-xs text-slate-400">
+CM Business ERP system
+</p>
+
+</a>
+
+</div>
+
+</div>
+
+<!-- FOOTER -->
+
+<footer class="text-center text-xs text-slate-500 mt-10 pb-6">
+
+© 2026 CM Experts Group  
+Experts in Tax & Business Compliances
+
+</footer>
+
+</body>
+</html>
