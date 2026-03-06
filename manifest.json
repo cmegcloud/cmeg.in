@@ -1,0 +1,65 @@
+{
+"name": "CMEG Tools",
+"short_name": "CMEG",
+"description": "CM Experts Group Business Tools and Admin App",
+
+"start_url": "/",
+"scope": "/",
+
+"display": "standalone",
+"orientation": "portrait",
+
+"background_color": "#0f172a",
+"theme_color": "#A67C52",
+
+"icons": [
+
+{
+"src": "https://raw.githubusercontent.com/cmegcloud/cmeg.in/main/logocmeg.png",
+"sizes": "192x192",
+"type": "image/png",
+"purpose": "any"
+},
+
+{
+"src": "https://raw.githubusercontent.com/cmegcloud/cmeg.in/main/logocmeg.png",
+"sizes": "512x512",
+"type": "image/png",
+"type": "image/png",
+"purpose": "maskable"
+}
+
+],
+
+"categories": [
+"business",
+"finance",
+"productivity"
+],
+
+"shortcuts": [
+
+{
+"name": "Admin App",
+"short_name": "Admin",
+"url": "/admin/app",
+"description": "Open CMEG Admin Panel"
+},
+
+{
+"name": "Compliance Calendar",
+"short_name": "Calendar",
+"url": "/calendar",
+"description": "View compliance due dates"
+},
+
+{
+"name": "HTML Viewer",
+"short_name": "HTML",
+"url": "/htmlviewer",
+"description": "Open HTML code viewer"
+}
+
+]
+
+}
