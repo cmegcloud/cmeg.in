@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CMEG Html Viewer</title>
+  <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22CMEG%20Html%20Viewer%22,%22short_name%22:%22CMEG%20Viewer%22,%22description%22:%22Professional%20HTML%20code%20viewer%20and%20editor%20by%20CM%20Experts%20Group%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffffff%22,%22theme_color%22:%22%23A67C52%22,%22scope%22:%22/%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23A67C52' width='192' height='192'/><text x='50%' y='50%' font-size='96' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central' font-family='Plus Jakarta Sans'>CM</text></svg>%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any%22},{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%23A67C52' width='512' height='512'/><text x='50%' y='50%' font-size='320' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central' font-family='Plus Jakarta Sans'>CM</text></svg>%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22maskable%22}],%22categories%22:[%22productivity%22,%22developer%22],%22screenshots%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%23FEFBED' width='540' height='720'/><rect fill='%23A67C52' x='0' y='0' width='540' height='4'/><rect fill='white' x='0' y='4' width='540' height='100'/><rect fill='%23F1F5F9' x='0' y='104' width='540' height='616'/></svg>%22,%22sizes%22:%22540x720%22,%22type%22:%22image/svg+xml%22,%22form_factor%22:%22narrow%22}]}">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Display:wght@700;800&amp;display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <script>
@@ -129,13 +131,9 @@
    <div class="bg-brand-primary h-1"></div>
    <header class="bg-white shadow-sm border-b border-border-primary px-4 py-3">
     <div class="flex items-center justify-between">
-     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-brand-primary rounded-card flex items-center justify-center">
-       <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-       </svg>
-      </div>
+     <div class="flex items-center gap-3"><img src="https://raw.githubusercontent.com/cmexperts/assets/main/logocmeg.png" alt="CMEG Logo" class="w-10 h-10 object-contain">
       <div>
-       <h1 id="app-title" class="text-lg font-bold text-text-primary">CMEG Html Viewer</h1>
+       <h1 id="app-title" class="text-lg font-bold text-text-primary" style="font-family: 'Noto Sans Display', 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em;">CMEG Html Viewer</h1>
        <p class="text-xs text-text-label">CM Experts Group</p>
       </div>
      </div><button onclick="toggleMenu()" class="p-2 hover:bg-border-soft rounded-card transition-colors">
@@ -591,5 +589,5 @@
     // Initialize
     updateLineNumbers();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d833669b143f82b',t:'MTc3MjgxOTUyOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d83762d66573a46',t:'MTc3MjgyMjE0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
