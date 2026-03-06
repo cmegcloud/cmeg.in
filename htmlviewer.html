@@ -1,593 +1,196 @@
 <!doctype html>
-<html lang="en" class="h-full">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CMEG Html Viewer</title>
-  <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22CMEG%20Html%20Viewer%22,%22short_name%22:%22CMEG%20Viewer%22,%22description%22:%22Professional%20HTML%20code%20viewer%20and%20editor%20by%20CM%20Experts%20Group%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffffff%22,%22theme_color%22:%22%23A67C52%22,%22scope%22:%22/%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23A67C52' width='192' height='192'/><text x='50%' y='50%' font-size='96' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central' font-family='Plus Jakarta Sans'>CM</text></svg>%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any%22},{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%23A67C52' width='512' height='512'/><text x='50%' y='50%' font-size='320' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central' font-family='Plus Jakarta Sans'>CM</text></svg>%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22maskable%22}],%22categories%22:[%22productivity%22,%22developer%22],%22screenshots%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%23FEFBED' width='540' height='720'/><rect fill='%23A67C52' x='0' y='0' width='540' height='4'/><rect fill='white' x='0' y='4' width='540' height='100'/><rect fill='%23F1F5F9' x='0' y='104' width='540' height='616'/></svg>%22,%22sizes%22:%22540x720%22,%22type%22:%22image/svg+xml%22,%22form_factor%22:%22narrow%22}]}">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Display:wght@700;800&amp;display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="/_sdk/element_sdk.js"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              primary: '#A67C52',
-              dark: '#856341',
-              background: '#FEFBED'
-            },
-            text: {
-              primary: '#0F172A',
-              secondary: '#475569',
-              label: '#64748B'
-            },
-            border: {
-              primary: '#E2E8F0',
-              soft: '#F1F5F9'
-            }
-          },
-          fontFamily: {
-            jakarta: ['Plus Jakarta Sans', 'sans-serif']
-          },
-          borderRadius: {
-            'card': '12px',
-            'container': '24px'
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    * {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    
-    .code-editor {
-      font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
-      tab-size: 2;
-      line-height: 1.6;
-    }
-    
-    .code-editor:focus {
-      outline: none;
-    }
-    
-    .preview-frame {
-      background: white;
-    }
-    
-    .tab-active {
-      background: #A67C52;
-      color: white;
-    }
-    
-    .tab-inactive {
-      background: #F1F5F9;
-      color: #475569;
-    }
-    
-    .line-numbers {
-      counter-reset: line;
-      font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
-    }
-    
-    .line-numbers span {
-      counter-increment: line;
-      display: block;
-      color: #64748B;
-      font-size: 12px;
-      line-height: 1.6;
-    }
-    
-    .line-numbers span::before {
-      content: counter(line);
-    }
+<html lang="en" class="dark">
 
-    .toast {
-      animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s;
-    }
-    
-    @keyframes slideIn {
-      from {
-        transform: translateY(-20px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-    
-    @keyframes fadeOut {
-      from {
-        opacity: 1;
-      }
-      to {
-        opacity: 0;
-      }
-    }
-
-    .btn-primary {
-      background: #A67C52;
-      transition: background-color 0.2s ease;
-    }
-    
-    .btn-primary:hover {
-      background: #856341;
-    }
-    
-    .btn-primary:active {
-      background: #6d5035;
-    }
-  </style>
-  <style>body { box-sizing: border-box; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
- </head>
- <body class="h-full bg-gray-50 font-jakarta">
-  <div id="app-container" class="h-full flex flex-col overflow-auto"><!-- Header with Accent Bar -->
-   <div class="bg-brand-primary h-1"></div>
-   <header class="bg-white shadow-sm border-b border-border-primary px-4 py-3">
-    <div class="flex items-center justify-between">
-     <div class="flex items-center gap-3"><img src="https://raw.githubusercontent.com/cmexperts/assets/main/logocmeg.png" alt="CMEG Logo" class="w-10 h-10 object-contain">
-      <div>
-       <h1 id="app-title" class="text-lg font-bold text-text-primary" style="font-family: 'Noto Sans Display', 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em;">CMEG Html Viewer</h1>
-       <p class="text-xs text-text-label">CM Experts Group</p>
-      </div>
-     </div><button onclick="toggleMenu()" class="p-2 hover:bg-border-soft rounded-card transition-colors">
-      <svg class="w-6 h-6 text-text-secondary" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-      </svg></button>
-    </div><!-- Dropdown Menu -->
-    <div id="dropdown-menu" class="hidden absolute right-4 top-16 bg-white rounded-card shadow-lg border border-border-primary z-50 min-w-48"><button onclick="clearEditor(); toggleMenu();" class="w-full px-4 py-3 text-left text-text-secondary hover:bg-border-soft flex items-center gap-3 rounded-t-card">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg> New File </button> <button onclick="loadSample(); toggleMenu();" class="w-full px-4 py-3 text-left text-text-secondary hover:bg-border-soft flex items-center gap-3">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-      </svg> Load Sample </button> <button onclick="copyCode(); toggleMenu();" class="w-full px-4 py-3 text-left text-text-secondary hover:bg-border-soft flex items-center gap-3">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-      </svg> Copy Code </button> <button onclick="downloadHtml(); toggleMenu();" class="w-full px-4 py-3 text-left text-text-secondary hover:bg-border-soft flex items-center gap-3 rounded-b-card">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-      </svg> Download HTML </button>
-    </div>
-   </header><!-- Tab Navigation -->
-   <div class="bg-white border-b border-border-primary px-4 py-2">
-    <div class="flex gap-2"><button id="tab-editor" onclick="switchTab('editor')" class="tab-active px-4 py-2 rounded-card text-sm font-semibold transition-all"> <span class="flex items-center gap-2">
-       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-       </svg> Editor </span> </button> <button id="tab-preview" onclick="switchTab('preview')" class="tab-inactive px-4 py-2 rounded-card text-sm font-semibold transition-all"> <span class="flex items-center gap-2">
-       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-       </svg> Preview </span> </button> <button id="tab-split" onclick="switchTab('split')" class="tab-inactive px-4 py-2 rounded-card text-sm font-semibold transition-all hidden sm:flex"> <span class="flex items-center gap-2">
-       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
-       </svg> Split </span> </button>
-    </div>
-   </div><!-- Main Content Area -->
-   <div class="flex-1 flex flex-col sm:flex-row overflow-hidden"><!-- Editor Panel -->
-    <div id="editor-panel" class="flex-1 flex flex-col bg-white border-r border-border-primary overflow-hidden">
-     <div class="bg-border-soft px-4 py-2 border-b border-border-primary flex items-center justify-between"><span class="text-xs font-medium text-text-label uppercase tracking-wide">HTML Code</span>
-      <div class="flex items-center gap-2"><span id="char-count" class="text-xs text-text-label">0 chars</span> <span class="text-xs text-text-label">|</span> <span id="line-count" class="text-xs text-text-label">1 line</span>
-      </div>
-     </div>
-     <div class="flex-1 flex overflow-hidden">
-      <div id="line-numbers" class="line-numbers bg-border-soft px-3 py-3 text-right select-none overflow-hidden"><span></span>
-      </div><textarea id="code-editor" class="code-editor flex-1 p-3 text-sm text-text-primary bg-white resize-none border-none" placeholder="<!-- Start typing your HTML code here -->
-<!DOCTYPE html>
-<html>
 <head>
-  <title>My Page</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CMEG HTML Viewer</title>
+
+<link rel="manifest" href="/manifest.json">
+
+<meta name="theme-color" content="#A67C52">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+
+<script>
+
+tailwind.config = {
+
+darkMode: 'class',
+
+theme: {
+extend: {
+colors: {
+brand: {
+primary: '#A67C52',
+dark: '#856341'
+}
+}
+}
+}
+
+}
+
+</script>
+
+<style>
+
+*{
+font-family:'Plus Jakarta Sans',sans-serif
+}
+
+textarea{
+font-family:monospace;
+line-height:1.6;
+}
+
+</style>
+
 </head>
-<body>
-  <h1>Hello World!</h1>
+
+<body class="bg-slate-900 text-gray-200 h-screen flex flex-col">
+
+<!-- BRAND BAR -->
+
+<div class="h-1 bg-[#A67C52]"></div>
+
+<!-- HEADER -->
+
+<header class="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center justify-between">
+
+<div class="flex items-center gap-3">
+
+<img
+src="https://raw.githubusercontent.com/cmegcloud/cmeg.in/main/logocmeg.png"
+class="w-9 h-9 object-contain">
+
+<div>
+
+<h1 class="text-sm font-bold">
+CMEG HTML Viewer
+</h1>
+
+<p class="text-xs text-slate-400">
+CM Experts Group
+</p>
+
+</div>
+
+</div>
+
+<button onclick="toggleTheme()" class="p-2 rounded hover:bg-slate-700">
+
+🌙
+
+</button>
+
+</header>
+
+<!-- MAIN -->
+
+<div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+
+<!-- EDITOR -->
+
+<div class="flex-1 flex flex-col border-r border-slate-700">
+
+<div class="text-xs px-4 py-2 bg-slate-800 border-b border-slate-700">
+
+HTML CODE
+
+</div>
+
+<textarea
+id="editor"
+class="flex-1 bg-slate-900 text-gray-200 p-4 text-sm resize-none outline-none"
+placeholder="Write HTML code here...">
+
+</textarea>
+
+</div>
+
+<!-- PREVIEW -->
+
+<div class="flex-1 flex flex-col">
+
+<div class="text-xs px-4 py-2 bg-slate-800 border-b border-slate-700 flex justify-between">
+
+LIVE PREVIEW
+
+<button onclick="runCode()" class="text-xs text-amber-400">
+
+Refresh
+
+</button>
+
+</div>
+
+<iframe
+id="preview"
+class="flex-1 bg-white">
+
+</iframe>
+
+</div>
+
+</div>
+
+<!-- RUN BUTTON -->
+
+<button
+onclick="runCode()"
+class="fixed bottom-6 right-6 bg-[#A67C52] hover:bg-[#856341] text-white px-6 py-3 rounded-xl shadow-lg">
+
+Run Code
+
+</button>
+
+<script>
+
+const editor = document.getElementById("editor")
+const preview = document.getElementById("preview")
+
+function runCode(){
+
+const code = editor.value
+
+const doc = preview.contentDocument || preview.contentWindow.document
+
+doc.open()
+doc.write(code)
+doc.close()
+
+}
+
+function toggleTheme(){
+
+document.documentElement.classList.toggle("dark")
+
+if(document.documentElement.classList.contains("dark")){
+
+localStorage.setItem("theme","dark")
+
+}else{
+
+localStorage.setItem("theme","light")
+
+}
+
+}
+
+if(localStorage.getItem("theme") !== "light"){
+
+document.documentElement.classList.add("dark")
+
+}
+
+</script>
+
 </body>
-</html>" spellcheck="false"></textarea>
-     </div>
-    </div><!-- Preview Panel -->
-    <div id="preview-panel" class="hidden flex-1 flex flex-col bg-white overflow-hidden">
-     <div class="bg-border-soft px-4 py-2 border-b border-border-primary flex items-center justify-between"><span id="preview-title" class="text-xs font-medium text-text-label uppercase tracking-wide">Live Preview</span> <button onclick="refreshPreview()" class="p-1.5 hover:bg-white rounded-card transition-colors" title="Refresh Preview">
-       <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-       </svg></button>
-     </div>
-     <div class="flex-1 p-3 bg-border-soft overflow-auto">
-      <div class="bg-white rounded-container shadow-lg h-full overflow-hidden"><iframe id="preview-frame" class="w-full h-full border-0" sandbox="allow-scripts"></iframe>
-      </div>
-     </div>
-    </div>
-   </div><!-- Bottom Action Bar (Mobile) -->
-   <div class="bg-white border-t border-border-primary px-4 py-3 sm:hidden"><button onclick="runCode()" class="btn-primary w-full py-3 rounded-card text-white font-semibold flex items-center justify-center gap-2 shadow-sm">
-     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-     </svg> Run Code </button>
-   </div><!-- Desktop Run Button -->
-   <div class="hidden sm:block fixed bottom-6 right-6 z-40"><button onclick="runCode()" class="btn-primary px-6 py-3 rounded-container text-white font-semibold flex items-center gap-2 shadow-2xl">
-     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-     </svg> Run Code </button>
-   </div><!-- Toast Container -->
-   <div id="toast-container" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50"></div>
-  </div>
-  <script>
-    // Default configuration
-    const defaultConfig = {
-      app_title: 'CMEG Html Viewer',
-      preview_title: 'Live Preview',
-      primary_color: '#A67C52',
-      dark_color: '#856341',
-      background_color: '#FEFBED',
-      text_color: '#0F172A',
-      secondary_text_color: '#475569'
-    };
-
-    let currentTab = 'editor';
-
-    // Initialize Element SDK
-    if (window.elementSdk) {
-      window.elementSdk.init({
-        defaultConfig,
-        onConfigChange: async (config) => {
-          document.getElementById('app-title').textContent = config.app_title || defaultConfig.app_title;
-          document.getElementById('preview-title').textContent = config.preview_title || defaultConfig.preview_title;
-        },
-        mapToCapabilities: (config) => ({
-          recolorables: [
-            {
-              get: () => config.primary_color || defaultConfig.primary_color,
-              set: (value) => window.elementSdk.setConfig({ primary_color: value })
-            },
-            {
-              get: () => config.dark_color || defaultConfig.dark_color,
-              set: (value) => window.elementSdk.setConfig({ dark_color: value })
-            },
-            {
-              get: () => config.background_color || defaultConfig.background_color,
-              set: (value) => window.elementSdk.setConfig({ background_color: value })
-            },
-            {
-              get: () => config.text_color || defaultConfig.text_color,
-              set: (value) => window.elementSdk.setConfig({ text_color: value })
-            },
-            {
-              get: () => config.secondary_text_color || defaultConfig.secondary_text_color,
-              set: (value) => window.elementSdk.setConfig({ secondary_text_color: value })
-            }
-          ],
-          borderables: [],
-          fontEditable: undefined,
-          fontSizeable: undefined
-        }),
-        mapToEditPanelValues: (config) => new Map([
-          ['app_title', config.app_title || defaultConfig.app_title],
-          ['preview_title', config.preview_title || defaultConfig.preview_title]
-        ])
-      });
-    }
-
-    const codeEditor = document.getElementById('code-editor');
-    const previewFrame = document.getElementById('preview-frame');
-    const lineNumbers = document.getElementById('line-numbers');
-    const charCount = document.getElementById('char-count');
-    const lineCount = document.getElementById('line-count');
-
-    // Update line numbers
-    function updateLineNumbers() {
-      const lines = codeEditor.value.split('\n').length;
-      let html = '';
-      for (let i = 1; i <= lines; i++) {
-        html += '<span></span>';
-      }
-      lineNumbers.innerHTML = html;
-      
-      // Update counts
-      charCount.textContent = `${codeEditor.value.length} chars`;
-      lineCount.textContent = `${lines} line${lines !== 1 ? 's' : ''}`;
-    }
-
-    // Sync scroll between editor and line numbers
-    codeEditor.addEventListener('scroll', () => {
-      lineNumbers.scrollTop = codeEditor.scrollTop;
-    });
-
-    codeEditor.addEventListener('input', updateLineNumbers);
-
-    // Tab switching
-    function switchTab(tab) {
-      currentTab = tab;
-      const editorPanel = document.getElementById('editor-panel');
-      const previewPanel = document.getElementById('preview-panel');
-      const tabEditor = document.getElementById('tab-editor');
-      const tabPreview = document.getElementById('tab-preview');
-      const tabSplit = document.getElementById('tab-split');
-
-      // Reset all tabs
-      [tabEditor, tabPreview, tabSplit].forEach(t => {
-        t.classList.remove('tab-active');
-        t.classList.add('tab-inactive');
-      });
-
-      if (tab === 'editor') {
-        editorPanel.classList.remove('hidden');
-        previewPanel.classList.add('hidden');
-        tabEditor.classList.remove('tab-inactive');
-        tabEditor.classList.add('tab-active');
-      } else if (tab === 'preview') {
-        editorPanel.classList.add('hidden');
-        previewPanel.classList.remove('hidden');
-        tabPreview.classList.remove('tab-inactive');
-        tabPreview.classList.add('tab-active');
-        runCode();
-      } else if (tab === 'split') {
-        editorPanel.classList.remove('hidden');
-        previewPanel.classList.remove('hidden');
-        tabSplit.classList.remove('tab-inactive');
-        tabSplit.classList.add('tab-active');
-        runCode();
-      }
-    }
-
-    // Run code in preview
-    function runCode() {
-      const code = codeEditor.value;
-      const previewDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
-      previewDoc.open();
-      previewDoc.write(code);
-      previewDoc.close();
-      
-      // Auto-switch to preview on mobile
-      if (window.innerWidth < 640 && currentTab === 'editor') {
-        switchTab('preview');
-      }
-      
-      showToast('Code executed successfully!', 'success');
-    }
-
-    // Refresh preview
-    function refreshPreview() {
-      runCode();
-    }
-
-    // Toggle menu
-    function toggleMenu() {
-      const menu = document.getElementById('dropdown-menu');
-      menu.classList.toggle('hidden');
-    }
-
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-      const menu = document.getElementById('dropdown-menu');
-      const menuBtn = e.target.closest('button[onclick="toggleMenu()"]');
-      if (!menuBtn && !menu.contains(e.target)) {
-        menu.classList.add('hidden');
-      }
-    });
-
-    // Clear editor
-    function clearEditor() {
-      codeEditor.value = '';
-      updateLineNumbers();
-      const previewDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
-      previewDoc.open();
-      previewDoc.write('');
-      previewDoc.close();
-      showToast('Editor cleared', 'info');
-    }
-
-    // Load sample code
-    function loadSample() {
-      const sampleCode = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CM Experts Group</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-    }
-    
-    body {
-      background: linear-gradient(135deg, #FEFBED 0%, #fff 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    
-    .card {
-      background: white;
-      border-radius: 24px;
-      padding: 40px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-    }
-    
-    .logo {
-      width: 80px;
-      height: 80px;
-      background: #A67C52;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 24px;
-      font-size: 32px;
-      color: white;
-      font-weight: 800;
-    }
-    
-    h1 {
-      color: #0F172A;
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-    
-    p {
-      color: #475569;
-      font-size: 16px;
-      line-height: 1.6;
-      margin-bottom: 24px;
-    }
-    
-    .btn {
-      background: #A67C52;
-      color: white;
-      padding: 14px 32px;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    
-    .btn:hover {
-      background: #856341;
-    }
-    
-    .features {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 32px;
-      padding-top: 32px;
-      border-top: 1px solid #E2E8F0;
-    }
-    
-    .feature {
-      text-align: center;
-    }
-    
-    .feature-icon {
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-    
-    .feature-text {
-      color: #64748B;
-      font-size: 12px;
-      font-weight: 500;
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="logo">CM</div>
-    <h1>CM Experts Group</h1>
-    <p>Professional consulting services with premium quality and expert guidance for your business needs.</p>
-    <button class="btn" onclick="alert('Welcome to CM Experts!')">Get Started</button>
-    
-    <div class="features">
-      <div class="feature">
-        <div class="feature-icon">🎯</div>
-        <div class="feature-text">Strategy</div>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">💼</div>
-        <div class="feature-text">Consulting</div>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">📊</div>
-        <div class="feature-text">Analytics</div>
-      </div>
-    </div>
-  </div>
-</body>
-</html>`;
-      
-      codeEditor.value = sampleCode;
-      updateLineNumbers();
-      showToast('Sample code loaded!', 'success');
-    }
-
-    // Copy code to clipboard
-    function copyCode() {
-      if (codeEditor.value.trim() === '') {
-        showToast('Nothing to copy', 'warning');
-        return;
-      }
-      
-      navigator.clipboard.writeText(codeEditor.value).then(() => {
-        showToast('Code copied to clipboard!', 'success');
-      }).catch(() => {
-        showToast('Failed to copy code', 'error');
-      });
-    }
-
-    // Download HTML file
-    function downloadHtml() {
-      if (codeEditor.value.trim() === '') {
-        showToast('Nothing to download', 'warning');
-        return;
-      }
-      
-      const blob = new Blob([codeEditor.value], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'cmeg-code.html';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast('File downloaded!', 'success');
-    }
-
-    // Show toast notification
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      
-      const colors = {
-        success: 'bg-green-500',
-        error: 'bg-red-500',
-        warning: 'bg-amber-500',
-        info: 'bg-brand-primary'
-      };
-      
-      const icons = {
-        success: '✓',
-        error: '✕',
-        warning: '⚠',
-        info: 'ℹ'
-      };
-      
-      toast.className = `toast ${colors[type]} text-white px-4 py-3 rounded-card shadow-lg flex items-center gap-3 mb-2`;
-      toast.innerHTML = `
-        <span class="font-bold">${icons[type]}</span>
-        <span class="font-medium text-sm">${message}</span>
-      `;
-      
-      container.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.remove();
-      }, 3000);
-    }
-
-    // Handle tab key in editor
-    codeEditor.addEventListener('keydown', (e) => {
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        const start = codeEditor.selectionStart;
-        const end = codeEditor.selectionEnd;
-        codeEditor.value = codeEditor.value.substring(0, start) + '  ' + codeEditor.value.substring(end);
-        codeEditor.selectionStart = codeEditor.selectionEnd = start + 2;
-        updateLineNumbers();
-      }
-    });
-
-    // Auto-run on Ctrl/Cmd + Enter
-    document.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        runCode();
-      }
-    });
-
-    // Initialize
-    updateLineNumbers();
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d83762d66573a46',t:'MTc3MjgyMjE0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
