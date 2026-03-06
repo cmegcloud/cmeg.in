@@ -1,1 +1,35 @@
+[
+{
+"id":"CL001",
+"name":"Truewell Healthcare",
+"gst":"32ABCDE1234F1Z5",
+"pan":"ABCDE1234F",
+"mobile":"9895470148",
+"email":"truewell@gmail.com",
 
+"credentials":{
+"gst_portal_user":"truewell_gst",
+"income_tax_user":"truewell_it",
+"mca_user":"truewell_mca"
+},
+
+"compliance":[
+
+{
+"type":"GST Return",
+"period":"Feb 2026",
+"due_date":"20-03-2026",
+"status":"Pending"
+},
+
+{
+"type":"TDS Return",
+"period":"Q4 2025",
+"due_date":"31-03-2026",
+"status":"Completed"
+}
+
+]
+
+}
+]
