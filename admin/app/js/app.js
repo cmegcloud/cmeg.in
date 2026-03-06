@@ -157,7 +157,7 @@ clients
 
 let div=document.createElement("div")
 
-div.className="p-3 border-b border-slate-700 cursor-pointer hover:bg-slate-700"
+div.className="p-4 border-b border-gray-700 cursor-pointer hover:bg-[#334155]"
 
 div.innerText=c.name
 
