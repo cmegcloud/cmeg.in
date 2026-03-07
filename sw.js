@@ -2,7 +2,6 @@ const CACHE_NAME = "cmeg-cache-v2"
 
 const urlsToCache = [
 
-"/",
 "/manifest.json",
 
 "/admin/app/",
