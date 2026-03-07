@@ -8,7 +8,7 @@
 
 <title>CMEG Admin</title>
 
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="/admin/app/manifest.json">
 
 <meta name="theme-color" content="#A67C52">
 
@@ -25,7 +25,7 @@
 <!-- HEADER -->
 <div class="flex items-center gap-3 mb-6">
 
-<img src="/assets/logocmeg.png" class="w-12 h-12">
+<img src="https://raw.githubusercontent.com/cmegcloud/cmeg.in/main/assets/logocmeg.png" class="w-12 h-12">
 
 <h1 class="text-xl font-bold text-[#D4AF37]">
 CMEG Admin
@@ -41,6 +41,9 @@ placeholder="Search client..."
 class="w-full p-4 bg-[#1e293b] rounded-xl border border-slate-700 focus:border-[#D4AF37] outline-none mb-4"
 oninput="searchClient()"
 />
+
+<!-- SELECTED CLIENT -->
+<div id="selectedClient" class="text-lg font-semibold mb-3 text-white"></div>
 
 <!-- SEARCH RESULTS -->
 <div
@@ -85,7 +88,6 @@ Credentials
 
 </div>
 
-<!-- LOAD JS -->
 <script src="js/app.js"></script>
 
 </body>
