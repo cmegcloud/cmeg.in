@@ -8,29 +8,58 @@
 
 <title>CMEG Admin</title>
 
-<link rel="manifest" href="/admin/app/manifest.json">
-
-<meta name="theme-color" content="#A67C52">
+<meta name="theme-color" content="#0b1220">
 
 <script src="https://cdn.tailwindcss.com"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script>
+tailwind.config={
+theme:{
+extend:{
+colors:{
+cmeg:{
+gold:"#a67c52",
+grey:"#5e6665",
+bg:"#0b1220",
+card:"#1e293b"
+}
+}
+}
+}
+}
+</script>
+
+<style>
+body{
+font-family:'Plus Jakarta Sans',sans-serif;
+}
+</style>
 
 </head>
 
-<body class="bg-[#0b1220] text-gray-200 min-h-screen">
+<body class="bg-cmeg-bg text-gray-200 min-h-screen">
 
 <div class="max-w-md mx-auto p-5">
 
 <!-- HEADER -->
 <div class="flex items-center gap-3 mb-6">
 
+<img src="/logocmeg.png" class="w-10 h-10 object-contain rotate-[-10deg]">
 
-<img src="/logocmeg.png" class="w-12 h-12">
-  
-<h1 class="text-xl font-bold text-[#D4AF37]">
-CMEG Admin
-</h1>
+<div>
+
+<div class="text-lg font-semibold tracking-wide">
+<span class="text-cmeg-grey">CM</span>
+<span class="text-cmeg-gold"> EXPERTS GROUP</span>
+</div>
+
+<div class="text-xs text-gray-400 tracking-wide">
+Count · Connect · Grow
+</div>
+
+</div>
 
 </div>
 
@@ -39,7 +68,7 @@ CMEG Admin
 id="clientSearch"
 type="text"
 placeholder="Search client..."
-class="w-full p-4 bg-[#1e293b] rounded-xl border border-slate-700 focus:border-[#D4AF37] outline-none mb-4"
+class="w-full p-4 bg-cmeg-card rounded-xl border border-slate-700 focus:border-cmeg-gold outline-none mb-4"
 oninput="searchClient()"
 />
 
@@ -47,16 +76,12 @@ oninput="searchClient()"
 <div id="selectedClient" class="text-lg font-semibold mb-3 text-white"></div>
 
 <!-- SEARCH RESULTS -->
-<div
-id="clientResults"
-class="bg-[#1e293b] rounded-xl mb-6 overflow-hidden">
-</div>
+<div id="clientResults" class="bg-cmeg-card rounded-xl mb-6 overflow-hidden"></div>
 
 <!-- CLIENT INFO -->
-<div id="clientInfo"
-class="bg-[#1e293b] p-5 rounded-xl mb-4 shadow-lg">
+<div id="clientInfo" class="bg-cmeg-card p-5 rounded-xl mb-4 shadow-lg">
 
-<h3 class="text-[#D4AF37] font-semibold mb-3">
+<h3 class="text-cmeg-gold font-semibold mb-3">
 Client Info
 </h3>
 
@@ -68,20 +93,18 @@ Client Info
 </div>
 
 <!-- COMPLIANCE -->
-<div id="complianceList"
-class="bg-[#1e293b] p-5 rounded-xl mb-4 shadow-lg">
+<div id="complianceList" class="bg-cmeg-card p-5 rounded-xl mb-4 shadow-lg">
 
-<h3 class="text-[#D4AF37] font-semibold mb-3">
+<h3 class="text-cmeg-gold font-semibold mb-3">
 Compliance
 </h3>
 
 </div>
 
 <!-- CREDENTIALS -->
-<div id="credentialsBox"
-class="bg-[#1e293b] p-5 rounded-xl shadow-lg">
+<div id="credentialsBox" class="bg-cmeg-card p-5 rounded-xl shadow-lg">
 
-<h3 class="text-[#D4AF37] font-semibold mb-3">
+<h3 class="text-cmeg-gold font-semibold mb-3">
 Credentials
 </h3>
 
@@ -89,7 +112,188 @@ Credentials
 
 </div>
 
-<script src="js/app.js"></script>
+<script>
+
+/* CLIENT DATABASE */
+
+let clients=[
+
+{
+id:"CL001",
+name:"Truewell Healthcare",
+gst:"32ABCDE1234F1Z5",
+pan:"ABCDE1234F",
+mobile:"9895470148",
+email:"truewell@gmail.com",
+
+credentials:{
+gst_portal_user:"truewell_gst",
+income_tax_user:"truewell_it",
+mca_user:"truewell_mca"
+},
+
+compliance:[
+
+{
+type:"GST Return",
+period:"Feb 2026",
+due_date:"20-03-2026",
+status:"Pending"
+},
+
+{
+type:"TDS Return",
+period:"Q4 2025",
+due_date:"31-03-2026",
+status:"Completed"
+}
+
+]
+
+}
+
+]
+
+
+/* SHOW CLIENT LIST */
+
+function showAllClients(){
+
+const container=document.getElementById("clientResults")
+
+container.innerHTML=""
+
+clients.forEach(c=>{
+
+let div=document.createElement("div")
+
+div.className="p-4 border-b border-slate-700 cursor-pointer hover:bg-slate-700"
+
+div.innerText=c.name
+
+div.onclick=()=>loadClient(c.id)
+
+container.appendChild(div)
+
+})
+
+}
+
+showAllClients()
+
+
+/* SEARCH CLIENT */
+
+function searchClient(){
+
+const keyword=document
+.getElementById("clientSearch")
+.value
+.toLowerCase()
+
+const container=document.getElementById("clientResults")
+
+container.innerHTML=""
+
+clients
+.filter(c=>c.name.toLowerCase().includes(keyword))
+.forEach(c=>{
+
+let div=document.createElement("div")
+
+div.className="p-4 border-b border-slate-700 cursor-pointer hover:bg-slate-700"
+
+div.innerText=c.name
+
+div.onclick=()=>loadClient(c.id)
+
+container.appendChild(div)
+
+})
+
+}
+
+
+/* LOAD CLIENT DETAILS */
+
+function loadClient(id){
+
+const client=clients.find(c=>c.id===id)
+
+if(!client)return
+
+
+document.getElementById("selectedClient").innerText=client.name
+
+
+document.getElementById("clientInfo").innerHTML=`
+
+<h3 class="text-cmeg-gold font-semibold mb-4">
+Client Info
+</h3>
+
+<div class="grid grid-cols-2 gap-3 text-sm">
+
+<div class="text-gray-400">GST</div>
+<div>${client.gst}</div>
+
+<div class="text-gray-400">PAN</div>
+<div>${client.pan}</div>
+
+<div class="text-gray-400">Mobile</div>
+<div>${client.mobile}</div>
+
+<div class="text-gray-400">Email</div>
+<div>${client.email}</div>
+
+</div>
+
+`
+
+
+let complianceHTML=`<h3 class="text-cmeg-gold font-semibold mb-3">Compliance</h3>`
+
+client.compliance.forEach(c=>{
+
+let color=c.status==="Pending"
+?"text-red-400"
+:"text-green-400"
+
+complianceHTML+=`
+
+<p class="mb-3">
+
+${c.type} (${c.period})<br>
+Due: ${c.due_date}<br>
+
+<span class="${color} font-semibold">
+${c.status}
+</span>
+
+</p>
+
+`
+
+})
+
+document.getElementById("complianceList").innerHTML=complianceHTML
+
+
+document.getElementById("credentialsBox").innerHTML=`
+
+<h3 class="text-cmeg-gold font-semibold mb-3">
+Credentials
+</h3>
+
+<p>GST Portal: ${client.credentials.gst_portal_user}</p>
+<p>Income Tax: ${client.credentials.income_tax_user}</p>
+<p>MCA: ${client.credentials.mca_user}</p>
+
+`
+
+}
+
+</script>
 
 </body>
 </html>
