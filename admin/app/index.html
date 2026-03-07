@@ -18,29 +18,45 @@
 
 </head>
 
-<body class="bg-[#0b1120] text-gray-200 min-h-screen">
+<body class="bg-[#0b1220] text-gray-200 min-h-screen">
 
-<div class="max-w-md mx-auto p-6">
+<div class="max-w-md mx-auto p-5">
 
-<h1 class="text-2xl font-bold text-[#ED6EBB] mb-6">
-CMEG Client Master
+<!-- HEADER -->
+<div class="flex items-center gap-3 mb-6">
+
+<img 
+src="https://raw.githubusercontent.com/cmegcloud/cmeg.in/main/assets/logocmeg.png"
+class="w-10 h-10">
+
+<h1 class="text-xl font-bold text-[#D4AF37]">
+CMEG Admin
 </h1>
 
+</div>
+
+<!-- SEARCH -->
 <input
 id="clientSearch"
 type="text"
 placeholder="Search client..."
-class="w-full p-4 bg-[#1e293b] rounded-xl border border-gray-700 focus:border-[#ED6EBB] outline-none mb-4"
+class="w-full p-4 bg-[#1e293b] rounded-xl border border-slate-700 focus:border-[#D4AF37] outline-none mb-4"
 oninput="searchClient()"
 />
 
+<!-- SEARCH RESULTS -->
 <div
 id="clientResults"
 class="bg-[#1e293b] rounded-xl mb-6 overflow-hidden">
 </div>
 
+<!-- CLIENT INFO -->
 <div id="clientInfo"
-class="bg-[#1e293b] p-5 rounded-xl mb-4">
+class="bg-[#1e293b] p-5 rounded-xl mb-4 shadow-lg">
+
+<h3 class="text-[#D4AF37] font-semibold mb-3">
+Client Info
+</h3>
 
 <p><span class="text-gray-400">GST</span><br>-</p>
 <p><span class="text-gray-400">PAN</span><br>-</p>
@@ -49,19 +65,21 @@ class="bg-[#1e293b] p-5 rounded-xl mb-4">
 
 </div>
 
+<!-- COMPLIANCE -->
 <div id="complianceList"
-class="bg-[#1e293b] p-5 rounded-xl mb-4">
+class="bg-[#1e293b] p-5 rounded-xl mb-4 shadow-lg">
 
-<h3 class="text-[#ED6EBB] font-semibold mb-2">
+<h3 class="text-[#D4AF37] font-semibold mb-3">
 Compliance
 </h3>
 
 </div>
 
+<!-- CREDENTIALS -->
 <div id="credentialsBox"
-class="bg-[#1e293b] p-5 rounded-xl">
+class="bg-[#1e293b] p-5 rounded-xl shadow-lg">
 
-<h3 class="text-[#ED6EBB] font-semibold mb-2">
+<h3 class="text-[#D4AF37] font-semibold mb-3">
 Credentials
 </h3>
 
