@@ -96,6 +96,8 @@ const client=clients.find(c=>c.id===id)
 if(!client)return
 
 
+/* CLIENT INFO */
+
 document.getElementById("clientInfo").innerHTML=`
 
 <h3 class="text-[#D4AF37] font-semibold mb-3">
@@ -109,6 +111,8 @@ Client Info
 
 `
 
+
+/* COMPLIANCE */
 
 let complianceHTML=`
 <h3 class="text-[#D4AF37] font-semibold mb-3">
@@ -124,10 +128,10 @@ let color=c.status==="Pending"
 
 complianceHTML+=`
 
-<p class="mb-2">
+<p class="mb-3">
 ${c.type} (${c.period})<br>
 Due: ${c.due_date}<br>
-<span class="${color}">${c.status}</span>
+<span class="${color} font-semibold">${c.status}</span>
 </p>
 
 `
@@ -137,15 +141,17 @@ Due: ${c.due_date}<br>
 document.getElementById("complianceList").innerHTML=complianceHTML
 
 
+/* CREDENTIALS */
+
 document.getElementById("credentialsBox").innerHTML=`
 
 <h3 class="text-[#D4AF37] font-semibold mb-3">
 Credentials
 </h3>
 
-<p>GST Portal: ${client.credentials.gst_portal_user}</p>
-<p>Income Tax: ${client.credentials.income_tax_user}</p>
-<p>MCA: ${client.credentials.mca_user}</p>
+<p>GST Portal: ${client.credentials?.gst_portal_user || "-"}</p>
+<p>Income Tax: ${client.credentials?.income_tax_user || "-"}</p>
+<p>MCA: ${client.credentials?.mca_user || "-"}</p>
 
 `
 
