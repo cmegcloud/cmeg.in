@@ -19,12 +19,15 @@ fetch("./data/clients.json")
 .then(res=>res.json())
 .then(data=>{
 
-clients = data;
+clients=data;
 
-initClients();
+showAllClients();
 
-});
-
+if(clients.length>0){
+setTimeout(()=>{
+loadClient(clients[0].id);
+},200);
+}
 
 /* LOAD CLIENTS */
 
