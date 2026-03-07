@@ -1,13 +1,9 @@
 /* SERVICE WORKER */
 
 if ("serviceWorker" in navigator) {
-
 navigator.serviceWorker.register("/sw.js")
-
-.then(() => console.log("Service Worker Registered"))
-
-.catch(err => console.log(err));
-
+.then(()=>console.log("Service Worker Registered"))
+.catch(err=>console.log(err));
 }
 
 
@@ -15,114 +11,30 @@ navigator.serviceWorker.register("/sw.js")
 
 let clients = [];
 
-fetch("./data/clients.json")
-.then(res=>res.json())
-.then(data=>{
 
-clients=data;
+/* LOAD JSON */
+
+fetch("./data/clients.json?v=" + Date.now())
+.then(res => res.json())
+.then(data => {
+
+clients = data;
 
 showAllClients();
 
-if(clients.length>0){
-setTimeout(()=>{
+if (clients.length > 0) {
 loadClient(clients[0].id);
-},200);
 }
 
-/* LOAD CLIENTS */
-
-function initClients(){
-
-const select=document.getElementById("clientSelect")
-
-clients.forEach(c=>{
-
-let option=document.createElement("option")
-
-option.value=c.id
-option.textContent=c.name
-
-select.appendChild(option)
-
 })
-
-}
-
-
-/* SHOW CLIENT */
-
-function loadClient(){
-
-const id=document.getElementById("clientSelect").value
-
-const client=clients.find(c=>c.id===id)
-
-if(!client)return
+.catch(err => console.log("JSON Error:", err));
 
 
-document.getElementById("clientInfo").innerHTML=`
-
-<p><b>GST:</b> ${client.gst}</p>
-<p><b>PAN:</b> ${client.pan}</p>
-<p><b>Mobile:</b> ${client.mobile}</p>
-<p><b>Email:</b> ${client.email}</p>
-
-`
-
-
-let complianceHTML="<h3 class='font-semibold mb-2'>Compliance</h3>"
-
-client.compliance.forEach(c=>{
-
-let color=c.status==="Pending"?"text-red-400":"text-green-400"
-
-complianceHTML+=`
-
-<p>
-
-${c.type} (${c.period})  
-Due: ${c.due_date}  
-<span class="${color}">${c.status}</span>
-
-</p>
-
-`
-
-})
-
-document.getElementById("complianceList").innerHTML=complianceHTML
-
-
-document.getElementById("credentialsBox").innerHTML=`
-
-<h3 class="font-semibold mb-2">Credentials</h3>
-
-<p>GST Portal: ${client.credentials.gst_portal_user || "-"}</p>
-
-<p>Income Tax: ${client.credentials.income_tax_user || "-"}</p>
-
-<p>MCA: ${client.credentials.mca_user || "-"}</p>
-
-`
-
-}
-
-let clients=[]
-
-fetch("data/clients.json")
-.then(res=>res.json())
-.then(data=>{
-
-clients=data
-
-showAllClients()
-
-})
-
+/* SHOW ALL CLIENTS */
 
 function showAllClients(){
 
-const container=document.getElementById("clientResults")
+const container = document.getElementById("clientResults")
 
 container.innerHTML=""
 
@@ -131,7 +43,7 @@ clients.forEach(c=>{
 let div=document.createElement("div")
 
 div.className="p-4 border-b border-gray-700 cursor-pointer hover:bg-[#334155]"
-  
+
 div.innerText=c.name
 
 div.onclick=()=>loadClient(c.id)
@@ -142,6 +54,8 @@ container.appendChild(div)
 
 }
 
+
+/* SEARCH CLIENT */
 
 function searchClient(){
 
@@ -173,6 +87,8 @@ container.appendChild(div)
 }
 
 
+/* LOAD CLIENT DETAILS */
+
 function loadClient(id){
 
 const client=clients.find(c=>c.id===id)
@@ -182,15 +98,23 @@ if(!client)return
 
 document.getElementById("clientInfo").innerHTML=`
 
-<p><b>GST:</b> ${client.gst}</p>
-<p><b>PAN:</b> ${client.pan}</p>
-<p><b>Mobile:</b> ${client.mobile}</p>
-<p><b>Email:</b> ${client.email}</p>
+<h3 class="text-[#D4AF37] font-semibold mb-3">
+Client Info
+</h3>
+
+<p><span class="text-gray-400">GST</span><br>${client.gst}</p>
+<p><span class="text-gray-400">PAN</span><br>${client.pan}</p>
+<p><span class="text-gray-400">Mobile</span><br>${client.mobile}</p>
+<p><span class="text-gray-400">Email</span><br>${client.email}</p>
 
 `
 
 
-let complianceHTML="<h3 class='font-semibold mb-2'>Compliance</h3>"
+let complianceHTML=`
+<h3 class="text-[#D4AF37] font-semibold mb-3">
+Compliance
+</h3>
+`
 
 client.compliance.forEach(c=>{
 
@@ -200,9 +124,9 @@ let color=c.status==="Pending"
 
 complianceHTML+=`
 
-<p>
-${c.type} (${c.period})  
-Due: ${c.due_date}  
+<p class="mb-2">
+${c.type} (${c.period})<br>
+Due: ${c.due_date}<br>
 <span class="${color}">${c.status}</span>
 </p>
 
@@ -215,11 +139,13 @@ document.getElementById("complianceList").innerHTML=complianceHTML
 
 document.getElementById("credentialsBox").innerHTML=`
 
-<h3 class="font-semibold mb-2">Credentials</h3>
+<h3 class="text-[#D4AF37] font-semibold mb-3">
+Credentials
+</h3>
 
-<p>GST Portal: ${client.credentials.gst_portal_user || "-"}</p>
-<p>Income Tax: ${client.credentials.income_tax_user || "-"}</p>
-<p>MCA: ${client.credentials.mca_user || "-"}</p>
+<p>GST Portal: ${client.credentials.gst_portal_user}</p>
+<p>Income Tax: ${client.credentials.income_tax_user}</p>
+<p>MCA: ${client.credentials.mca_user}</p>
 
 `
 
