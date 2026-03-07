@@ -1,4 +1,4 @@
-const CACHE_NAME = "cmeg-app-v1";
+const CACHE_NAME = "cmeg-cache-v2"
 
 const urlsToCache = [
 
