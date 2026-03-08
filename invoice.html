@@ -675,23 +675,90 @@
     document.getElementById("clientMobile").addEventListener("change", (e) => { clientMobile = e.target.value; });
     document.getElementById("invoiceNotes").addEventListener("change", (e) => { invoiceNotes = e.target.value; });
 
-    function renderServices() {
-        const servicesList = document.getElementById("servicesList");
-        servicesList.innerHTML = '';
-        let total = 0;
+// 1. Define the service database
+const serviceCatalog = {
+    "GST Registration": { type: "reg", docs: "PAN, Aadhaar, Photo, Electricity Bill, Cancelled Cheque" },
+    "GST Return Filing": { type: "ret", docs: "" },
+    "Income Tax Return": { type: "ret", docs: "" },
+    "MSME (Udyam) Registration": { type: "reg", docs: "Aadhaar Card, PAN Card, Bank Details" },
+    "Company Incorporation": { type: "reg", docs: "PAN, Aadhaar, DIN, Digital Signature, Address Proof" },
+    "PAN/TAN Application": { type: "reg", docs: "ID Proof, Address Proof, Photo" },
+    "Professional Tax Reg": { type: "reg", docs: "Trade License, Lease Agreement, PAN" },
+    "TDS Return Filing": { type: "ret", docs: "" },
+    "Other Consultancy": { type: "other", docs: "" }
+};
 
-        services.forEach(service => {
-            total += service.amount;
-            const serviceItem = document.createElement('div');
-            serviceItem.className = 'service-item';
-            const removeBtnHtml = isClientMode ? '' : `<button class="service-remove" onclick="removeService(${service.id})">✕</button>`;
-            serviceItem.innerHTML = `
-                <input type="text" value="${service.name}" class="service-amount-input" style="flex: 1;" onchange="updateServiceName(${service.id}, this.value)" placeholder="Item Description">
-                <input type="number" value="${service.amount}" class="service-amount-input amount-field" onchange="updateServiceAmount(${service.id}, this.value)" placeholder="0">
+// 2. Updated renderServices Function
+function renderServices() {
+    const servicesList = document.getElementById("servicesList");
+    servicesList.innerHTML = '';
+    let total = 0;
+
+    services.forEach(service => {
+        total += service.amount;
+        const serviceData = serviceCatalog[service.name] || { type: 'other', docs: '' };
+        const isRegistration = serviceData.type === 'reg';
+
+        const serviceItem = document.createElement('div');
+        serviceItem.className = 'service-item';
+        serviceItem.style.flexDirection = 'column';
+        serviceItem.style.alignItems = 'stretch';
+
+        // Create Dropdown Options
+        let optionsHtml = Object.keys(serviceCatalog).map(name => 
+            `<option value="${name}" ${service.name === name ? 'selected' : ''}>${name}</option>`
+        ).join('');
+
+        const removeBtnHtml = isClientMode ? '' : `<button class="service-remove" onclick="removeService(${service.id})">✕</button>`;
+
+        serviceItem.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                <select class="service-amount-input" style="flex: 1;" onchange="updateServiceName(${service.id}, this.value)">
+                    ${optionsHtml}
+                </select>
+                <input type="number" value="${service.amount}" class="service-amount-input amount-field" onchange="updateServiceAmount(${service.id}, this.value)">
                 ${removeBtnHtml}
-            `;
-            servicesList.appendChild(serviceItem);
-        });
+            </div>
+            
+            ${isRegistration ? `
+                <div style="margin-top: 8px; display: flex; align-items: center; gap: 10px; background: #eee; padding: 5px 10px; border-radius: 6px;">
+                    <span style="font-size: 11px; font-weight: bold; color: #555;">Show Required Documents?</span>
+                    <select onchange="toggleDocs(${service.id}, this.value)" class="service-amount-input" style="padding: 2px 5px; font-size: 11px; width: auto; background: white; border: 1px solid #ccc;">
+                        <option value="no" ${service.showDocs === 'no' ? 'selected' : ''}>No</option>
+                        <option value="yes" ${service.showDocs === 'yes' ? 'selected' : ''}>Yes</option>
+                    </select>
+                </div>
+                ${service.showDocs === 'yes' ? `
+                    <div style="margin-top: 5px; font-size: 11px; color: #8B6F47; background: #fffbe6; padding: 8px; border: 1px dashed #d4a574; border-radius: 4px;">
+                        <strong>Required:</strong> ${serviceData.docs}
+                    </div>
+                ` : ''}
+            ` : ''}
+        `;
+        servicesList.appendChild(serviceItem);
+    });
+
+    document.getElementById("totalAmount").textContent = '₹' + total.toLocaleString('en-IN');
+    document.getElementById("totalWords").textContent = numberToWords(total);
+}
+
+// 3. Helper functions to manage the new state
+function updateServiceName(id, name) {
+    const service = services.find(s => s.id === id);
+    if (service) { 
+        service.name = name; 
+        service.showDocs = 'no'; // Reset docs view on change
+        renderServices(); 
+    }
+}
+
+function toggleDocs(id, value) {
+    const service = services.find(s => s.id === id);
+    if (service) {
+        service.showDocs = value;
+        renderServices();
+    }
+}
 
         document.getElementById("totalAmount").textContent = '₹' + total.toLocaleString('en-IN');
         document.getElementById("totalWords").textContent = numberToWords(total);
