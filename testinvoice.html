@@ -30,7 +30,6 @@
         .detail-group { display: flex; flex-direction: column; }
         .detail-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; font-weight: 600; }
         .detail-value { width: 100%; border: none; border-bottom: 1px dashed var(--border-focus); background: transparent; padding: 6px 0; font-size: 15px; font-weight: 600; color: var(--text-main); border-radius: 0; }
-        select.detail-value { appearance: none; -webkit-appearance: none; cursor: pointer; }
         .detail-value:focus { outline: none; border-bottom: 1px solid var(--primary); background: rgba(139, 111, 71, 0.03); }
         textarea.detail-value { border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 500; resize: vertical; min-height: 60px; }
         .services-section { background: #fafafa; border-radius: 12px; padding: 20px; margin-bottom: 24px; border: 1px solid var(--border); }
@@ -81,9 +80,8 @@
     <div class="details-grid">
         <div class="detail-group">
             <span class="detail-label">Client Name</span>
-            <select id="client" class="detail-value" onchange="updateClientId()">
-                <option value="">Loading Clients...</option>
-            </select>
+            <input type="text" id="client" list="clientList" class="detail-value" placeholder="Type or select..." onchange="updateClientId()">
+            <datalist id="clientList"></datalist>
         </div>
         <div class="detail-group">
             <span class="detail-label">Client ID</span>
@@ -147,18 +145,25 @@
 
 <script>
     // ==========================================
-    // 1. ADD YOUR LIVE HOSTED URL HERE
-    // ==========================================
     const HOSTED_PORTAL_URL = "https://cmeg.in/invoice.html"; 
     
+    // UPDATED: Now pointing to your JSON file
+    const GITHUB_JSON_URL = "https://raw.githubusercontent.com/cmegcloud/cmeg.in/main/clients.json"; 
     // ==========================================
-    // 2. ADD YOUR GITHUB RAW CSV URL HERE
-    // ==========================================
-    const GITHUB_CSV_URL = "YOUR_GITHUB_RAW_CSV_URL_HERE"; 
 
     const params = new URLSearchParams(window.location.search);
     const isClientMode = params.get("mode") === "client";
     
+    // Crash Protection: Safe URL Decoder
+    const safeGetParam = (key) => {
+        try {
+            const val = params.get(key);
+            return val ? decodeURIComponent(val) : "";
+        } catch (e) {
+            return "";
+        }
+    };
+
     // Service Database
     const serviceCatalog = {
         "GST Registration": { type: "reg", docs: "PAN, Aadhaar, Photo, Electricity Bill, Cancelled Cheque" },
@@ -172,100 +177,80 @@
     };
 
     let services = [];
+    let clientDatabase = {}; // Stores mapping of Name to ID
     
-    // Load initial services from URL or Default
-    const sNamesParam = params.get("snames");
-    const sAmtsParam = params.get("samts");
+    // Load initial services
+    const sNamesParam = safeGetParam("snames");
+    const sAmtsParam = safeGetParam("samts");
     if (sNamesParam && sAmtsParam) {
-        const namesArr = decodeURIComponent(sNamesParam).split('|');
-        const amtsArr = decodeURIComponent(sAmtsParam).split('|');
+        const namesArr = sNamesParam.split('|');
+        const amtsArr = sAmtsParam.split('|');
         namesArr.forEach((n, i) => services.push({ id: i+1, name: n, amount: parseInt(amtsArr[i]) || 0, showDocs: 'no' }));
     } else {
         services.push({ id: 1, name: "GST Registration", amount: 5000, showDocs: 'no' });
     }
 
-    // Generate Dynamic Invoice ID: PI(YY)4(DD)(MM)
     function generateInvoiceId() {
         const d = new Date();
         const yy = String(d.getFullYear()).slice(-2);
-        const dd = d.getDate();
-        const mm = d.getMonth() + 1;
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
         return `PI${yy}4${dd}${mm}`;
     }
 
-    // Fetch Clients from GitHub CSV
+    // UPDATED: Fetch Clients from JSON file instead of CSV
     async function fetchClients() {
         try {
-            const response = await fetch(GITHUB_CSV_URL);
-            const data = await response.text();
+            const response = await fetch(GITHUB_JSON_URL);
+            if (!response.ok) throw new Error("Network error fetching JSON");
             
-            const lines = data.split('\n').filter(l => l.trim() !== '');
-            if (lines.length < 2) return;
+            const clients = await response.json(); 
+            const clientList = document.getElementById("clientList");
             
-            // Auto-detect columns (assuming header row)
-            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase());
-            const idIdx = headers.indexOf('client id') > -1 ? headers.indexOf('client id') : 0;
-            const nameIdx = headers.indexOf('client name') > -1 ? headers.indexOf('client name') : 1;
-            
-            const clientSelect = document.getElementById("client");
-            clientSelect.innerHTML = '<option value="">-- Select Client --</option>';
-            
-            for(let i=1; i<lines.length; i++) {
-                // Safely split CSV line ignoring commas inside quotes
-                const cols = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(val => val.replace(/^"|"$/g, '').trim());
-                if (cols.length > Math.max(idIdx, nameIdx)) {
+            clients.forEach(client => {
+                // Tries a few common key names just in case they are formatted differently in JSON
+                const cName = client["Client Name"] || client.client_name || client.name || client.ClientName; 
+                const cId = client["Client ID"] || client.client_id || client.id || client.ClientID;
+                
+                if (cName && cId) {
+                    clientDatabase[cName] = cId;
+                    
                     const opt = document.createElement('option');
-                    opt.value = cols[nameIdx];
-                    opt.dataset.id = cols[idIdx];
-                    opt.textContent = cols[nameIdx];
-                    clientSelect.appendChild(opt);
+                    opt.value = cName;
+                    clientList.appendChild(opt);
                 }
-            }
+            });
         } catch(e) {
-            console.error("Error loading CSV:", e);
-            document.getElementById("client").innerHTML = '<option value="">Error loading clients</option>';
+            console.warn("Could not load clients. You can manually type the client name.", e);
         }
     }
 
-    // Update Client ID when dropdown changes
     function updateClientId() {
-        const select = document.getElementById("client");
-        const opt = select.options[select.selectedIndex];
-        if(opt && opt.dataset.id) {
-            document.getElementById("clientId").value = opt.dataset.id;
+        const clientInput = document.getElementById("client").value;
+        if(clientDatabase[clientInput]) {
+            document.getElementById("clientId").value = clientDatabase[clientInput];
         } else {
-            document.getElementById("clientId").value = "";
+            document.getElementById("clientId").value = ""; // Clear if not found
         }
     }
 
-    // Toggle Mode UI & Initialization
+    // Initialize Mode
     if (isClientMode) {
         document.body.classList.add('client-mode');
         document.getElementById('appContainer').style.display = 'block';
         
-        // In client mode, we don't fetch CSV, just show what was passed in URL
-        const clientSelect = document.getElementById("client");
-        const clientName = params.get("client") || "";
-        clientSelect.innerHTML = `<option value="${clientName}">${clientName}</option>`;
-        clientSelect.disabled = true;
-        
-        document.getElementById("invoiceId").value = params.get("id") || "";
-        document.getElementById("clientId").value = params.get("clientId") || "";
-        document.getElementById("invoiceDate").value = params.get("date") || "";
+        document.getElementById("client").value = safeGetParam("client");
+        document.getElementById("invoiceId").value = safeGetParam("id");
+        document.getElementById("clientId").value = safeGetParam("clientId");
+        document.getElementById("invoiceDate").value = safeGetParam("date");
+        document.getElementById("invoiceNotes").value = safeGetParam("notes");
     } else {
         document.getElementById('loginContainer').style.display = 'block';
-        
-        // Admin Mode Initialization
-        if (GITHUB_CSV_URL !== "YOUR_GITHUB_RAW_CSV_URL_HERE") {
-            fetchClients();
-        }
+        fetchClients();
         document.getElementById("invoiceId").value = generateInvoiceId();
         document.getElementById("invoiceDate").value = new Date().toISOString().split('T')[0];
     }
-    document.getElementById("invoiceNotes").value = decodeURIComponent(params.get("notes") || "");
 
-
-    // Login Logic
     function processLogin() {
         if (document.getElementById('passwordInput').value === '3655') {
             document.getElementById('loginContainer').style.display = 'none';
@@ -276,7 +261,6 @@
     }
     function handleLoginKeyPress(e) { if (e.key === 'Enter') processLogin(); }
 
-    // Service Rendering Logic
     function renderServices() {
         const list = document.getElementById("servicesList");
         list.innerHTML = '';
@@ -320,38 +304,23 @@
         document.getElementById("totalWords").innerText = numberToWords(total);
     }
 
-    function updateServiceName(id, name) {
-        const s = services.find(x => x.id === id);
-        if(s) { s.name = name; s.showDocs = 'no'; renderServices(); }
-    }
-
-    function updateServiceAmount(id, amt) {
-        const s = services.find(x => x.id === id);
-        if(s) { s.amount = parseInt(amt) || 0; renderServices(); }
-    }
-
-    function toggleDocs(id, val) {
-        const s = services.find(x => x.id === id);
-        if(s) { s.showDocs = val; renderServices(); }
-    }
-
+    function updateServiceName(id, name) { const s = services.find(x => x.id === id); if(s) { s.name = name; s.showDocs = 'no'; renderServices(); } }
+    function updateServiceAmount(id, amt) { const s = services.find(x => x.id === id); if(s) { s.amount = parseInt(amt) || 0; renderServices(); } }
+    function toggleDocs(id, val) { const s = services.find(x => x.id === id); if(s) { s.showDocs = val; renderServices(); } }
+    
     function addService() {
         const id = services.length ? Math.max(...services.map(s => s.id)) + 1 : 1;
         services.push({ id, name: "Other Consultancy", amount: 0, showDocs: 'no' });
         renderServices();
     }
-
-    function removeService(id) {
-        services = services.filter(s => s.id !== id);
-        renderServices();
-    }
+    
+    function removeService(id) { services = services.filter(s => s.id !== id); renderServices(); }
 
     function numberToWords(num) {
         if (num === 0) return 'Zero Rupees Only';
         const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
         const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
         const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-        
         function convert(n) {
             let res = "";
             if (n >= 100) { res += ones[Math.floor(n/100)] + " Hundred "; n %= 100; }
@@ -360,7 +329,6 @@
             if (n > 0) res += ones[n] + " ";
             return res.trim();
         }
-
         let result = "";
         if (Math.floor(num / 10000000) > 0) { result += convert(Math.floor(num/10000000)) + " Crore "; num %= 10000000; }
         if (Math.floor(num / 100000) > 0) { result += convert(Math.floor(num/100000)) + " Lakh "; num %= 100000; }
@@ -371,12 +339,11 @@
 
     renderServices();
 
-    // Export & Send Logic
     function downloadInvoice() {
         window.scrollTo(0, 0);
         const total = services.reduce((sum, s) => sum + s.amount, 0);
         const invId = document.getElementById("invoiceId").value;
-        const clientName = document.getElementById("client").value || document.getElementById("client").options[document.getElementById("client").selectedIndex].text;
+        const clientName = document.getElementById("client").value || "Client Name";
         const clientId = document.getElementById("clientId").value;
         const noteTxt = document.getElementById("invoiceNotes").value;
         
@@ -436,8 +403,7 @@
         const total = services.reduce((sum, s) => sum + s.amount, 0);
         const sNames = encodeURIComponent(services.map(s => s.name).join('|'));
         const sAmts = encodeURIComponent(services.map(s => s.amount).join('|'));
-        const clientSelect = document.getElementById("client");
-        const client = encodeURIComponent(clientSelect.value || clientSelect.options[clientSelect.selectedIndex].text);
+        const client = encodeURIComponent(document.getElementById("client").value || "Client Name");
         const clientId = encodeURIComponent(document.getElementById("clientId").value);
         const id = encodeURIComponent(document.getElementById("invoiceId").value);
         const date = document.getElementById("invoiceDate").value;
