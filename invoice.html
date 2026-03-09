@@ -39,10 +39,13 @@
         .service-input { font-size: 13px; padding: 6px; border: 1px solid var(--border); border-radius: 6px; width: 100%; }
         .doc-toggle { font-size: 11px; background: #eee; padding: 6px; border-radius: 6px; display: flex; align-items: center; gap: 8px; margin-top: 4px; }
         .btn-add-service { width: 100%; margin-top: 12px; background: transparent; color: var(--primary); border: 1px dashed var(--primary); padding: 8px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
-        .summary-section { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 24px; }
-        .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 600; align-items: center; }
+        
+        /* ADJUSTED SUMMARY STYLES for tighter gaps */
+        .summary-section { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 10px 16px; margin-bottom: 24px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; font-weight: 600; align-items: center; }
         .summary-input { width: 80px; text-align: right; border: 1px solid var(--border); border-radius: 4px; padding: 4px; }
-        .total-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 12px; padding-top: 12px; border-top: 2px solid var(--primary); font-size: 18px; font-weight: 700; color: var(--primary); }
+        .total-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px; padding-top: 8px; border-top: 2px solid var(--primary); font-size: 18px; font-weight: 700; color: var(--primary); }
+        
         .button-group { display: flex; flex-direction: column; gap: 12px; }
         .action-btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
         .btn-primary { background: var(--primary); color: white; }
@@ -72,8 +75,7 @@
     <div class="header">
         <img src="logocmeg.png" alt="CM Experts Group" class="logo-img">
         <h1>CM Experts Group</h1>
-        <p class="subtitle">Invoice Generator</p>
-    </div>
+        </div>
 
     <div class="details-grid">
         <div class="detail-group">
@@ -138,9 +140,9 @@
 
 <script>
     // ==========================================
-    const HOSTED_PORTAL_URL = "https://cmeg.in/invoice.html"; 
+    const HOSTED_PORTAL_URL = "https://cmeg.in/invoice"; 
     
-    // I HAVE DIRECTLY LINKED YOUR GITHUB JSON HERE:
+    // LIVE GITHUB JSON PATH IS ALREADY SET HERE:
     const GITHUB_JSON_URL = "https://raw.githubusercontent.com/cmegcloud/cmeg.in/main/clients.json"; 
     // ==========================================
 
@@ -160,7 +162,7 @@
     let services = [];
     let clientDatabase = {};
     
-    // Safe Bootloader
+    // Safe parameter loading with fallbacks
     try {
         const sNamesParam = urlParams.get("snames");
         if (sNamesParam) {
@@ -194,8 +196,7 @@
             document.getElementById("invoiceDate").value = new Date().toISOString().split('T')[0];
         }
     } catch (e) {
-        console.error("Initialization Error:", e);
-        // Force app to show even if parameters are malformed
+        console.error("Link malformed. Forcing app display.", e);
         document.getElementById('appContainer').style.display = 'block';
     }
 
@@ -213,7 +214,7 @@
                     list.appendChild(new Option(cName, cName));
                 }
             });
-        } catch(e) { console.warn("Failed to load clients.json"); }
+        } catch(e) { console.warn("Failed to load clients.json from GitHub."); }
     }
 
     function updateClientId() {
@@ -260,7 +261,7 @@
                             <option value="no" ${s.showDocs === 'no' ? 'selected' : ''}>No</option>
                             <option value="yes" ${s.showDocs === 'yes' ? 'selected' : ''}>Yes</option>
                         </select>
-                        ${s.showDocs === 'yes' ? `<span style="color:#8B6F47; font-size:10px;">(Will be added to PDF)</span>` : ''}
+                        ${s.showDocs === 'yes' ? `<span style="color:#8B6F47; font-size:10px;">(Included in PDF)</span>` : ''}
                     </div>
                 ` : ''}
             `;
@@ -465,24 +466,23 @@
         const adv = parseFloat(document.getElementById("advance").value) || 0;
         const total = subtotal + adj - adv;
 
-        // Modern, crash-proof URL generation
-        const paramsToSend = new URLSearchParams();
-        paramsToSend.append('mode', 'client');
-        paramsToSend.append('client', document.getElementById("client").value);
-        paramsToSend.append('clientId', document.getElementById("clientId").value);
-        paramsToSend.append('id', document.getElementById("invoiceId").value);
-        paramsToSend.append('date', document.getElementById("invoiceDate").value);
-        paramsToSend.append('due', document.getElementById("dueDate").value);
-        paramsToSend.append('adj', document.getElementById("adjustments").value);
-        paramsToSend.append('adv', document.getElementById("advance").value);
+        const params = new URLSearchParams();
+        params.append('mode', 'client');
+        params.append('client', document.getElementById("client").value);
+        params.append('clientId', document.getElementById("clientId").value);
+        params.append('id', document.getElementById("invoiceId").value);
+        params.append('date', document.getElementById("invoiceDate").value);
+        params.append('due', document.getElementById("dueDate").value);
+        params.append('adj', document.getElementById("adjustments").value);
+        params.append('adv', document.getElementById("advance").value);
         
-        paramsToSend.append('snames', services.map(s => s.name).join('|'));
-        paramsToSend.append('sids', services.map(s => s.sId).join('|'));
-        paramsToSend.append('spers', services.map(s => s.period).join('|'));
-        paramsToSend.append('samts', services.map(s => s.amount).join('|'));
-        paramsToSend.append('sdocs', services.map(s => s.showDocs).join('|'));
+        params.append('snames', services.map(s => s.name).join('|'));
+        params.append('sids', services.map(s => s.sId).join('|'));
+        params.append('spers', services.map(s => s.period).join('|'));
+        params.append('samts', services.map(s => s.amount).join('|'));
+        params.append('sdocs', services.map(s => s.showDocs).join('|'));
 
-        const url = `${HOSTED_PORTAL_URL}?${paramsToSend.toString()}`;
+        const url = `${HOSTED_PORTAL_URL}?${params.toString()}`;
         
         const msg = `Hi ${document.getElementById("client").value},\nYour Invoice ${document.getElementById("invoiceId").value} is ready.\nGrand Total: ₹${total.toLocaleString('en-IN')}\n\nView & Pay: ${url}`;
         window.open(`https://api.whatsapp.com/send?phone=91${mob}&text=${encodeURIComponent(msg)}`, '_blank');
