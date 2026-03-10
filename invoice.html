@@ -276,7 +276,7 @@
     }
     
     function addService() {
-        services.push({ id: Date.now(), name: "Other Consultancy", sId: "—", period: "", amount: 0, showDocs: 'no' });
+        services.push({ id: Date.now(), name: "Others", sId: "—", period: "", amount: 0, showDocs: 'no' });
         renderServices();
     }
     function removeService(id) { services = services.filter(s => s.id !== id); renderServices(); }
