@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CM Experts Group</title>
+    <title>CM BIZ</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#f9f9fb">
     <meta name="apple-mobile-web-app-capable" content="yes">
     
-    <link rel="icon" type="image/png" href="logocmte.png">
-    <link rel="apple-touch-icon" href="logocmte.png">
+    <link rel="icon" type="image/jpeg" href="logoapp.jpg">
+    <link rel="apple-touch-icon" href="logoapp.jpg">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -71,16 +71,15 @@
         .mobile-frame::before {
             content: '';
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('logocmte.png'); /* Uses your 1x1 logo */
+            background-image: url('logoapp.jpg'); /* Updated to logoapp.jpg */
             background-repeat: no-repeat;
             background-position: center;
             background-size: 70%;
-            opacity: 0.04; /* Very light watermark */
+            opacity: 0.04; 
             z-index: 0;
-            pointer-events: none; /* Allows clicking through the background */
+            pointer-events: none; 
         }
 
-        /* Make sure content sits above the watermark */
         .app-header, .app-content, .app-footer { position: relative; z-index: 1; }
 
         /* -- Header -- */
@@ -91,8 +90,9 @@
 
         .logo-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         
-        /* New Horizontal Logo Styling */
-        .logo-img { height: 40px; object-fit: contain; }
+        /* Updated Logo Styling to fit the square CM BIZ logo beautifully */
+        .logo-img { height: 42px; width: 42px; border-radius: 8px; object-fit: cover; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .brand-title { font-size: 18px; font-weight: 700; color: var(--text-dark); flex-grow: 1; margin-left: 12px; }
         
         .profile-icon { font-size: 26px; cursor: pointer; }
 
@@ -101,13 +101,15 @@
         .app-content::-webkit-scrollbar { display: none; }
 
         .highlights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .highlight-card { background-color: var(--primary-brown); border-radius: var(--border-radius-lg); padding: 20px 15px; display: flex; flex-direction: column; color: #ffffff; box-shadow: 0 6px 15px rgba(166, 124, 82, 0.25); cursor: pointer; }
+        .highlight-card { background-color: var(--primary-brown); border-radius: var(--border-radius-lg); padding: 20px 15px; display: flex; flex-direction: column; color: #ffffff; box-shadow: 0 6px 15px rgba(166, 124, 82, 0.25); cursor: pointer; transition: transform 0.2s; }
+        .highlight-card:active { transform: scale(0.96); }
         .card-icon-box { width: 36px; height: 36px; background-color: rgba(255, 255, 255, 0.2); border-radius: 10px; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; }
         .card-title { font-weight: 700; font-size: 16px; margin: 0; line-height: 1.25; }
 
         /* 75/25 Split Section */
         .split-section { display: flex; gap: 12px; margin-bottom: 25px; }
-        .calendar-box { flex: 0 0 68%; background-color: var(--bg-card-light); border-radius: var(--border-radius-lg); padding: 16px; box-shadow: var(--shadow-soft); display: flex; align-items: center; cursor: pointer; }
+        .calendar-box { flex: 0 0 68%; background-color: var(--bg-card-light); border-radius: var(--border-radius-lg); padding: 16px; box-shadow: var(--shadow-soft); display: flex; align-items: center; cursor: pointer; transition: transform 0.2s; }
+        .calendar-box:active { transform: scale(0.96); }
         .calendar-icon { width: 35px; height: 35px; background-color: rgba(166, 124, 82, 0.1); border-radius: 10px; display: flex; justify-content: center; align-items: center; margin-right: 12px; }
         .calendar-icon i { font-size: 16px; color: var(--primary-brown); }
         .calendar-text h3 { margin: 0; font-size: 14px; color: var(--text-dark); font-weight: 700; }
@@ -120,7 +122,7 @@
 
         /* Divisions */
         .section-header { font-size: 15px; font-weight: 700; color: var(--text-dark); margin: 0 0 12px 0; }
-        .division-box { background-color: var(--bg-card-light); border-left: 4px solid var(--primary-brown); border-radius: var(--border-radius-md); padding: 12px 15px; margin-bottom: 12px; display: flex; align-items: center; box-shadow: var(--shadow-soft); }
+        .division-box { background-color: var(--bg-card-light); border-left: 4px solid var(--primary-brown); border-radius: var(--border-radius-md); padding: 12px 15px; margin-bottom: 12px; display: flex; align-items: center; box-shadow: var(--shadow-soft); cursor: pointer;}
         .division-icon { width: 32px; height: 32px; background-color: rgba(166, 124, 82, 0.1); border-radius: 8px; display: flex; justify-content: center; align-items: center; margin-right: 15px; }
         .division-icon i { font-size: 14px; color: var(--primary-brown); }
         .division-content h4 { margin: 0; font-size: 14px; color: var(--text-dark); font-weight: 700; }
@@ -192,19 +194,6 @@
         .calc-btn:active { transform: scale(0.95); }
         .calc-btn.op { color: var(--primary-brown); background: rgba(166, 124, 82, 0.1); }
         .calc-btn.eq { background: var(--primary-brown); color: white; grid-column: span 2; }
-        
-        /* Calendar Modal */
-        .calendar-modal { position: absolute; bottom: -100%; left: 0; width: 100%; height: 80%; background-color: var(--bg-main); z-index: 60; border-top-left-radius: 30px; border-top-right-radius: 30px; box-shadow: 0 -10px 30px rgba(0,0,0,0.15); transition: bottom 0.4s ease; display: flex; flex-direction: column; }
-        .calendar-modal.active { bottom: 0; }
-        .modal-header { padding: 25px 20px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(166, 124, 82, 0.1); }
-        .modal-header h2 { margin: 0; font-size: 16px; color: var(--text-dark); }
-        .modal-content { padding: 20px; overflow-y: auto; flex-grow: 1; }
-        .modal-content::-webkit-scrollbar { display: none; }
-        .timeline-month { font-weight: 700; font-size: 14px; color: var(--primary-brown); margin: 15px 0 10px; }
-        .timeline-item { background: var(--bg-card-light); padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 3px solid var(--secondary-grey); box-shadow: var(--shadow-soft); }
-        .timeline-item h4 { margin: 0 0 4px 0; font-size: 13px; color: var(--text-dark); }
-        .timeline-item p { margin: 0; font-size: 11px; }
-
     </style>
 </head>
 <body>
@@ -213,7 +202,7 @@
 
         <div class="app-header">
             <div class="header-top">
-                <span>Oct 15, 2026</span>
+                <span id="currentDateDisplay">Mar 10, 2026</span>
                 <div>
                     <i class="fa fa-search"></i>
                     <i class="fa fa-bars" onclick="toggleSidebar()"></i>
@@ -221,58 +210,60 @@
             </div>
             
             <div class="logo-area">
-                <img src="logo-horizontal.png" alt="CM Experts Group" class="logo-img">
+                <img src="logoapp.jpg" alt="CM BIZ" class="logo-img">
+                <span class="brand-title">CM BIZ</span>
                 <i class="fa fa-circle-user profile-icon"></i>
             </div>
         </div>
 
         <div class="app-content">
             <div class="highlights-grid">
-                <div class="highlight-card">
+                <div class="highlight-card" onclick="window.location.href='registrationportal.html'">
                     <div class="card-icon-box"><i class="fa fa-file-signature"></i></div>
                     <h2 class="card-title">Registration<br>Portal</h2>
                 </div>
-                <div class="highlight-card">
+                <div class="highlight-card" onclick="window.location.href='complianceportal.html'">
                     <div class="card-icon-box"><i class="fa fa-scale-balanced"></i></div>
                     <h2 class="card-title">Compliance<br>Portal</h2>
                 </div>
             </div>
 
             <div class="split-section">
-                <div class="calendar-box" onclick="toggleCalendarModal()">
+                <div class="calendar-box" onclick="window.location.href='calender.html'">
                     <div class="calendar-icon"><i class="fa fa-calendar-days"></i></div>
                     <div class="calendar-text">
                         <h3>Compliance Calendar</h3>
-                        <p>Valid till Mar 31, 2027</p>
+                        <p>Track Due Dates</p>
                     </div>
                 </div>
-                <div class="upcoming-box">
-                    <span class="upcoming-name">GSTR-3B</span>
-                    <span class="upcoming-date">Oct 20</span>
+                
+                <div class="upcoming-box" id="upcomingDateBox">
+                    <span class="upcoming-name">Advance Tax</span>
+                    <span class="upcoming-date">Mar 15</span>
                     <span class="upcoming-label">Upcoming</span>
                 </div>
             </div>
 
             <h3 class="section-header">Divisions</h3>
-            <div class="division-box">
+            <div class="division-box" onclick="window.location.href='accountree.html'">
                 <div class="division-icon"><i class="fa fa-calculator"></i></div>
                 <div class="division-content"><h4>Accountree</h4><p>Accounting & Bookkeeping Services</p></div>
             </div>
-            <div class="division-box">
+            <div class="division-box" onclick="window.location.href='taxexperts.html'">
                 <div class="division-icon"><i class="fa fa-file-contract"></i></div>
                 <div class="division-content"><h4>CM Tax Experts</h4><p>Experts in Compliances</p></div>
             </div>
-            <div class="division-box">
+            <div class="division-box" onclick="window.location.href='cmbook.html'">
                 <div class="division-icon"><i class="fa fa-cloud"></i></div>
                 <div class="division-content"><h4>CM Books</h4><p>Cloud based ERP & CRM</p></div>
             </div>
         </div>
 
         <div class="app-footer">
-            <a href="#" class="footer-nav-item active"><i class="fa fa-house"></i><span>Home</span></a>
-            <a href="#" class="footer-nav-item"><i class="fa fa-newspaper"></i><span>Tax Updates</span></a>
+            <a href="index.html" class="footer-nav-item active"><i class="fa fa-house"></i><span>Home</span></a>
+            <a href="paymentportal.html" class="footer-nav-item"><i class="fa fa-wallet"></i><span>Payment</span></a>
             <a href="https://wa.me/919946151111" target="_blank" class="footer-nav-item support-hub"><i class="fab fa-whatsapp"></i><span>Support</span></a>
-            <a href="#" class="footer-nav-item"><i class="fa fa-circle-user"></i><span>Client Login</span></a>
+            <a href="client-login.html" class="footer-nav-item"><i class="fa fa-circle-user"></i><span>Client Login</span></a>
         </div>
 
         <div class="overlay" id="mainOverlay" onclick="closeAll()"></div>
@@ -286,11 +277,11 @@
                 <li onclick="toggleCalc()"><a href="#"><i class="fa fa-calculator"></i> Calculator</a></li>
                 
                 <li><a href="#"><i class="fa fa-magnifying-glass"></i> Trademark Search</a></li>
-                <li><a href="#"><i class="fa fa-link"></i> Compliance Links</a></li>
+                <li><a href="complianceportal.html"><i class="fa fa-link"></i> Compliance Links</a></li>
                 <li><a href="#"><i class="fa fa-lock"></i> Admin Login</a></li>
                 <li><a href="#"><i class="fa fa-map-location-dot"></i> Locate Us</a></li>
                 <li><a href="http://www.cmeg.in" target="_blank"><i class="fa fa-globe"></i> Visit Website</a></li>
-                <li><a href="#"><i class="fa fa-share-nodes"></i> Share App</a></li>
+                <li onclick="shareApp()"><a href="#"><i class="fa fa-share-nodes"></i> Share App</a></li>
                 <li>
                     <div class="theme-switch-wrapper">
                         <span><i class="fa fa-moon"></i> Dark Mode</span>
@@ -302,7 +293,7 @@
                 </li>
                 <li><a href="#"><i class="fa fa-circle-question"></i> Help</a></li>
             </ul>
-            <div class="sidebar-footer">&copy; CMEG 2026 All Rights Reserved.</div>
+            <div class="sidebar-footer">&copy; CM BIZ 2026 All Rights Reserved.</div>
         </div>
 
         <div class="calc-modal" id="calcModal">
@@ -332,119 +323,4 @@
                 <div class="calc-btn" onclick="appendCalc('3')">3</div>
                 <div class="calc-btn op" onclick="appendCalc('+')">+</div>
                 
-                <div class="calc-btn" onclick="appendCalc('0')">0</div>
-                <div class="calc-btn" onclick="appendCalc('.')">.</div>
-                <div class="calc-btn eq" onclick="calcResult()">=</div>
-            </div>
-        </div>
-
-        <div class="calendar-modal" id="calendarModal">
-            <div class="modal-header">
-                <h2>Compliance Calendar</h2>
-                <i class="fa fa-times close-btn" onclick="toggleCalendarModal()"></i>
-            </div>
-            <div class="modal-content">
-                <div class="timeline-month">October 2026</div>
-                <div class="timeline-item"><h4>Oct 11 - GSTR-1</h4><p>Outward Supplies Filing</p></div>
-                <div class="timeline-item"><h4>Oct 20 - GSTR-3B</h4><p>Monthly GST Return</p></div>
-                
-                <div class="timeline-month">November 2026</div>
-                <div class="timeline-item"><h4>Nov 07 - TDS/TCS</h4><p>Deposit of Tax Deducted</p></div>
-                
-                <div class="timeline-month">December 2026</div>
-                <div class="timeline-item"><h4>Dec 15 - Advance Tax</h4><p>3rd Instalment of Advance Tax</p></div>
-                <div class="timeline-item"><h4>Dec 31 - Annual Return</h4><p>GSTR-9 & 9C Filing</p></div>
-
-                <div class="timeline-month">January 2027</div>
-                <div class="timeline-item"><h4>Jan 18 - CMP-08</h4><p>Composition Dealer Return</p></div>
-
-                <div class="timeline-month">February 2027</div>
-                <div class="timeline-item"><h4>Feb 11 - GSTR-1</h4><p>Outward Supplies Filing</p></div>
-
-                <div class="timeline-month">March 2027</div>
-                <div class="timeline-item" style="border-color: var(--highlight-color);"><h4>Mar 15 - Advance Tax</h4><p>4th & Final Instalment</p></div>
-                <div class="timeline-item" style="border-color: var(--primary-brown);"><h4>Mar 31 - FY Closure</h4><p>Finalize Books / Year End Compliances</p></div>
-            </div>
-        </div>
-
-    </div>
-
-    <script>
-        // --- Service Worker Registration ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                .then(registration => { console.log('SW registered successfully:', registration); })
-                .catch(error => { console.log('SW registration failed:', error); });
-            });
-        }
-
-        // --- UI Interactions ---
-        const overlay = document.getElementById('mainOverlay');
-        const sideMenu = document.getElementById('sideMenu');
-        const calendarModal = document.getElementById('calendarModal');
-        const calcModal = document.getElementById('calcModal');
-        const body = document.body;
-
-        function toggleSidebar() {
-            if (sideMenu.classList.contains('active')) {
-                sideMenu.classList.remove('active'); overlay.classList.remove('active');
-            } else { closeAll(); sideMenu.classList.add('active'); overlay.classList.add('active'); }
-        }
-
-        function toggleCalendarModal() {
-            if (calendarModal.classList.contains('active')) {
-                calendarModal.classList.remove('active'); overlay.classList.remove('active');
-            } else { closeAll(); calendarModal.classList.add('active'); overlay.classList.add('active'); }
-        }
-
-        function toggleCalc() {
-            closeAll(); // close sidebar if open
-            if (calcModal.classList.contains('active')) {
-                calcModal.classList.remove('active');
-            } else { calcModal.classList.add('active'); }
-        }
-
-        function closeAll() {
-            sideMenu.classList.remove('active');
-            calendarModal.classList.remove('active');
-            overlay.classList.remove('active');
-        }
-
-        function toggleTheme() {
-            document.getElementById('themeToggle').checked ? body.classList.add('dark-theme') : body.classList.remove('dark-theme');
-        }
-
-        // --- Calculator Logic ---
-        const calcDisplay = document.getElementById('calcDisplay');
-        let calcVal = '0';
-
-        function updateDisplay() { calcDisplay.innerText = calcVal; }
-        
-        function appendCalc(val) {
-            if (calcVal === '0' && val !== '.') { calcVal = val; } 
-            else { calcVal += val; }
-            updateDisplay();
-        }
-        
-        function clearCalc() { calcVal = '0'; updateDisplay(); }
-        
-        function delCalc() {
-            if (calcVal.length > 1) { calcVal = calcVal.slice(0, -1); } 
-            else { calcVal = '0'; }
-            updateDisplay();
-        }
-        
-        function calcResult() {
-            try { 
-                // Basic eval for prototype demonstration
-                let result = eval(calcVal); 
-                calcVal = String(Number.isInteger(result) ? result : result.toFixed(4));
-            } 
-            catch (e) { calcVal = 'Error'; }
-            updateDisplay();
-            if(calcVal === 'Error') setTimeout(() => { clearCalc() }, 1000);
-        }
-    </script>
-</body>
-</html>
+                <div class="calc-btn" onclick="appendCalc('0
