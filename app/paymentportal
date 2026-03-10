@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Payment Portal - CM Experts Group</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f9f9fb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <link rel="icon" type="image/png" href="logocmte.png">
+    <link rel="apple-touch-icon" href="logocmte.png">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* BRAND COLORS */
+            --primary-brown: #a67c52;
+            --secondary-grey: #5e6665;
+            --highlight-color: #e63946;
+            
+            /* Light Theme */
+            --bg-main: #f9f9fb;
+            --bg-card-light: #ffffff;
+            --text-dark: #333333;
+            --border-color: #ffffff;
+            --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.04);
+            --overlay-bg: rgba(0, 0, 0, 0.4);
+            
+            --border-radius-lg: 20px;
+            --border-radius-md: 12px;
+        }
+
+        body.dark-theme {
+            --bg-main: #121212;
+            --bg-card-light: #1e1e1e;
+            --text-dark: #f5f5f5;
+            --secondary-grey: #a0a0a0;
+            --border-color: #2a2a2a;
+            --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.3);
+            --overlay-bg: rgba(0, 0, 0, 0.7);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #e0e5ec;
+            color: var(--secondary-grey);
+            margin: 0; padding: 0;
+            display: flex; justify-content: center; align-items: center;
+            min-h: 100vh; transition: background-color 0.3s ease;
+        }
+
+        /* Mobile Device Frame */
+        .mobile-frame {
+            width: 380px; height: 800px;
+            background-color: var(--bg-main);
+            border: 14px solid var(--border-color);
+            border-radius: 40px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.15);
+            overflow: hidden; position: relative;
+            display: flex; flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-frame::before {
+            content: '';
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('logocmte.png'); 
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 70%;
+            opacity: 0.04; 
+            z-index: 0;
+            pointer-events: none; 
+        }
+
+        .app-header, .app-content, .app-footer { position: relative; z-index: 1; }
+
+        /* -- Header -- */
+        .app-header { padding: 30px 20px 10px; background-color: transparent; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .header-top span { font-size: 13px; font-weight: 500; opacity: 0.8; }
+        .header-top i { font-size: 18px; margin-left: 15px; cursor: pointer; }
+
+        .logo-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .logo-img { height: 40px; object-fit: contain; }
+        .profile-icon { font-size: 26px; cursor: pointer; }
+
+        /* -- Main Content -- */
+        .app-content { flex-grow: 1; overflow-y: auto; padding-bottom: 90px; overflow-x: hidden; padding-left: 20px; padding-right: 20px;}
+        .app-content::-webkit-scrollbar { display: none; }
+
+        /* Page Title */
+        .page-title { display: flex; align-items: center; font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 20px; }
+        .page-title i { margin-right: 12px; color: var(--primary-brown); cursor: pointer; padding: 5px; }
+
+        /* Form Styling */
+        .form-section { background-color: var(--bg-card-light); border-radius: var(--border-radius-lg); padding: 20px; box-shadow: var(--shadow-soft); margin-bottom: 20px; border-top: 4px solid var(--primary-brown); }
+        .form-section p.subtitle { margin: 0 0 15px 0; font-size: 11px; color: var(--secondary-grey); }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; }
+        .form-control { width: 100%; box-sizing: border-box; padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(166, 124, 82, 0.2); background-color: var(--bg-main); color: var(--text-dark); font-family: 'Montserrat', sans-serif; font-size: 13px; outline: none; transition: border 0.3s; }
+        .form-control:focus { border-color: var(--primary-brown); }
+        textarea.form-control { resize: none; height: 70px; }
+
+        /* Highlighted Amount Field */
+        .amount-wrapper { position: relative; }
+        .amount-wrapper i { position: absolute; left: 15px; top: 13px; font-size: 14px; color: var(--text-dark); }
+        .amount-wrapper input { padding-left: 35px; font-size: 16px; font-weight: 700; color: var(--primary-brown); border-color: var(--primary-brown); background-color: rgba(166,124,82,0.05); }
+
+        /* QR Code Block */
+        .qr-section { background: rgba(166, 124, 82, 0.06); padding: 20px; border-radius: var(--border-radius-md); text-align: center; margin-bottom: 20px; border: 1px dashed var(--primary-brown); }
+        .qr-img-box { width: 160px; height: 160px; background-color: #fff; margin: 0 auto 15px; border-radius: 10px; display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .qr-img-box img { width: 100%; height: 100%; object-fit: contain; }
+        .qr-instructions { font-size: 11px; color: var(--secondary-grey); line-height: 1.4; margin-bottom: 15px; }
+        .qr-instructions strong { color: var(--highlight-color); }
+
+        /* CTA Buttons */
+        .cta-section { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
+        .btn { padding: 14px; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 600; text-align: center; text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: var(--shadow-soft); transition: transform 0.2s; border: none; cursor: pointer; width: 100%; box-sizing: border-box;}
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background-color: var(--primary-brown); color: #ffffff; }
+        .btn-whatsapp { background-color: #25D366; color: #ffffff; }
+
+        /* Quick Links */
+        .quick-links-box { background-color: var(--bg-card-light); border-radius: var(--border-radius-lg); padding: 20px; box-shadow: var(--shadow-soft); margin-bottom: 10px; }
+        .quick-links-box h3 { margin: 0 0 15px 0; font-size: 15px; color: var(--text-dark); font-weight: 700; border-bottom: 1px solid rgba(166, 124, 82, 0.1); padding-bottom: 10px; }
+        .quick-links-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+        .quick-links-list a { text-decoration: none; color: var(--secondary-grey); font-size: 12px; font-weight: 500; display: flex; align-items: center; transition: color 0.2s; }
+        .quick-links-list a i { margin-right: 10px; font-size: 10px; color: var(--primary-brown); opacity: 0.7; }
+        .quick-links-list a:hover { color: var(--primary-brown); }
+
+        /* Footer Navigation */
+        .app-footer { position: absolute; bottom: 0; left: 0; width: 100%; height: 75px; background-color: var(--bg-card-light); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); border-top-left-radius: 30px; border-top-right-radius: 30px; display: flex; justify-content: space-evenly; align-items: center; padding: 0 10px 10px; z-index: 10; transition: background-color 0.3s; }
+        .footer-nav-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; text-decoration: none; width: 65px; opacity: 0.6; color: var(--text-dark); }
+        .footer-nav-item:hover, .footer-nav-item.active { color: var(--primary-brown); opacity: 1; }
+        .footer-nav-item i { font-size: 20px; margin-bottom: 6px; }
+        .footer-nav-item span { font-size: 10px; font-weight: 500; }
+
+        /* Sidebar & Overlays */
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay-bg); z-index: 40; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .overlay.active { opacity: 1; visibility: visible; }
+        .sidebar { position: absolute; top: 0; right: -280px; width: 250px; height: 100%; background-color: var(--bg-card-light); z-index: 50; box-shadow: -5px 0 20px rgba(0,0,0,0.1); transition: right 0.3s ease; display: flex; flex-direction: column; }
+        .sidebar.active { right: 0; }
+        .sidebar-header { padding: 30px 20px 20px; border-bottom: 1px solid rgba(166, 124, 82, 0.2); display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-header h2 { margin: 0; font-size: 18px; color: var(--text-dark); }
+        .close-btn { font-size: 24px; cursor: pointer; }
+        
+        .menu-list { list-style: none; padding: 20px 0; margin: 0; flex-grow: 1; overflow-y: auto; }
+        .menu-list li { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; transition: background 0.2s; }
+        .menu-list li a { text-decoration: none; color: var(--text-dark); font-size: 14px; font-weight: 500; display: flex; align-items: center; width: 100%; }
+        .menu-list li i { width: 30px; font-size: 16px; color: var(--primary-brown); }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-frame">
+        <div class="app-header">
+            <div class="header-top">
+                <span id="headerDate">Mar 10, 2026</span>
+                <div>
+                    <i class="fa fa-search"></i>
+                    <i class="fa fa-bars" onclick="toggleSidebar()"></i>
+                </div>
+            </div>
+            
+            <div class="logo-area">
+                <img src="logo-horizontal.png" alt="CM Experts Group" class="logo-img" onerror="this.style.display='none'">
+                <i class="fa fa-circle-user profile-icon"></i>
+            </div>
+        </div>
+
+        <div class="app-content">
+            <div class="page-title">
+                <i class="fa fa-arrow-left" onclick="history.back()"></i>
+                <span>Payment Portal</span>
+            </div>
+
+            <div class="form-section">
+                <p class="subtitle">Enter your details to generate a secure payment link.</p>
+                
+                <div class="form-group">
+                    <label>Amount (₹) <span style="color:red;">*</span></label>
+                    <div class="amount-wrapper">
+                        <i class="fa fa-indian-rupee-sign"></i>
+                        <input type="number" id="payAmount" class="form-control" placeholder="0.00" oninput="updateQR()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="payName" class="form-control" placeholder="Your Full Name" oninput="updateQR()">
+                </div>
+
+                <div class="form-group">
+                    <label>Description of Payment</label>
+                    <input type="text" id="payDesc" class="form-control" placeholder="e.g. GST Filing March" oninput="updateQR()">
+                </div>
+
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <input type="tel" id="payMobile" class="form-control" placeholder="Enter Mobile Number">
+                </div>
+
+                <div class="form-group">
+                    <label>Email ID</label>
+                    <input type="email" id="payEmail" class="form-control" placeholder="Enter Email Address">
+                </div>
+
+                <div class="form-group">
+                    <label>Additional Notes (Optional)</label>
+                    <textarea id="payNotes" class="form-control" placeholder="Any special instructions..."></textarea>
+                </div>
+            </div>
+
+            <div class="qr-section">
+                <div class="qr-img-box">
+                    <img id="qrCodeImage" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=cmtaxexperts@ybl&pn=CMEG" alt="UPI QR Code">
+                </div>
+                
+                <p class="qr-instructions">
+                    Scan with any UPI app (GPay, PhonePe, Paytm).<br>
+                    <strong>Important:</strong> Please ensure your <span style="text-decoration: underline;">Name & Description</span> are mentioned in the UPI "Add a Note" or "Remarks" section before paying.
+                </p>
+
+                <a id="payNowBtn" href="upi://pay?pa=cmtaxexperts@ybl&pn=CMEG" class="btn btn-primary" style="margin-bottom: 12px;">
+                    <i class="fa fa-bolt"></i> Tap to Pay Now
+                </a>
+                
+                <button onclick="sendAckToWhatsapp()" class="btn btn-whatsapp">
+                    <i class="fab fa-whatsapp"></i> Send Receipt/Ack to CMEG
+                </button>
+            </div>
+
+            <div class="quick-links-box">
+                <h3>Quick Links</h3>
+                <ul class="quick-links-list">
+                    <li><a href="https://cmeg.in/app/index.html"><i class="fa fa-chevron-right"></i> Home</a></li>
+                    <li><a href="https://cmeg.in/app/client-login.html"><i class="fa fa-chevron-right"></i> Client Login</a></li>
+                    <li><a href="https://cmeg.in/app/compliance.html"><i class="fa fa-chevron-right"></i> Compliance Portal</a></li>
+                    <li><a href="https://cmeg.in/app/registration.html"><i class="fa fa-chevron-right"></i> Registration Portal</a></li>
+                    <li><a href="https://cmeg.in/app/calendar.html"><i class="fa fa-chevron-right"></i> Compliance Calendar</a></li>
+                    <li><a href="https://cmeg.in/app/cmbook.html"><i class="fa fa-chevron-right"></i> CM Book ERP</a></li>
+                    <li><a href="https://cmeg.in/app/accountree.html"><i class="fa fa-chevron-right"></i> Accountree</a></li>
+                    <li><a href="https://cmeg.in/app/taxexperts.html"><i class="fa fa-chevron-right"></i> CM Tax Experts</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="app-footer">
+            <a href="https://cmeg.in/app/index.html" class="footer-nav-item"><i class="fa fa-house"></i><span>Home</span></a>
+            <a href="https://cmeg.in/app/tax-updates.html" class="footer-nav-item"><i class="fa fa-newspaper"></i><span>Tax Updates</span></a>
+            <a href="https://wa.me/919946151111" target="_blank" class="footer-nav-item"><i class="fab fa-whatsapp" style="color: #25D366;"></i><span style="color: #25D366;">Support</span></a>
+            <a href="https://cmeg.in/app/client-login.html" class="footer-nav-item"><i class="fa fa-circle-user"></i><span>Client Login</span></a>
+        </div>
+
+        <div class="overlay" id="mainOverlay" onclick="closeAll()"></div>
+
+        <div class="sidebar" id="sideMenu">
+            <div class="sidebar-header">
+                <h2>Menu</h2>
+                <i class="fa fa-times close-btn" onclick="toggleSidebar()"></i>
+            </div>
+            <ul class="menu-list">
+                <li><a href="#"><i class="fa fa-magnifying-glass"></i> Trademark Search</a></li>
+                <li><a href="https://cmeg.in/app/compliance.html"><i class="fa fa-link"></i> Compliance Links</a></li>
+                <li><a href="#"><i class="fa fa-lock"></i> Admin Login</a></li>
+                <li><a href="#"><i class="fa fa-map-location-dot"></i> Locate Us</a></li>
+                <li><a href="http://www.cmeg.in" target="_blank"><i class="fa fa-globe"></i> Visit Website</a></li>
+                <li><a href="#"><i class="fa fa-share-nodes"></i> Share App</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        // Set Header Date automatically
+        const today = new Date();
+        document.getElementById('headerDate').innerText = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+        // Generate Dynamic QR and Deep Link
+        function updateQR() {
+            const amount = document.getElementById('payAmount').value;
+            const name = document.getElementById('payName').value || '';
+            const desc = document.getElementById('payDesc').value || '';
+            
+            // Build the Narration for the UPI string
+            let narration = '';
+            if (name || desc) {
+                narration = `${name} - ${desc}`.replace(/[^a-zA-Z0-9 -]/g, "").trim(); // Sanitize characters for UPI
+            } else {
+                narration = 'CMEG Payment';
+            }
+
+            // Construct UPI String (UPI ID hardcoded and hidden in JS logic)
+            let upiString = `upi://pay?pa=cmtaxexperts@ybl&pn=CMEG&tn=${encodeURIComponent(narration)}&cu=INR`;
+            
+            // Append amount only if it exists and is greater than 0
+            if (amount && parseFloat(amount) > 0) {
+                upiString += `&am=${amount}`;
+            }
+
+            // Update the QR Image source using a free QR API
+            const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+            document.getElementById('qrCodeImage').src = qrImageUrl;
+
+            // Update the 'Pay Now' Button Link
+            document.getElementById('payNowBtn').href = upiString;
+        }
+
+        // WhatsApp Submission Logic
+        function sendAckToWhatsapp() {
+            const amount = document.getElementById('payAmount').value || '0.00';
+            const name = document.getElementById('payName').value || '[Not Provided]';
+            const desc = document.getElementById('payDesc').value || '[Not Provided]';
+            const mobile = document.getElementById('payMobile').value || '[Not Provided]';
+            const email = document.getElementById('payEmail').value || '[Not Provided]';
+            const notes = document.getElementById('payNotes').value || 'None';
+
+            const message = `Hello CM Experts Group,\n\nI have initiated a payment. Here are my details:\n\n*Amount Paid:* ₹${amount}\n*Name:* ${name}\n*Description:* ${desc}\n*Mobile:* ${mobile}\n*Email:* ${email}\n*Notes:* ${notes}\n\nPlease find the attached payment screenshot/receipt for acknowledgment.`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/919946151111?text=${encodedMessage}`, '_blank');
+        }
+
+        // Sidebar logic
+        const overlay = document.getElementById('mainOverlay');
+        const sideMenu = document.getElementById('sideMenu');
+
+        function toggleSidebar() {
+            if (sideMenu.classList.contains('active')) {
+                sideMenu.classList.remove('active'); overlay.classList.remove('active');
+            } else { closeAll(); sideMenu.classList.add('active'); overlay.classList.add('active'); }
+        }
+
+        function closeAll() {
+            sideMenu.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+    </script>
+</body>
+</html>
