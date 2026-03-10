@@ -356,6 +356,15 @@
     </div>
 
     <script>
+        // --- 1. SERVICE WORKER REGISTRATION (REQUIRED FOR APP INSTALL) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                .then(registration => { console.log('SW registered successfully:', registration); })
+                .catch(error => { console.log('SW registration failed:', error); });
+            });
+        }
+
         // --- Date setup ---
         const today = new Date();
         document.getElementById('currentDateDisplay').innerText = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -367,11 +376,11 @@
         // Array of fixed dates for the current month to check against
         const complianceSchedule = [
             { date: new Date(currentYear, currentMonth, 7), name: 'TDS Payment' },
-            { date: new Date(currentYear, currentMonth, 11), name: 'GSTR-1' },     // Fixed: 11th is now here
+            { date: new Date(currentYear, currentMonth, 11), name: 'GSTR-1' },     
             { date: new Date(currentYear, currentMonth, 15), name: 'Advance Tax' },
             { date: new Date(currentYear, currentMonth, 20), name: 'GSTR-3B' },
             { date: new Date(currentYear, currentMonth, 31), name: 'FY Closure' },
-            { date: new Date(currentYear, currentMonth + 1, 7), name: 'TDS Payment' }, // Next month spillover
+            { date: new Date(currentYear, currentMonth + 1, 7), name: 'TDS Payment' }, 
             { date: new Date(currentYear, currentMonth + 1, 11), name: 'GSTR-1' }
         ];
 
@@ -437,7 +446,7 @@
             }
         }
 
-        // --- Fixed UI Interactions (Removed null reference errors) ---
+        // --- Fixed UI Interactions ---
         const overlay = document.getElementById('mainOverlay');
         const sideMenu = document.getElementById('sideMenu');
         const calcModal = document.getElementById('calcModal');
