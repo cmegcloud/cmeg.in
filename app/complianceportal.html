@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Registration Portal - CM Experts Group</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f9f9fb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <link rel="icon" type="image/png" href="logocmte.png">
+    <link rel="apple-touch-icon" href="logocmte.png">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* BRAND COLORS */
+            --primary-brown: #a67c52;
+            --secondary-grey: #5e6665;
+            --highlight-color: #e63946;
+            
+            /* Light Theme */
+            --bg-main: #f9f9fb;
+            --bg-card-light: #ffffff;
+            --text-dark: #333333;
+            --border-color: #ffffff;
+            --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.04);
+            --overlay-bg: rgba(0, 0, 0, 0.4);
+            
+            --border-radius-lg: 20px;
+            --border-radius-md: 12px;
+        }
+
+        body.dark-theme {
+            --bg-main: #121212;
+            --bg-card-light: #1e1e1e;
+            --text-dark: #f5f5f5;
+            --secondary-grey: #a0a0a0;
+            --border-color: #2a2a2a;
+            --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.3);
+            --overlay-bg: rgba(0, 0, 0, 0.7);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #e0e5ec;
+            color: var(--secondary-grey);
+            margin: 0; padding: 0;
+            display: flex; justify-content: center; align-items: center;
+            min-h: 100vh; transition: background-color 0.3s ease;
+        }
+
+        /* Mobile Device Frame */
+        .mobile-frame {
+            width: 380px; height: 800px;
+            background-color: var(--bg-main);
+            border: 14px solid var(--border-color);
+            border-radius: 40px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.15);
+            overflow: hidden; position: relative;
+            display: flex; flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-frame::before {
+            content: '';
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('logocmte.png'); 
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 70%;
+            opacity: 0.04; 
+            z-index: 0;
+            pointer-events: none; 
+        }
+
+        .app-header, .app-content, .app-footer { position: relative; z-index: 1; }
+
+        /* -- Header -- */
+        .app-header { padding: 30px 20px 10px; background-color: transparent; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .header-top span { font-size: 13px; font-weight: 500; opacity: 0.8; }
+        .header-top i { font-size: 18px; margin-left: 15px; cursor: pointer; }
+
+        .logo-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .logo-img { height: 40px; object-fit: contain; }
+        .profile-icon { font-size: 26px; cursor: pointer; }
+
+        /* -- Main Content -- */
+        .app-content { flex-grow: 1; overflow-y: auto; padding-bottom: 90px; overflow-x: hidden; }
+        .app-content::-webkit-scrollbar { display: none; }
+        
+        .view-container { padding: 0 20px 20px; display: none; animation: fadeIn 0.3s ease; }
+        .view-container.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* Page Title */
+        .page-title { display: flex; align-items: center; font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 20px; }
+        .page-title i { margin-right: 12px; color: var(--primary-brown); cursor: pointer; padding: 5px; }
+
+        /* Service Grid */
+        .service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .service-card { background-color: var(--bg-card-light); border-radius: var(--border-radius-md); padding: 15px 10px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: var(--shadow-soft); border-bottom: 3px solid transparent; transition: border-color 0.2s; cursor: pointer; }
+        .service-card:hover { border-bottom: 3px solid var(--primary-brown); }
+        .service-card i { font-size: 24px; color: var(--primary-brown); margin-bottom: 10px; }
+        .service-card span { font-size: 11px; font-weight: 600; color: var(--text-dark); line-height: 1.3; }
+
+        /* Service Detail Form View */
+        .service-header { background-color: rgba(166, 124, 82, 0.1); padding: 15px; border-radius: var(--border-radius-md); margin-bottom: 20px; border-left: 4px solid var(--primary-brown); }
+        .service-header h3 { margin: 0 0 5px 0; font-size: 15px; color: var(--text-dark); }
+        .service-header p { margin: 0; font-size: 11px; color: var(--secondary-grey); }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; }
+        .form-control { width: 100%; box-sizing: border-box; padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(166, 124, 82, 0.2); background-color: var(--bg-card-light); color: var(--text-dark); font-family: 'Montserrat', sans-serif; font-size: 13px; outline: none; transition: border 0.3s; }
+        .form-control:focus { border-color: var(--primary-brown); }
+        
+        .doc-list-box { background-color: var(--bg-card-light); border-radius: var(--border-radius-md); padding: 15px; box-shadow: var(--shadow-soft); margin-bottom: 20px; }
+        .doc-list-box h4 { margin: 0 0 10px 0; font-size: 13px; color: var(--text-dark); }
+        .doc-list { list-style: none; padding: 0; margin: 0; font-size: 12px; }
+        .doc-list li { margin-bottom: 8px; display: flex; align-items: flex-start; }
+        .doc-list li i { color: var(--primary-brown); margin-right: 8px; margin-top: 3px; font-size: 10px; }
+
+        .payment-block { background: rgba(166, 124, 82, 0.06); padding: 15px; border-radius: 12px; margin-top: 20px; border: 1px dashed var(--primary-brown); }
+        .payment-block h4 { margin: 0 0 12px 0; font-size: 13px; color: var(--primary-brown); }
+
+        /* CTA Buttons */
+        .cta-section { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
+        .btn { padding: 14px; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 600; text-align: center; text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: var(--shadow-soft); transition: transform 0.2s; border: none; cursor: pointer; width: 100%; box-sizing: border-box;}
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background-color: var(--primary-brown); color: #ffffff; }
+        .btn-whatsapp { background-color: #25D366; color: #ffffff; }
+        .btn-outline { background-color: transparent; border: 1px solid var(--primary-brown); color: var(--primary-brown); }
+
+        /* Quick Links */
+        .quick-links-box { background-color: var(--bg-card-light); border-radius: var(--border-radius-lg); padding: 20px; box-shadow: var(--shadow-soft); margin-bottom: 10px; }
+        .quick-links-box h3 { margin: 0 0 15px 0; font-size: 15px; color: var(--text-dark); font-weight: 700; border-bottom: 1px solid rgba(166, 124, 82, 0.1); padding-bottom: 10px; }
+        .quick-links-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+        .quick-links-list a { text-decoration: none; color: var(--secondary-grey); font-size: 12px; font-weight: 500; display: flex; align-items: center; transition: color 0.2s; }
+        .quick-links-list a i { margin-right: 10px; font-size: 10px; color: var(--primary-brown); opacity: 0.7; }
+        .quick-links-list a:hover { color: var(--primary-brown); }
+
+        /* Footer Navigation */
+        .app-footer { position: absolute; bottom: 0; left: 0; width: 100%; height: 75px; background-color: var(--bg-card-light); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); border-top-left-radius: 30px; border-top-right-radius: 30px; display: flex; justify-content: space-evenly; align-items: center; padding: 0 10px 10px; z-index: 10; transition: background-color 0.3s; }
+        .footer-nav-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; text-decoration: none; width: 65px; opacity: 0.6; color: var(--text-dark); }
+        .footer-nav-item:hover, .footer-nav-item.active { color: var(--primary-brown); opacity: 1; }
+        .footer-nav-item i { font-size: 20px; margin-bottom: 6px; }
+        .footer-nav-item span { font-size: 10px; font-weight: 500; }
+        .support-hub { color: #25D366; opacity: 1; }
+
+        /* Sidebar & Overlays */
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay-bg); z-index: 40; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .overlay.active { opacity: 1; visibility: visible; }
+        .sidebar { position: absolute; top: 0; right: -280px; width: 250px; height: 100%; background-color: var(--bg-card-light); z-index: 50; box-shadow: -5px 0 20px rgba(0,0,0,0.1); transition: right 0.3s ease; display: flex; flex-direction: column; }
+        .sidebar.active { right: 0; }
+        .sidebar-header { padding: 30px 20px 20px; border-bottom: 1px solid rgba(166, 124, 82, 0.2); display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-header h2 { margin: 0; font-size: 18px; color: var(--text-dark); }
+        .close-btn { font-size: 24px; cursor: pointer; }
+        
+        .menu-list { list-style: none; padding: 20px 0; margin: 0; flex-grow: 1; overflow-y: auto; }
+        .menu-list li { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; transition: background 0.2s; }
+        .menu-list li a { text-decoration: none; color: var(--text-dark); font-size: 14px; font-weight: 500; display: flex; align-items: center; width: 100%; }
+        .menu-list li i { width: 30px; font-size: 16px; color: var(--primary-brown); }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-frame">
+        <div class="app-header">
+            <div class="header-top">
+                <span>Oct 15, 2026</span>
+                <div>
+                    <i class="fa fa-search"></i>
+                    <i class="fa fa-bars" onclick="toggleSidebar()"></i>
+                </div>
+            </div>
+            
+            <div class="logo-area">
+                <img src="logo-horizontal.png" alt="CM Experts Group" class="logo-img" onerror="this.style.display='none'">
+                <i class="fa fa-circle-user profile-icon"></i>
+            </div>
+        </div>
+
+        <div class="app-content">
+            
+            <div class="view-container active" id="mainGrid">
+                <div class="page-title">
+                    <i class="fa fa-arrow-left" onclick="history.back()"></i>
+                    <span>Registration Portal</span>
+                </div>
+
+                <div class="service-grid">
+                    <div class="service-card" onclick="openService('Udhyam')"><i class="fa fa-industry"></i><span>Udhyam</span></div>
+                    <div class="service-card" onclick="openService('GST')"><i class="fa fa-receipt"></i><span>GST</span></div>
+                    <div class="service-card" onclick="openService('IEC')"><i class="fa fa-ship"></i><span>Import Export Code</span></div>
+                    <div class="service-card" onclick="openService('TradeMark')"><i class="fa fa-trademark"></i><span>TradeMark</span></div>
+                    <div class="service-card" onclick="openService('Trade Licence')"><i class="fa fa-id-card"></i><span>Trade Licence</span></div>
+                    <div class="service-card" onclick="openService('Kswift')"><i class="fa fa-bolt"></i><span>Kswift</span></div>
+                    <div class="service-card" onclick="openService('Labour')"><i class="fa fa-users-gear"></i><span>Labour</span></div>
+                    <div class="service-card" onclick="openService('ESI')"><i class="fa fa-heart-pulse"></i><span>ESI</span></div>
+                    <div class="service-card" onclick="openService('EPF')"><i class="fa fa-piggy-bank"></i><span>EPF</span></div>
+                    <div class="service-card" onclick="openService('PAN')"><i class="fa fa-id-badge"></i><span>PAN</span></div>
+                    <div class="service-card" onclick="openService('TAN')"><i class="fa fa-file-signature"></i><span>TAN</span></div>
+                    <div class="service-card" onclick="openService('DSC')"><i class="fa fa-signature"></i><span>DSC</span></div>
+                    <div class="service-card" onclick="openService('Partnership Firm')"><i class="fa fa-handshake"></i><span>Partnership Firm</span></div>
+                    <div class="service-card" onclick="openService('LLP')"><i class="fa fa-building-user"></i><span>LLP</span></div>
+                    <div class="service-card" onclick="openService('Pvt Ltd Company')"><i class="fa fa-building"></i><span>Pvt Ltd Company</span></div>
+                    <div class="service-card" onclick="openService('FSSAI')"><i class="fa fa-utensils"></i><span>Food & Safety FSSAI</span></div>
+                    <div class="service-card" onclick="openService('Repacking Licence')"><i class="fa fa-box-open"></i><span>Repacking Licence</span></div>
+                </div>
+
+                <div class="cta-section">
+                    <a href="tel:+919946151111" class="btn btn-primary">
+                        <i class="fa fa-phone"></i> Need Assistance
+                    </a>
+                    <a href="https://wa.me/919946151111" class="btn btn-whatsapp" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Chat with Experts
+                    </a>
+                </div>
+
+                <div class="quick-links-box">
+                    <h3>Quick Links</h3>
+                    <ul class="quick-links-list">
+                        <li><a href="#"><i class="fa fa-chevron-right"></i> Home</a></li>
+                        <li><a href="#"><i class="fa fa-chevron-right"></i> Client Login</a></li>
+                        <li><a href="#"><i class="fa fa-chevron-right"></i> Compliance Portal</a></li>
+                        <li><a href="#"><i class="fa fa-chevron-right"></i> Registration Portal</a></li>
+                        <li><a href="#"><i class="fa fa-chevron-right"></i> Compliance Calendar 2026-27</a></li>
+                        <li><a href="#"><i class="fa fa-chevron-right"></i> CM Book ERP</a></li>
+                        <li><a href="#"><i class="fa fa-chevron-right"></i> Accountree</a></li>
+                        <li><a href="#"><i class="fa fa-chevron-right"></i> CM Tax Experts</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="view-container" id="serviceFormView">
+                <div class="page-title">
+                    <i class="fa fa-arrow-left" onclick="showMainView()"></i>
+                    <span>Document Required</span>
+                </div>
+
+                <div class="service-header">
+                    <h3 id="serviceTitle">Service Name</h3>
+                    <p id="serviceTime"><i class="fa fa-clock"></i> Estimated Processing Time: 3-5 Working Days</p>
+                </div>
+
+                <div id="standardFormFields">
+                    <div class="form-group" id="constitutionGroup">
+                        <label>Constitution of Business <span style="color:red;">*</span></label>
+                        <select id="appConstitution" class="form-control" onchange="updateDocs()">
+                            <option value="">Select Constitution</option>
+                            <option value="Proprietorship">Proprietorship</option>
+                            <option value="Partnership">Partnership Firm</option>
+                            <option value="LLP">Limited Liability Partnership (LLP)</option>
+                            <option value="Private Limited">Private Limited Company</option>
+                            <option value="Trust/Society">Trust / Society</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="dscTypeGroup" style="display:none;">
+                        <label>Applicant Type (Class 3) <span style="color:red;">*</span></label>
+                        <select id="appDscType" class="form-control" onchange="updateDocs()">
+                            <option value="">Select Type</option>
+                            <option value="Individual">Individual</option>
+                            <option value="Institution">Institution</option>
+                        </select>
+                    </div>
+
+                    <div id="contactFormGroup">
+                        <div class="form-group">
+                            <label>Name of Applicant</label>
+                            <input type="text" id="appName" class="form-control" placeholder="Enter Full Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Mobile No.</label>
+                            <input type="tel" id="appMobile" class="form-control" placeholder="Enter Mobile Number">
+                        </div>
+                        <div class="form-group">
+                            <label>Email ID</label>
+                            <input type="email" id="appEmail" class="form-control" placeholder="Enter Email Address">
+                        </div>
+                    </div>
+
+                    <div class="payment-block" id="paymentSection">
+                        <h4>Payment Details</h4>
+                        <a href="upi://pay?pa=cmtaxexperts@ybl&pn=CM%20Tax%20Experts" target="_blank" class="btn btn-whatsapp" style="margin-bottom: 15px; font-size: 13px; padding: 10px;">
+                            <i class="fa fa-qrcode"></i> Pay Now (cmtaxexperts@ybl)
+                        </a>
+                        <div class="form-group">
+                            <label>Amount Paid (₹)</label>
+                            <input type="number" id="payAmount" class="form-control" placeholder="Enter Amount">
+                        </div>
+                        <div class="form-group">
+                            <label>Reference No. (UPI/NEFT)</label>
+                            <input type="text" id="payRef" class="form-control" placeholder="Transaction Ref No.">
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Date</label>
+                            <input type="date" id="payDate" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="doc-list-box" id="documentSection">
+                    <h4>Required Documents Checklist</h4>
+                    <ul class="doc-list" id="docChecklist">
+                        </ul>
+                </div>
+
+                <div class="cta-section">
+                    <button id="whatsappSubmitBtn" onclick="sendToWhatsapp()" class="btn btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i> Send Documents Click Here
+                    </button>
+                    <a id="directCallBtn" href="tel:+919946151111" class="btn btn-primary" style="display:none;">
+                        <i class="fa fa-phone"></i> Call Experts Directly
+                    </a>
+                    
+                    <a href="tel:+919946151111" id="supportCallBtn" class="btn btn-outline">
+                        <i class="fa fa-phone"></i> Call Support: 9946151111
+                    </a>
+                </div>
+
+                <div class="quick-links-box" style="margin-top: 20px;">
+                    <h3>Quick Links</h3>
+                    <ul class="quick-links-list">
+                        <li><a href="#" onclick="showMainView()"><i class="fa fa-chevron-right"></i> Home</a></li>
+                        <li><a href="#"><i class="fa fa-chevron-right"></i> Client Login</a></li>
+                        <li><a href="#"><i class="fa fa-chevron-right"></i> Compliance Portal</a></li>
+                        <li><a href="#" onclick="showMainView()"><i class="fa fa-chevron-right"></i> Registration Portal</a></li>
+                        <li><a href="#"><i class="fa fa-chevron-right"></i> Compliance Calendar 2026-27</a></li>
+                        <li><a href="#"><i class="fa fa-chevron-right"></i> CM Book ERP</a></li>
+                        <li><a href="#"><i class="fa fa-chevron-right"></i> Accountree</a></li>
+                        <li><a href="#"><i class="fa fa-chevron-right"></i> CM Tax Experts</a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="app-footer">
+            <a href="#" class="footer-nav-item active"><i class="fa fa-house"></i><span>Home</span></a>
+            <a href="#" class="footer-nav-item"><i class="fa fa-newspaper"></i><span>Tax Updates</span></a>
+            <a href="https://wa.me/919946151111" target="_blank" class="footer-nav-item support-hub"><i class="fab fa-whatsapp"></i><span>Support</span></a>
+            <a href="#" class="footer-nav-item"><i class="fa fa-circle-user"></i><span>Client Login</span></a>
+        </div>
+
+        <div class="overlay" id="mainOverlay" onclick="closeAll()"></div>
+
+        <div class="sidebar" id="sideMenu">
+            <div class="sidebar-header">
+                <h2>Menu</h2>
+                <i class="fa fa-times close-btn" onclick="toggleSidebar()"></i>
+            </div>
+            <ul class="menu-list">
+                <li><a href="#"><i class="fa fa-magnifying-glass"></i> Trademark Search</a></li>
+                <li><a href="#"><i class="fa fa-link"></i> Compliance Links</a></li>
+                <li><a href="#"><i class="fa fa-lock"></i> Admin Login</a></li>
+                <li><a href="#"><i class="fa fa-map-location-dot"></i> Locate Us</a></li>
+                <li><a href="http://www.cmeg.in" target="_blank"><i class="fa fa-globe"></i> Visit Website</a></li>
+                <li><a href="#"><i class="fa fa-share-nodes"></i> Share App</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        // Database of base documents and times
+        const serviceData = {
+            'Udhyam': { time: '1-2 Working Days', docs: ['Bank Account Details'] },
+            'GST': { time: '3-7 Working Days', docs: ['Passport Size Photo', 'Rent Agreement / NOC', 'Latest Electricity Bill', 'Bank Cancelled Cheque'] },
+            'IEC': { time: '1-2 Working Days', docs: ['Bank Certificate / Cancelled Cheque'] },
+            'TradeMark': { time: '1-3 Days (Filing)', docs: ['Logo / Brand Name', 'MSME / Udhyam Certificate', 'Signed Power of Attorney (TM-48)'] },
+            'Trade Licence': { time: '7-15 Working Days', docs: ['Premises Ownership/Rent Proof', 'Property Tax Receipt'] },
+            'Kswift': { time: '5-10 Working Days', docs: ['Project Report', 'Building Permit (if applicable)', 'Local Body Approval'] },
+            'Labour': { time: '3-5 Working Days', docs: ['Rental Agreement of Shop/Office'] },
+            'ESI': { time: '5-7 Working Days', docs: ['List of Employees with IDs', 'Cancelled Cheque'] },
+            'EPF': { time: '5-7 Working Days', docs: ['List of Employees with Details'] },
+            'PAN': { time: '3-5 Working Days', docs: [] },
+            'TAN': { time: '3-5 Working Days', docs: ['Address Proof of Business'] },
+            
+            // New Services Base Data
+            'DSC': { time: '1-2 Working Days', docs: ['Please select Applicant Type above.'] },
+            'Partnership Firm': { time: '5-7 Working Days', docs: ['Partnership Deed', 'PAN Cards of all Partners', 'Aadhaar of all Partners', 'Passport Photos', 'Office Address Proof (Rent Agreement & Utility Bill)'] },
+            'LLP': { time: '10-15 Working Days', docs: ['PAN & Aadhaar of Designated Partners', 'Photos of Partners', 'Office Address Proof (NOC & Utility Bill)', 'DSC of Partners'] },
+            'Pvt Ltd Company': { time: '10-15 Working Days', docs: ['PAN & Aadhaar of Directors', 'Photos of Directors', 'Latest Bank Statement of Directors', 'Office Address Proof (NOC & Utility Bill)', 'DSC of Directors'] },
+            'FSSAI': { time: 'Consultation Required', docs: ['Click Call Experts below to discuss food category and capacity requirements.'] },
+            'Repacking Licence': { time: 'Consultation Required', docs: ['Click Call Experts below to discuss plant layout and local body approvals.'] }
+        };
+
+        let currentService = '';
+
+        function openService(serviceName) {
+            currentService = serviceName;
+            const data = serviceData[serviceName] || { time: 'Standard Processing Time', docs: ['ID Proof', 'Address Proof'] };
+            
+            document.getElementById('serviceTitle').innerText = 'Registration for ' + serviceName;
+            document.getElementById('serviceTime').innerHTML = '<i class="fa fa-clock"></i> Estimated Time: ' + data.time;
+            
+            // Reset Form Fields
+            document.getElementById('appConstitution').value = '';
+            document.getElementById('appDscType').value = '';
+            document.getElementById('appName').value = '';
+            document.getElementById('appMobile').value = '';
+            document.getElementById('appEmail').value = '';
+            document.getElementById('payAmount').value = '';
+            document.getElementById('payRef').value = '';
+            document.getElementById('payDate').value = '';
+
+            // Layout Toggles based on Service Type
+            const isEntityReg = ['Partnership Firm', 'LLP', 'Pvt Ltd Company'].includes(serviceName);
+            const isDirectCall = ['FSSAI', 'Repacking Licence'].includes(serviceName);
+            const isDsc = serviceName === 'DSC';
+
+            // Show/Hide Constitution & DSC Dropdowns
+            document.getElementById('constitutionGroup').style.display = (isEntityReg || isDirectCall || isDsc) ? 'none' : 'block';
+            document.getElementById('dscTypeGroup').style.display = isDsc ? 'block' : 'none';
+
+            // Handle Direct Call Services (Hide form & show big call button)
+            if(isDirectCall) {
+                document.getElementById('standardFormFields').style.display = 'none';
+                document.getElementById('whatsappSubmitBtn').style.display = 'none';
+                document.getElementById('supportCallBtn').style.display = 'none';
+                document.getElementById('directCallBtn').style.display = 'flex';
+            } else {
+                document.getElementById('standardFormFields').style.display = 'block';
+                document.getElementById('whatsappSubmitBtn').style.display = 'flex';
+                document.getElementById('supportCallBtn').style.display = 'flex';
+                document.getElementById('directCallBtn').style.display = 'none';
+            }
+
+            // Update Documents based on initial load
+            updateDocs();
+
+            // Switch Views
+            document.getElementById('mainGrid').classList.remove('active');
+            document.getElementById('serviceFormView').classList.add('active');
+            document.querySelector('.app-content').scrollTop = 0;
+        }
+
+        function updateDocs() {
+            const consti = document.getElementById('appConstitution').value;
+            const dscType = document.getElementById('appDscType').value;
+            let data = serviceData[currentService];
+            let docs = [...(data.docs || [])];
+            
+            // Inject Constitution specific docs if it's a standard service
+            if (!['DSC', 'Partnership Firm', 'LLP', 'Pvt Ltd Company', 'FSSAI', 'Repacking Licence'].includes(currentService)) {
+                if (consti === 'Proprietorship') docs.unshift('Proprietor PAN & Aadhaar');
+                else if (consti === 'Partnership') docs.unshift('Partnership Deed', 'Partner PANs & Aadhaar');
+                else if (consti === 'LLP') docs.unshift('LLP Agreement', 'Incorporation Certificate', 'Partner IDs');
+                else if (consti === 'Private Limited') docs.unshift('COI, MOA, AOA', 'Director PAN/Aadhaar');
+                else if (consti === 'Trust/Society') docs.unshift('Trust Deed / Registration Cert', 'Trustee IDs');
+                else if (consti !== '') docs.unshift('ID Proof of Applicant', 'Business Registration Proof');
+            }
+
+            // Handle DSC specific dynamic docs
+            if (currentService === 'DSC') {
+                if (dscType === 'Individual') {
+                    docs = ['Applicant PAN', 'Applicant Aadhaar', 'Passport Photo', 'Email & Mobile linked to Aadhaar'];
+                } else if (dscType === 'Institution') {
+                    docs = ['Applicant PAN & Aadhaar', 'Organization Proof (GST / COI)', 'Authorization Letter from Authorized Signatory', 'Passport Photo'];
+                } else {
+                    docs = ['Please select Applicant Type above to view Class 3 requirements.'];
+                }
+            }
+
+            // Render Document List
+            const docList = document.getElementById('docChecklist');
+            docList.innerHTML = '';
+            docs.forEach(doc => {
+                const li = document.createElement('li');
+                li.innerHTML = `<i class="fa fa-check-circle"></i> ${doc}`;
+                docList.appendChild(li);
+            });
+        }
+
+        function showMainView() {
+            document.getElementById('serviceFormView').classList.remove('active');
+            document.getElementById('mainGrid').classList.add('active');
+            document.querySelector('.app-content').scrollTop = 0;
+        }
+
+        function sendToWhatsapp() {
+            // Collect Form Details
+            const name = document.getElementById('appName').value || '[Not Provided]';
+            const mobile = document.getElementById('appMobile').value || '[Not Provided]';
+            const email = document.getElementById('appEmail').value || '[Not Provided]';
+            
+            let typeString = '';
+            if (currentService === 'DSC') {
+                typeString = `\nApplicant Type: ${document.getElementById('appDscType').value || '[Not Selected]'}`;
+            } else if (document.getElementById('constitutionGroup').style.display !== 'none') {
+                typeString = `\nConstitution: ${document.getElementById('appConstitution').value || '[Not Selected]'}`;
+            }
+
+            // Collect Payment Details
+            const pAmount = document.getElementById('payAmount').value || 'Pending';
+            const pRef = document.getElementById('payRef').value || 'Pending';
+            const pDate = document.getElementById('payDate').value || 'Pending';
+
+            const message = `Hello CM Experts Group,\n\nI want to apply for *${currentService} Registration*.\n\n*My Details:*\nName: ${name}\nMobile: ${mobile}\nEmail: ${email}${typeString}\n\n*Payment Details:*\nAmount: ₹${pAmount}\nRef No: ${pRef}\nDate: ${pDate}\n\nI am ready to submit the required documents. Please guide me further.`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/919946151111?text=${encodedMessage}`, '_blank');
+        }
+
+        // Sidebar logic
+        const overlay = document.getElementById('mainOverlay');
+        const sideMenu = document.getElementById('sideMenu');
+
+        function toggleSidebar() {
+            if (sideMenu.classList.contains('active')) {
+                sideMenu.classList.remove('active'); overlay.classList.remove('active');
+            } else { closeAll(); sideMenu.classList.add('active'); overlay.classList.add('active'); }
+        }
+
+        function closeAll() {
+            sideMenu.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+    </script>
+</body>
+</html>
