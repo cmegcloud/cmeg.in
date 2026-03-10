@@ -71,7 +71,7 @@
         .mobile-frame::before {
             content: '';
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('logoapp.jpg'); /* Updated to logoapp.jpg */
+            background-image: url('logoapp.jpg'); 
             background-repeat: no-repeat;
             background-position: center;
             background-size: 70%;
@@ -89,12 +89,15 @@
         .header-top i { font-size: 18px; margin-left: 15px; cursor: pointer; }
 
         .logo-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        
-        /* Updated Logo Styling to fit the square CM BIZ logo beautifully */
         .logo-img { height: 42px; width: 42px; border-radius: 8px; object-fit: cover; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .brand-title { font-size: 18px; font-weight: 700; color: var(--text-dark); flex-grow: 1; margin-left: 12px; }
-        
         .profile-icon { font-size: 26px; cursor: pointer; }
+
+        /* -- Search Bar (Hidden by default) -- */
+        .search-container { display: none; padding: 0 20px 15px; animation: fadeIn 0.3s ease; }
+        .search-container.active { display: block; }
+        .search-input { width: 100%; box-sizing: border-box; padding: 10px 15px; border-radius: 20px; border: 1px solid var(--primary-brown); background-color: var(--bg-card-light); color: var(--text-dark); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* -- Main Content -- */
         .app-content { flex-grow: 1; padding: 0 20px 20px; overflow-y: auto; padding-bottom: 90px; }
@@ -116,7 +119,7 @@
         .calendar-text p { margin: 2px 0 0 0; font-size: 10px; }
 
         .upcoming-box { flex: 1; background-color: var(--highlight-color); border-radius: var(--border-radius-lg); padding: 12px 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: #ffffff; box-shadow: 0 6px 15px rgba(230, 57, 70, 0.3); }
-        .upcoming-name { font-size: 10px; font-weight: 600; opacity: 0.95; margin-bottom: 4px; }
+        .upcoming-name { font-size: 10px; font-weight: 600; opacity: 0.95; margin-bottom: 4px; text-align: center; }
         .upcoming-date { font-size: 15px; font-weight: 700; line-height: 1; }
         .upcoming-label { font-size: 8px; text-transform: uppercase; opacity: 0.8; margin-top: 4px; }
 
@@ -127,6 +130,14 @@
         .division-icon i { font-size: 14px; color: var(--primary-brown); }
         .division-content h4 { margin: 0; font-size: 14px; color: var(--text-dark); font-weight: 700; }
         .division-content p { margin: 2px 0 0 0; font-size: 10px; }
+
+        /* Dark Quick Links */
+        .quick-links-box { background-color: #4a3320; border-radius: var(--border-radius-lg); padding: 20px; box-shadow: var(--shadow-soft); margin-bottom: 10px; margin-top: 15px; }
+        .quick-links-box h3 { margin: 0 0 15px 0; font-size: 15px; color: #ffffff; font-weight: 700; border-bottom: 1px solid rgba(255, 255, 255, 0.15); padding-bottom: 10px; }
+        .quick-links-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+        .quick-links-list a { text-decoration: none; color: #f5f5f5; font-size: 12px; font-weight: 500; display: flex; align-items: center; transition: color 0.2s; }
+        .quick-links-list a i { margin-right: 10px; font-size: 10px; color: #dcb897; opacity: 1; }
+        .quick-links-list a:hover { color: #ffffff; opacity: 0.8; }
 
         /* Footer Navigation */
         .app-footer { position: absolute; bottom: 0; left: 0; width: 100%; height: 75px; background-color: var(--bg-card-light); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); border-top-left-radius: 30px; border-top-right-radius: 30px; display: flex; justify-content: space-evenly; align-items: center; padding: 0 10px 10px; z-index: 10; transition: background-color 0.3s; }
@@ -202,9 +213,9 @@
 
         <div class="app-header">
             <div class="header-top">
-                <span id="currentDateDisplay">Mar 10, 2026</span>
+                <span id="currentDateDisplay"></span>
                 <div>
-                    <i class="fa fa-search"></i>
+                    <i class="fa fa-search" onclick="toggleSearch()"></i>
                     <i class="fa fa-bars" onclick="toggleSidebar()"></i>
                 </div>
             </div>
@@ -214,6 +225,10 @@
                 <span class="brand-title">CM BIZ</span>
                 <i class="fa fa-circle-user profile-icon"></i>
             </div>
+        </div>
+
+        <div class="search-container" id="searchBar">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search portals or services..." onkeypress="handleSearch(event)">
         </div>
 
         <div class="app-content">
@@ -238,24 +253,36 @@
                 </div>
                 
                 <div class="upcoming-box" id="upcomingDateBox">
-                    <span class="upcoming-name">Advance Tax</span>
-                    <span class="upcoming-date">Mar 15</span>
+                    <span class="upcoming-name">Loading...</span>
+                    <span class="upcoming-date">--</span>
                     <span class="upcoming-label">Upcoming</span>
                 </div>
             </div>
 
             <h3 class="section-header">Divisions</h3>
-            <div class="division-box" onclick="window.location.href='accountree.html'">
+            <div class="division-box" onclick="window.location.href='#'">
                 <div class="division-icon"><i class="fa fa-calculator"></i></div>
                 <div class="division-content"><h4>Accountree</h4><p>Accounting & Bookkeeping Services</p></div>
             </div>
-            <div class="division-box" onclick="window.location.href='taxexperts.html'">
+            <div class="division-box" onclick="window.location.href='#'">
                 <div class="division-icon"><i class="fa fa-file-contract"></i></div>
                 <div class="division-content"><h4>CM Tax Experts</h4><p>Experts in Compliances</p></div>
             </div>
-            <div class="division-box" onclick="window.location.href='cmbook.html'">
+            <div class="division-box" onclick="window.location.href='#'">
                 <div class="division-icon"><i class="fa fa-cloud"></i></div>
                 <div class="division-content"><h4>CM Books</h4><p>Cloud based ERP & CRM</p></div>
+            </div>
+
+            <div class="quick-links-box">
+                <h3>Quick Links</h3>
+                <ul class="quick-links-list">
+                    <li><a href="index.html"><i class="fa fa-chevron-right"></i> Home</a></li>
+                    <li><a href="#"><i class="fa fa-chevron-right"></i> Client Login</a></li>
+                    <li><a href="complianceportal.html"><i class="fa fa-chevron-right"></i> Compliance Portal</a></li>
+                    <li><a href="registrationportal.html"><i class="fa fa-chevron-right"></i> Registration Portal</a></li>
+                    <li><a href="paymentportal.html"><i class="fa fa-chevron-right"></i> Payment Portal</a></li>
+                    <li><a href="calender.html"><i class="fa fa-chevron-right"></i> Compliance Calendar</a></li>
+                </ul>
             </div>
         </div>
 
@@ -263,7 +290,7 @@
             <a href="index.html" class="footer-nav-item active"><i class="fa fa-house"></i><span>Home</span></a>
             <a href="paymentportal.html" class="footer-nav-item"><i class="fa fa-wallet"></i><span>Payment</span></a>
             <a href="https://wa.me/919946151111" target="_blank" class="footer-nav-item support-hub"><i class="fab fa-whatsapp"></i><span>Support</span></a>
-            <a href="client-login.html" class="footer-nav-item"><i class="fa fa-circle-user"></i><span>Client Login</span></a>
+            <a href="#" class="footer-nav-item"><i class="fa fa-circle-user"></i><span>Client Login</span></a>
         </div>
 
         <div class="overlay" id="mainOverlay" onclick="closeAll()"></div>
@@ -274,14 +301,15 @@
                 <i class="fa fa-times close-btn" onclick="toggleSidebar()"></i>
             </div>
             <ul class="menu-list">
-                <li onclick="toggleCalc()"><a href="#"><i class="fa fa-calculator"></i> Calculator</a></li>
-                
+                <li onclick="toggleCalc()"><a href="javascript:void(0)"><i class="fa fa-calculator"></i> Calculator</a></li>
                 <li><a href="#"><i class="fa fa-magnifying-glass"></i> Trademark Search</a></li>
                 <li><a href="complianceportal.html"><i class="fa fa-link"></i> Compliance Links</a></li>
                 <li><a href="#"><i class="fa fa-lock"></i> Admin Login</a></li>
                 <li><a href="#"><i class="fa fa-map-location-dot"></i> Locate Us</a></li>
                 <li><a href="http://www.cmeg.in" target="_blank"><i class="fa fa-globe"></i> Visit Website</a></li>
-                <li onclick="shareApp()"><a href="#"><i class="fa fa-share-nodes"></i> Share App</a></li>
+                
+                <li><a href="javascript:void(0)" onclick="shareApp()"><i class="fa fa-share-nodes"></i> Share App</a></li>
+                
                 <li>
                     <div class="theme-switch-wrapper">
                         <span><i class="fa fa-moon"></i> Dark Mode</span>
@@ -307,20 +335,176 @@
                 <div class="calc-btn op" onclick="delCalc()"><i class="fa fa-delete-left"></i></div>
                 <div class="calc-btn op" onclick="appendCalc('%')">%</div>
                 <div class="calc-btn op" onclick="appendCalc('/')">&divide;</div>
-                
                 <div class="calc-btn" onclick="appendCalc('7')">7</div>
                 <div class="calc-btn" onclick="appendCalc('8')">8</div>
                 <div class="calc-btn" onclick="appendCalc('9')">9</div>
                 <div class="calc-btn op" onclick="appendCalc('*')">&times;</div>
-                
                 <div class="calc-btn" onclick="appendCalc('4')">4</div>
                 <div class="calc-btn" onclick="appendCalc('5')">5</div>
                 <div class="calc-btn" onclick="appendCalc('6')">6</div>
                 <div class="calc-btn op" onclick="appendCalc('-')">&minus;</div>
-                
                 <div class="calc-btn" onclick="appendCalc('1')">1</div>
                 <div class="calc-btn" onclick="appendCalc('2')">2</div>
                 <div class="calc-btn" onclick="appendCalc('3')">3</div>
                 <div class="calc-btn op" onclick="appendCalc('+')">+</div>
+                <div class="calc-btn" onclick="appendCalc('0')">0</div>
+                <div class="calc-btn" onclick="appendCalc('.')">.</div>
+                <div class="calc-btn eq" onclick="calcResult()">=</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Date setup ---
+        const today = new Date();
+        document.getElementById('currentDateDisplay').innerText = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+        // --- Corrected Upcoming Compliance Logic ---
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth(); // 0-indexed (2 = March)
+
+        // Array of fixed dates for the current month to check against
+        const complianceSchedule = [
+            { date: new Date(currentYear, currentMonth, 7), name: 'TDS Payment' },
+            { date: new Date(currentYear, currentMonth, 11), name: 'GSTR-1' },     // Fixed: 11th is now here
+            { date: new Date(currentYear, currentMonth, 15), name: 'Advance Tax' },
+            { date: new Date(currentYear, currentMonth, 20), name: 'GSTR-3B' },
+            { date: new Date(currentYear, currentMonth, 31), name: 'FY Closure' },
+            { date: new Date(currentYear, currentMonth + 1, 7), name: 'TDS Payment' }, // Next month spillover
+            { date: new Date(currentYear, currentMonth + 1, 11), name: 'GSTR-1' }
+        ];
+
+        // Find the next upcoming event
+        let foundEvent = false;
+        for (let event of complianceSchedule) {
+            // Check if event is today or in the future
+            if (event.date >= new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+                const day = event.date.getDate();
+                const monthStr = event.date.toLocaleDateString('en-US', { month: 'short' });
                 
-                <div class="calc-btn" onclick="appendCalc('0
+                document.getElementById('upcomingDateBox').innerHTML = `
+                    <span class="upcoming-name">${event.name}</span>
+                    <span class="upcoming-date">${monthStr} ${day}</span>
+                    <span class="upcoming-label">Upcoming</span>
+                `;
+                foundEvent = true;
+                break;
+            }
+        }
+        
+        if(!foundEvent) {
+             document.getElementById('upcomingDateBox').innerHTML = `
+                <span class="upcoming-name">All Clear!</span>
+                <span class="upcoming-date">--</span>
+                <span class="upcoming-label">Updated</span>
+            `;
+        }
+
+        // --- Search Bar Functionality ---
+        function toggleSearch() {
+            const searchBar = document.getElementById('searchBar');
+            searchBar.classList.toggle('active');
+            if(searchBar.classList.contains('active')) {
+                document.getElementById('searchInput').focus();
+            }
+        }
+
+        function handleSearch(event) {
+            if (event.key === 'Enter') {
+                const query = document.getElementById('searchInput').value.toLowerCase();
+                if(query.includes('reg')) window.location.href = 'registrationportal.html';
+                else if(query.includes('comp') || query.includes('gst') || query.includes('tax')) window.location.href = 'complianceportal.html';
+                else if(query.includes('pay')) window.location.href = 'paymentportal.html';
+                else if(query.includes('cal') || query.includes('date')) window.location.href = 'calender.html';
+                else alert('No specific page found for: ' + query);
+            }
+        }
+
+        // --- Fixed Web Share API ---
+        function shareApp() {
+            closeAll(); // Close the menu when sharing
+            if (navigator.share) {
+                navigator.share({
+                    title: 'CM BIZ',
+                    text: 'Check out CM BIZ - Your complete compliance and business registration portal!',
+                    url: 'https://cmeg.in/app/'
+                }).then(() => {
+                    console.log('Thanks for sharing!');
+                }).catch(console.error);
+            } else {
+                alert('Share feature is not supported on this browser. You can copy this link to share: https://cmeg.in/app/');
+            }
+        }
+
+        // --- Fixed UI Interactions (Removed null reference errors) ---
+        const overlay = document.getElementById('mainOverlay');
+        const sideMenu = document.getElementById('sideMenu');
+        const calcModal = document.getElementById('calcModal');
+        const body = document.body;
+
+        function toggleSidebar() {
+            if (sideMenu.classList.contains('active')) {
+                closeAll();
+            } else { 
+                closeAll(); 
+                sideMenu.classList.add('active'); 
+                overlay.classList.add('active'); 
+            }
+        }
+
+        function toggleCalc() {
+            closeAll();
+            if (calcModal.classList.contains('active')) {
+                calcModal.classList.remove('active');
+            } else { 
+                calcModal.classList.add('active'); 
+            }
+        }
+
+        function closeAll() {
+            if(sideMenu) sideMenu.classList.remove('active');
+            if(overlay) overlay.classList.remove('active');
+            if(calcModal) calcModal.classList.remove('active');
+            
+            // Hide search if open when clicking overlay
+            const searchBar = document.getElementById('searchBar');
+            if(searchBar && searchBar.classList.contains('active')) {
+                searchBar.classList.remove('active');
+            }
+        }
+
+        function toggleTheme() {
+            document.getElementById('themeToggle').checked ? body.classList.add('dark-theme') : body.classList.remove('dark-theme');
+        }
+
+        // --- Calculator Logic ---
+        const calcDisplay = document.getElementById('calcDisplay');
+        let calcVal = '0';
+
+        function updateDisplay() { calcDisplay.innerText = calcVal; }
+        
+        function appendCalc(val) {
+            if (calcVal === '0' && val !== '.') { calcVal = val; } 
+            else { calcVal += val; }
+            updateDisplay();
+        }
+        function clearCalc() { calcVal = '0'; updateDisplay(); }
+        function delCalc() {
+            if (calcVal.length > 1) { calcVal = calcVal.slice(0, -1); } 
+            else { calcVal = '0'; }
+            updateDisplay();
+        }
+        function calcResult() {
+            try { 
+                let result = eval(calcVal); 
+                calcVal = String(Number.isInteger(result) ? result : result.toFixed(4));
+            } catch (e) { 
+                calcVal = 'Error'; 
+            }
+            updateDisplay();
+            if(calcVal === 'Error') setTimeout(() => { clearCalc() }, 1000);
+        }
+    </script>
+</body>
+</html>
