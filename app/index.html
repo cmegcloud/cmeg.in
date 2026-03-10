@@ -9,8 +9,8 @@
     <meta name="theme-color" content="#f9f9fb">
     <meta name="apple-mobile-web-app-capable" content="yes">
     
-    <link rel="icon" type="image/jpeg" href="logoapp.jpg">
-    <link rel="apple-touch-icon" href="logoapp.jpg">
+    <link rel="icon" type="image/png" href="logoapp.png">
+    <link rel="apple-touch-icon" href="logoapp.png">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,11 +67,11 @@
             transition: all 0.3s ease;
         }
 
-        /* LIGHT OPACITY BACKGROUND LOGO */
+        /* LIGHT OPACITY BACKGROUND LOGO - Updated to PNG */
         .mobile-frame::before {
             content: '';
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('logoapp.jpg'); 
+            background-image: url('logoapp.png'); 
             background-repeat: no-repeat;
             background-position: center;
             background-size: 70%;
@@ -86,7 +86,7 @@
         .app-header { padding: 30px 20px 10px; background-color: transparent; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .header-top span { font-size: 13px; font-weight: 500; opacity: 0.8; }
-        .header-top i { font-size: 18px; margin-left: 15px; cursor: pointer; }
+        .header-top i { font-size: 18px; margin-left: 15px; cursor: pointer; padding: 5px; }
 
         .logo-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .logo-img { height: 42px; width: 42px; border-radius: 8px; object-fit: cover; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -154,7 +154,7 @@
         .sidebar.active { right: 0; }
         .sidebar-header { padding: 30px 20px 20px; border-bottom: 1px solid rgba(166, 124, 82, 0.2); display: flex; justify-content: space-between; align-items: center; }
         .sidebar-header h2 { margin: 0; font-size: 18px; color: var(--text-dark); }
-        .close-btn { font-size: 24px; cursor: pointer; }
+        .close-btn { font-size: 24px; cursor: pointer; padding: 5px;}
         
         .menu-list { list-style: none; padding: 20px 0; margin: 0; flex-grow: 1; overflow-y: auto; }
         .menu-list li { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; transition: background 0.2s; }
@@ -215,13 +215,13 @@
             <div class="header-top">
                 <span id="currentDateDisplay"></span>
                 <div>
-                    <i class="fa fa-search" onclick="toggleSearch()"></i>
-                    <i class="fa fa-bars" onclick="toggleSidebar()"></i>
+                    <i class="fa fa-search" onclick="toggleSearch()" style="cursor: pointer;"></i>
+                    <i class="fa fa-bars" onclick="toggleSidebar()" style="cursor: pointer;"></i>
                 </div>
             </div>
             
             <div class="logo-area">
-                <img src="logoapp.jpg" alt="CM BIZ" class="logo-img">
+                <img src="logoapp.png" alt="CM BIZ" class="logo-img">
                 <span class="brand-title">CM BIZ</span>
                 <i class="fa fa-circle-user profile-icon"></i>
             </div>
@@ -303,12 +303,12 @@
             <ul class="menu-list">
                 <li onclick="toggleCalc()"><a href="javascript:void(0)"><i class="fa fa-calculator"></i> Calculator</a></li>
                 <li><a href="#"><i class="fa fa-magnifying-glass"></i> Trademark Search</a></li>
-                <li><a href="complianceportal.html"><i class="fa fa-link"></i> Compliance Links</a></li>
+                <li onclick="window.location.href='complianceportal.html'"><a href="javascript:void(0)"><i class="fa fa-link"></i> Compliance Links</a></li>
                 <li><a href="#"><i class="fa fa-lock"></i> Admin Login</a></li>
                 <li><a href="#"><i class="fa fa-map-location-dot"></i> Locate Us</a></li>
                 <li><a href="http://www.cmeg.in" target="_blank"><i class="fa fa-globe"></i> Visit Website</a></li>
                 
-                <li><a href="javascript:void(0)" onclick="shareApp()"><i class="fa fa-share-nodes"></i> Share App</a></li>
+                <li onclick="shareApp()"><a href="javascript:void(0)"><i class="fa fa-share-nodes"></i> Share App</a></li>
                 
                 <li>
                     <div class="theme-switch-wrapper">
@@ -356,7 +356,7 @@
     </div>
 
     <script>
-        // --- 1. SERVICE WORKER REGISTRATION (REQUIRED FOR APP INSTALL) ---
+        // --- 1. SERVICE WORKER REGISTRATION ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
@@ -371,9 +371,11 @@
 
         // --- Corrected Upcoming Compliance Logic ---
         const currentYear = today.getFullYear();
-        const currentMonth = today.getMonth(); // 0-indexed (2 = March)
+        const currentMonth = today.getMonth(); 
+        
+        // We normalize 'today' to midnight so an event happening exactly today won't be skipped
+        const todayNormalized = new Date(currentYear, currentMonth, today.getDate());
 
-        // Array of fixed dates for the current month to check against
         const complianceSchedule = [
             { date: new Date(currentYear, currentMonth, 7), name: 'TDS Payment' },
             { date: new Date(currentYear, currentMonth, 11), name: 'GSTR-1' },     
@@ -384,11 +386,10 @@
             { date: new Date(currentYear, currentMonth + 1, 11), name: 'GSTR-1' }
         ];
 
-        // Find the next upcoming event
         let foundEvent = false;
         for (let event of complianceSchedule) {
-            // Check if event is today or in the future
-            if (event.date >= new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+            // Because we normalized today's date, if today is the 11th, event.date >= todayNormalized will be TRUE.
+            if (event.date >= todayNormalized) {
                 const day = event.date.getDate();
                 const monthStr = event.date.toLocaleDateString('en-US', { month: 'short' });
                 
@@ -432,7 +433,7 @@
 
         // --- Fixed Web Share API ---
         function shareApp() {
-            closeAll(); // Close the menu when sharing
+            closeAll(); // Close sidebar first
             if (navigator.share) {
                 navigator.share({
                     title: 'CM BIZ',
@@ -447,12 +448,9 @@
         }
 
         // --- Fixed UI Interactions ---
-        const overlay = document.getElementById('mainOverlay');
-        const sideMenu = document.getElementById('sideMenu');
-        const calcModal = document.getElementById('calcModal');
-        const body = document.body;
-
         function toggleSidebar() {
+            const sideMenu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('mainOverlay');
             if (sideMenu.classList.contains('active')) {
                 closeAll();
             } else { 
@@ -463,6 +461,7 @@
         }
 
         function toggleCalc() {
+            const calcModal = document.getElementById('calcModal');
             closeAll();
             if (calcModal.classList.contains('active')) {
                 calcModal.classList.remove('active');
@@ -472,19 +471,19 @@
         }
 
         function closeAll() {
+            const sideMenu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('mainOverlay');
+            const calcModal = document.getElementById('calcModal');
+            const searchBar = document.getElementById('searchBar');
+            
             if(sideMenu) sideMenu.classList.remove('active');
             if(overlay) overlay.classList.remove('active');
             if(calcModal) calcModal.classList.remove('active');
-            
-            // Hide search if open when clicking overlay
-            const searchBar = document.getElementById('searchBar');
-            if(searchBar && searchBar.classList.contains('active')) {
-                searchBar.classList.remove('active');
-            }
+            if(searchBar && searchBar.classList.contains('active')) searchBar.classList.remove('active');
         }
 
         function toggleTheme() {
-            document.getElementById('themeToggle').checked ? body.classList.add('dark-theme') : body.classList.remove('dark-theme');
+            document.body.classList.toggle('dark-theme');
         }
 
         // --- Calculator Logic ---
