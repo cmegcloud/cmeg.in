@@ -97,9 +97,23 @@
             </div>
           </div>
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200"><h3 class="font-bold mb-4">Task Status</h3><canvas id="chart1" height="200"></canvas></div>
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200"><h3 class="font-bold mb-4">Transactions Record</h3><canvas id="chart2" height="200"></canvas></div>
-          </div>
+  
+  <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col">
+    <h3 class="font-bold mb-4">Task Status</h3>
+    <div class="relative w-full h-64">
+      <canvas id="chart1"></canvas>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col">
+    <h3 class="font-bold mb-4">Transactions Record</h3>
+    <div class="relative w-full h-64">
+      <canvas id="chart2"></canvas>
+    </div>
+  </div>
+
+</div>
+
         </div>
 
         <div id="view-data" class="fade-in w-full max-w-7xl mx-auto hidden">
