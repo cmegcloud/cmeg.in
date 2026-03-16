@@ -1,22 +1,22 @@
 {
-"name": "CMEG Admin",
-"short_name": "CMEG Admin",
-"description": "CMEG Personal Business App",
-"start_url": "/admin/app/",
-"display": "standalone",
-"background_color": "#0b1220",
-"theme_color": "#D4AF37",
-
-"icons": [
-{
-"src": "/assets/icon192.png",
-"sizes": "192x192",
-"type": "image/png"
-},
-{
-"src": "/assets/icon512.png",
-"sizes": "512x512",
-"type": "image/png"
-}
-]
+  "name": "CM BIZ ERP",
+  "short_name": "CM BIZ",
+  "description": "Enterprise Resource Planning for CM Experts Group",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#5453EC",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://ui-avatars.com/api/?name=CM&background=5453EC&color=fff&size=192",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://ui-avatars.com/api/?name=CM&background=5453EC&color=fff&size=512",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
 }
