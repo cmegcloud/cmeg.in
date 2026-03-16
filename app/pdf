@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CM Biz PDF Tools</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+  
+  <script src="https://www.canva.com/apps/app-sdk/v2/app.js"></script>
+
+  <style>
+    :root {
+      --primary-brown: #a67c52;
+      --secondary-grey: #5e6665;
+      --highlight-color: #e63946;
+      --quick-links-bg: #4a3320;
+      --bg-main: #f9f9fb;
+      --bg-card-light: #ffffff;
+      --text-dark: #333333;
+      --border-color: #ffffff;
+      --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.04);
+      --border-radius-lg: 20px;
+      --border-radius-md: 12px;
+    }
+    body.dark-theme {
+      --bg-main: #121212;
+      --bg-card-light: #1e1e1e;
+      --text-dark: #f5f5f5;
+      --secondary-grey: #a0a0a0;
+      --border-color: #2a2a2a;
+      --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    * { font-family: 'Montserrat', sans-serif; }
+    html, body { height: 100%; margin: 0; }
+
+    .tool-card {
+      background: var(--bg-card-light);
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--border-color);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+    .tool-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(166, 124, 82, 0.15);
+      border-color: var(--primary-brown);
+    }
+    .tool-card:hover .tool-icon-wrap {
+      transform: scale(1.08);
+    }
+    .tool-icon-wrap {
+      transition: transform 0.3s ease;
+    }
+
+    .drop-zone {
+      border: 2px dashed var(--primary-brown);
+      border-radius: var(--border-radius-md);
+      background: rgba(166, 124, 82, 0.04);
+      transition: all 0.3s ease;
+      min-height: 180px;
+    }
+    .drop-zone.dragover {
+      background: rgba(166, 124, 82, 0.12);
+      border-color: var(--highlight-color);
+      transform: scale(1.01);
+    }
+
+    .btn-primary {
+      background: var(--primary-brown);
+      color: #fff;
+      border-radius: var(--border-radius-md);
+      font-weight: 600;
+      transition: all 0.2s ease;
+      padding: 12px 28px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .btn-primary:hover { background: #8f6a42; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary-brown);
+      border: 2px solid var(--primary-brown);
+      border-radius: var(--border-radius-md);
+      font-weight: 600;
+      transition: all 0.2s ease;
+      padding: 10px 24px;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .btn-secondary:hover { background: rgba(166, 124, 82, 0.08); }
+
+    .file-chip {
+      background: rgba(166,124,82,0.1);
+      border: 1px solid rgba(166,124,82,0.2);
+      border-radius: 8px;
+      padding: 8px 14px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px;
+      color: var(--text-dark);
+    }
+    .file-chip .remove-file {
+      cursor: pointer; opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+    .file-chip .remove-file:hover { opacity: 1; }
+
+    .progress-bar {
+      height: 6px;
+      background: rgba(166,124,82,0.15);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--primary-brown);
+      border-radius: 3px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--quick-links-bg);
+      color: #fff; padding: 14px 22px;
+      border-radius: var(--border-radius-md);
+      font-size: 14px; font-weight: 500;
+      z-index: 200;
+      transform: translateY(100px); opacity: 0;
+      transition: all 0.4s ease;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    .theme-toggle {
+      width: 48px; height: 26px;
+      background: var(--secondary-grey);
+      border-radius: 13px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s;
+      border: none;
+    }
+    .theme-toggle::after {
+      content: '';
+      width: 20px; height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 3px; left: 3px;
+      transition: transform 0.3s;
+    }
+    .theme-toggle.dark { background: var(--primary-brown); }
+    .theme-toggle.dark::after { transform: translateX(22px); }
+
+    .password-input-wrap {
+      position: relative;
+    }
+    .password-input-wrap input, .page-range-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid rgba(166,124,82,0.3);
+      border-radius: var(--border-radius-md);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      background: var(--bg-card-light);
+      color: var(--text-dark);
+      transition: border-color 0.2s;
+    }
+    .password-input-wrap input {
+      padding-right: 48px;
+    }
+    .password-input-wrap input:focus, .page-range-input:focus {
+      outline: none;
+      border-color: var(--primary-brown);
+    }
+    .password-toggle {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: var(--secondary-grey);
+      background: none; border: none;
+    }
+
+    .fade-in { animation: fadeIn 0.5s ease both; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .stagger-1 { animation-delay: 0.05s; }
+    .stagger-2 { animation-delay: 0.1s; }
+    .stagger-3 { animation-delay: 0.15s; }
+    .stagger-4 { animation-delay: 0.2s; }
+    .stagger-5 { animation-delay: 0.25s; }
+    .stagger-6 { animation-delay: 0.3s; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+  </style>
+ </head>
+ <body class="h-full" style="background: var(--bg-main); color: var(--text-dark);">
+  <div id="app" class="h-full w-full overflow-auto">
+   
+   <header class="w-full px-5 py-4" style="background: var(--bg-card-light); box-shadow: var(--shadow-soft);">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+     <div class="flex items-center gap-3">
+      <div class="w-10 h-10 flex items-center justify-center bg-white rounded-xl overflow-hidden shadow-sm">
+       <img src="./logocmeg.png" alt="CM Biz Logo" class="max-w-full max-h-full object-contain" onerror="this.src='https://ui-avatars.com/api/?name=CM&background=a67c52&color=fff'">
+      </div>
+      <div>
+       <h1 id="brandName" class="text-lg font-bold leading-tight" style="color: var(--text-dark);">CM Biz</h1>
+       <p id="tagline" class="text-xs font-medium" style="color: var(--secondary-grey);">PDF Tools</p>
+      </div>
+     </div>
+     <div class="flex items-center gap-3"><button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode"></button>
+     </div>
+    </div>
+   </header>
+
+   <main class="max-w-5xl mx-auto px-5 py-8">
+    <div id="toolGrid">
+     <p class="text-sm font-semibold mb-5 uppercase tracking-wider" style="color: var(--secondary-grey);">Choose a Tool</p>
+     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">
+      <div class="tool-card p-5 fade-in stagger-1" onclick="openTool('unlock')">
+       <div class="tool-icon-wrap w-12 h-12 rounded-xl flex items-center justify-center mb-3" style="background: rgba(230,57,70,0.1);"><i data-lucide="unlock" style="color: var(--highlight-color); width:22px; height:22px;"></i></div>
+       <h3 class="font-bold text-sm mb-1" style="color: var(--text-dark);">Unlock PDF</h3>
+       <p class="text-xs" style="color: var(--secondary-grey);">Remove password</p>
+      </div>
+      <div class="tool-card p-5 fade-in stagger-2" onclick="openTool('compress')">
+       <div class="tool-icon-wrap w-12 h-12 rounded-xl flex items-center justify-center mb-3" style="background: rgba(166,124,82,0.1);"><i data-lucide="minimize-2" style="color: var(--primary-brown); width:22px; height:22px;"></i></div>
+       <h3 class="font-bold text-sm mb-1" style="color: var(--text-dark);">Reduce Size</h3>
+       <p class="text-xs" style="color: var(--secondary-grey);">Compress PDF</p>
+      </div>
+      <div class="tool-card p-5 fade-in stagger-3" onclick="openTool('merge')">
+       <div class="tool-icon-wrap w-12 h-12 rounded-xl flex items-center justify-center mb-3" style="background: rgba(74,51,32,0.1);"><i data-lucide="git-merge" style="color: var(--quick-links-bg); width:22px; height:22px;"></i></div>
+       <h3 class="font-bold text-sm mb-1" style="color: var(--text-dark);">Merge PDFs</h3>
+       <p class="text-xs" style="color: var(--secondary-grey);">Combine files</p>
+      </div>
+      <div class="tool-card p-5 fade-in stagger-4" onclick="openTool('split')">
+       <div class="tool-icon-wrap w-12 h-12 rounded-xl flex items-center justify-center mb-3" style="background: rgba(94,102,101,0.1);"><i data-lucide="scissors" style="color: var(--secondary-grey); width:22px; height:22px;"></i></div>
+       <h3 class="font-bold text-sm mb-1" style="color: var(--text-dark);">Split PDF</h3>
+       <p class="text-xs" style="color: var(--secondary-grey);">Extract pages</p>
+      </div>
+      <div class="tool-card p-5 fade-in stagger-5" onclick="openTool('protect')">
+       <div class="tool-icon-wrap w-12 h-12 rounded-xl flex items-center justify-center mb-3" style="background: rgba(230,57,70,0.08);"><i data-lucide="lock" style="color: var(--highlight-color); width:22px; height:22px;"></i></div>
+       <h3 class="font-bold text-sm mb-1" style="color: var(--text-dark);">Protect PDF</h3>
+       <p class="text-xs" style="color: var(--secondary-grey);">Add password</p>
+      </div>
+      <div class="tool-card p-5 fade-in stagger-6" onclick="openTool('rotate')">
+       <div class="tool-icon-wrap w-12 h-12 rounded-xl flex items-center justify-center mb-3" style="background: rgba(166,124,82,0.1);"><i data-lucide="rotate-cw" style="color: var(--primary-brown); width:22px; height:22px;"></i></div>
+       <h3 class="font-bold text-sm mb-1" style="color: var(--text-dark);">Rotate Pages</h3>
+       <p class="text-xs" style="color: var(--secondary-grey);">Rotate PDF</p>
+      </div>
+     </div>
+    </div>
+
+    <div id="toolWorkspace" class="hidden"><button onclick="backToGrid()" class="flex items-center gap-2 mb-5 text-sm font-semibold" style="color: var(--primary-brown); background: none; border: none; cursor: pointer; font-family: 'Montserrat', sans-serif;"> <i data-lucide="arrow-left" style="width:16px; height:16px;"></i> Back to Tools </button>
+     <div style="background: var(--bg-card-light); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-soft);" class="p-6 sm:p-8">
+      <div class="flex items-center gap-3 mb-6">
+       <div id="wsIcon" class="w-11 h-11 rounded-xl flex items-center justify-center"></div>
+       <div>
+        <h2 id="wsTitle" class="font-bold text-lg" style="color: var(--text-dark);"></h2>
+        <p id="wsDesc" class="text-xs" style="color: var(--secondary-grey);"></p>
+       </div>
+      </div>
+      
+      <div id="dropZone" class="drop-zone flex flex-col items-center justify-center p-8 text-center"><i data-lucide="upload-cloud" style="width:40px; height:40px; color: var(--primary-brown); opacity: 0.6; margin-bottom: 12px;"></i>
+       <p class="font-semibold text-sm mb-1" style="color: var(--text-dark);">Drag &amp; drop PDF files here</p>
+       <p class="text-xs mb-4" style="color: var(--secondary-grey);">or click to browse</p><input type="file" id="fileInput" accept=".pdf" class="hidden"> <button onclick="document.getElementById('fileInput').click()" class="btn-secondary text-sm">Select Files</button>
+      </div>
+      
+      <div id="fileList" class="mt-4 flex flex-col gap-2"></div>
+      
+      <div id="toolOptions" class="mt-5 hidden"></div>
+      
+      <div id="progressWrap" class="mt-5 hidden">
+       <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
+       </div>
+       <p id="progressText" class="text-xs mt-2 text-center" style="color: var(--secondary-grey);">Processing...</p>
+      </div>
+      
+      <div class="mt-6 flex flex-wrap gap-3">
+        <button id="actionBtn" class="btn-primary flex items-center gap-2 text-sm" disabled> <span id="actionBtnText">Process</span> </button> 
+        <button id="downloadBtn" class="btn-primary flex items-center gap-2 text-sm hidden" style="background: var(--quick-links-bg);"> <i data-lucide="download" style="width:16px; height:16px;"></i> <span>Download</span> </button>
+        <button id="addToCanvaBtn" class="btn-secondary flex items-center gap-2 text-sm hidden" style="border-color: #8b3dff; color: #8b3dff;"> <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Canva_icon_2021.svg" alt="Canva" style="width:16px; height:16px;"> <span>Add to Design</span> </button>
+      </div>
+     </div>
+    </div>
+   </main>
+   
+   <footer class="w-full px-5 py-5 mt-8 text-center border-t border-slate-200 dark:border-slate-800">
+    <p class="text-xs" style="color: var(--secondary-grey);">Local browser processing. No files uploaded.</p>
+    <p class="text-xs mt-1 font-semibold" style="color: var(--primary-brown);">© CM Biz</p>
+   </footer>
+  </div>
+  
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // Initialize Canva App SDK
+    const canvaApp = window.canva ? window.canva.init() : null;
+
+    let currentTool = null;
+    let uploadedFiles = [];
+    let processedBlob = null;
+    let processedFileName = '';
+
+    const toolConfig = {
+      unlock: { title: 'Unlock PDF', desc: 'Remove password protection', iconBg: 'rgba(230,57,70,0.1)', iconColor: 'var(--highlight-color)', icon: 'unlock', multi: false, action: 'Unlock PDF' },
+      compress: { title: 'Reduce Size', desc: 'Compress file size', iconBg: 'rgba(166,124,82,0.1)', iconColor: 'var(--primary-brown)', icon: 'minimize-2', multi: false, action: 'Compress' },
+      merge: { title: 'Merge PDFs', desc: 'Combine multiple files', iconBg: 'rgba(74,51,32,0.1)', iconColor: 'var(--quick-links-bg)', icon: 'git-merge', multi: true, action: 'Merge' },
+      split: { title: 'Split PDF', desc: 'Extract pages', iconBg: 'rgba(94,102,101,0.1)', iconColor: 'var(--secondary-grey)', icon: 'scissors', multi: false, action: 'Split' },
+      protect: { title: 'Protect PDF', desc: 'Add password', iconBg: 'rgba(230,57,70,0.08)', iconColor: 'var(--highlight-color)', icon: 'lock', multi: false, action: 'Protect' },
+      rotate: { title: 'Rotate Pages', desc: 'Rotate all pages', iconBg: 'rgba(166,124,82,0.1)', iconColor: 'var(--primary-brown)', icon: 'rotate-cw', multi: false, action: 'Rotate' }
+    };
+
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-theme');
+      themeToggle.classList.toggle('dark');
+    });
+
+    function showToast(msg, duration = 3000) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), duration);
+    }
+
+    function openTool(tool) {
+      currentTool = tool;
+      uploadedFiles = [];
+      processedBlob = null;
+      const cfg = toolConfig[tool];
+
+      document.getElementById('toolGrid').classList.add('hidden');
+      document.getElementById('toolWorkspace').classList.remove('hidden');
+      document.getElementById('wsTitle').textContent = cfg.title;
+      document.getElementById('wsDesc').textContent = cfg.desc;
+      const iconWrap = document.getElementById('wsIcon');
+      iconWrap.style.background = cfg.iconBg;
+      iconWrap.innerHTML = `<i data-lucide="${cfg.icon}" style="color:${cfg.iconColor}; width:20px; height:20px;"></i>`;
+
+      document.getElementById('fileInput').multiple = cfg.multi;
+      document.getElementById('fileInput').value = '';
+      document.getElementById('fileList').innerHTML = '';
+      document.getElementById('progressWrap').classList.add('hidden');
+      document.getElementById('downloadBtn').classList.add('hidden');
+      document.getElementById('addToCanvaBtn').classList.add('hidden');
+      document.getElementById('actionBtn').disabled = true;
+      document.getElementById('actionBtnText').textContent = cfg.action;
+
+      const optionsEl = document.getElementById('toolOptions');
+      optionsEl.innerHTML = '';
+      optionsEl.classList.add('hidden');
+
+      if (tool === 'unlock') {
+        optionsEl.classList.remove('hidden');
+        optionsEl.innerHTML = `
+          <label class="text-xs font-semibold mb-2 block">Enter PDF Password</label>
+          <div class="password-input-wrap">
+            <input type="password" id="pdfPassword" placeholder="Current password">
+            <button class="password-toggle" onclick="togglePasswordVis('pdfPassword', this)" type="button"><i data-lucide="eye" style="width:18px; height:18px;"></i></button>
+          </div>`;
+      } else if (tool === 'protect') {
+        optionsEl.classList.remove('hidden');
+        optionsEl.innerHTML = `
+          <label class="text-xs font-semibold mb-2 block">New Password</label>
+          <div class="password-input-wrap mb-3">
+            <input type="password" id="newPassword" placeholder="New password">
+            <button class="password-toggle" onclick="togglePasswordVis('newPassword', this)" type="button"><i data-lucide="eye" style="width:18px; height:18px;"></i></button>
+          </div>
+          <label class="text-xs font-semibold mb-2 block">Confirm</label>
+          <div class="password-input-wrap">
+            <input type="password" id="confirmPassword" placeholder="Confirm password">
+            <button class="password-toggle" onclick="togglePasswordVis('confirmPassword', this)" type="button"><i data-lucide="eye" style="width:18px; height:18px;"></i></button>
+          </div>`;
+      } else if (tool === 'split') {
+        optionsEl.classList.remove('hidden');
+        optionsEl.innerHTML = `<label class="text-xs font-semibold mb-2 block">Page Range</label><input type="text" id="pageRange" class="page-range-input" placeholder="e.g. 1-3, 5"><p class="text-xs mt-2" style="color: var(--secondary-grey);">Comma separated (e.g. 1-3, 5)</p>`;
+      } else if (tool === 'rotate') {
+        optionsEl.classList.remove('hidden');
+        optionsEl.innerHTML = `
+          <label class="text-xs font-semibold mb-2 block">Rotation Angle</label>
+          <div class="flex gap-3">
+            <button class="btn-secondary text-sm rotate-opt" data-angle="90" onclick="selectRotation(this)">90°</button>
+            <button class="btn-secondary text-sm rotate-opt" data-angle="180" onclick="selectRotation(this)">180°</button>
+            <button class="btn-secondary text-sm rotate-opt" data-angle="270" onclick="selectRotation(this)">270°</button>
+          </div>`;
+      }
+      lucide.createIcons();
+    }
+
+    function backToGrid() {
+      document.getElementById('toolGrid').classList.remove('hidden');
+      document.getElementById('toolWorkspace').classList.add('hidden');
+    }
+
+    function togglePasswordVis(id, btn) {
+      const inp = document.getElementById(id);
+      const isPwd = inp.type === 'password';
+      inp.type = isPwd ? 'text' : 'password';
+      btn.innerHTML = `<i data-lucide="${isPwd ? 'eye-off' : 'eye'}" style="width:18px; height:18px;"></i>`;
+      lucide.createIcons();
+    }
+
+    let selectedRotation = 90;
+    function selectRotation(btn) {
+      selectedRotation = parseInt(btn.dataset.angle);
+      document.querySelectorAll('.rotate-opt').forEach(b => { b.style.background = 'transparent'; b.style.color = 'var(--primary-brown)'; });
+      btn.style.background = 'var(--primary-brown)'; btn.style.color = '#fff';
+    }
+
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+    dropZone.addEventListener('click', e => { if (e.target.tagName !== 'BUTTON') fileInput.click(); });
+    fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+    function handleFiles(files) {
+      const cfg = toolConfig[currentTool];
+      for (const f of files) {
+        if (f.type !== 'application/pdf') { showToast('Only PDFs allowed'); continue; }
+        if (!cfg.multi && uploadedFiles.length >= 1) uploadedFiles = [];
+        uploadedFiles.push(f);
+      }
+      renderFileList();
+      document.getElementById('actionBtn').disabled = uploadedFiles.length === 0;
+    }
+
+    function renderFileList() {
+      const container = document.getElementById('fileList');
+      container.innerHTML = '';
+      uploadedFiles.forEach((f, i) => {
+        const size = f.size > 1048576 ? (f.size/1048576).toFixed(1)+' MB' : (f.size/1024).toFixed(1)+' KB';
+        container.insertAdjacentHTML('beforeend', `
+          <div class="file-chip">
+            <i data-lucide="file-text" style="width:16px; height:16px; color: var(--primary-brown);"></i>
+            <span class="flex-1 truncate text-xs">${f.name}</span>
+            <span class="text-xs" style="color: var(--secondary-grey);">${size}</span>
+            <span class="remove-file" onclick="removeFile(${i})"><i data-lucide="x" style="width:14px; height:14px;"></i></span>
+          </div>`);
+      });
+      lucide.createIcons();
+    }
+
+    function removeFile(idx) { uploadedFiles.splice(idx, 1); renderFileList(); document.getElementById('actionBtn').disabled = uploadedFiles.length === 0; }
+
+    document.getElementById('actionBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('actionBtn');
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      
+      btn.disabled = true;
+      document.getElementById('actionBtnText').innerHTML = '<span class="spinner"></span>';
+      document.getElementById('progressWrap').classList.remove('hidden');
+      document.getElementById('downloadBtn').classList.add('hidden');
+      document.getElementById('addToCanvaBtn').classList.add('hidden');
+      progressFill.style.width = '10%';
+      progressText.textContent = 'Processing...';
+
+      try {
+        if(currentTool === 'unlock') await processUnlock();
+        else if(currentTool === 'compress') await processCompress();
+        else if(currentTool === 'merge') await processMerge();
+        else if(currentTool === 'split') await processSplit();
+        else if(currentTool === 'protect') await processProtect();
+        else if(currentTool === 'rotate') await processRotate();
+
+        progressFill.style.width = '100%';
+        progressText.textContent = 'Done!';
+        document.getElementById('downloadBtn').classList.remove('hidden');
+        
+        // Show Canva button if running inside Canva
+        if(canvaApp) {
+           document.getElementById('addToCanvaBtn').classList.remove('hidden');
+        }
+        
+        showToast('Complete!');
+      } catch (err) {
+        progressFill.style.width = '0%';
+        progressText.textContent = 'Error: ' + err.message;
+        showToast('Error: ' + err.message);
+      }
+      document.getElementById('actionBtnText').textContent = toolConfig[currentTool].action;
+      btn.disabled = false;
+    });
+
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      if(!processedBlob) return;
+      const url = URL.createObjectURL(processedBlob);
+      const a = document.createElement('a'); a.href = url; a.download = processedFileName; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Canva Add to Design Integration
+    document.getElementById('addToCanvaBtn').addEventListener('click', async () => {
+      if(!processedBlob || !canvaApp) return;
+      try {
+          const file = new File([processedBlob], processedFileName, { type: 'application/pdf' });
+          await canvaApp.design.addPDF({ file: file });
+          showToast('Added to Canva design!');
+      } catch (error) {
+          showToast('Failed to add to Canva: ' + error.message);
+      }
+    });
+
+    // Processing Logic (Identical to previous, shortened for space)
+    async function processUnlock() {
+      const pw = document.getElementById('pdfPassword')?.value || '';
+      const buf = await uploadedFiles[0].arrayBuffer();
+      try {
+        const pdf = await PDFLib.PDFDocument.load(buf, { password: pw, ignoreEncryption: true });
+        const newPdf = await PDFLib.PDFDocument.create();
+        const pages = await newPdf.copyPages(pdf, pdf.getPageIndices());
+        pages.forEach(p => newPdf.addPage(p));
+        const bytes = await newPdf.save();
+        processedBlob = new Blob([bytes], {type: 'application/pdf'});
+        processedFileName = uploadedFiles[0].name.replace('.pdf', '_unlocked.pdf');
+      } catch(e) { throw new Error('Incorrect password'); }
+    }
+    
+    async function processCompress() {
+      const buf = await uploadedFiles[0].arrayBuffer();
+      const pdf = await PDFLib.PDFDocument.load(buf);
+      const newPdf = await PDFLib.PDFDocument.create();
+      const pages = await newPdf.copyPages(pdf, pdf.getPageIndices());
+      pages.forEach(p => newPdf.addPage(p));
+      const bytes = await newPdf.save({useObjectStreams: true});
+      processedBlob = new Blob([bytes], {type: 'application/pdf'});
+      processedFileName = uploadedFiles[0].name.replace('.pdf', '_compressed.pdf');
+    }
+
+    async function processMerge() {
+      const mergedPdf = await PDFLib.PDFDocument.create();
+      for(let i=0; i<uploadedFiles.length; i++) {
+        const buf = await uploadedFiles[i].arrayBuffer();
+        const pdf = await PDFLib.PDFDocument.load(buf);
+        const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+        pages.forEach(p => mergedPdf.addPage(p));
+      }
+      const bytes = await mergedPdf.save();
+      processedBlob = new Blob([bytes], {type: 'application/pdf'});
+      processedFileName = 'merged.pdf';
+    }
+
+    async function processSplit() {
+      const range = document.getElementById('pageRange').value;
+      if(!range) throw new Error('Enter range');
+      const buf = await uploadedFiles[0].arrayBuffer();
+      const srcPdf = await PDFLib.PDFDocument.load(buf);
+      const indices = new Set();
+      range.split(',').forEach(p => {
+        let t = p.trim();
+        if(t.includes('-')) { let [s,e] = t.split('-').map(Number); for(let i=s; i<=e; i++) indices.add(i-1); }
+        else indices.add(parseInt(t)-1);
+      });
+      const newPdf = await PDFLib.PDFDocument.create();
+      const pages = await newPdf.copyPages(srcPdf, [...indices].sort((a,b)=>a-b));
+      pages.forEach(p => newPdf.addPage(p));
+      const bytes = await newPdf.save();
+      processedBlob = new Blob([bytes], {type: 'application/pdf'});
+      processedFileName = uploadedFiles[0].name.replace('.pdf', '_split.pdf');
+    }
+
+    async function processProtect() {
+      const pw = document.getElementById('newPassword').value;
+      if(pw !== document.getElementById('confirmPassword').value) throw new Error('Passwords mismatch');
+      const buf = await uploadedFiles[0].arrayBuffer();
+      const srcPdf = await PDFLib.PDFDocument.load(buf);
+      const newPdf = await PDFLib.PDFDocument.create();
+      const pages = await newPdf.copyPages(srcPdf, srcPdf.getPageIndices());
+      pages.forEach(p => newPdf.addPage(p));
+      const bytes = await newPdf.save({userPassword: pw, ownerPassword: pw});
+      processedBlob = new Blob([bytes], {type: 'application/pdf'});
+      processedFileName = uploadedFiles[0].name.replace('.pdf', '_protected.pdf');
+    }
+
+    async function processRotate() {
+      const buf = await uploadedFiles[0].arrayBuffer();
+      const pdf = await PDFLib.PDFDocument.load(buf);
+      pdf.getPages().forEach(p => p.setRotation(PDFLib.degrees(p.getRotation().angle + selectedRotation)));
+      const bytes = await pdf.save();
+      processedBlob = new Blob([bytes], {type: 'application/pdf'});
+      processedFileName = uploadedFiles[0].name.replace('.pdf', '_rotated.pdf');
+    }
+    lucide.createIcons();
+  </script>
+ </body>
+</html>
