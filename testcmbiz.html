@@ -6,76 +6,36 @@
   <title>CM BIZ - Enterprise Resource Planning</title>
   
   <meta name="theme-color" content="#5453EC">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
+  <link rel="manifest" href="manifest.json">
+  
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <script>
-    tailwind.config = {
-      darkMode: 'class', 
-      theme: {
-        extend: { fontFamily: { jakarta: ['Plus Jakarta Sans', 'sans-serif'], } }
-      }
-    }
-  </script>
   <style>
     * { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
     html, body { max-width: 100vw; overflow-x: hidden; }
-    
     .sidebar-transition { transition: transform 0.3s ease-in-out; }
-    .card-hover { transition: all 0.3s ease; }
-    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); }
-    
     .fade-in { animation: fadeIn 0.4s ease forwards; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    .dark ::-webkit-scrollbar-thumb { background: #475569; }
-
     input:focus, select:focus { border-color: #5453EC !important; outline: none; box-shadow: 0 0 0 2px rgba(84, 83, 236, 0.2); }
-    
-    /* Active Nav Item Styling */
-    .nav-active {
-        background: linear-gradient(135deg, #5453EC, #6B63FF); 
-        box-shadow: 0 8px 16px rgba(84, 83, 236, 0.3);
-        color: white !important;
-    }
-    .nav-inactive {
-        color: #94a3b8;
-    }
-    .nav-inactive:hover {
-        background: rgba(255, 255, 255, 0.05);
-        color: white;
-    }
-
-    /* Loader */
-    .loader {
-        border: 3px solid rgba(84, 83, 236, 0.2);
-        border-top: 3px solid #5453EC;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        animation: spin 1s linear infinite;
-    }
+    .nav-active { background: linear-gradient(135deg, #5453EC, #6B63FF); color: white !important; box-shadow: 0 8px 16px rgba(84, 83, 236, 0.3); }
+    .nav-inactive { color: #94a3b8; }
+    .nav-inactive:hover { background: rgba(255, 255, 255, 0.05); color: white; }
+    .loader { border: 3px solid rgba(84, 83, 236, 0.2); border-top: 3px solid #5453EC; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
-<body class="h-full bg-slate-50 dark:bg-slate-900 overflow-hidden w-full relative transition-colors duration-300">
+<body class="h-full bg-slate-50 overflow-hidden w-full relative">
   <div id="app" class="h-full flex w-full relative overflow-hidden">
     
     <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden lg:hidden opacity-0 transition-opacity" onclick="toggleSidebar()"></div>
 
     <aside id="sidebar" class="sidebar-transition bg-slate-900 h-full w-72 flex flex-col shadow-2xl fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0 shrink-0">
-      
       <div class="p-6 border-b border-slate-700/50 flex items-center gap-3 shrink-0">
-        <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center p-1 shadow-lg">
-          <span class="font-bold text-[#5453EC] text-xl">CM</span>
-        </div>
+        <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center font-bold text-[#5453EC] text-xl shadow-lg">CM</div>
         <div>
           <h1 class="text-xl font-bold text-white tracking-tight leading-tight">CM BIZ</h1>
           <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Enterprise ERP</p>
@@ -83,162 +43,92 @@
       </div>
       
       <nav class="flex-1 px-4 py-6 overflow-y-auto w-full">
-        <p class="text-[10px] font-extrabold uppercase text-slate-500 mb-3 px-2 tracking-widest">Modules</p>
-        <ul class="space-y-2 w-full" id="menu-container">
-            <li><button onclick="loadTab('Dashboard')" class="nav-btn nav-active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"><span class="font-bold text-sm tracking-wide">Dashboard</span></button></li>
-            <li><button onclick="loadTab('CLIENTS')" class="nav-btn nav-inactive w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"><span class="font-bold text-sm tracking-wide">CLIENTS</span></button></li>
-            <li><button onclick="loadTab('TASKS')" class="nav-btn nav-inactive w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"><span class="font-bold text-sm tracking-wide">TASKS</span></button></li>
-            <li><button onclick="loadTab('USER CREDENTIALS')" class="nav-btn nav-inactive w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"><span class="font-bold text-sm tracking-wide">USER CREDENTIALS</span></button></li>
-            <li><button onclick="loadTab('TRANSACTIONS')" class="nav-btn nav-inactive w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"><span class="font-bold text-sm tracking-wide">TRANSACTIONS</span></button></li>
-            <li><button onclick="loadTab('LEDGERS')" class="nav-btn nav-inactive w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"><span class="font-bold text-sm tracking-wide">LEDGERS</span></button></li>
-            <li><button onclick="loadTab('INVOICE')" class="nav-btn nav-inactive w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"><span class="font-bold text-sm tracking-wide">INVOICE</span></button></li>
+        <ul class="space-y-2 w-full">
+            <li><button onclick="switchTab('Dashboard')" class="nav-btn nav-active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"><span class="font-bold text-sm tracking-wide">Dashboard</span></button></li>
+            <li><button onclick="switchTab('CLIENTS')" class="nav-btn nav-inactive w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"><span class="font-bold text-sm tracking-wide">CLIENTS</span></button></li>
+            <li><button onclick="switchTab('TASKS')" class="nav-btn nav-inactive w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"><span class="font-bold text-sm tracking-wide">TASKS</span></button></li>
+            <li><button onclick="switchTab('USER CREDENTIALS')" class="nav-btn nav-inactive w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"><span class="font-bold text-sm tracking-wide">CREDENTIALS</span></button></li>
+            <li><button onclick="switchTab('TRANSACTIONS')" class="nav-btn nav-inactive w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"><span class="font-bold text-sm tracking-wide">TRANSACTIONS</span></button></li>
+            <li><button onclick="switchTab('LEDGERS')" class="nav-btn nav-inactive w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"><span class="font-bold text-sm tracking-wide">LEDGERS</span></button></li>
+            <li><button onclick="switchTab('INVOICE')" class="nav-btn nav-inactive w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"><span class="font-bold text-sm tracking-wide">INVOICE</span></button></li>
         </ul>
       </nav>
-      
-      <div class="p-4 border-t border-slate-700/50 shrink-0">
-        <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50">
-          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#5453EC] to-[#F7CB51] flex items-center justify-center text-white font-bold text-sm">CM</div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-semibold text-white truncate">Administrator</p>
-            <p class="text-xs text-slate-400 truncate">CM Experts Group</p>
-          </div>
-        </div>
-      </div>
     </aside>
 
-    <main class="flex-1 h-full flex flex-col relative min-w-0 bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+    <main class="flex-1 h-full flex flex-col relative min-w-0 bg-slate-50">
       
-      <header class="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700 px-4 py-4 flex items-center justify-between z-10 shrink-0 transition-colors duration-300">
+      <header class="bg-white shadow-sm border-b border-slate-200 px-4 py-4 flex items-center justify-between z-10 shrink-0">
         <div class="flex items-center gap-3">
-          <button onclick="toggleSidebar()" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors lg:hidden">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
-          </button>
-          <div class="min-w-0">
-            <h2 id="page-title" class="text-lg sm:text-xl font-bold text-slate-800 dark:text-white truncate">Dashboard</h2>
-          </div>
+          <button onclick="toggleSidebar()" class="p-2 rounded-xl text-slate-600 lg:hidden"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg></button>
+          <h2 id="page-title" class="text-xl font-bold text-slate-800 truncate">Dashboard</h2>
         </div>
         
-        <div class="flex items-center gap-3">
-          <button onclick="refreshCurrentTab()" class="px-3 sm:px-4 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-500/20 text-[#5453EC] dark:text-indigo-300 font-bold hover:bg-indigo-100 dark:hover:bg-indigo-500/30 transition-all flex items-center gap-2 group shadow-sm">
-            <svg class="w-4 h-4 transition-transform group-hover:rotate-180 duration-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-            <span class="text-xs sm:text-sm hidden sm:block">Sync</span>
-          </button>
-          <div class="hidden lg:flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-            <svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-            <span class="text-sm font-medium text-slate-600 dark:text-slate-300" id="current-date"></span>
-          </div>
-        </div>
+        <button onclick="syncAllData()" class="px-4 py-2 rounded-xl bg-indigo-50 text-[#5453EC] font-bold flex items-center gap-2 shadow-sm hover:bg-indigo-100">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+            <span class="text-sm hidden sm:block">Sync Cloud</span>
+        </button>
       </header>
 
       <div class="flex-1 overflow-y-auto p-4 sm:p-6 w-full relative">
         
-        <div id="loader" class="absolute inset-0 z-20 hidden items-center justify-center bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-sm">
+        <div id="loader" class="absolute inset-0 z-20 flex items-center justify-center bg-slate-50/80 backdrop-blur-sm">
             <div class="flex flex-col items-center gap-3">
-                <div class="loader"></div>
-                <p class="text-sm font-bold text-[#5453EC] dark:text-indigo-400">Syncing Data...</p>
+                <div class="loader"></div><p class="text-sm font-bold text-[#5453EC]">Syncing Database...</p>
             </div>
         </div>
 
         <div id="view-dashboard" class="fade-in w-full max-w-7xl mx-auto block">
-          
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div class="card-hover bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-100 dark:border-slate-700 transition-colors">
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white" style="background: linear-gradient(135deg, #5453EC, #6B63FF);">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                </div>
-              </div>
-              <h3 class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">1,204</h3>
-              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Total Clients</p>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+              <h3 id="stat-clients" class="text-2xl font-bold text-slate-800">0</h3>
+              <p class="text-sm text-slate-500 mt-1">Total Clients</p>
             </div>
-            
-            <div class="card-hover bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-100 dark:border-slate-700 transition-colors">
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white" style="background: linear-gradient(135deg, #F7CB51, #FCD34D);">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
-                </div>
-              </div>
-              <h3 class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">45</h3>
-              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Pending Tasks</p>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+              <h3 id="stat-tasks" class="text-2xl font-bold text-slate-800">0</h3>
+              <p class="text-sm text-slate-500 mt-1">Total Tasks</p>
             </div>
-
-            <div class="card-hover bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-100 dark:border-slate-700 transition-colors">
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white" style="background: linear-gradient(135deg, #10b981, #34d399);">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-                <span class="text-emerald-600 dark:text-emerald-400 text-xs font-bold bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-lg">High</span>
-              </div>
-              <h3 class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">92%</h3>
-              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Compliance Rate</p>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+              <h3 id="stat-transactions" class="text-2xl font-bold text-slate-800">0</h3>
+              <p class="text-sm text-slate-500 mt-1">Total Transactions</p>
             </div>
-
-            <div class="card-hover bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-100 dark:border-slate-700 transition-colors">
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white" style="background: linear-gradient(135deg, #EF4444, #F87171);">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-              </div>
-              <h3 class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">₹ 2.4M</h3>
-              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">YTD Revenue</p>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+              <h3 id="stat-invoices" class="text-2xl font-bold text-slate-800">0</h3>
+              <p class="text-sm text-slate-500 mt-1">Invoices Issued</p>
             </div>
           </div>
-
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6 w-full">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-100 dark:border-slate-700 relative w-full min-w-0 transition-colors">
-              <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Compliance Status (GST/Tax)</h3>
-              <div class="relative w-full h-48 sm:h-64 flex justify-center"><canvas id="complianceChart"></canvas></div>
-            </div>
-            
-            <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-100 dark:border-slate-700 relative w-full min-w-0 transition-colors">
-              <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Monthly Transactions Overview</h3>
-              <div class="relative w-full h-64 sm:h-72"><canvas id="transactionsChart"></canvas></div>
-            </div>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200"><h3 class="font-bold mb-4">Task Status</h3><canvas id="chart1" height="200"></canvas></div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200"><h3 class="font-bold mb-4">Transactions Record</h3><canvas id="chart2" height="200"></canvas></div>
           </div>
         </div>
 
         <div id="view-data" class="fade-in w-full max-w-7xl mx-auto hidden">
           
-          <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-700 transition-colors mb-6">
-            <div class="flex items-center gap-4 mb-6 border-b border-slate-100 dark:border-slate-700 pb-4">
-              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#5453EC] to-[#6B63FF] flex items-center justify-center text-white shadow-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-              </div>
-              <div>
-                  <h2 class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">Add New Record</h2>
-                  <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm">Create a new entry in the <span id="subtitle-sheet" class="font-bold text-[#5453EC]">DATABASE</span>.</p>
-              </div>
-            </div>
+          <div class="flex gap-2 mb-6 p-1 bg-slate-200 rounded-xl w-fit">
+              <button onclick="toggleDataView('table')" id="tab-table" class="px-6 py-2 rounded-lg font-bold text-sm bg-white shadow-sm text-[#5453EC]">View Database</button>
+              <button onclick="toggleDataView('form')" id="tab-form" class="px-6 py-2 rounded-lg font-bold text-sm text-slate-600 hover:text-slate-800">Add/Edit Record</button>
+          </div>
 
-            <div id="dynamicForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                </div>
-
-            <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700 flex justify-end">
-                <button id="submitBtn" onclick="submitData()" style="display:none;" class="px-8 py-3 rounded-xl bg-gradient-to-r from-[#5453EC] to-[#6B63FF] text-white font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all w-full md:w-auto">
-                    Save Record
-                </button>
+          <div id="section-form" class="hidden bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
+            <h2 class="text-xl font-bold text-slate-800 mb-6 pb-4 border-b">Record Editor</h2>
+            
+            <input type="hidden" id="editRowIndex" value="">
+            <div id="dynamicForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+            
+            <div class="mt-8 pt-6 border-t flex justify-end gap-3">
+                <button onclick="toggleDataView('table')" class="px-6 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm">Cancel</button>
+                <button id="submitBtn" onclick="submitData()" class="px-8 py-3 rounded-xl bg-[#5453EC] text-white font-bold text-sm shadow-lg">Save Record</button>
             </div>
           </div>
 
-          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors overflow-hidden">
-             
-             <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-                 <h3 class="text-lg font-bold text-slate-800 dark:text-white">Database Records</h3>
-                 
-                 <div class="relative w-full sm:w-72">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </div>
-                    <input type="text" id="searchInput" onkeyup="searchTable()" class="block w-full p-2.5 pl-10 text-sm text-slate-900 border border-slate-300 rounded-xl bg-white dark:bg-slate-700 dark:border-slate-600 dark:placeholder-slate-400 dark:text-white transition-colors" placeholder="Search records...">
-                 </div>
+          <div id="section-table" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+             <div class="p-4 border-b bg-slate-50 flex justify-between items-center">
+                 <input type="text" id="searchInput" onkeyup="searchTable()" class="w-full sm:w-72 p-2.5 text-sm border border-slate-300 rounded-xl" placeholder="Search records...">
              </div>
-
              <div class="overflow-x-auto">
-                <table id="dataTable" class="w-full text-left border-collapse">
-                    <thead id="tableHead" class="bg-slate-100 dark:bg-slate-900/80">
-                        </thead>
-                    <tbody id="tableBody" class="divide-y divide-slate-100 dark:divide-slate-700/50">
-                        </tbody>
+                <table class="w-full text-left border-collapse">
+                    <thead id="tableHead" class="bg-slate-100"></thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-100"></tbody>
                 </table>
              </div>
           </div>
@@ -250,290 +140,281 @@
 
   <script>
     // ==========================================
-    // YOUR LIVE GOOGLE APPS SCRIPT URL
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyiAcmabkMHDRm_FFd_iumh1xXRB5zC9QdyLcSKnp6o7mvsMUHmYrYEKsJLhg6Kwbmn/exec"; 
+    // NEW WEB APP URL ADDED HERE
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyCNIezXu1lNTb43z-ZZd2-l9wGrlaf2yxpUMiQUZIM_mKnCZ-Xcc9ATefs-vpyI3n2/exec"; 
     // ==========================================
 
+    let cachedDatabase = {}; 
     let currentSheet = "Dashboard";
-    let currentHeaders = [];
-    let chartsRendered = false;
+    let chartInstance1, chartInstance2;
 
-    // Set Current Date in Header
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-US', dateOptions);
-
-    // Mobile Sidebar Toggle
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
-        
-        if (sidebar.classList.contains('-translate-x-full')) {
-            sidebar.classList.remove('-translate-x-full');
-            overlay.classList.remove('hidden');
-            setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-        } else {
-            sidebar.classList.add('-translate-x-full');
-            overlay.classList.add('opacity-0');
-            setTimeout(() => overlay.classList.add('hidden'), 300);
-        }
-    }
-
-    // Load Tab Data (Handles switching between Dashboard and Data Views)
-    async function loadTab(tabName) {
-        currentSheet = tabName;
-        document.getElementById('page-title').innerText = tabName;
-        
-        // Update Navigation UI
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.classList.remove('nav-active');
-            btn.classList.add('nav-inactive');
-            if(btn.innerText.includes(tabName)) {
-                btn.classList.add('nav-active');
-                btn.classList.remove('nav-inactive');
-            }
-        });
-
-        // Close sidebar on mobile
-        if (window.innerWidth < 1024) toggleSidebar();
-
-        // Switch Views based on selection
-        if (tabName === 'Dashboard') {
-            document.getElementById('view-dashboard').classList.remove('hidden');
-            document.getElementById('view-dashboard').classList.add('block');
-            document.getElementById('view-data').classList.add('hidden');
-            document.getElementById('view-data').classList.remove('block');
-            
-            if(!chartsRendered) renderCharts();
-            return;
-        }
-
-        // If it's a Data Tab (Clients, Tasks, etc.)
-        document.getElementById('view-dashboard').classList.add('hidden');
-        document.getElementById('view-dashboard').classList.remove('block');
-        document.getElementById('view-data').classList.remove('hidden');
-        document.getElementById('view-data').classList.add('block');
-        document.getElementById('subtitle-sheet').innerText = tabName;
-        
-        // Reset Search Bar
-        document.getElementById('searchInput').value = "";
-
-        // Show Loader, clear old data
+    // Fetch all data on startup
+    async function syncAllData() {
         document.getElementById('loader').style.display = "flex";
-        document.getElementById('dynamicForm').innerHTML = "";
-        document.getElementById('submitBtn').style.display = "none";
-        document.getElementById('tableHead').innerHTML = "";
-        document.getElementById('tableBody').innerHTML = "";
-
         try {
-            const response = await fetch(`${WEB_APP_URL}?sheet=${tabName}`);
-            const result = await response.json();
+            const response = await fetch(WEB_APP_URL);
+            cachedDatabase = await response.json();
             
-            if(result.error) {
-                document.getElementById('tableBody').innerHTML = `<tr><td class="p-8 text-center text-red-500 font-bold">Error: ${result.error}</td></tr>`;
-            } else {
-                currentHeaders = result.headers;
-                buildForm(result.headers);
-                buildTable(result.headers, result.data);
+            // Check if there was an error connecting to the script properly
+            if(cachedDatabase.error) {
+                 alert("Apps Script Error: " + cachedDatabase.error);
+                 return;
             }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            document.getElementById('tableBody').innerHTML = `<tr><td class="p-8 text-center text-red-500 font-bold">Error connecting to Google Sheets database.</td></tr>`;
+            
+            updateDashboardStats();
+            if(currentSheet !== "Dashboard") renderDataTab(currentSheet);
+        } catch (e) {
+            console.error(e);
+            alert("Error connecting to Google Sheets. Make sure the new script (doGet for all sheets) is deployed correctly.");
         } finally {
             document.getElementById('loader').style.display = "none";
         }
     }
 
-    // Refresh Data button logic
-    function refreshCurrentTab() {
-        if(currentSheet !== 'Dashboard') {
-            loadTab(currentSheet);
-        }
-    }
-
-    // Build the Input Form dynamically
-    function buildForm(headers) {
-        const formDiv = document.getElementById('dynamicForm');
-        if (!headers || headers.length === 0) return;
-
-        headers.forEach((header, index) => {
-            if(header === "_RowNumber" || header === "") return; 
-
-            const groupDiv = document.createElement('div');
-            
-            const label = document.createElement('label');
-            label.className = "block text-[10px] font-extrabold uppercase text-slate-600 dark:text-slate-300 mb-2 tracking-wide";
-            label.innerText = header;
-            
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.id = 'input_' + index; 
-            input.placeholder = 'Enter ' + header;
-            input.className = "w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm text-slate-800 dark:text-white transition-all";
-
-            groupDiv.appendChild(label);
-            groupDiv.appendChild(input);
-            formDiv.appendChild(groupDiv);
+    // Switch between left menu tabs instantly
+    function switchTab(tabName) {
+        currentSheet = tabName;
+        document.getElementById('page-title').innerText = tabName;
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.replace('nav-active', 'nav-inactive');
+            if(btn.innerText.includes(tabName)) btn.classList.replace('nav-inactive', 'nav-active');
         });
-        
-        if(headers.length > 0) {
-            document.getElementById('submitBtn').style.display = "block";
+        if (window.innerWidth < 1024) toggleSidebar();
+
+        if (tabName === 'Dashboard') {
+            document.getElementById('view-dashboard').classList.replace('hidden', 'block');
+            document.getElementById('view-data').classList.replace('block', 'hidden');
+            updateDashboardStats();
+        } else {
+            document.getElementById('view-dashboard').classList.replace('block', 'hidden');
+            document.getElementById('view-data').classList.replace('hidden', 'block');
+            toggleDataView('table'); // Always show table when switching tabs
+            renderDataTab(tabName);
         }
     }
 
-    // Build the Data Table dynamically
-    function buildTable(headers, data) {
+    // Switch between Table and Form view
+    function toggleDataView(view) {
+        const btnTable = document.getElementById('tab-table');
+        const btnForm = document.getElementById('tab-form');
+        const secTable = document.getElementById('section-table');
+        const secForm = document.getElementById('section-form');
+
+        if(view === 'table') {
+            btnTable.className = "px-6 py-2 rounded-lg font-bold text-sm bg-white shadow-sm text-[#5453EC]";
+            btnForm.className = "px-6 py-2 rounded-lg font-bold text-sm text-slate-600 hover:text-slate-800";
+            secTable.classList.remove('hidden');
+            secForm.classList.add('hidden');
+            document.getElementById('editRowIndex').value = ""; // Clear edit mode
+            document.getElementById('submitBtn').innerText = "Save New Record";
+        } else {
+            btnForm.className = "px-6 py-2 rounded-lg font-bold text-sm bg-white shadow-sm text-[#5453EC]";
+            btnTable.className = "px-6 py-2 rounded-lg font-bold text-sm text-slate-600 hover:text-slate-800";
+            secForm.classList.remove('hidden');
+            secTable.classList.add('hidden');
+        }
+    }
+
+    // Render Data Table & Form Inputs from Cache
+    function renderDataTab(sheetName) {
+        const sheetData = cachedDatabase[sheetName];
+        
+        // Handle case where sheet doesn't exist yet or is empty
+        if(!sheetData || !sheetData.headers || sheetData.headers.length === 0) {
+            document.getElementById('dynamicForm').innerHTML = "<p class='text-slate-500'>No columns found in this tab.</p>";
+            document.getElementById('tableHead').innerHTML = "";
+            document.getElementById('tableBody').innerHTML = "<tr><td class='p-8 text-center'>No data or sheet not found.</td></tr>";
+            return;
+        }
+
+        // Build Form
+        const formDiv = document.getElementById('dynamicForm');
+        formDiv.innerHTML = "";
+        sheetData.headers.forEach((header, index) => {
+            if(!header) return;
+            formDiv.innerHTML += `
+                <div>
+                    <label class="block text-[10px] font-extrabold uppercase text-slate-600 mb-2">${header}</label>
+                    <input type="text" id="input_${index}" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm" ${header === "_RowNumber" ? "disabled" : ""}>
+                </div>`;
+        });
+
+        // Build Table
         const thead = document.getElementById('tableHead');
         const tbody = document.getElementById('tableBody');
-
-        if (!headers) return;
-
+        
         let trHead = '<tr>';
-        headers.forEach(header => {
-            trHead += `<th class="p-4 text-[10px] uppercase font-extrabold text-slate-500 dark:text-slate-400 tracking-wider whitespace-nowrap">${header}</th>`;
-        });
-        trHead += '</tr>';
+        sheetData.headers.forEach(h => { if(h) trHead += `<th class="p-4 text-[10px] uppercase font-extrabold text-slate-500 whitespace-nowrap">${h}</th>` });
+        trHead += `<th class="p-4 text-[10px] uppercase font-extrabold text-slate-500 sticky right-0 bg-slate-100 shadow-[-5px_0_10px_rgba(0,0,0,0.05)]">Actions</th></tr>`;
         thead.innerHTML = trHead;
 
-        if(data && data.length > 0) {
-            data.forEach(row => {
-                let trBody = '<tr class="searchable-row hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors">';
-                headers.forEach(header => {
-                    trBody += `<td class="p-4 text-sm text-slate-700 dark:text-slate-300 whitespace-nowrap border-b border-slate-100 dark:border-slate-700/50">${row[header] || "-"}</td>`;
-                });
-                trBody += '</tr>';
+        tbody.innerHTML = "";
+        if(sheetData.data && sheetData.data.length > 0) {
+            sheetData.data.forEach(row => {
+                let trBody = '<tr class="searchable-row hover:bg-slate-50 transition-colors">';
+                
+                // Usually ID is in Column B (index 1) or Column A (index 0). We will pass the whole row to the delete function.
+                let rowId = row[sheetData.headers[1]] || row[sheetData.headers[0]]; 
+                let escapedRow = JSON.stringify(row).replace(/"/g, '&quot;'); 
+
+                sheetData.headers.forEach(h => { if(h) trBody += `<td class="p-4 text-sm text-slate-700 whitespace-nowrap">${row[h] || "-"}</td>` });
+                
+                trBody += `<td class="p-4 flex gap-2 sticky right-0 bg-white shadow-[-5px_0_10px_rgba(0,0,0,0.05)]">
+                    <button onclick="editRecord('${escapedRow}')" class="px-3 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-200">Edit</button>
+                    <button onclick="deleteRecord('${rowId}')" class="px-3 py-1 bg-red-100 text-red-600 rounded-lg text-xs font-bold hover:bg-red-200">Del</button>
+                </td></tr>`;
                 tbody.innerHTML += trBody;
             });
         } else {
-            tbody.innerHTML = `<tr><td colspan="${headers.length}" class="p-8 text-center text-slate-500 dark:text-slate-400 font-medium">No records found in this database yet.</td></tr>`;
+             tbody.innerHTML = `<tr><td colspan="${sheetData.headers.length + 1}" class="p-8 text-center text-slate-500">No records found.</td></tr>`;
         }
     }
 
-    // Real-time Search Logic for the Table
-    function searchTable() {
-        const input = document.getElementById("searchInput");
-        const filter = input.value.toLowerCase();
-        const tbody = document.getElementById("tableBody");
-        const rows = tbody.getElementsByTagName("tr");
-
-        for (let i = 0; i < rows.length; i++) {
-            if (rows[i].classList.contains("searchable-row")) {
-                let textValue = rows[i].textContent || rows[i].innerText;
-                if (textValue.toLowerCase().indexOf(filter) > -1) {
-                    rows[i].style.display = "";
-                } else {
-                    rows[i].style.display = "none";
-                }
-            }
-        }
-    }
-
-    // Submit Data to Google Sheets
-    async function submitData() {
-        const submitBtn = document.getElementById('submitBtn');
-        const originalText = submitBtn.innerHTML;
+    // Handle Edit Button Click
+    function editRecord(rowJson) {
+        const rowData = JSON.parse(rowJson);
+        const headers = cachedDatabase[currentSheet].headers;
         
-        submitBtn.innerHTML = '<span class="flex items-center justify-center gap-2"><div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Saving...</span>';
-        submitBtn.disabled = true;
+        headers.forEach((h, index) => {
+            if(h && document.getElementById('input_' + index)) {
+                document.getElementById('input_' + index).value = rowData[h] || "";
+            }
+        });
+        
+        document.getElementById('editRowIndex').value = rowData[headers[1]] || rowData[headers[0]]; // Set ID to update
+        document.getElementById('submitBtn').innerText = "Update Record";
+        toggleDataView('form');
+    }
 
-        let rowDataToSubmit = [];
-        currentHeaders.forEach((header, index) => {
-            if(header === "_RowNumber") {
-                rowDataToSubmit.push(""); 
-            } else if (header !== "") {
-                let val = document.getElementById('input_' + index).value;
-                rowDataToSubmit.push(val);
+    // Handle Submit (Add or Edit)
+    async function submitData() {
+        const btn = document.getElementById('submitBtn');
+        const isEdit = document.getElementById('editRowIndex').value !== "";
+        const action = isEdit ? "edit" : "add";
+        const id = document.getElementById('editRowIndex').value;
+        
+        btn.innerText = "Saving..."; btn.disabled = true;
+
+        let dataArr = [];
+        cachedDatabase[currentSheet].headers.forEach((h, i) => {
+            if(h) {
+                // If it's a new record, leave _RowNumber blank so AppSheet/Sheets can fill it if needed.
+                if(h === "_RowNumber" && !isEdit) {
+                    dataArr.push("");
+                } else {
+                    dataArr.push(document.getElementById('input_' + i).value);
+                }
             }
         });
 
         try {
             await fetch(WEB_APP_URL, {
                 method: "POST",
-                body: JSON.stringify({ sheet: currentSheet, action: "add", data: rowDataToSubmit })
+                body: JSON.stringify({ sheet: currentSheet, action: action, id: id, data: dataArr })
             });
             
-            submitBtn.innerHTML = '✓ Saved Successfully';
-            submitBtn.classList.replace('from-[#5453EC]', 'from-emerald-500');
-            submitBtn.classList.replace('to-[#6B63FF]', 'to-emerald-400');
-            
-            setTimeout(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.classList.replace('from-emerald-500', 'from-[#5453EC]');
-                submitBtn.classList.replace('to-emerald-400', 'to-[#6B63FF]');
-                submitBtn.disabled = false;
-                loadTab(currentSheet); 
-            }, 1500);
-
-        } catch (error) {
-            alert("Error saving data. Check your connection.");
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
+            await syncAllData(); // Refresh local cache with new data
+            toggleDataView('table'); // Go back to table view
+        } catch(e) {
+            alert("Error saving data.");
+        } finally {
+            btn.innerText = isEdit ? "Update Record" : "Save Record";
+            btn.disabled = false;
         }
     }
 
-    // Chart.js Rendering Logic for the Dashboard
-    function renderCharts() {
-        // 1. Compliance Doughnut Chart
-        const ctxCompliance = document.getElementById('complianceChart').getContext('2d');
-        new Chart(ctxCompliance, {
-            type: 'doughnut',
-            data: {
-                labels: ['Filed/Compliant', 'Pending', 'Overdue'],
-                datasets: [{
-                    data: [75, 15, 10], // Sample Data
-                    backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
-                    borderWidth: 0,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans' } } }
-                },
-                cutout: '70%'
-            }
-        });
-
-        // 2. Transactions Bar Chart
-        const ctxTransactions = document.getElementById('transactionsChart').getContext('2d');
-        new Chart(ctxTransactions, {
-            type: 'bar',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Income',
-                    data: [120000, 190000, 150000, 220000, 180000, 250000], // Sample Data
-                    backgroundColor: '#5453EC',
-                    borderRadius: 4
-                },
-                {
-                    label: 'Expenses',
-                    data: [80000, 110000, 90000, 130000, 100000, 140000], // Sample Data
-                    backgroundColor: '#cbd5e1',
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'top', labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans' } } }
-                },
-                scales: {
-                    y: { grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94a3b8' } },
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-                }
-            }
-        });
-
-        chartsRendered = true;
+    // Handle Delete
+    async function deleteRecord(id) {
+        if(!confirm(`Are you sure you want to delete record ${id}?`)) return;
+        
+        document.getElementById('loader').style.display = "flex";
+        try {
+            await fetch(WEB_APP_URL, {
+                method: "POST",
+                body: JSON.stringify({ sheet: currentSheet, action: "delete", id: id })
+            });
+            await syncAllData(); // Refresh local cache
+        } catch(e) {
+            alert("Error deleting record.");
+            document.getElementById('loader').style.display = "none";
+        }
     }
 
-    // Initialize the app by loading the Dashboard
-    window.onload = () => {
-        loadTab('Dashboard');
-    };
+    // Calculate real data for dashboard
+    function updateDashboardStats() {
+        if(!cachedDatabase['CLIENTS'] || !cachedDatabase['CLIENTS'].data) return;
+
+        // Update Numbers
+        document.getElementById('stat-clients').innerText = cachedDatabase['CLIENTS'] ? cachedDatabase['CLIENTS'].data.length : 0;
+        document.getElementById('stat-tasks').innerText = cachedDatabase['TASKS'] ? cachedDatabase['TASKS'].data.length : 0;
+        document.getElementById('stat-transactions').innerText = cachedDatabase['TRANSACTIONS'] ? cachedDatabase['TRANSACTIONS'].data.length : 0;
+        document.getElementById('stat-invoices').innerText = cachedDatabase['INVOICE'] ? cachedDatabase['INVOICE'].data.length : 0;
+
+        // Chart 1: Tasks (Count status)
+        let tasks = cachedDatabase['TASKS'] ? cachedDatabase['TASKS'].data : [];
+        let taskStatus = {};
+        tasks.forEach(t => { 
+            let status = t['Status of Task'] || t['Status'] || 'Other';
+            taskStatus[status] = (taskStatus[status] || 0) + 1; 
+        });
+
+        if(chartInstance1) chartInstance1.destroy();
+        chartInstance1 = new Chart(document.getElementById('chart1'), {
+            type: 'doughnut',
+            data: { 
+                labels: Object.keys(taskStatus).length > 0 ? Object.keys(taskStatus) : ['No Data'], 
+                datasets: [{ 
+                    data: Object.values(taskStatus).length > 0 ? Object.values(taskStatus) : [1], 
+                    backgroundColor: ['#5453EC', '#10b981', '#f59e0b', '#cbd5e1'] 
+                }] 
+            },
+            options: { maintainAspectRatio: false }
+        });
+
+        // Chart 2: Transactions
+        let trans = cachedDatabase['TRANSACTIONS'] ? cachedDatabase['TRANSACTIONS'].data : [];
+        let transCounts = { "Receipt": 0, "Payment": 0, "Other": 0 };
+        trans.forEach(t => {
+            let type = t['Voucher Type'] || t['Type'] || 'Other';
+            if(type.toLowerCase().includes('receipt')) transCounts["Receipt"]++;
+            else if(type.toLowerCase().includes('payment')) transCounts["Payment"]++;
+            else transCounts["Other"]++;
+        });
+
+        if(chartInstance2) chartInstance2.destroy();
+        chartInstance2 = new Chart(document.getElementById('chart2'), {
+            type: 'bar',
+            data: { 
+                labels: Object.keys(transCounts), 
+                datasets: [{ 
+                    label: 'Voucher Count', 
+                    data: Object.values(transCounts), 
+                    backgroundColor: '#5453EC' 
+                }] 
+            },
+            options: { maintainAspectRatio: false }
+        });
+    }
+
+    // Table Search Filter
+    function searchTable() {
+        const filter = document.getElementById("searchInput").value.toLowerCase();
+        const rows = document.getElementById("tableBody").getElementsByTagName("tr");
+        for (let i = 0; i < rows.length; i++) {
+            let text = rows[i].textContent.toLowerCase();
+            rows[i].style.display = text.includes(filter) ? "" : "none";
+        }
+    }
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+    }
+
+    // Start App
+    window.onload = syncAllData;
   </script>
 </body>
 </html>
