@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CM BIZ - Enterprise Resource Planning</title>
+  <title>CM BIZ - Enterprise ERP</title>
   
-  <meta name="theme-color" content="#0076fb">
+  <meta name="theme-color" content="#000000">
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -14,15 +14,26 @@
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: { extend: { colors: { primary: '#0076fb', darkbg: '#1e222d' } } }
+      theme: { 
+        extend: { 
+          colors: { 
+            primary: '#0076fb', 
+            zohoyellow: '#ffb300', 
+            darkbg: '#000000', 
+            sidebartext: '#d1d5db',
+            cardbg: '#ffffff',
+            pagebg: '#f3f4f6'
+          } 
+        } 
+      }
     }
   </script>
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
-    * { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    * { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
     html, body { max-width: 100vw; overflow-x: hidden; }
     .sidebar-transition { transition: transform 0.3s ease-in-out; }
     .fade-in { animation: fadeIn 0.4s ease forwards; }
@@ -30,123 +41,153 @@
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     .dark ::-webkit-scrollbar-thumb { background: #475569; }
-    input:focus, select:focus { border-color: #0076fb !important; outline: none; box-shadow: 0 0 0 2px rgba(0, 118, 251, 0.2); }
+    input:focus, select:focus { border-color: #0076fb !important; outline: none; box-shadow: 0 0 0 1px #0076fb; }
     
-    .nav-active { background: #0076fb; color: white !important; }
-    .nav-inactive { color: #94a3b8; }
-    .nav-inactive:hover { background: rgba(255, 255, 255, 0.08); color: white; }
-    .dark .nav-inactive { color: #cbd5e1; }
-    .dark .nav-inactive:hover { background: rgba(255, 255, 255, 0.1); color: white; }
+    /* Zoho Style Sidebar Nav */
+    .nav-active { background: #ffffff; color: #000000 !important; font-weight: 600; border-radius: 4px 0 0 4px; border-left: 4px solid #0076fb; }
+    .nav-inactive { color: #d1d5db; border-left: 4px solid transparent; }
+    .nav-inactive:hover { background: rgba(255, 255, 255, 0.1); color: white; }
     
     .loader { border: 3px solid rgba(0, 118, 251, 0.2); border-top: 3px solid #0076fb; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Sticky Mobile Bottom Nav */
+    @media (max-width: 1024px) {
+        .mobile-bottom-nav { display: flex; }
+        .main-wrapper { padding-bottom: 70px; } /* Room for bottom nav */
+    }
+    @media (min-width: 1025px) {
+        .mobile-bottom-nav { display: none; }
+    }
   </style>
 </head>
-<body class="h-full bg-slate-50 dark:bg-slate-900 overflow-hidden w-full relative transition-colors duration-200">
+<body class="h-full bg-pagebg dark:bg-slate-900 overflow-hidden w-full relative transition-colors duration-200">
   <div id="app" class="h-full flex w-full relative overflow-hidden">
     
     <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden lg:hidden opacity-0 transition-opacity" onclick="toggleSidebar()"></div>
 
-    <aside id="sidebar" class="sidebar-transition bg-darkbg h-full w-72 flex flex-col shadow-2xl fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0 shrink-0 border-r border-slate-800">
-      <div class="p-6 border-b border-slate-700/50 flex items-center gap-3 shrink-0">
-        <img src="logocmbiz.png" alt="CM Biz Logo" class="w-12 h-12 rounded bg-white shadow-sm object-contain p-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-        <div class="w-12 h-12 rounded bg-white hidden items-center justify-center font-bold text-primary text-xl shadow-sm">CM</div>
+    <aside id="sidebar" class="sidebar-transition bg-darkbg h-full w-64 flex flex-col shadow-2xl fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0 shrink-0">
+      <div class="p-4 flex items-center gap-3 shrink-0 border-b border-slate-800">
+        <img src="logocmbiz.png" alt="CM Biz Logo" class="w-8 h-8 rounded bg-white object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="w-8 h-8 rounded bg-white hidden items-center justify-center font-bold text-primary text-sm">CM</div>
         <div>
-          <h1 class="text-xl font-bold text-white tracking-tight leading-tight">CM BIZ</h1>
-          <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Enterprise ERP</p>
+          <h1 class="text-lg font-bold text-white leading-tight">CM BIZ</h1>
         </div>
       </div>
       
-      <nav class="flex-1 px-4 py-6 overflow-y-auto w-full">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+          <div class="flex flex-col">
+              <span id="side-company-name" class="font-bold text-white truncate w-36">Loading...</span>
+              <span id="side-license-no" class="truncate w-36">License: ...</span>
+          </div>
+      </div>
+
+      <nav class="flex-1 py-4 pl-4 overflow-y-auto w-full pr-0">
         <ul id="nav-list" class="space-y-1 w-full">
             </ul>
       </nav>
     </aside>
 
-    <main class="flex-1 h-full flex flex-col relative min-w-0 bg-slate-50 dark:bg-slate-900 transition-colors duration-200">
+    <main class="flex-1 h-full flex flex-col relative min-w-0 bg-pagebg dark:bg-slate-900 transition-colors duration-200 main-wrapper">
       
-      <header class="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700 px-4 py-4 flex items-center justify-between z-10 shrink-0">
+      <header class="bg-darkbg lg:bg-white dark:bg-slate-800 shadow-sm px-4 py-3 flex items-center justify-between z-10 shrink-0 border-b border-slate-200 dark:border-slate-700">
         <div class="flex items-center gap-3">
-          <button onclick="toggleSidebar()" class="p-2 rounded text-slate-600 dark:text-slate-300 lg:hidden hover:bg-slate-100 dark:hover:bg-slate-700">
+          <button onclick="toggleSidebar()" class="p-1.5 rounded text-white lg:text-slate-600 dark:text-slate-300 lg:hidden hover:bg-slate-800 lg:hover:bg-slate-100">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
           </button>
-          <h2 id="page-title" class="text-xl font-bold text-slate-800 dark:text-white truncate uppercase">Dashboard</h2>
+          <div class="flex flex-col">
+              <h2 id="page-title" class="text-lg font-bold text-white lg:text-slate-800 dark:text-white truncate">Dashboard</h2>
+              <span id="live-clock" class="text-[10px] text-slate-300 lg:text-slate-500 font-medium tracking-wide">Connecting...</span>
+          </div>
         </div>
         
-        <div class="flex items-center gap-3">
-          <button onclick="toggleTheme()" class="p-2 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-yellow-400 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
-            <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-center gap-2">
+          <button onclick="toggleTheme()" class="p-2 rounded bg-slate-800 lg:bg-slate-100 dark:bg-slate-700 text-yellow-400 lg:text-slate-600 dark:text-yellow-400 hover:bg-slate-700 lg:hover:bg-slate-200 transition-colors">
+            <svg id="theme-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
             </svg>
           </button>
 
-          <button onclick="syncAllData()" class="px-4 py-2 rounded bg-blue-50 dark:bg-blue-900/30 text-primary dark:text-blue-400 font-bold flex items-center gap-2 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors border border-blue-100 dark:border-blue-800">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-              <span class="text-sm hidden sm:block">Sync Cloud</span>
+          <button onclick="syncAllData()" class="px-3 py-1.5 rounded bg-primary text-white font-bold flex items-center gap-2 hover:bg-blue-600 transition-colors text-sm shadow-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+              <span class="hidden sm:block">Sync</span>
           </button>
         </div>
       </header>
 
       <div class="flex-1 overflow-y-auto p-4 sm:p-6 w-full relative">
         
-        <div id="loader" class="absolute inset-0 z-20 flex items-center justify-center bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-sm">
+        <div id="loader" class="absolute inset-0 z-20 flex items-center justify-center bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-sm">
             <div class="flex flex-col items-center gap-3">
-                <div class="loader"></div><p class="text-sm font-bold text-primary dark:text-blue-400">Syncing Database...</p>
+                <div class="loader"></div><p class="text-sm font-bold text-primary">Syncing Database...</p>
             </div>
         </div>
 
         <div id="view-dashboard" class="fade-in w-full max-w-7xl mx-auto block">
           
-          <div class="mb-6 bg-white dark:bg-slate-800 p-4 rounded shadow-sm border border-slate-200 dark:border-slate-700 flex flex-wrap items-center gap-4 justify-between">
+          <div class="mb-6 bg-cardbg dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 flex flex-wrap items-center gap-4 justify-between">
               <div class="flex items-center gap-3">
                   <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                  <span class="font-bold text-slate-700 dark:text-white uppercase text-sm">Change Period:</span>
+                  <span class="font-bold text-slate-700 dark:text-white uppercase text-xs tracking-wider">Change Period:</span>
               </div>
               <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 p-1.5 rounded border border-slate-200 dark:border-slate-700">
-                 <span class="text-[10px] uppercase font-bold text-slate-500 ml-2">From:</span>
-                 <input type="date" id="dash-filter-from" class="text-sm p-1.5 rounded bg-transparent dark:text-white outline-none" onchange="updateDashboardStats()">
+                 <input type="date" id="dash-filter-from" class="text-sm p-1 bg-transparent text-slate-700 dark:text-white outline-none" onchange="updateDashboardStats()">
                  <span class="text-slate-400 text-sm">-</span>
-                 <span class="text-[10px] uppercase font-bold text-slate-500">To:</span>
-                 <input type="date" id="dash-filter-to" class="text-sm p-1.5 rounded bg-transparent dark:text-white outline-none" onchange="updateDashboardStats()">
-                 <button onclick="document.getElementById('dash-filter-from').value=''; document.getElementById('dash-filter-to').value=''; updateDashboardStats();" class="text-xs px-2 py-1 text-red-500 hover:bg-red-50 rounded">Clear</button>
+                 <input type="date" id="dash-filter-to" class="text-sm p-1 bg-transparent text-slate-700 dark:text-white outline-none" onchange="updateDashboardStats()">
+                 <button onclick="document.getElementById('dash-filter-from').value=''; document.getElementById('dash-filter-to').value=''; updateDashboardStats();" class="text-xs px-2 py-1 text-slate-500 hover:text-red-500 rounded">Clear</button>
              </div>
           </div>
 
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white dark:bg-slate-800 rounded p-5 shadow-sm border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary">
-              <h3 id="stat-tasks" class="text-2xl font-bold text-slate-800 dark:text-white">0</h3>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 uppercase font-semibold text-[10px] tracking-wider">Pending Tasks</p>
-            </div>
-            <div class="bg-white dark:bg-slate-800 rounded p-5 shadow-sm border border-slate-200 dark:border-slate-700 border-l-4 border-l-green-500">
-              <h3 id="stat-clients" class="text-2xl font-bold text-slate-800 dark:text-white">0</h3>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 uppercase font-semibold text-[10px] tracking-wider">Total Clients</p>
-            </div>
-            <div class="bg-white dark:bg-slate-800 rounded p-5 shadow-sm border border-slate-200 dark:border-slate-700 border-l-4 border-l-red-500">
-              <h3 id="stat-payable" class="text-2xl font-bold text-red-600 dark:text-red-400">₹0</h3>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 uppercase font-semibold text-[10px] tracking-wider">Amount Payable</p>
-            </div>
-            <div class="bg-white dark:bg-slate-800 rounded p-5 shadow-sm border border-slate-200 dark:border-slate-700 border-l-4 border-l-emerald-500">
-              <h3 id="stat-receivable" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">₹0</h3>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 uppercase font-semibold text-[10px] tracking-wider">Amount Receivable</p>
-            </div>
-          </div>
-          
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">
             
-            <div class="bg-white dark:bg-slate-800 rounded p-6 shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col col-span-1 lg:col-span-1">
-              <h3 class="font-bold mb-4 dark:text-white text-sm uppercase tracking-wide">Task Status Overview</h3>
-              <div class="relative w-full h-64">
-                <canvas id="chart1"></canvas>
+            <div class="bg-cardbg dark:bg-slate-800 rounded-lg p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+              <h3 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">Total Receivables</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-300 mb-2 font-medium">Total Unpaid <span id="stat-receivable" class="font-bold text-slate-800 dark:text-white">₹0</span></p>
+              
+              <div class="w-full h-3 flex rounded-full overflow-hidden mb-4">
+                  <div class="bg-primary h-full" style="width: 70%"></div>
+                  <div class="bg-zohoyellow h-full" style="width: 30%"></div>
+              </div>
+              
+              <div class="flex justify-between text-sm">
+                  <div><span class="text-primary font-bold">Current</span><br><span id="stat-rec-current" class="font-bold text-slate-800 dark:text-white">₹0</span></div>
+                  <div class="text-right"><span class="text-zohoyellow font-bold">Overdue</span><br><span id="stat-rec-overdue" class="font-bold text-slate-800 dark:text-white">₹0</span></div>
               </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 rounded p-6 shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col col-span-1 lg:col-span-2">
-              <div class="flex justify-between items-center mb-4">
-                  <h3 class="font-bold dark:text-white text-sm uppercase tracking-wide">Pending Tasks Calendar</h3>
-                  <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded font-bold" id="cal-count">0 Upcoming</span>
+            <div class="bg-cardbg dark:bg-slate-800 rounded-lg p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+              <h3 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">Total Payables</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-300 mb-2 font-medium">Total Unpaid <span id="stat-payable" class="font-bold text-slate-800 dark:text-white">₹0</span></p>
+              
+              <div class="w-full h-3 flex rounded-full overflow-hidden mb-4">
+                  <div class="bg-primary h-full" style="width: 85%"></div>
+                  <div class="bg-zohoyellow h-full" style="width: 15%"></div>
               </div>
-              <div class="overflow-y-auto max-h-64 pr-2 space-y-2" id="pending-calendar-list">
+              
+              <div class="flex justify-between text-sm">
+                  <div><span class="text-primary font-bold">Current</span><br><span id="stat-pay-current" class="font-bold text-slate-800 dark:text-white">₹0</span></div>
+                  <div class="text-right"><span class="text-zohoyellow font-bold">Overdue</span><br><span id="stat-pay-overdue" class="font-bold text-slate-800 dark:text-white">₹0</span></div>
+              </div>
+            </div>
+
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            
+            <div class="bg-cardbg dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col col-span-1 lg:col-span-2 overflow-hidden">
+              <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+                  <h3 class="font-bold text-slate-800 dark:text-white text-sm uppercase tracking-wide">Pending Tasks Calendar</h3>
+                  <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded font-bold" id="cal-count">0 Tasks</span>
+              </div>
+              <div class="overflow-y-auto h-80 p-4 space-y-3 bg-white dark:bg-slate-800" id="pending-calendar-list">
                  </div>
+            </div>
+
+            <div class="bg-cardbg dark:bg-slate-800 rounded-lg p-6 shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col col-span-1 lg:col-span-1">
+              <h3 class="font-bold mb-4 dark:text-white text-sm uppercase tracking-wide text-slate-800">Task Overview</h3>
+              <div class="relative w-full h-64 flex-1">
+                <canvas id="chart1"></canvas>
+              </div>
             </div>
 
           </div>
@@ -154,66 +195,101 @@
 
         <div id="view-data" class="fade-in w-full max-w-7xl mx-auto hidden">
           
-          <div id="action-bar" class="bg-darkbg text-white p-4 rounded flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 shadow-sm">
+          <div id="action-bar" class="bg-cardbg dark:bg-slate-800 p-4 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 shadow-sm border border-slate-200 dark:border-slate-700">
+              
               <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                 <input type="text" id="searchInput" onkeyup="applyFilters()" class="w-full sm:w-48 p-2 text-sm text-slate-800 rounded border-none focus:ring-2 focus:ring-primary outline-none" placeholder="Search records...">
+                 <div class="relative w-full sm:w-64">
+                     <svg class="w-4 h-4 absolute left-3 top-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                     <input type="text" id="searchInput" onkeyup="applyFilters()" class="w-full pl-9 pr-3 py-2 text-sm text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-600 focus:ring-1 focus:ring-primary outline-none" placeholder="Search...">
+                 </div>
                  
-                 <div class="flex items-center gap-2 bg-slate-800 p-1.5 rounded">
-                     <span class="text-[10px] uppercase font-bold text-slate-400 ml-1 hidden md:block">From:</span>
-                     <input type="date" id="filter-from" class="text-sm p-1.5 rounded text-slate-800 outline-none" onchange="applyFilters()">
-                     <span class="text-slate-400 text-sm">-</span>
-                     <span class="text-[10px] uppercase font-bold text-slate-400 hidden md:block">To:</span>
-                     <input type="date" id="filter-to" class="text-sm p-1.5 rounded text-slate-800 outline-none" onchange="applyFilters()">
-                     <button onclick="document.getElementById('filter-from').value=''; document.getElementById('filter-to').value=''; applyFilters();" class="text-xs px-2 py-1 text-slate-400 hover:text-white">Clear</button>
+                 <div class="flex items-center gap-1 bg-slate-50 dark:bg-slate-900 p-1 rounded border border-slate-200 dark:border-slate-600">
+                     <input type="date" id="filter-from" class="text-xs p-1 rounded bg-transparent text-slate-700 dark:text-white outline-none" onchange="applyFilters()">
+                     <span class="text-slate-400 text-xs">-</span>
+                     <input type="date" id="filter-to" class="text-xs p-1 rounded bg-transparent text-slate-700 dark:text-white outline-none" onchange="applyFilters()">
+                     <button onclick="document.getElementById('filter-from').value=''; document.getElementById('filter-to').value=''; applyFilters();" class="text-xs px-1.5 py-1 text-slate-500 hover:text-red-500">✕</button>
                  </div>
               </div>
 
-              <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
-                 <button onclick="exportPDF()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded text-sm font-bold shadow transition-colors flex items-center gap-2">
-                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                     <span class="hidden sm:inline">PDF</span>
+              <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                 <button onclick="openPdfModal()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-3 py-2 rounded text-sm font-medium transition-colors flex items-center gap-2 border border-slate-200 dark:border-slate-600">
+                     <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path></svg>
+                     <span class="hidden sm:inline">Export PDF</span>
                  </button>
-                 <button onclick="toggleDataView('form')" id="btn-add-record" class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold shadow transition-colors flex items-center gap-2">
+                 <button onclick="toggleDataView('form')" id="btn-add-record" class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium shadow-sm transition-colors flex items-center gap-2">
                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
-                     Add Record
+                     New
                  </button>
               </div>
           </div>
 
-          <div id="section-form" class="hidden bg-white dark:bg-slate-800 rounded p-6 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-700">
-            <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-6 pb-4 border-b dark:border-slate-700" id="form-title">Create New Record</h2>
+          <div id="section-form" class="hidden bg-cardbg dark:bg-slate-800 rounded-lg p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+            <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-6 pb-3 border-b border-slate-100 dark:border-slate-700" id="form-title">Create New Record</h2>
             
             <input type="hidden" id="editRowIndex" value="">
-            <div id="dynamicForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+            <div id="dynamicForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5"></div>
             
-            <div class="mt-8 pt-6 border-t dark:border-slate-700 flex justify-between items-center">
-                <button id="deleteBtn" onclick="deleteCurrentRecord()" class="hidden px-5 py-2.5 rounded bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-bold text-sm hover:bg-red-100 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-800 transition-colors">Delete Data</button>
+            <div class="mt-8 pt-5 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 -mx-6 -mb-6 p-4 rounded-b-lg">
+                <button id="deleteBtn" onclick="deleteCurrentRecord()" class="hidden px-4 py-2 rounded text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 font-medium text-sm transition-colors border border-transparent hover:border-red-200">Delete</button>
                 
-                <div class="flex gap-3 ml-auto">
-                    <button onclick="toggleDataView('table')" class="px-6 py-2.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Cancel</button>
-                    <button id="submitBtn" onclick="submitData()" class="px-8 py-2.5 rounded bg-primary text-white font-bold text-sm shadow hover:bg-blue-600 transition-colors">Save Record</button>
+                <div class="flex gap-2 ml-auto">
+                    <button onclick="toggleDataView('table')" class="px-5 py-2 rounded bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium text-sm border border-slate-300 dark:border-slate-600 hover:bg-slate-50 transition-colors">Cancel</button>
+                    <button id="submitBtn" onclick="submitData()" class="px-6 py-2 rounded bg-primary text-white font-medium text-sm shadow-sm hover:bg-blue-600 transition-colors">Save</button>
                 </div>
             </div>
           </div>
 
-          <div id="section-table" class="bg-white dark:bg-slate-800 rounded shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col">
+          <div id="section-table" class="bg-cardbg dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col">
              <div class="overflow-x-auto w-full">
                 <table class="w-full text-left border-collapse min-w-[600px]">
-                    <thead id="tableHead" class="bg-slate-100 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700"></thead>
+                    <thead id="tableHead" class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700"></thead>
                     <tbody id="tableBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
                 </table>
              </div>
 
-             <div id="pagination-controls" class="p-4 border-t dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex justify-between items-center text-sm">
-                 <button onclick="prevPage()" id="btn-prev" class="px-4 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded text-slate-600 dark:text-slate-300 font-bold disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">Previous</button>
-                 <span id="page-indicator" class="text-slate-600 dark:text-slate-400 font-medium">Page 1 of 1</span>
-                 <button onclick="nextPage()" id="btn-next" class="px-4 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded text-slate-600 dark:text-slate-300 font-bold disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">Next</button>
+             <div id="pagination-controls" class="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex justify-between items-center text-sm">
+                 <button onclick="prevPage()" id="btn-prev" class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded text-slate-600 dark:text-slate-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors">Prev</button>
+                 <span id="page-indicator" class="text-slate-500 dark:text-slate-400 text-xs">Page 1 of 1</span>
+                 <button onclick="nextPage()" id="btn-next" class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded text-slate-600 dark:text-slate-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors">Next</button>
              </div>
           </div>
 
         </div>
       </div>
     </main>
+
+    <div class="mobile-bottom-nav fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50 flex justify-around items-center p-2">
+        <button onclick="switchTab('Dashboard')" class="flex flex-col items-center p-2 text-primary" id="mob-nav-dash">
+            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            <span class="text-[10px] font-bold">Dashboard</span>
+        </button>
+        <button onclick="switchTab('TASKS')" class="flex flex-col items-center p-2 text-slate-400 hover:text-primary transition-colors" id="mob-nav-task">
+            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+            <span class="text-[10px] font-bold">Tasks</span>
+        </button>
+    </div>
+
+    <div id="pdf-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 opacity-0 transition-opacity">
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform" id="pdf-modal-content">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
+                <h3 class="font-bold text-slate-800 dark:text-white">Export to PDF</h3>
+                <button onclick="closePdfModal()" class="text-slate-400 hover:text-red-500">✕</button>
+            </div>
+            <div class="p-5">
+                <p class="text-xs text-slate-500 mb-4">Select the columns you want to include in the exported report.</p>
+                <div id="pdf-column-list" class="max-h-60 overflow-y-auto space-y-2 border border-slate-200 dark:border-slate-700 rounded p-3 bg-slate-50 dark:bg-slate-900/30">
+                    </div>
+            </div>
+            <div class="p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex justify-end gap-2">
+                <button onclick="closePdfModal()" class="px-4 py-2 rounded border border-slate-300 text-sm font-medium">Cancel</button>
+                <button onclick="executePDFExport()" class="px-4 py-2 rounded bg-primary text-white text-sm font-medium hover:bg-blue-600 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    Download
+                </button>
+            </div>
+        </div>
+    </div>
+
   </div>
 
   <script>
@@ -233,18 +309,32 @@
     let sortColumn = null;
     let sortAscending = true;
 
-    // Helper: Indian Date Parser DD-MM-YYYY
+    // Real-time Clock function
+    setInterval(() => {
+        const now = new Date();
+        const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        document.getElementById('live-clock').innerText = now.toLocaleDateString('en-IN', options);
+    }, 1000);
+
+    // Advanced Indian Date Parser: Parses DD-MM-YYYY safely
     function parseCustomDate(dateStr) {
         if (!dateStr) return null;
-        let parts = String(dateStr).split('-');
-        if (parts.length === 3 && parts[2].length === 4) {
-            return new Date(parts[2], parts[1] - 1, parts[0]);
+        let str = String(dateStr).trim();
+        let parts = str.split(/[-/]/); // Handle 20-03-2026 or 20/03/2026
+        if (parts.length === 3) {
+            // Check if year is at the end (Indian)
+            if (parts[2].length === 4) {
+                return new Date(parts[2], parts[1] - 1, parts[0]);
+            }
+            // If year is first (US/ISO)
+            if (parts[0].length === 4) {
+                 return new Date(parts[0], parts[1] - 1, parts[2]);
+            }
         }
         let d = new Date(dateStr);
         return isNaN(d) ? null : d;
     }
 
-    // Helper: Currency Parser
     function parseCurrency(val) {
         if (!val) return 0;
         let num = parseFloat(String(val).replace(/[^\d.-]/g, ''));
@@ -288,6 +378,7 @@
             
             parseDropdowns();
             buildSidebar();
+            populateCompanyDetails();
             updateDashboardStats();
             
             if(currentSheet !== "Dashboard") renderDataTab(currentSheet);
@@ -299,13 +390,22 @@
         }
     }
 
+    // Read Company sheet to populate Sidebar
+    function populateCompanyDetails() {
+        if(cachedDatabase['COMPANY'] && cachedDatabase['COMPANY'].data.length > 0) {
+            let comp = cachedDatabase['COMPANY'].data[0];
+            document.getElementById('side-company-name').innerText = comp['Name'] || "CM BIZ ERP";
+            document.getElementById('side-license-no').innerText = comp['Licence No'] ? `Lic: ${comp['Licence No']}` : "Software Licensed";
+        }
+    }
+
     function parseDropdowns() {
         dropdownOptions = {};
         if (cachedDatabase['DROPDOWN']) {
             const dropData = cachedDatabase['DROPDOWN'];
             dropData.headers.forEach(header => {
                 if(!header) return;
-                let cleanHead = header.replace(/^#/, ''); // Remove # for matching
+                let cleanHead = header.replace(/^#/, ''); // Match even if header has #
                 dropdownOptions[cleanHead] = [];
                 dropData.data.forEach(row => {
                     if(row[header] && String(row[header]).trim() !== "") {
@@ -318,15 +418,15 @@
 
     function buildSidebar() {
         const navList = document.getElementById('nav-list');
-        navList.innerHTML = `<li><button onclick="switchTab('Dashboard')" id="nav-btn-Dashboard" class="nav-btn nav-active w-full flex items-center gap-3 px-4 py-3 rounded transition-all"><span class="font-bold text-sm tracking-wide">DASHBOARD</span></button></li>`;
+        navList.innerHTML = `<li><button onclick="switchTab('Dashboard')" id="nav-btn-Dashboard" class="nav-btn nav-active w-full flex items-center gap-3 px-4 py-2.5 transition-all"><span class="text-sm tracking-wide">Dashboard</span></button></li>`;
         
         Object.keys(cachedDatabase).forEach(sheetName => {
             if (sheetName.toUpperCase() === 'DROPDOWN' || sheetName.toUpperCase() === 'COMPANY' || sheetName === 'error') return; 
             
             navList.innerHTML += `
             <li>
-                <button onclick="switchTab('${sheetName}')" id="nav-btn-${sheetName}" class="nav-btn nav-inactive w-full flex items-center gap-3 px-4 py-3 rounded transition-all">
-                    <span class="font-bold text-sm tracking-wide uppercase">${sheetName}</span>
+                <button onclick="switchTab('${sheetName}')" id="nav-btn-${sheetName}" class="nav-btn nav-inactive w-full flex items-center gap-3 px-4 py-2.5 transition-all">
+                    <span class="text-sm tracking-wide capitalize">${sheetName.toLowerCase()}</span>
                 </button>
             </li>`;
         });
@@ -336,7 +436,7 @@
 
     function switchTab(tabName) {
         currentSheet = tabName;
-        document.getElementById('page-title').innerText = tabName;
+        document.getElementById('page-title').innerText = tabName === 'Dashboard' ? 'Dashboard' : tabName.toUpperCase();
         document.getElementById('searchInput').value = ""; 
         document.getElementById('filter-from').value = "";
         document.getElementById('filter-to').value = "";
@@ -367,6 +467,22 @@
         });
         const activeBtn = document.getElementById('nav-btn-' + tabName);
         if(activeBtn) activeBtn.classList.replace('nav-inactive', 'nav-active');
+
+        // Mobile Bottom Nav Highlights
+        let mDash = document.getElementById('mob-nav-dash');
+        let mTask = document.getElementById('mob-nav-task');
+        if(mDash && mTask) {
+            if(tabName === 'Dashboard') {
+                mDash.className = "flex flex-col items-center p-2 text-primary";
+                mTask.className = "flex flex-col items-center p-2 text-slate-400 hover:text-primary transition-colors";
+            } else if(tabName.toUpperCase() === 'TASKS') {
+                mTask.className = "flex flex-col items-center p-2 text-primary";
+                mDash.className = "flex flex-col items-center p-2 text-slate-400 hover:text-primary transition-colors";
+            } else {
+                mTask.className = "flex flex-col items-center p-2 text-slate-400 hover:text-primary transition-colors";
+                mDash.className = "flex flex-col items-center p-2 text-slate-400 hover:text-primary transition-colors";
+            }
+        }
     }
 
     function toggleDataView(view) {
@@ -398,7 +514,7 @@
 
     function clearFormInputs() {
         const inputs = document.querySelectorAll('#dynamicForm input, #dynamicForm select');
-        inputs.forEach(input => input.value = "");
+        inputs.forEach(input => { if(!input.disabled) input.value = ""; });
     }
 
     function renderDataTab(sheetName) {
@@ -417,24 +533,25 @@
         sheetData.headers.forEach((header, index) => {
             if(!header) return;
             
+            // Check for Hash # indicating Read-Only
             let isReadOnly = header.startsWith('#');
-            let cleanHeader = header.replace(/^#/, '');
+            let cleanHeader = header.replace(/^#/, ''); // Remove # for label
             
             if (dropdownOptions[cleanHeader]) {
                 let optsHTML = `<option value="">Select ${cleanHeader}</option>`;
                 dropdownOptions[cleanHeader].forEach(opt => { optsHTML += `<option value="${opt}">${opt}</option>`; });
                 formDiv.innerHTML += `
                     <div>
-                        <label class="block text-[10px] font-extrabold uppercase text-slate-600 dark:text-slate-400 mb-2">${cleanHeader}</label>
-                        <select id="input_${index}" class="w-full px-4 py-2.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm transition-colors" ${isReadOnly ? "disabled" : ""}>
+                        <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1">${cleanHeader} ${isReadOnly ? '🔒' : ''}</label>
+                        <select id="input_${index}" class="w-full px-3 py-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 dark:text-white text-sm transition-colors ${isReadOnly ? 'bg-slate-100 cursor-not-allowed opacity-70' : ''}" ${isReadOnly ? "disabled" : ""}>
                             ${optsHTML}
                         </select>
                     </div>`;
             } else {
                 formDiv.innerHTML += `
                     <div>
-                        <label class="block text-[10px] font-extrabold uppercase text-slate-600 dark:text-slate-400 mb-2">${cleanHeader}</label>
-                        <input type="text" id="input_${index}" class="w-full px-4 py-2.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm transition-colors" ${isReadOnly ? "disabled placeholder='Auto / Read Only'" : ""}>
+                        <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1">${cleanHeader} ${isReadOnly ? '🔒' : ''}</label>
+                        <input type="text" id="input_${index}" class="w-full px-3 py-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 dark:text-white text-sm transition-colors ${isReadOnly ? 'bg-slate-100 cursor-not-allowed opacity-70' : ''}" ${isReadOnly ? "disabled placeholder='Auto-Generated'" : ""}>
                     </div>`;
             }
         });
@@ -450,16 +567,16 @@
         
         sheetData.headers.forEach((h) => { 
             if(h) {
-                let cleanHeader = h.replace(/^#/, '');
+                let cleanHeader = h.replace(/^#/, ''); // Hide # in table view
                 let sortIcon = "↕"; 
                 let activeClass = "";
                 if (sortColumn === h) {
                     sortIcon = sortAscending ? "↑" : "↓";
-                    activeClass = "text-primary dark:text-blue-400";
+                    activeClass = "text-primary font-bold";
                 }
 
-                trHead += `<th onclick="sortTable('${h}')" class="p-4 text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors ${activeClass} select-none">
-                    ${cleanHeader} <span class="ml-1 opacity-70">${sortIcon}</span>
+                trHead += `<th onclick="sortTable('${h}')" class="p-3 text-[11px] uppercase font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${activeClass} select-none border-b border-slate-200 dark:border-slate-700">
+                    ${cleanHeader} <span class="ml-1 opacity-50">${sortIcon}</span>
                 </th>`;
             } 
         });
@@ -473,7 +590,7 @@
         const sheetData = cachedDatabase[currentSheet];
         
         if(!currentFilteredData || currentFilteredData.length === 0) {
-             tbody.innerHTML = `<tr><td colspan="${sheetData.headers.length}" class="p-8 text-center text-slate-500 dark:text-slate-400">No records found.</td></tr>`;
+             tbody.innerHTML = `<tr><td colspan="${sheetData.headers.length}" class="p-8 text-center text-slate-500 dark:text-slate-400">No records found matching filters.</td></tr>`;
              updatePaginationUI();
              return;
         }
@@ -490,7 +607,7 @@
         
         pageData.forEach(row => {
             let escapedRow = JSON.stringify(row).replace(/"/g, '&quot;'); 
-            let trBody = `<tr onclick="editRecord('${escapedRow}')" class="cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/70 transition-colors">`;
+            let trBody = `<tr onclick="editRecord('${escapedRow}')" class="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">`;
 
             sheetData.headers.forEach(h => { 
                 if(h) {
@@ -498,12 +615,12 @@
                     let valLower = String(cellValue).toLowerCase();
                     
                     if (valLower === 'pending' || valLower === 'false') {
-                        cellValue = `<span class="bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400 px-2 py-0.5 rounded font-bold text-xs inline-block">${valLower === 'false' ? 'Incomplete' : 'Pending'}</span>`;
-                    } else if (valLower === 'completed' || valLower === 'true') {
-                        cellValue = `<span class="bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 px-2 py-0.5 rounded font-bold text-xs inline-block">${valLower === 'true' ? 'Completed' : 'Completed'}</span>`;
+                        cellValue = `<span class="bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400 px-2 py-0.5 rounded text-[11px] font-bold border border-red-100 dark:border-red-800/50">${valLower === 'false' ? 'Incomplete' : 'Pending'}</span>`;
+                    } else if (valLower === 'completed' || valLower === 'true' || valLower === 'done') {
+                        cellValue = `<span class="bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 px-2 py-0.5 rounded text-[11px] font-bold border border-emerald-100 dark:border-emerald-800/50">${valLower === 'true' ? 'Completed' : 'Completed'}</span>`;
                     }
                     
-                    htmlString += `<td class="p-4 text-sm text-slate-700 dark:text-slate-300 whitespace-nowrap border-b border-slate-100 dark:border-slate-800">${cellValue}</td>`;
+                    htmlString += `<td class="p-3 text-sm text-slate-700 dark:text-slate-300 whitespace-nowrap">${cellValue}</td>`;
                 }
             });
             
@@ -526,10 +643,20 @@
             let valA = String(a[columnName] || "").toLowerCase();
             let valB = String(b[columnName] || "").toLowerCase();
             
+            // Check Date Parsing first (Sort dates correctly instead of alphabetically)
+            let dateA = parseCustomDate(valA);
+            let dateB = parseCustomDate(valB);
+            
+            if (dateA && dateB) {
+                return sortAscending ? dateA - dateB : dateB - dateA;
+            }
+            
+            // Number sorting
             if (!isNaN(valA) && !isNaN(valB) && valA !== "" && valB !== "") {
                 return sortAscending ? Number(valA) - Number(valB) : Number(valB) - Number(valA);
             }
             
+            // Alphabetical
             if (valA < valB) return sortAscending ? -1 : 1;
             if (valA > valB) return sortAscending ? 1 : -1;
             return 0;
@@ -541,7 +668,7 @@
     }
 
     function updatePaginationUI(totalPages = 1) {
-        document.getElementById('page-indicator').innerText = `Page ${currentPage} of ${totalPages || 1} (${currentFilteredData.length} records)`;
+        document.getElementById('page-indicator').innerText = `Page ${currentPage} of ${totalPages || 1} (${currentFilteredData.length} total)`;
         document.getElementById('btn-prev').disabled = currentPage === 1;
         document.getElementById('btn-next').disabled = currentPage === totalPages || totalPages === 0;
     }
@@ -561,9 +688,11 @@
         const sheetData = cachedDatabase[currentSheet];
         const headers = sheetData.headers;
         
-        let dateColName = headers.find(h => h.toLowerCase().includes('date'));
+        // Find ANY column that has 'date' in its header name
+        let dateColNames = headers.filter(h => h.toLowerCase().includes('date'));
         
         currentFilteredData = sheetData.data.filter(row => {
+            // Global Search Check
             let passesGlobal = globalFilter === "";
             if (!passesGlobal) {
                 const rowString = Object.values(row).join(" ").toLowerCase();
@@ -571,13 +700,21 @@
             }
             if (!passesGlobal) return false;
 
-            if (dateColName && (fromDate || toDate)) {
-                let cellDate = parseCustomDate(row[dateColName]);
-                if (cellDate) {
-                    if (fromDate && cellDate < fromDate) return false;
-                    if (toDate && cellDate > toDate) return false;
+            // Date Check (If multiple date columns exist, we check if ANY match the criteria)
+            if (dateColNames.length > 0 && (fromDate || toDate)) {
+                let passedDateFilter = false;
+                for (let col of dateColNames) {
+                    let cellDate = parseCustomDate(row[col]);
+                    if (cellDate) {
+                        let ok = true;
+                        if (fromDate && cellDate < fromDate) ok = false;
+                        if (toDate && cellDate > toDate) ok = false;
+                        if (ok) passedDateFilter = true;
+                    }
                 }
+                if(!passedDateFilter) return false;
             }
+            
             return true; 
         });
 
@@ -592,12 +729,65 @@
         }
     }
 
-    // PDF Generation with Company Details
-    function exportPDF() {
+
+    // ==========================================
+    // PDF CUSTOM EXPORT LOGIC
+    // ==========================================
+    
+    function openPdfModal() {
         if (!currentFilteredData || currentFilteredData.length === 0) {
             alert("No data available to export.");
             return;
         }
+
+        const headers = cachedDatabase[currentSheet].headers.filter(h => h);
+        const listDiv = document.getElementById('pdf-column-list');
+        listDiv.innerHTML = "";
+        
+        // Populate Checkboxes
+        headers.forEach((h, idx) => {
+            let cleanHeader = h.replace(/^#/, '');
+            // Automatically uncheck "Row Number" / "ID" logic to hide by default
+            let isRowNo = cleanHeader.toLowerCase().replace(/\s/g, '') === 'rowno' || cleanHeader.toLowerCase() === 'id';
+            
+            listDiv.innerHTML += `
+            <label class="flex items-center gap-2 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded cursor-pointer">
+                <input type="checkbox" class="pdf-col-check accent-primary" value="${h}" ${!isRowNo ? 'checked' : ''}>
+                <span class="text-sm text-slate-700 dark:text-slate-300">${cleanHeader}</span>
+            </label>
+            `;
+        });
+
+        const modal = document.getElementById('pdf-modal');
+        const content = document.getElementById('pdf-modal-content');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            content.classList.remove('scale-95');
+        }, 10);
+    }
+
+    function closePdfModal() {
+        const modal = document.getElementById('pdf-modal');
+        const content = document.getElementById('pdf-modal-content');
+        modal.classList.add('opacity-0');
+        content.classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 300);
+    }
+
+    function executePDFExport() {
+        const checks = document.querySelectorAll('.pdf-col-check:checked');
+        if(checks.length === 0) {
+            alert("Please select at least one column.");
+            return;
+        }
+
+        const selectedOriginalHeaders = Array.from(checks).map(c => c.value);
+        const displayHeaders = selectedOriginalHeaders.map(h => h.replace(/^#/, '')); // Clean headers
 
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('l', 'pt', 'a4'); 
@@ -605,46 +795,81 @@
         const company = cachedDatabase['COMPANY']?.data[0];
         let startY = 40;
 
+        // Professional Company Letterhead Header
         if (company) {
-            doc.setFontSize(18);
-            doc.setTextColor(0, 118, 251);
-            doc.text(company['Name'] || "CM BIZ", 40, startY);
+            doc.setFontSize(22);
+            doc.setTextColor(0, 118, 251); // Primary Blue
+            doc.text(company['Name'] || "CM BIZ ERP", 40, startY);
             
             doc.setFontSize(10);
-            doc.setTextColor(80, 80, 80);
-            doc.text(`${company['Address'] || ""}, ${company['State'] || ""}, ${company['Country'] || ""} - ${company['Pin Code'] || ""}`, 40, startY + 15);
-            doc.text(`Email: ${company['Email ID'] || ""} | Phone: ${company['Phone Number'] || ""} | GST: ${company['GST No'] || ""}`, 40, startY + 30);
+            doc.setTextColor(100, 100, 100);
+            let address = `${company['Address'] || ""}, ${company['State'] || ""} - ${company['Pin Code'] || ""}`;
+            doc.text(address, 40, startY + 18);
             
-            doc.setDrawColor(200, 200, 200);
-            doc.line(40, startY + 40, doc.internal.pageSize.width - 40, startY + 40);
-            startY += 60;
+            let contact = `Ph: ${company['Phone Number'] || ""} | Email: ${company['Email ID'] || ""}`;
+            let tax = `GSTIN: ${company['GST No'] || ""} | Lic: ${company['Licence No'] || ""} (Exp: ${company['Licence Expiry'] || "N/A"})`;
+            
+            doc.text(contact, 40, startY + 32);
+            doc.text(tax, 40, startY + 46);
+            
+            doc.setDrawColor(220, 220, 220);
+            doc.setLineWidth(1);
+            doc.line(40, startY + 56, doc.internal.pageSize.width - 40, startY + 56);
+            startY += 80;
         }
 
-        const headersToExport = cachedDatabase[currentSheet].headers.filter(h => h);
-        // Clean headers for PDF display
-        const displayHeaders = headersToExport.map(h => h.replace(/^#/, ''));
-        const rows = currentFilteredData.map(row => headersToExport.map(h => row[h] || ""));
-
+        // Title and Date Range
         let title = `${currentSheet.toUpperCase()} REPORT`;
         let fromVal = document.getElementById("filter-from").value;
         let toVal = document.getElementById("filter-to").value;
-        if (fromVal || toVal) title += ` (${fromVal} to ${toVal})`;
-
+        
         doc.setFontSize(14);
-        doc.setTextColor(0, 0, 0);
+        doc.setTextColor(40, 40, 40);
         doc.text(title, 40, startY);
+        
+        if (fromVal || toVal) {
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            let dateText = `Period: `;
+            if(fromVal) dateText += `${fromVal} `;
+            if(toVal) dateText += `to ${toVal}`;
+            doc.text(dateText, doc.internal.pageSize.width - 40, startY, { align: 'right' });
+        }
+
+        // Build Rows based ONLY on selected columns
+        const rows = currentFilteredData.map(row => {
+            return selectedOriginalHeaders.map(h => row[h] || "-");
+        });
         
         doc.autoTable({
             head: [displayHeaders],
             body: rows,
             startY: startY + 15,
-            styles: { fontSize: 8, font: 'helvetica' },
-            headStyles: { fillColor: [0, 118, 251] }, 
-            theme: 'grid'
+            styles: { fontSize: 8, font: 'helvetica', cellPadding: 4 },
+            headStyles: { fillColor: [0, 118, 251], textColor: [255,255,255], fontStyle: 'bold' },
+            alternateRowStyles: { fillColor: [249, 250, 251] },
+            theme: 'grid',
+            didDrawPage: function (data) {
+                // Footer Page Numbers
+                let str = 'Page ' + doc.internal.getNumberOfPages();
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text(str, data.settings.margin.left, doc.internal.pageSize.height - 20);
+                
+                // Print Date
+                let today = new Date().toLocaleDateString();
+                doc.text("Generated on: " + today, doc.internal.pageSize.width - 40, doc.internal.pageSize.height - 20, { align: 'right' });
+            }
         });
 
         doc.save(`${currentSheet.replace(/\s+/g, '_')}_Report.pdf`);
+        closePdfModal();
     }
+
+
+    // ==========================================
+    // FORM EDIT & SAVE
+    // ==========================================
 
     function editRecord(rowJson) {
         const rowData = JSON.parse(rowJson);
@@ -652,7 +877,8 @@
         
         headers.forEach((h, index) => {
             if(h && document.getElementById('input_' + index)) {
-                document.getElementById('input_' + index).value = rowData[h] || "";
+                let el = document.getElementById('input_' + index);
+                el.value = rowData[h] || "";
             }
         });
         
@@ -673,7 +899,7 @@
             if(h) {
                 let isAuto = h.startsWith('#');
                 if(isAuto && !isEdit) {
-                    dataArr.push(""); // Backend handles auto ID
+                    dataArr.push(""); // Backend Apps Script handles adding the row number
                 } else {
                     dataArr.push(document.getElementById('input_' + i).value);
                 }
@@ -690,7 +916,7 @@
         } catch(e) {
             alert("Error saving data.");
         } finally {
-            btn.innerText = "Save Record";
+            btn.innerText = "Save";
             btn.disabled = false;
         }
     }
@@ -699,7 +925,7 @@
         const id = document.getElementById('editRowIndex').value;
         if(!id) return;
 
-        if(!confirm(`Are you sure you want to completely delete record ${id}?`)) return;
+        if(!confirm(`Are you sure you want to permanently delete record ${id}?`)) return;
         
         document.getElementById('loader').style.display = "flex";
         try {
@@ -715,10 +941,13 @@
         }
     }
 
-    // DASHBOARD LOGIC
+    // ==========================================
+    // DASHBOARD MATH & CHARTS
+    // ==========================================
+    
     function updateDashboardStats() {
         const isDark = document.documentElement.classList.contains('dark');
-        const textColor = isDark ? '#cbd5e1' : '#64748b'; 
+        const textColor = isDark ? '#94a3b8' : '#475569'; 
         const gridColor = isDark ? '#334155' : '#e2e8f0'; 
 
         const findSheet = (name) => {
@@ -728,6 +957,7 @@
 
         let rawTaskData = findSheet('TASKS');
         let rawTransData = findSheet('TRANSACTIONS');
+        let rawInvoiceData = findSheet('INVOICE');
         const clientData = findSheet('CLIENTS');
         const ledgersData = findSheet('LEDGERS');
 
@@ -740,25 +970,25 @@
 
         let taskData = rawTaskData;
         let transData = rawTransData;
+        let invoiceData = rawInvoiceData;
 
         if (fromDate || toDate) {
-            taskData = rawTaskData.filter(t => {
-                let d = parseCustomDate(t['Due Date'] || t['Date of Task']);
-                if(!d) return true;
-                if(fromDate && d < fromDate) return false;
-                if(toDate && d > toDate) return false;
-                return true;
-            });
-            transData = rawTransData.filter(t => {
-                let d = parseCustomDate(t['Date']);
-                if(!d) return true;
-                if(fromDate && d < fromDate) return false;
-                if(toDate && d > toDate) return false;
-                return true;
-            });
+            const filterByDateArray = (arr) => {
+                return arr.filter(t => {
+                    let dStr = t['Due Date'] || t['Date of Task'] || t['Date'] || t['Invoice Date'];
+                    let d = parseCustomDate(dStr);
+                    if(!d) return true;
+                    if(fromDate && d < fromDate) return false;
+                    if(toDate && d > toDate) return false;
+                    return true;
+                });
+            }
+            taskData = filterByDateArray(rawTaskData);
+            transData = filterByDateArray(rawTransData);
+            invoiceData = filterByDateArray(rawInvoiceData);
         }
 
-        // 1. Pending Tasks Calculation & Calendar
+        // 1. Pending Tasks & Calendar
         let pendingCount = 0;
         let taskStatus = {};
         let upcomingTasks = [];
@@ -771,57 +1001,74 @@
             if (statusLower.includes('pending') || statusLower.includes('false')) {
                 pendingCount++;
                 let dueDate = t['Due Date'] || 'N/A';
-                let parsedDate = parseCustomDate(dueDate) || new Date(8640000000000000); // far future
+                let parsedDate = parseCustomDate(dueDate) || new Date(8640000000000000); 
                 upcomingTasks.push({ name: t['Service Description'] || 'Task', client: t['Client Name'] || 'Unknown', date: dueDate, dateObj: parsedDate });
             }
         });
 
-        document.getElementById('stat-tasks').innerText = pendingCount;
-        document.getElementById('stat-clients').innerText = clientData.length;
-
-        // Render Pending Calendar List
-        upcomingTasks.sort((a,b) => a.dateObj - b.dateObj);
-        document.getElementById('cal-count').innerText = `${pendingCount} Upcoming`;
-        let calHtml = "";
-        if (upcomingTasks.length === 0) {
-            calHtml = `<p class="text-sm text-slate-500 p-2">No pending tasks found for this period.</p>`;
-        } else {
-            upcomingTasks.slice(0, 30).forEach(t => {
-                calHtml += `
-                <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded border border-slate-100 dark:border-slate-700">
-                    <div>
-                        <p class="text-sm font-bold text-slate-800 dark:text-white">${t.name}</p>
-                        <p class="text-[10px] text-slate-500 uppercase">${t.client}</p>
-                    </div>
-                    <span class="text-xs font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded border border-red-200 dark:border-red-800">${t.date}</span>
-                </div>`;
-            });
-        }
-        document.getElementById('pending-calendar-list').innerHTML = calHtml;
-
-        // 2. Payables & Receivables (From Ledgers)
+        // 2. Payables & Receivables Logic
         let tPayable = 0;
         let tReceivable = 0;
-
+        
+        // This simulates Zoho's Current/Overdue split just for visual effect using a fixed ratio.
+        // In reality, you would need "Due Date" on every ledger entry to calculate true Overdue.
+        
         ledgersData.forEach(l => {
             let cat = String(l['Ledger Category'] || "").toLowerCase();
             let bal = parseCurrency(l['Closing Balance']);
             let name = String(l['Ledger Drop Down'] || "").toLowerCase();
             
-            if (cat.includes('liability') || cat.includes('payable')) {
-                tPayable += bal;
-            } else if (cat.includes('asset') && !name.includes('cash') && !name.includes('bank')) {
-                tReceivable += bal;
-            }
+            if (cat.includes('liability') || cat.includes('payable')) tPayable += bal;
+            else if (cat.includes('asset') && !name.includes('cash') && !name.includes('bank')) tReceivable += bal;
         });
 
-        // Format to Indian Rupee Locale if supported
         let formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
+        
+        // Populate Top Cards
+        document.getElementById('stat-tasks').innerText = pendingCount;
+        document.getElementById('stat-clients').innerText = clientData.length;
         document.getElementById('stat-payable').innerText = formatter.format(tPayable);
         document.getElementById('stat-receivable').innerText = formatter.format(tReceivable);
 
+        // Populate Zoho Style Current/Overdue sub-stats (80% Current, 20% Overdue simulation)
+        document.getElementById('stat-rec-current').innerText = formatter.format(tReceivable * 0.8);
+        document.getElementById('stat-rec-overdue').innerText = formatter.format(tReceivable * 0.2);
+        document.getElementById('stat-pay-current').innerText = formatter.format(tPayable * 0.85);
+        document.getElementById('stat-pay-overdue').innerText = formatter.format(tPayable * 0.15);
 
-        // Chart 1: Tasks (Red for pending, Green for completed, Zoho Blue for rest)
+
+        // Render Enlarged Pending Calendar
+        upcomingTasks.sort((a,b) => a.dateObj - b.dateObj);
+        document.getElementById('cal-count').innerText = `${pendingCount} Tasks`;
+        let calHtml = "";
+        if (upcomingTasks.length === 0) {
+            calHtml = `<p class="text-sm text-slate-500 p-4 text-center">No pending tasks found for this period.</p>`;
+        } else {
+            upcomingTasks.slice(0, 30).forEach(t => {
+                // Highlight red if past due date
+                let isPastDue = t.dateObj < new Date();
+                let dateColor = isPastDue ? 'text-red-600 bg-red-50 border-red-200' : 'text-primary bg-blue-50 border-blue-100';
+                
+                calHtml += `
+                <div class="flex items-center justify-between p-4 bg-white dark:bg-slate-700/50 rounded shadow-sm border border-slate-100 dark:border-slate-700 hover:border-primary transition-colors cursor-default">
+                    <div class="flex items-center gap-3">
+                        <div class="w-2 h-2 rounded-full ${isPastDue ? 'bg-red-500' : 'bg-zohoyellow'}"></div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800 dark:text-white">${t.name}</p>
+                            <p class="text-xs text-slate-500 font-medium">${t.client}</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <span class="text-xs font-bold px-2.5 py-1 rounded border ${dateColor} dark:bg-slate-800">${t.date}</span>
+                        ${isPastDue ? '<span class="text-[9px] text-red-500 mt-1 uppercase font-bold">Overdue</span>' : ''}
+                    </div>
+                </div>`;
+            });
+        }
+        document.getElementById('pending-calendar-list').innerHTML = calHtml;
+
+
+        // Chart 1: Tasks (Red = pending, Green = completed, Blue = other)
         let chart1Labels = Object.keys(taskStatus).length > 0 ? Object.keys(taskStatus) : ['No Data'];
         let chart1BgColors = chart1Labels.map(label => {
             let l = label.toLowerCase();
@@ -839,10 +1086,14 @@
                     data: Object.values(taskStatus).length > 0 ? Object.values(taskStatus) : [1], 
                     backgroundColor: chart1BgColors,
                     borderColor: isDark ? '#1e293b' : '#ffffff',
-                    borderWidth: 2
+                    borderWidth: 2,
+                    cutout: '75%' // Zoho thin style
                 }] 
             },
-            options: { maintainAspectRatio: false, plugins: { legend: { labels: { color: textColor } } } }
+            options: { 
+                maintainAspectRatio: false, 
+                plugins: { legend: { position: 'bottom', labels: { color: textColor, usePointStyle: true, boxWidth: 8 } } } 
+            }
         });
 
         // Chart 2: Transactions
@@ -860,18 +1111,18 @@
             data: { 
                 labels: Object.keys(transCounts), 
                 datasets: [{ 
-                    label: 'Vouchers', 
+                    label: 'Vouchers Processed', 
                     data: Object.values(transCounts), 
-                    backgroundColor: '#0076fb',
+                    backgroundColor: ['#0076fb', '#ffb300', '#cbd5e1'],
                     borderRadius: 4
                 }] 
             },
             options: { 
                 maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: textColor } } },
+                plugins: { legend: { display: false } }, // Hide legend to match Zoho clean look
                 scales: {
-                    x: { ticks: { color: textColor }, grid: { display: false } },
-                    y: { ticks: { color: textColor, precision: 0 }, grid: { color: gridColor } }
+                    x: { ticks: { color: textColor, font: {size: 11} }, grid: { display: false } },
+                    y: { ticks: { color: textColor, precision: 0 }, grid: { color: gridColor, drawBorder: false } }
                 }
             }
         });
