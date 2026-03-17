@@ -32,7 +32,6 @@
     .dark ::-webkit-scrollbar-thumb { background: #475569; }
     input:focus, select:focus { border-color: #0076fb !important; outline: none; box-shadow: 0 0 0 2px rgba(0, 118, 251, 0.2); }
     
-    /* Zoho style nav active */
     .nav-active { background: #0076fb; color: white !important; }
     .nav-inactive { color: #94a3b8; }
     .nav-inactive:hover { background: rgba(255, 255, 255, 0.08); color: white; }
@@ -97,39 +96,59 @@
         </div>
 
         <div id="view-dashboard" class="fade-in w-full max-w-7xl mx-auto block">
+          
+          <div class="mb-6 bg-white dark:bg-slate-800 p-4 rounded shadow-sm border border-slate-200 dark:border-slate-700 flex flex-wrap items-center gap-4 justify-between">
+              <div class="flex items-center gap-3">
+                  <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                  <span class="font-bold text-slate-700 dark:text-white uppercase text-sm">Change Period:</span>
+              </div>
+              <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 p-1.5 rounded border border-slate-200 dark:border-slate-700">
+                 <span class="text-[10px] uppercase font-bold text-slate-500 ml-2">From:</span>
+                 <input type="date" id="dash-filter-from" class="text-sm p-1.5 rounded bg-transparent dark:text-white outline-none" onchange="updateDashboardStats()">
+                 <span class="text-slate-400 text-sm">-</span>
+                 <span class="text-[10px] uppercase font-bold text-slate-500">To:</span>
+                 <input type="date" id="dash-filter-to" class="text-sm p-1.5 rounded bg-transparent dark:text-white outline-none" onchange="updateDashboardStats()">
+                 <button onclick="document.getElementById('dash-filter-from').value=''; document.getElementById('dash-filter-to').value=''; updateDashboardStats();" class="text-xs px-2 py-1 text-red-500 hover:bg-red-50 rounded">Clear</button>
+             </div>
+          </div>
+
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white dark:bg-slate-800 rounded p-6 shadow-sm border border-slate-200 dark:border-slate-700 border-t-4 border-t-primary">
-              <h3 id="stat-clients" class="text-2xl font-bold text-slate-800 dark:text-white">0</h3>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 uppercase font-semibold text-[11px]">Total Clients</p>
-            </div>
-            <div class="bg-white dark:bg-slate-800 rounded p-6 shadow-sm border border-slate-200 dark:border-slate-700 border-t-4 border-t-primary">
+            <div class="bg-white dark:bg-slate-800 rounded p-5 shadow-sm border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary">
               <h3 id="stat-tasks" class="text-2xl font-bold text-slate-800 dark:text-white">0</h3>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 uppercase font-semibold text-[11px]">Total Tasks</p>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 uppercase font-semibold text-[10px] tracking-wider">Pending Tasks</p>
             </div>
-            <div class="bg-white dark:bg-slate-800 rounded p-6 shadow-sm border border-slate-200 dark:border-slate-700 border-t-4 border-t-primary">
-              <h3 id="stat-transactions" class="text-2xl font-bold text-slate-800 dark:text-white">0</h3>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 uppercase font-semibold text-[11px]">Total Transactions</p>
+            <div class="bg-white dark:bg-slate-800 rounded p-5 shadow-sm border border-slate-200 dark:border-slate-700 border-l-4 border-l-green-500">
+              <h3 id="stat-clients" class="text-2xl font-bold text-slate-800 dark:text-white">0</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 uppercase font-semibold text-[10px] tracking-wider">Total Clients</p>
             </div>
-            <div class="bg-white dark:bg-slate-800 rounded p-6 shadow-sm border border-slate-200 dark:border-slate-700 border-t-4 border-t-primary">
-              <h3 id="stat-invoices" class="text-2xl font-bold text-slate-800 dark:text-white">0</h3>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 uppercase font-semibold text-[11px]">Invoices Issued</p>
+            <div class="bg-white dark:bg-slate-800 rounded p-5 shadow-sm border border-slate-200 dark:border-slate-700 border-l-4 border-l-red-500">
+              <h3 id="stat-payable" class="text-2xl font-bold text-red-600 dark:text-red-400">₹0</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 uppercase font-semibold text-[10px] tracking-wider">Amount Payable</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 rounded p-5 shadow-sm border border-slate-200 dark:border-slate-700 border-l-4 border-l-emerald-500">
+              <h3 id="stat-receivable" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">₹0</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 uppercase font-semibold text-[10px] tracking-wider">Amount Receivable</p>
             </div>
           </div>
           
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-            <div class="bg-white dark:bg-slate-800 rounded p-6 shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col">
-              <h3 class="font-bold mb-4 dark:text-white">Task Status</h3>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+            
+            <div class="bg-white dark:bg-slate-800 rounded p-6 shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col col-span-1 lg:col-span-1">
+              <h3 class="font-bold mb-4 dark:text-white text-sm uppercase tracking-wide">Task Status Overview</h3>
               <div class="relative w-full h-64">
                 <canvas id="chart1"></canvas>
               </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 rounded p-6 shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col">
-              <h3 class="font-bold mb-4 dark:text-white">Transactions Record</h3>
-              <div class="relative w-full h-64">
-                <canvas id="chart2"></canvas>
+            <div class="bg-white dark:bg-slate-800 rounded p-6 shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col col-span-1 lg:col-span-2">
+              <div class="flex justify-between items-center mb-4">
+                  <h3 class="font-bold dark:text-white text-sm uppercase tracking-wide">Pending Tasks Calendar</h3>
+                  <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded font-bold" id="cal-count">0 Upcoming</span>
               </div>
+              <div class="overflow-y-auto max-h-64 pr-2 space-y-2" id="pending-calendar-list">
+                 </div>
             </div>
+
           </div>
         </div>
 
@@ -145,6 +164,7 @@
                      <span class="text-slate-400 text-sm">-</span>
                      <span class="text-[10px] uppercase font-bold text-slate-400 hidden md:block">To:</span>
                      <input type="date" id="filter-to" class="text-sm p-1.5 rounded text-slate-800 outline-none" onchange="applyFilters()">
+                     <button onclick="document.getElementById('filter-from').value=''; document.getElementById('filter-to').value=''; applyFilters();" class="text-xs px-2 py-1 text-slate-400 hover:text-white">Clear</button>
                  </div>
               </div>
 
@@ -177,7 +197,6 @@
           </div>
 
           <div id="section-table" class="bg-white dark:bg-slate-800 rounded shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col">
-             
              <div class="overflow-x-auto w-full">
                 <table class="w-full text-left border-collapse min-w-[600px]">
                     <thead id="tableHead" class="bg-slate-100 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700"></thead>
@@ -207,14 +226,31 @@
     let chartInstance1, chartInstance2;
     let dropdownOptions = {}; 
 
-    // Pagination & Sorting Variables
+    // Pagination & Sorting
     let currentPage = 1;
     let rowsPerPage = 50;
     let currentFilteredData = [];
     let sortColumn = null;
     let sortAscending = true;
 
-    // Load Theme Preference on startup
+    // Helper: Indian Date Parser DD-MM-YYYY
+    function parseCustomDate(dateStr) {
+        if (!dateStr) return null;
+        let parts = String(dateStr).split('-');
+        if (parts.length === 3 && parts[2].length === 4) {
+            return new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+        let d = new Date(dateStr);
+        return isNaN(d) ? null : d;
+    }
+
+    // Helper: Currency Parser
+    function parseCurrency(val) {
+        if (!val) return 0;
+        let num = parseFloat(String(val).replace(/[^\d.-]/g, ''));
+        return isNaN(num) ? 0 : num;
+    }
+
     if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
         updateThemeIcon(true);
@@ -269,10 +305,11 @@
             const dropData = cachedDatabase['DROPDOWN'];
             dropData.headers.forEach(header => {
                 if(!header) return;
-                dropdownOptions[header] = [];
+                let cleanHead = header.replace(/^#/, ''); // Remove # for matching
+                dropdownOptions[cleanHead] = [];
                 dropData.data.forEach(row => {
                     if(row[header] && String(row[header]).trim() !== "") {
-                        dropdownOptions[header].push(row[header]);
+                        dropdownOptions[cleanHead].push(row[header]);
                     }
                 });
             });
@@ -284,7 +321,7 @@
         navList.innerHTML = `<li><button onclick="switchTab('Dashboard')" id="nav-btn-Dashboard" class="nav-btn nav-active w-full flex items-center gap-3 px-4 py-3 rounded transition-all"><span class="font-bold text-sm tracking-wide">DASHBOARD</span></button></li>`;
         
         Object.keys(cachedDatabase).forEach(sheetName => {
-            if (sheetName.toUpperCase() === 'DROPDOWN' || sheetName === 'error') return; 
+            if (sheetName.toUpperCase() === 'DROPDOWN' || sheetName.toUpperCase() === 'COMPANY' || sheetName === 'error') return; 
             
             navList.innerHTML += `
             <li>
@@ -303,7 +340,7 @@
         document.getElementById('searchInput').value = ""; 
         document.getElementById('filter-from').value = "";
         document.getElementById('filter-to').value = "";
-        sortColumn = null; // reset sort on tab switch
+        sortColumn = null; 
         
         highlightNavTab(tabName);
         if (window.innerWidth < 1024) toggleSidebar();
@@ -344,19 +381,16 @@
             secForm.classList.add('hidden');
             document.getElementById('editRowIndex').value = ""; 
             document.getElementById('form-title').innerText = "Create New Record";
-            document.getElementById('submitBtn').innerText = "Save Record";
-            delBtn.classList.add('hidden'); // Hide delete button when adding
+            delBtn.classList.add('hidden'); 
         } else {
             secForm.classList.remove('hidden');
             secTable.classList.add('hidden');
             actionBar.classList.add('hidden');
             
-            // Check if editing or adding based on editRowIndex value presence
             if(document.getElementById('editRowIndex').value !== "") {
                 document.getElementById('form-title').innerText = "Edit Record";
-                delBtn.classList.remove('hidden'); // Show delete button when editing
+                delBtn.classList.remove('hidden'); 
             } else {
-                // We are adding a new record, ensure fields are cleared
                 clearFormInputs();
             }
         }
@@ -367,37 +401,40 @@
         inputs.forEach(input => input.value = "");
     }
 
-    // Handles the setup of Headers and Form. Calls renderTableBody for actual data.
     function renderDataTab(sheetName) {
         const sheetData = cachedDatabase[sheetName];
         
         if(!sheetData || !sheetData.headers || sheetData.headers.length === 0) {
-            document.getElementById('dynamicForm').innerHTML = "<p class='text-slate-500 dark:text-slate-400'>No columns found.</p>";
+            document.getElementById('dynamicForm').innerHTML = "<p class='text-slate-500'>No columns found.</p>";
             document.getElementById('tableHead').innerHTML = "";
-            document.getElementById('tableBody').innerHTML = "<tr><td class='p-8 text-center dark:text-slate-400'>No data found.</td></tr>";
+            document.getElementById('tableBody').innerHTML = "<tr><td class='p-8 text-center'>No data found.</td></tr>";
             return;
         }
 
-        // Build Form
         const formDiv = document.getElementById('dynamicForm');
         formDiv.innerHTML = "";
+        
         sheetData.headers.forEach((header, index) => {
             if(!header) return;
-            if (dropdownOptions[header]) {
-                let optsHTML = `<option value="">Select ${header}</option>`;
-                dropdownOptions[header].forEach(opt => { optsHTML += `<option value="${opt}">${opt}</option>`; });
+            
+            let isReadOnly = header.startsWith('#');
+            let cleanHeader = header.replace(/^#/, '');
+            
+            if (dropdownOptions[cleanHeader]) {
+                let optsHTML = `<option value="">Select ${cleanHeader}</option>`;
+                dropdownOptions[cleanHeader].forEach(opt => { optsHTML += `<option value="${opt}">${opt}</option>`; });
                 formDiv.innerHTML += `
                     <div>
-                        <label class="block text-[10px] font-extrabold uppercase text-slate-600 dark:text-slate-400 mb-2">${header}</label>
-                        <select id="input_${index}" class="w-full px-4 py-2.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm transition-colors">
+                        <label class="block text-[10px] font-extrabold uppercase text-slate-600 dark:text-slate-400 mb-2">${cleanHeader}</label>
+                        <select id="input_${index}" class="w-full px-4 py-2.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm transition-colors" ${isReadOnly ? "disabled" : ""}>
                             ${optsHTML}
                         </select>
                     </div>`;
             } else {
                 formDiv.innerHTML += `
                     <div>
-                        <label class="block text-[10px] font-extrabold uppercase text-slate-600 dark:text-slate-400 mb-2">${header}</label>
-                        <input type="text" id="input_${index}" class="w-full px-4 py-2.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm transition-colors" ${header === "_RowNumber" ? "disabled placeholder='Auto-generated'" : ""}>
+                        <label class="block text-[10px] font-extrabold uppercase text-slate-600 dark:text-slate-400 mb-2">${cleanHeader}</label>
+                        <input type="text" id="input_${index}" class="w-full px-4 py-2.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm transition-colors" ${isReadOnly ? "disabled placeholder='Auto / Read Only'" : ""}>
                     </div>`;
             }
         });
@@ -413,8 +450,8 @@
         
         sheetData.headers.forEach((h) => { 
             if(h) {
-                // Sorting indicator
-                let sortIcon = "↕"; // Default state
+                let cleanHeader = h.replace(/^#/, '');
+                let sortIcon = "↕"; 
                 let activeClass = "";
                 if (sortColumn === h) {
                     sortIcon = sortAscending ? "↑" : "↓";
@@ -422,7 +459,7 @@
                 }
 
                 trHead += `<th onclick="sortTable('${h}')" class="p-4 text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors ${activeClass} select-none">
-                    ${h} <span class="ml-1 opacity-70">${sortIcon}</span>
+                    ${cleanHeader} <span class="ml-1 opacity-70">${sortIcon}</span>
                 </th>`;
             } 
         });
@@ -431,7 +468,6 @@
         thead.innerHTML = trHead;
     }
 
-    // High Performance Rendering with Pagination and Clickable Rows
     function renderTableBody() {
         const tbody = document.getElementById('tableBody');
         const sheetData = cachedDatabase[currentSheet];
@@ -442,7 +478,6 @@
              return;
         }
 
-        // Calculate Pagination
         const totalPages = Math.ceil(currentFilteredData.length / rowsPerPage);
         if (currentPage > totalPages) currentPage = totalPages;
         if (currentPage < 1) currentPage = 1;
@@ -455,7 +490,6 @@
         
         pageData.forEach(row => {
             let escapedRow = JSON.stringify(row).replace(/"/g, '&quot;'); 
-            // Make row clickable to edit
             let trBody = `<tr onclick="editRecord('${escapedRow}')" class="cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/70 transition-colors">`;
 
             sheetData.headers.forEach(h => { 
@@ -464,9 +498,9 @@
                     let valLower = String(cellValue).toLowerCase();
                     
                     if (valLower === 'pending' || valLower === 'false') {
-                        cellValue = `<span class="bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400 px-2.5 py-1 rounded font-bold text-xs inline-block">${valLower === 'false' ? 'Incomplete' : 'Pending'}</span>`;
+                        cellValue = `<span class="bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400 px-2 py-0.5 rounded font-bold text-xs inline-block">${valLower === 'false' ? 'Incomplete' : 'Pending'}</span>`;
                     } else if (valLower === 'completed' || valLower === 'true') {
-                        cellValue = `<span class="bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 px-2.5 py-1 rounded font-bold text-xs inline-block">${valLower === 'true' ? 'Completed' : 'Completed'}</span>`;
+                        cellValue = `<span class="bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 px-2 py-0.5 rounded font-bold text-xs inline-block">${valLower === 'true' ? 'Completed' : 'Completed'}</span>`;
                     }
                     
                     htmlString += `<td class="p-4 text-sm text-slate-700 dark:text-slate-300 whitespace-nowrap border-b border-slate-100 dark:border-slate-800">${cellValue}</td>`;
@@ -480,7 +514,6 @@
         updatePaginationUI(totalPages);
     }
 
-    // Sorting Logic
     function sortTable(columnName) {
         if (sortColumn === columnName) {
             sortAscending = !sortAscending;
@@ -493,7 +526,6 @@
             let valA = String(a[columnName] || "").toLowerCase();
             let valB = String(b[columnName] || "").toLowerCase();
             
-            // Number sorting capability
             if (!isNaN(valA) && !isNaN(valB) && valA !== "" && valB !== "") {
                 return sortAscending ? Number(valA) - Number(valB) : Number(valB) - Number(valA);
             }
@@ -504,7 +536,7 @@
         });
 
         currentPage = 1;
-        renderTableHead(); // update arrows
+        renderTableHead(); 
         renderTableBody();
     }
 
@@ -517,7 +549,6 @@
     function nextPage() { currentPage++; renderTableBody(); }
     function prevPage() { currentPage--; renderTableBody(); }
 
-    // Date & Global Search Filtering
     function applyFilters() {
         const globalFilter = document.getElementById("searchInput").value.toLowerCase();
         let fromDateRaw = document.getElementById("filter-from").value;
@@ -525,16 +556,14 @@
         
         let fromDate = fromDateRaw ? new Date(fromDateRaw) : null;
         let toDate = toDateRaw ? new Date(toDateRaw) : null;
-        if(toDate) toDate.setHours(23, 59, 59, 999); // Cover entire end day
+        if(toDate) toDate.setHours(23, 59, 59, 999); 
 
         const sheetData = cachedDatabase[currentSheet];
         const headers = sheetData.headers;
         
-        // Find a column that looks like a date for filtering
         let dateColName = headers.find(h => h.toLowerCase().includes('date'));
         
         currentFilteredData = sheetData.data.filter(row => {
-            // 1. Global Search Check
             let passesGlobal = globalFilter === "";
             if (!passesGlobal) {
                 const rowString = Object.values(row).join(" ").toLowerCase();
@@ -542,31 +571,28 @@
             }
             if (!passesGlobal) return false;
 
-            // 2. Date Filter Check
             if (dateColName && (fromDate || toDate)) {
-                let cellDate = new Date(row[dateColName]);
-                if (!isNaN(cellDate)) {
+                let cellDate = parseCustomDate(row[dateColName]);
+                if (cellDate) {
                     if (fromDate && cellDate < fromDate) return false;
                     if (toDate && cellDate > toDate) return false;
                 }
             }
-
             return true; 
         });
 
-        // Re-apply sort if active
         if (sortColumn) {
-            let tempAsc = sortAscending; // store current direction
-            sortColumn = null; // force re-sort
-            sortAscending = tempAsc; // restore direction 
-            sortTable(sortColumn); // this will call render
+            let tempAsc = sortAscending; 
+            sortColumn = null; 
+            sortAscending = tempAsc; 
+            sortTable(sortColumn); 
         } else {
             currentPage = 1;
             renderTableBody();
         }
     }
 
-    // PDF Export Logic using jsPDF & AutoTable
+    // PDF Generation with Company Details
     function exportPDF() {
         if (!currentFilteredData || currentFilteredData.length === 0) {
             alert("No data available to export.");
@@ -574,32 +600,46 @@
         }
 
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('l', 'pt', 'a4'); // Landscape, points, A4 size
+        const doc = new jsPDF('l', 'pt', 'a4'); 
         
-        const headers = cachedDatabase[currentSheet].headers.filter(h => h);
-        const rows = currentFilteredData.map(row => headers.map(h => row[h] || ""));
+        const company = cachedDatabase['COMPANY']?.data[0];
+        let startY = 40;
 
-        // Build Title String including Date range if selected
+        if (company) {
+            doc.setFontSize(18);
+            doc.setTextColor(0, 118, 251);
+            doc.text(company['Name'] || "CM BIZ", 40, startY);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            doc.text(`${company['Address'] || ""}, ${company['State'] || ""}, ${company['Country'] || ""} - ${company['Pin Code'] || ""}`, 40, startY + 15);
+            doc.text(`Email: ${company['Email ID'] || ""} | Phone: ${company['Phone Number'] || ""} | GST: ${company['GST No'] || ""}`, 40, startY + 30);
+            
+            doc.setDrawColor(200, 200, 200);
+            doc.line(40, startY + 40, doc.internal.pageSize.width - 40, startY + 40);
+            startY += 60;
+        }
+
+        const headersToExport = cachedDatabase[currentSheet].headers.filter(h => h);
+        // Clean headers for PDF display
+        const displayHeaders = headersToExport.map(h => h.replace(/^#/, ''));
+        const rows = currentFilteredData.map(row => headersToExport.map(h => row[h] || ""));
+
         let title = `${currentSheet.toUpperCase()} REPORT`;
         let fromVal = document.getElementById("filter-from").value;
         let toVal = document.getElementById("filter-to").value;
-        
-        if (fromVal || toVal) {
-            title += ` (`;
-            if (fromVal) title += `From: ${fromVal} `;
-            if (toVal) title += `To: ${toVal}`;
-            title += `)`;
-        }
+        if (fromVal || toVal) title += ` (${fromVal} to ${toVal})`;
 
         doc.setFontSize(14);
-        doc.text(title, 40, 40);
+        doc.setTextColor(0, 0, 0);
+        doc.text(title, 40, startY);
         
         doc.autoTable({
-            head: [headers],
+            head: [displayHeaders],
             body: rows,
-            startY: 50,
+            startY: startY + 15,
             styles: { fontSize: 8, font: 'helvetica' },
-            headStyles: { fillColor: [0, 118, 251] }, // Zoho Blue
+            headStyles: { fillColor: [0, 118, 251] }, 
             theme: 'grid'
         });
 
@@ -617,7 +657,7 @@
         });
         
         document.getElementById('editRowIndex').value = rowData[headers[1]] || rowData[headers[0]]; 
-        toggleDataView('form'); // Switch to form view
+        toggleDataView('form'); 
     }
 
     async function submitData() {
@@ -631,8 +671,9 @@
         let dataArr = [];
         cachedDatabase[currentSheet].headers.forEach((h, i) => {
             if(h) {
-                if(h === "_RowNumber" && !isEdit) {
-                    dataArr.push("");
+                let isAuto = h.startsWith('#');
+                if(isAuto && !isEdit) {
+                    dataArr.push(""); // Backend handles auto ID
                 } else {
                     dataArr.push(document.getElementById('input_' + i).value);
                 }
@@ -654,7 +695,6 @@
         }
     }
 
-    // Moved delete into a separate function for the inner form button
     async function deleteCurrentRecord() {
         const id = document.getElementById('editRowIndex').value;
         if(!id) return;
@@ -668,13 +708,14 @@
                 body: JSON.stringify({ sheet: currentSheet, action: "delete", id: id })
             });
             await syncAllData(); 
-            toggleDataView('table'); // Go back to table view
+            toggleDataView('table'); 
         } catch(e) {
             alert("Error deleting record.");
             document.getElementById('loader').style.display = "none";
         }
     }
 
+    // DASHBOARD LOGIC
     function updateDashboardStats() {
         const isDark = document.documentElement.classList.contains('dark');
         const textColor = isDark ? '#cbd5e1' : '#64748b'; 
@@ -685,29 +726,108 @@
             return cachedDatabase[key] ? cachedDatabase[key].data : [];
         };
 
+        let rawTaskData = findSheet('TASKS');
+        let rawTransData = findSheet('TRANSACTIONS');
         const clientData = findSheet('CLIENTS');
-        const taskData = findSheet('TASKS');
-        const transData = findSheet('TRANSACTIONS');
-        const invoiceData = findSheet('INVOICE');
+        const ledgersData = findSheet('LEDGERS');
 
-        document.getElementById('stat-clients').innerText = clientData.length;
-        document.getElementById('stat-tasks').innerText = taskData.length;
-        document.getElementById('stat-transactions').innerText = transData.length;
-        document.getElementById('stat-invoices').innerText = invoiceData.length;
+        // Apply Dashboard Date Filters
+        let fromDateRaw = document.getElementById("dash-filter-from").value;
+        let toDateRaw = document.getElementById("dash-filter-to").value;
+        let fromDate = fromDateRaw ? new Date(fromDateRaw) : null;
+        let toDate = toDateRaw ? new Date(toDateRaw) : null;
+        if(toDate) toDate.setHours(23, 59, 59, 999);
 
-        // Chart 1: Tasks (Red for pending, Green for completed, Zoho Blue for rest)
+        let taskData = rawTaskData;
+        let transData = rawTransData;
+
+        if (fromDate || toDate) {
+            taskData = rawTaskData.filter(t => {
+                let d = parseCustomDate(t['Due Date'] || t['Date of Task']);
+                if(!d) return true;
+                if(fromDate && d < fromDate) return false;
+                if(toDate && d > toDate) return false;
+                return true;
+            });
+            transData = rawTransData.filter(t => {
+                let d = parseCustomDate(t['Date']);
+                if(!d) return true;
+                if(fromDate && d < fromDate) return false;
+                if(toDate && d > toDate) return false;
+                return true;
+            });
+        }
+
+        // 1. Pending Tasks Calculation & Calendar
+        let pendingCount = 0;
         let taskStatus = {};
+        let upcomingTasks = [];
+
         taskData.forEach(t => { 
             let status = t['Status of Task'] || t['Status'] || 'Other';
+            let statusLower = status.toLowerCase();
             taskStatus[status] = (taskStatus[status] || 0) + 1; 
+            
+            if (statusLower.includes('pending') || statusLower.includes('false')) {
+                pendingCount++;
+                let dueDate = t['Due Date'] || 'N/A';
+                let parsedDate = parseCustomDate(dueDate) || new Date(8640000000000000); // far future
+                upcomingTasks.push({ name: t['Service Description'] || 'Task', client: t['Client Name'] || 'Unknown', date: dueDate, dateObj: parsedDate });
+            }
         });
 
+        document.getElementById('stat-tasks').innerText = pendingCount;
+        document.getElementById('stat-clients').innerText = clientData.length;
+
+        // Render Pending Calendar List
+        upcomingTasks.sort((a,b) => a.dateObj - b.dateObj);
+        document.getElementById('cal-count').innerText = `${pendingCount} Upcoming`;
+        let calHtml = "";
+        if (upcomingTasks.length === 0) {
+            calHtml = `<p class="text-sm text-slate-500 p-2">No pending tasks found for this period.</p>`;
+        } else {
+            upcomingTasks.slice(0, 30).forEach(t => {
+                calHtml += `
+                <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded border border-slate-100 dark:border-slate-700">
+                    <div>
+                        <p class="text-sm font-bold text-slate-800 dark:text-white">${t.name}</p>
+                        <p class="text-[10px] text-slate-500 uppercase">${t.client}</p>
+                    </div>
+                    <span class="text-xs font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded border border-red-200 dark:border-red-800">${t.date}</span>
+                </div>`;
+            });
+        }
+        document.getElementById('pending-calendar-list').innerHTML = calHtml;
+
+        // 2. Payables & Receivables (From Ledgers)
+        let tPayable = 0;
+        let tReceivable = 0;
+
+        ledgersData.forEach(l => {
+            let cat = String(l['Ledger Category'] || "").toLowerCase();
+            let bal = parseCurrency(l['Closing Balance']);
+            let name = String(l['Ledger Drop Down'] || "").toLowerCase();
+            
+            if (cat.includes('liability') || cat.includes('payable')) {
+                tPayable += bal;
+            } else if (cat.includes('asset') && !name.includes('cash') && !name.includes('bank')) {
+                tReceivable += bal;
+            }
+        });
+
+        // Format to Indian Rupee Locale if supported
+        let formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
+        document.getElementById('stat-payable').innerText = formatter.format(tPayable);
+        document.getElementById('stat-receivable').innerText = formatter.format(tReceivable);
+
+
+        // Chart 1: Tasks (Red for pending, Green for completed, Zoho Blue for rest)
         let chart1Labels = Object.keys(taskStatus).length > 0 ? Object.keys(taskStatus) : ['No Data'];
         let chart1BgColors = chart1Labels.map(label => {
             let l = label.toLowerCase();
-            if (l.includes('pending') || l.includes('false') || l.includes('incomplete')) return '#ef4444'; // Red
-            if (l.includes('completed') || l.includes('true') || l.includes('done')) return '#10b981'; // Green
-            return '#0076fb'; // Zoho Blue
+            if (l.includes('pending') || l.includes('false')) return '#ef4444'; 
+            if (l.includes('completed') || l.includes('true')) return '#10b981'; 
+            return '#0076fb'; 
         });
 
         if(chartInstance1) chartInstance1.destroy();
@@ -722,18 +842,15 @@
                     borderWidth: 2
                 }] 
             },
-            options: { 
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: textColor } } }
-            }
+            options: { maintainAspectRatio: false, plugins: { legend: { labels: { color: textColor } } } }
         });
 
         // Chart 2: Transactions
         let transCounts = { "Receipt": 0, "Payment": 0, "Other": 0 };
         transData.forEach(t => {
-            let type = t['Voucher Type'] || t['Type'] || 'Other';
-            if(type.toLowerCase().includes('receipt')) transCounts["Receipt"]++;
-            else if(type.toLowerCase().includes('payment')) transCounts["Payment"]++;
+            let type = String(t['Voucher Type'] || t['Type'] || 'Other').toLowerCase();
+            if(type.includes('receipt')) transCounts["Receipt"]++;
+            else if(type.includes('payment')) transCounts["Payment"]++;
             else transCounts["Other"]++;
         });
 
@@ -743,9 +860,9 @@
             data: { 
                 labels: Object.keys(transCounts), 
                 datasets: [{ 
-                    label: 'Voucher Count', 
+                    label: 'Vouchers', 
                     data: Object.values(transCounts), 
-                    backgroundColor: '#0076fb', // Zoho Blue
+                    backgroundColor: '#0076fb',
                     borderRadius: 4
                 }] 
             },
