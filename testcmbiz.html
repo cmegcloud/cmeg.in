@@ -43,7 +43,6 @@
     .dark ::-webkit-scrollbar-thumb { background: #475569; }
     input:focus, select:focus { border-color: #0076fb !important; outline: none; box-shadow: 0 0 0 1px #0076fb; }
     
-    /* Zoho Style Sidebar Nav */
     .nav-active { background: #ffffff; color: #000000 !important; font-weight: 600; border-radius: 4px 0 0 4px; border-left: 4px solid #0076fb; }
     .nav-inactive { color: #d1d5db; border-left: 4px solid transparent; }
     .nav-inactive:hover { background: rgba(255, 255, 255, 0.1); color: white; }
@@ -51,10 +50,9 @@
     .loader { border: 3px solid rgba(0, 118, 251, 0.2); border-top: 3px solid #0076fb; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* Sticky Mobile Bottom Nav */
     @media (max-width: 1024px) {
         .mobile-bottom-nav { display: flex; }
-        .main-wrapper { padding-bottom: 70px; } /* Room for bottom nav */
+        .main-wrapper { padding-bottom: 70px; } 
     }
     @media (min-width: 1025px) {
         .mobile-bottom-nav { display: none; }
@@ -66,7 +64,7 @@
     
     <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden lg:hidden opacity-0 transition-opacity" onclick="toggleSidebar()"></div>
 
-    <aside id="sidebar" class="sidebar-transition bg-darkbg h-full w-64 flex flex-col shadow-2xl fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0 shrink-0">
+    <aside id="sidebar" class="sidebar-transition bg-darkbg h-full w-64 flex flex-col shadow-2xl fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0 shrink-0 border-r border-slate-800">
       <div class="p-4 flex items-center gap-3 shrink-0 border-b border-slate-800">
         <img src="logocmbiz.png" alt="CM Biz Logo" class="w-8 h-8 rounded bg-white object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
         <div class="w-8 h-8 rounded bg-white hidden items-center justify-center font-bold text-primary text-sm">CM</div>
@@ -294,7 +292,7 @@
 
   <script>
     // ==========================================
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwboI0dmNt1LRf5nO3JO3uOVWjVqJf8ZXdtBTCGj2i3MKgxFaXf1hOgrYWfhcDH5kpC/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwUNNaFhBEI0TmYvTJ3C4UEqlM0uRxWqIdKJFQNnLjPVOM2LuIJGUoMvbh_TF65mZU/exec"; 
     // ==========================================
 
     let cachedDatabase = {}; 
@@ -302,31 +300,26 @@
     let chartInstance1, chartInstance2;
     let dropdownOptions = {}; 
 
-    // Pagination & Sorting
     let currentPage = 1;
     let rowsPerPage = 50;
     let currentFilteredData = [];
     let sortColumn = null;
     let sortAscending = true;
 
-    // Real-time Clock function
     setInterval(() => {
         const now = new Date();
         const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
         document.getElementById('live-clock').innerText = now.toLocaleDateString('en-IN', options);
     }, 1000);
 
-    // Advanced Indian Date Parser: Parses DD-MM-YYYY safely
     function parseCustomDate(dateStr) {
         if (!dateStr) return null;
         let str = String(dateStr).trim();
-        let parts = str.split(/[-/]/); // Handle 20-03-2026 or 20/03/2026
+        let parts = str.split(/[-/]/); 
         if (parts.length === 3) {
-            // Check if year is at the end (Indian)
             if (parts[2].length === 4) {
                 return new Date(parts[2], parts[1] - 1, parts[0]);
             }
-            // If year is first (US/ISO)
             if (parts[0].length === 4) {
                  return new Date(parts[0], parts[1] - 1, parts[2]);
             }
@@ -339,6 +332,17 @@
         if (!val) return 0;
         let num = parseFloat(String(val).replace(/[^\d.-]/g, ''));
         return isNaN(num) ? 0 : num;
+    }
+
+    // HELPER: Fuzzy search for column names
+    function getFieldValue(row, possibleNames) {
+        if (!row) return "";
+        let keys = Object.keys(row);
+        for (let p of possibleNames) {
+            let match = keys.find(k => k.toLowerCase().replace(/[^a-z]/g, '').includes(p.toLowerCase().replace(/[^a-z]/g, '')));
+            if (match) return row[match];
+        }
+        return "";
     }
 
     if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -390,12 +394,12 @@
         }
     }
 
-    // Read Company sheet to populate Sidebar
     function populateCompanyDetails() {
         if(cachedDatabase['COMPANY'] && cachedDatabase['COMPANY'].data.length > 0) {
             let comp = cachedDatabase['COMPANY'].data[0];
-            document.getElementById('side-company-name').innerText = comp['Name'] || "CM BIZ ERP";
-            document.getElementById('side-license-no').innerText = comp['Licence No'] ? `Lic: ${comp['Licence No']}` : "Software Licensed";
+            document.getElementById('side-company-name').innerText = getFieldValue(comp, ['name', 'company']) || "CM BIZ ERP";
+            let lic = getFieldValue(comp, ['licence', 'license']);
+            document.getElementById('side-license-no').innerText = lic ? `Lic: ${lic}` : "Software Licensed";
         }
     }
 
@@ -405,7 +409,7 @@
             const dropData = cachedDatabase['DROPDOWN'];
             dropData.headers.forEach(header => {
                 if(!header) return;
-                let cleanHead = header.replace(/^#/, ''); // Match even if header has #
+                let cleanHead = header.replace(/^#/, ''); 
                 dropdownOptions[cleanHead] = [];
                 dropData.data.forEach(row => {
                     if(row[header] && String(row[header]).trim() !== "") {
@@ -468,7 +472,6 @@
         const activeBtn = document.getElementById('nav-btn-' + tabName);
         if(activeBtn) activeBtn.classList.replace('nav-inactive', 'nav-active');
 
-        // Mobile Bottom Nav Highlights
         let mDash = document.getElementById('mob-nav-dash');
         let mTask = document.getElementById('mob-nav-task');
         if(mDash && mTask) {
@@ -533,9 +536,8 @@
         sheetData.headers.forEach((header, index) => {
             if(!header) return;
             
-            // Check for Hash # indicating Read-Only
             let isReadOnly = header.startsWith('#');
-            let cleanHeader = header.replace(/^#/, ''); // Remove # for label
+            let cleanHeader = header.replace(/^#/, ''); 
             
             if (dropdownOptions[cleanHeader]) {
                 let optsHTML = `<option value="">Select ${cleanHeader}</option>`;
@@ -567,7 +569,7 @@
         
         sheetData.headers.forEach((h) => { 
             if(h) {
-                let cleanHeader = h.replace(/^#/, ''); // Hide # in table view
+                let cleanHeader = h.replace(/^#/, ''); 
                 let sortIcon = "↕"; 
                 let activeClass = "";
                 if (sortColumn === h) {
@@ -643,7 +645,6 @@
             let valA = String(a[columnName] || "").toLowerCase();
             let valB = String(b[columnName] || "").toLowerCase();
             
-            // Check Date Parsing first (Sort dates correctly instead of alphabetically)
             let dateA = parseCustomDate(valA);
             let dateB = parseCustomDate(valB);
             
@@ -651,12 +652,10 @@
                 return sortAscending ? dateA - dateB : dateB - dateA;
             }
             
-            // Number sorting
             if (!isNaN(valA) && !isNaN(valB) && valA !== "" && valB !== "") {
                 return sortAscending ? Number(valA) - Number(valB) : Number(valB) - Number(valA);
             }
             
-            // Alphabetical
             if (valA < valB) return sortAscending ? -1 : 1;
             if (valA > valB) return sortAscending ? 1 : -1;
             return 0;
@@ -688,11 +687,9 @@
         const sheetData = cachedDatabase[currentSheet];
         const headers = sheetData.headers;
         
-        // Find ANY column that has 'date' in its header name
         let dateColNames = headers.filter(h => h.toLowerCase().includes('date'));
         
         currentFilteredData = sheetData.data.filter(row => {
-            // Global Search Check
             let passesGlobal = globalFilter === "";
             if (!passesGlobal) {
                 const rowString = Object.values(row).join(" ").toLowerCase();
@@ -700,7 +697,6 @@
             }
             if (!passesGlobal) return false;
 
-            // Date Check (If multiple date columns exist, we check if ANY match the criteria)
             if (dateColNames.length > 0 && (fromDate || toDate)) {
                 let passedDateFilter = false;
                 for (let col of dateColNames) {
@@ -744,10 +740,8 @@
         const listDiv = document.getElementById('pdf-column-list');
         listDiv.innerHTML = "";
         
-        // Populate Checkboxes
         headers.forEach((h, idx) => {
             let cleanHeader = h.replace(/^#/, '');
-            // Automatically uncheck "Row Number" / "ID" logic to hide by default
             let isRowNo = cleanHeader.toLowerCase().replace(/\s/g, '') === 'rowno' || cleanHeader.toLowerCase() === 'id';
             
             listDiv.innerHTML += `
@@ -787,7 +781,7 @@
         }
 
         const selectedOriginalHeaders = Array.from(checks).map(c => c.value);
-        const displayHeaders = selectedOriginalHeaders.map(h => h.replace(/^#/, '')); // Clean headers
+        const displayHeaders = selectedOriginalHeaders.map(h => h.replace(/^#/, '')); 
 
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('l', 'pt', 'a4'); 
@@ -795,19 +789,18 @@
         const company = cachedDatabase['COMPANY']?.data[0];
         let startY = 40;
 
-        // Professional Company Letterhead Header
         if (company) {
             doc.setFontSize(22);
-            doc.setTextColor(0, 118, 251); // Primary Blue
-            doc.text(company['Name'] || "CM BIZ ERP", 40, startY);
+            doc.setTextColor(0, 118, 251); 
+            doc.text(getFieldValue(company, ['name', 'company']) || "CM BIZ ERP", 40, startY);
             
             doc.setFontSize(10);
             doc.setTextColor(100, 100, 100);
-            let address = `${company['Address'] || ""}, ${company['State'] || ""} - ${company['Pin Code'] || ""}`;
+            let address = `${getFieldValue(company, ['address']) || ""}, ${getFieldValue(company, ['state']) || ""} - ${getFieldValue(company, ['pin', 'zip']) || ""}`;
             doc.text(address, 40, startY + 18);
             
-            let contact = `Ph: ${company['Phone Number'] || ""} | Email: ${company['Email ID'] || ""}`;
-            let tax = `GSTIN: ${company['GST No'] || ""} | Lic: ${company['Licence No'] || ""} (Exp: ${company['Licence Expiry'] || "N/A"})`;
+            let contact = `Ph: ${getFieldValue(company, ['phone', 'mob']) || ""} | Email: ${getFieldValue(company, ['email']) || ""}`;
+            let tax = `GSTIN: ${getFieldValue(company, ['gst']) || ""} | Lic: ${getFieldValue(company, ['licence', 'license']) || ""} (Exp: ${getFieldValue(company, ['expiry', 'exp']) || "N/A"})`;
             
             doc.text(contact, 40, startY + 32);
             doc.text(tax, 40, startY + 46);
@@ -818,7 +811,6 @@
             startY += 80;
         }
 
-        // Title and Date Range
         let title = `${currentSheet.toUpperCase()} REPORT`;
         let fromVal = document.getElementById("filter-from").value;
         let toVal = document.getElementById("filter-to").value;
@@ -836,7 +828,6 @@
             doc.text(dateText, doc.internal.pageSize.width - 40, startY, { align: 'right' });
         }
 
-        // Build Rows based ONLY on selected columns
         const rows = currentFilteredData.map(row => {
             return selectedOriginalHeaders.map(h => row[h] || "-");
         });
@@ -850,13 +841,11 @@
             alternateRowStyles: { fillColor: [249, 250, 251] },
             theme: 'grid',
             didDrawPage: function (data) {
-                // Footer Page Numbers
                 let str = 'Page ' + doc.internal.getNumberOfPages();
                 doc.setFontSize(8);
                 doc.setTextColor(150, 150, 150);
                 doc.text(str, data.settings.margin.left, doc.internal.pageSize.height - 20);
                 
-                // Print Date
                 let today = new Date().toLocaleDateString();
                 doc.text("Generated on: " + today, doc.internal.pageSize.width - 40, doc.internal.pageSize.height - 20, { align: 'right' });
             }
@@ -899,7 +888,7 @@
             if(h) {
                 let isAuto = h.startsWith('#');
                 if(isAuto && !isEdit) {
-                    dataArr.push(""); // Backend Apps Script handles adding the row number
+                    dataArr.push(""); 
                 } else {
                     dataArr.push(document.getElementById('input_' + i).value);
                 }
@@ -957,11 +946,8 @@
 
         let rawTaskData = findSheet('TASKS');
         let rawTransData = findSheet('TRANSACTIONS');
-        let rawInvoiceData = findSheet('INVOICE');
-        const clientData = findSheet('CLIENTS');
         const ledgersData = findSheet('LEDGERS');
 
-        // Apply Dashboard Date Filters
         let fromDateRaw = document.getElementById("dash-filter-from").value;
         let toDateRaw = document.getElementById("dash-filter-to").value;
         let fromDate = fromDateRaw ? new Date(fromDateRaw) : null;
@@ -970,12 +956,12 @@
 
         let taskData = rawTaskData;
         let transData = rawTransData;
-        let invoiceData = rawInvoiceData;
 
         if (fromDate || toDate) {
             const filterByDateArray = (arr) => {
                 return arr.filter(t => {
-                    let dStr = t['Due Date'] || t['Date of Task'] || t['Date'] || t['Invoice Date'];
+                    // Try to grab ANY date from row
+                    let dStr = getFieldValue(t, ['date', 'due']);
                     let d = parseCustomDate(dStr);
                     if(!d) return true;
                     if(fromDate && d < fromDate) return false;
@@ -985,38 +971,38 @@
             }
             taskData = filterByDateArray(rawTaskData);
             transData = filterByDateArray(rawTransData);
-            invoiceData = filterByDateArray(rawInvoiceData);
         }
 
-        // 1. Pending Tasks & Calendar
         let pendingCount = 0;
         let taskStatus = {};
         let upcomingTasks = [];
 
         taskData.forEach(t => { 
-            let status = t['Status of Task'] || t['Status'] || 'Other';
-            let statusLower = status.toLowerCase();
+            let status = getFieldValue(t, ['status']);
+            let statusLower = String(status).toLowerCase();
             taskStatus[status] = (taskStatus[status] || 0) + 1; 
             
             if (statusLower.includes('pending') || statusLower.includes('false')) {
                 pendingCount++;
-                let dueDate = t['Due Date'] || 'N/A';
+                let dueDate = getFieldValue(t, ['due', 'date']) || 'N/A';
                 let parsedDate = parseCustomDate(dueDate) || new Date(8640000000000000); 
-                upcomingTasks.push({ name: t['Service Description'] || 'Task', client: t['Client Name'] || 'Unknown', date: dueDate, dateObj: parsedDate });
+                upcomingTasks.push({ 
+                    name: getFieldValue(t, ['service', 'desc', 'task']), 
+                    client: getFieldValue(t, ['client', 'name']), 
+                    date: dueDate, 
+                    dateObj: parsedDate 
+                });
             }
         });
 
-        // 2. Payables & Receivables Logic
+        // FUZZY MATCH LOGIC for Receivables & Payables
         let tPayable = 0;
         let tReceivable = 0;
         
-        // This simulates Zoho's Current/Overdue split just for visual effect using a fixed ratio.
-        // In reality, you would need "Due Date" on every ledger entry to calculate true Overdue.
-        
         ledgersData.forEach(l => {
-            let cat = String(l['Ledger Category'] || "").toLowerCase();
-            let bal = parseCurrency(l['Closing Balance']);
-            let name = String(l['Ledger Drop Down'] || "").toLowerCase();
+            let cat = String(getFieldValue(l, ['category', 'group', 'type'])).toLowerCase();
+            let bal = parseCurrency(getFieldValue(l, ['balance', 'amount', 'closing']));
+            let name = String(getFieldValue(l, ['ledger', 'name', 'account'])).toLowerCase();
             
             if (cat.includes('liability') || cat.includes('payable')) tPayable += bal;
             else if (cat.includes('asset') && !name.includes('cash') && !name.includes('bank')) tReceivable += bal;
@@ -1024,28 +1010,23 @@
 
         let formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
         
-        // Populate Top Cards
         document.getElementById('stat-tasks').innerText = pendingCount;
-        document.getElementById('stat-clients').innerText = clientData.length;
         document.getElementById('stat-payable').innerText = formatter.format(tPayable);
         document.getElementById('stat-receivable').innerText = formatter.format(tReceivable);
 
-        // Populate Zoho Style Current/Overdue sub-stats (80% Current, 20% Overdue simulation)
         document.getElementById('stat-rec-current').innerText = formatter.format(tReceivable * 0.8);
         document.getElementById('stat-rec-overdue').innerText = formatter.format(tReceivable * 0.2);
         document.getElementById('stat-pay-current').innerText = formatter.format(tPayable * 0.85);
         document.getElementById('stat-pay-overdue').innerText = formatter.format(tPayable * 0.15);
 
 
-        // Render Enlarged Pending Calendar
         upcomingTasks.sort((a,b) => a.dateObj - b.dateObj);
         document.getElementById('cal-count').innerText = `${pendingCount} Tasks`;
         let calHtml = "";
         if (upcomingTasks.length === 0) {
-            calHtml = `<p class="text-sm text-slate-500 p-4 text-center">No pending tasks found for this period.</p>`;
+            calHtml = `<p class="text-sm text-slate-500 p-4 text-center">No pending tasks found.</p>`;
         } else {
             upcomingTasks.slice(0, 30).forEach(t => {
-                // Highlight red if past due date
                 let isPastDue = t.dateObj < new Date();
                 let dateColor = isPastDue ? 'text-red-600 bg-red-50 border-red-200' : 'text-primary bg-blue-50 border-blue-100';
                 
@@ -1054,8 +1035,8 @@
                     <div class="flex items-center gap-3">
                         <div class="w-2 h-2 rounded-full ${isPastDue ? 'bg-red-500' : 'bg-zohoyellow'}"></div>
                         <div>
-                            <p class="text-sm font-bold text-slate-800 dark:text-white">${t.name}</p>
-                            <p class="text-xs text-slate-500 font-medium">${t.client}</p>
+                            <p class="text-sm font-bold text-slate-800 dark:text-white">${t.name || "Task"}</p>
+                            <p class="text-xs text-slate-500 font-medium">${t.client || ""}</p>
                         </div>
                     </div>
                     <div class="flex flex-col items-end">
@@ -1068,7 +1049,6 @@
         document.getElementById('pending-calendar-list').innerHTML = calHtml;
 
 
-        // Chart 1: Tasks (Red = pending, Green = completed, Blue = other)
         let chart1Labels = Object.keys(taskStatus).length > 0 ? Object.keys(taskStatus) : ['No Data'];
         let chart1BgColors = chart1Labels.map(label => {
             let l = label.toLowerCase();
@@ -1087,7 +1067,7 @@
                     backgroundColor: chart1BgColors,
                     borderColor: isDark ? '#1e293b' : '#ffffff',
                     borderWidth: 2,
-                    cutout: '75%' // Zoho thin style
+                    cutout: '75%' 
                 }] 
             },
             options: { 
@@ -1096,10 +1076,9 @@
             }
         });
 
-        // Chart 2: Transactions
         let transCounts = { "Receipt": 0, "Payment": 0, "Other": 0 };
         transData.forEach(t => {
-            let type = String(t['Voucher Type'] || t['Type'] || 'Other').toLowerCase();
+            let type = String(getFieldValue(t, ['type', 'voucher'])).toLowerCase();
             if(type.includes('receipt')) transCounts["Receipt"]++;
             else if(type.includes('payment')) transCounts["Payment"]++;
             else transCounts["Other"]++;
@@ -1119,7 +1098,7 @@
             },
             options: { 
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } }, // Hide legend to match Zoho clean look
+                plugins: { legend: { display: false } }, 
                 scales: {
                     x: { ticks: { color: textColor, font: {size: 11} }, grid: { display: false } },
                     y: { ticks: { color: textColor, precision: 0 }, grid: { color: gridColor, drawBorder: false } }
