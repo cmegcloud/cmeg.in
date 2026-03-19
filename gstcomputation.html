@@ -6,10 +6,11 @@
   <title>CM BIZ - GST Computation</title>
   
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" type="image/png" href="logocmbiz.png?v=3"> 
-  <link rel="apple-touch-icon" href="logocmbiz.png?v=3">
+  <link rel="icon" type="image/png" href="logogstcmbiz.png?v=4">
+  <link rel="apple-touch-icon" href="logogstcmbiz.png?v=4">
   <meta name="mobile-web-app-capable" content="yes">
-  <link rel="manifest" href="manifestgst.json?v=3"> 
+  
+  <link rel="manifest" href="manifestgst.json?v=4"> 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -74,7 +75,7 @@
       
       <div class="p-5 flex items-center justify-center gap-3 shrink-0 border-b border-slate-50 dark:border-slate-800">
         <div class="flex flex-col items-center">
-            <img src="logocmbiz.png?v=3" alt="CM Biz Logo" class="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 dark:border-slate-700 object-contain mb-2 p-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <img src="logogstcmbiz.png?v=4" alt="CM Biz Logo" class="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 dark:border-slate-700 object-contain mb-2 p-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 hidden items-center justify-center mb-2 shadow-sm border border-indigo-100 dark:border-indigo-800">
                 <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
             </div>
@@ -130,7 +131,7 @@
         
         <div id="loader" class="absolute inset-0 z-20 flex items-center justify-center bg-pagebg/90 dark:bg-slate-900/90 backdrop-blur-sm">
             <div class="flex flex-col items-center gap-4">
-                <img src="logocmbiz.png?v=3" alt="Loading..." class="w-16 h-16 animate-bounce drop-shadow-xl rounded-xl bg-white p-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <img src="logogstcmbiz.png?v=4" alt="Loading..." class="w-16 h-16 animate-bounce drop-shadow-xl rounded-xl bg-white p-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                 <div class="loader hidden"></div>
                 <p class="text-sm font-bold text-primary tracking-wide">Processing GST Data...</p>
             </div>
@@ -265,7 +266,7 @@
 
   <script>
     // ==========================================
-    // PASTE YOUR NEW APP SCRIPT URL HERE:
+    // GST APP - Apps Script Web App URL
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3TlWHIZ6767foSlO9cilfI5o623k_QffMRM9T6r3R/exec"; 
     // ==========================================
 
@@ -408,8 +409,6 @@
         currentSheet = tabName;
         document.getElementById('page-title').innerText = tabName === 'Dashboard' ? 'Dashboard' : tabName.toUpperCase();
         document.getElementById('searchInput').value = ""; 
-        document.getElementById('filter-from').value = "";
-        document.getElementById('filter-to').value = "";
         sortColumn = null; 
         
         highlightNavTab(tabName);
@@ -425,6 +424,7 @@
             
             const sheetData = cachedDatabase[tabName];
             const bulkBtn = document.getElementById('btn-bulk-paste');
+            // Show Bulk Paste only for sheet index 5 or greater (6th sheet onwards)
             if(sheetData && sheetData.sheetIndex >= 5) {
                 bulkBtn.classList.remove('hidden');
                 bulkBtn.classList.add('flex');
@@ -626,39 +626,15 @@
 
     function applyFilters() {
         const globalFilter = document.getElementById("searchInput").value.toLowerCase();
-        let fromDateRaw = document.getElementById("filter-from").value;
-        let toDateRaw = document.getElementById("filter-to").value;
-        
-        let fromDate = fromDateRaw ? new Date(fromDateRaw) : null;
-        let toDate = toDateRaw ? new Date(toDateRaw) : null;
-        if(toDate) toDate.setHours(23, 59, 59, 999); 
 
         const sheetData = cachedDatabase[currentSheet];
-        const headers = sheetData.headers;
-        let dateColNames = headers.filter(h => h.toLowerCase().includes('date'));
-        
         currentFilteredData = sheetData.data.filter(row => {
             let passesGlobal = globalFilter === "";
             if (!passesGlobal) {
                 const rowString = Object.values(row).join(" ").toLowerCase();
                 passesGlobal = rowString.includes(globalFilter);
             }
-            if (!passesGlobal) return false;
-
-            if (dateColNames.length > 0 && (fromDate || toDate)) {
-                let passedDateFilter = false;
-                for (let col of dateColNames) {
-                    let cellDate = parseCustomDate(row[col]);
-                    if (cellDate) {
-                        let ok = true;
-                        if (fromDate && cellDate < fromDate) ok = false;
-                        if (toDate && cellDate > toDate) ok = false;
-                        if (ok) passedDateFilter = true;
-                    }
-                }
-                if(!passedDateFilter) return false;
-            }
-            return true; 
+            return passesGlobal; 
         });
 
         if (sortColumn) {
@@ -724,7 +700,6 @@
     // ==========================================
     // FORM EDIT & SAVE
     // ==========================================
-
     function editRecord(dataIndex) {
         const rowData = currentFilteredData[dataIndex];
         const headers = cachedDatabase[currentSheet].headers;
