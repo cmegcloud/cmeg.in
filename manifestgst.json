@@ -1,0 +1,20 @@
+{
+  "name": "CM BIZ - GST Computation",
+  "short_name": "CM BIZ GST",
+  "start_url": "./gstindex.html",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "logocmbiz.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logocmbiz.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
