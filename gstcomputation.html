@@ -6,11 +6,11 @@
   <title>CM BIZ - GST Computation</title>
   
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" type="image/png" href="logogstcmbiz.png?v=4">
-  <link rel="apple-touch-icon" href="logogstcmbiz.png?v=4">
+  <link rel="icon" type="image/png" href="logogstcmbiz.png?v=5">
+  <link rel="apple-touch-icon" href="logogstcmbiz.png?v=5">
   <meta name="mobile-web-app-capable" content="yes">
   
-  <link rel="manifest" href="manifestgst.json?v=4"> 
+  <link rel="manifest" href="manifestgst.json?v=5"> 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -75,7 +75,7 @@
       
       <div class="p-5 flex items-center justify-center gap-3 shrink-0 border-b border-slate-50 dark:border-slate-800">
         <div class="flex flex-col items-center">
-            <img src="logogstcmbiz.png?v=4" alt="CM Biz Logo" class="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 dark:border-slate-700 object-contain mb-2 p-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <img src="logogstcmbiz.png?v=5" alt="CM Biz Logo" class="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 dark:border-slate-700 object-contain mb-2 p-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 hidden items-center justify-center mb-2 shadow-sm border border-indigo-100 dark:border-indigo-800">
                 <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
             </div>
@@ -131,7 +131,7 @@
         
         <div id="loader" class="absolute inset-0 z-20 flex items-center justify-center bg-pagebg/90 dark:bg-slate-900/90 backdrop-blur-sm">
             <div class="flex flex-col items-center gap-4">
-                <img src="logogstcmbiz.png?v=4" alt="Loading..." class="w-16 h-16 animate-bounce drop-shadow-xl rounded-xl bg-white p-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <img src="logogstcmbiz.png?v=5" alt="Loading..." class="w-16 h-16 animate-bounce drop-shadow-xl rounded-xl bg-white p-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                 <div class="loader hidden"></div>
                 <p class="text-sm font-bold text-primary tracking-wide">Processing GST Data...</p>
             </div>
@@ -266,7 +266,6 @@
 
   <script>
     // ==========================================
-    // GST APP - Apps Script Web App URL
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3TlWHIZ6767foSlO9cilfI5o623k_QffMRM9T6r3R/exec"; 
     // ==========================================
 
@@ -538,6 +537,7 @@
             } 
         });
         
+        // Actions Column
         trHead += `<th class="p-4 text-[11px] uppercase font-bold text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-700 text-right sticky right-0 bg-white dark:bg-slate-800 shadow-[-5px_0_10px_rgba(0,0,0,0.02)]">Action</th></tr>`;
         thead.innerHTML = trHead;
     }
@@ -626,8 +626,8 @@
 
     function applyFilters() {
         const globalFilter = document.getElementById("searchInput").value.toLowerCase();
-
         const sheetData = cachedDatabase[currentSheet];
+        
         currentFilteredData = sheetData.data.filter(row => {
             let passesGlobal = globalFilter === "";
             if (!passesGlobal) {
@@ -700,6 +700,7 @@
     // ==========================================
     // FORM EDIT & SAVE
     // ==========================================
+
     function editRecord(dataIndex) {
         const rowData = currentFilteredData[dataIndex];
         const headers = cachedDatabase[currentSheet].headers;
