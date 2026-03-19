@@ -1,1 +1,279 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GST Registration Portal | CM Tax Experts</title>
+    <style>
+        :root {
+            --primary: #1e3a8a; 
+            --secondary: #fbbf24; 
+            --bg: #f3f4f6;
+            --text: #1f2937;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-top: 5px solid var(--primary);
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: var(--primary); margin-bottom: 5px; }
+        .header p { color: #6b7280; font-size: 0.9em; }
+        .section-title {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; }
+        .help-text { font-size: 0.8em; color: #ef4444; display: block; margin-bottom: 5px; }
+        input[type="text"], input[type="email"], input[type="tel"], select {
+            width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 4px; box-sizing: border-box;
+        }
+        input[type="file"] {
+            border: 1px dashed #9ca3af; padding: 10px; width: 100%; box-sizing: border-box; background: #f9fafb;
+        }
+        button {
+            background-color: var(--primary); color: white; border: none; padding: 12px 20px;
+            font-size: 16px; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 20px; font-weight: bold;
+        }
+        button:hover { background-color: #152c6b; }
+        #loading { display: none; text-align: center; margin-top: 15px; font-weight: bold; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>CM Tax Experts</h1>
+        <h2>GST Registration Portal</h2>
+        <p>Please provide accurate details as per your PAN and legal documents.</p>
+    </div>
+
+    <form id="gstForm">
+        
+        <div class="section-title">Part A: Business Details</div>
+        
+        <div class="form-group">
+            <label for="legalName">Legal Name of Business (As per PAN)</label>
+            <input type="text" id="legalName" required>
+        </div>
+        <div class="form-group">
+            <label for="tradeName">Trade Name (Optional)</label>
+            <input type="text" id="tradeName">
+        </div>
+        <div class="form-group">
+            <label for="panNumber">Permanent Account Number (PAN)</label>
+            <input type="text" id="panNumber" required pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" title="Enter a valid 10-character PAN">
+        </div>
+        <div class="form-group">
+            <label for="businessType">Constitution of Business</label>
+            <select id="businessType" required>
+                <option value="">Select...</option>
+                <option value="Proprietorship">Proprietorship</option>
+                <option value="Partnership">Partnership</option>
+                <option value="Private Limited Company">Private Limited Company</option>
+                <option value="LLP">Limited Liability Partnership (LLP)</option>
+                <option value="HUF">HUF</option>
+                <option value="Society/Club/Trust/AOP">Society/Club/Trust/AOP</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="state">State / Union Territory</label>
+            <select id="state" required>
+                <option value="">Select State...</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="email">Primary Email Address</label>
+            <input type="email" id="email" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">Primary Mobile Number</label>
+            <input type="tel" id="phone" required pattern="[0-9]{10}">
+        </div>
+
+        <div class="section-title">Part B: Principal Place of Business</div>
+
+        <div class="form-group">
+            <label for="premisesType">Nature of Possession of Premises</label>
+            <select id="premisesType" required>
+                <option value="">Select...</option>
+                <option value="Rented">Rented</option>
+                <option value="Owned">Owned</option>
+                <option value="Leased">Leased</option>
+                <option value="Consent">Consent</option>
+                <option value="Shared">Shared</option>
+                <option value="Others">Others</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="businessActivity">Nature of Business Activity being carried out at above premises</label>
+            <select id="businessActivity" required>
+                <option value="">Select...</option>
+                <option value="Retail Business">Retail Business</option>
+                <option value="Wholesale Business">Wholesale Business</option>
+                <option value="Service Provision">Service Provision</option>
+                <option value="Manufacturing">Manufacturing</option>
+                <option value="Works Contract">Works Contract</option>
+                <option value="Export/Import">Export / Import</option>
+                <option value="E-Commerce">E-Commerce</option>
+            </select>
+        </div>
+
+        <div class="section-title">Part C: Document Uploads (As per GST Site Limits)</div>
+
+        <div class="form-group">
+            <label for="photo">1. Photograph of Promoter/Partner</label>
+            <span class="help-text">Format: JPEG/JPG only. Maximum Size: 100 KB.</span>
+            <input type="file" id="photo" accept="image/jpeg, image/jpg" required>
+        </div>
+
+        <div class="form-group">
+            <label for="businessProof">2. Proof of Constitution of Business</label>
+            <span class="help-text">Format: PDF or JPEG. Maximum Size: 1 MB.</span>
+            <input type="file" id="businessProof" accept="image/jpeg, image/jpg, application/pdf" required>
+        </div>
+
+        <div class="form-group">
+            <label for="addressProof">3. Proof of Principal Place of Business</label>
+            <span class="help-text">Format: PDF or JPEG. Maximum Size: 1 MB. (Must match the "Nature of Possession" selected above)</span>
+            <input type="file" id="addressProof" accept="image/jpeg, image/jpg, application/pdf" required>
+        </div>
+
+        <div class="form-group">
+            <label for="bankProof">4. Bank Account Proof</label>
+            <span class="help-text">Format: PDF or JPEG. Maximum Size: 100 KB.</span>
+            <input type="file" id="bankProof" accept="image/jpeg, image/jpg, application/pdf" required>
+        </div>
+
+        <button type="submit" id="submitBtn">Submit Registration Details</button>
+        <div id="loading">Uploading files and submitting data... Please do not close this window.</div>
+    </form>
+</div>
+
+<script>
+    // --- IMPORTANT: PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE ---
+    const WEB_APP_URL = 'YOUR_WEB_APP_URL_HERE'; 
+
+    const LIMITS = {
+        photo: 100 * 1024,
+        businessProof: 1024 * 1024,
+        addressProof: 1024 * 1024,
+        bankProof: 100 * 1024
+    };
+
+    const readFileAsBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            if (!file) { resolve(null); return; }
+            const reader = new FileReader();
+            reader.onload = () => resolve({
+                base64: reader.result,
+                name: file.name,
+                mime: file.type
+            });
+            reader.onerror = error => reject(error);
+            reader.readAsDataURL(file);
+        });
+    };
+
+    document.getElementById('gstForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const photoFile = document.getElementById('photo').files[0];
+        const businessProofFile = document.getElementById('businessProof').files[0];
+        const addressProofFile = document.getElementById('addressProof').files[0];
+        const bankProofFile = document.getElementById('bankProof').files[0];
+
+        if (photoFile && photoFile.size > LIMITS.photo) return alert('Photograph exceeds 100 KB limit.');
+        if (businessProofFile && businessProofFile.size > LIMITS.businessProof) return alert('Constitution Proof exceeds 1 MB limit.');
+        if (addressProofFile && addressProofFile.size > LIMITS.addressProof) return alert('Address Proof exceeds 1 MB limit.');
+        if (bankProofFile && bankProofFile.size > LIMITS.bankProof) return alert('Bank Proof exceeds 100 KB limit.');
+
+        document.getElementById('submitBtn').style.display = 'none';
+        document.getElementById('loading').style.display = 'block';
+
+        try {
+            const photoData = await readFileAsBase64(photoFile);
+            const businessProofData = await readFileAsBase64(businessProofFile);
+            const addressProofData = await readFileAsBase64(addressProofFile);
+            const bankProofData = await readFileAsBase64(bankProofFile);
+
+            // Added the new dropdown values to the payload
+            const payload = {
+                legalName: document.getElementById('legalName').value,
+                tradeName: document.getElementById('tradeName').value,
+                panNumber: document.getElementById('panNumber').value,
+                businessType: document.getElementById('businessType').value,
+                state: document.getElementById('state').value,                      // NEW
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                premisesType: document.getElementById('premisesType').value,        // NEW
+                businessActivity: document.getElementById('businessActivity').value,// NEW
+                
+                photoFile: photoData ? photoData.base64 : null,
+                photoName: photoData ? photoData.name : null,
+                photoMime: photoData ? photoData.mime : null,
+
+                businessProofFile: businessProofData ? businessProofData.base64 : null,
+                businessProofName: businessProofData ? businessProofData.name : null,
+                businessProofMime: businessProofData ? businessProofData.mime : null,
+
+                addressProofFile: addressProofData ? addressProofData.base64 : null,
+                addressProofName: addressProofData ? addressProofData.name : null,
+                addressProofMime: addressProofData ? addressProofData.mime : null,
+
+                bankProofFile: bankProofData ? bankProofData.base64 : null,
+                bankProofName: bankProofData ? bankProofData.name : null,
+                bankProofMime: bankProofData ? bankProofData.mime : null,
+            };
+
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                alert('Registration details submitted successfully to CM Tax Experts!');
+                document.getElementById('gstForm').reset();
+            } else {
+                alert('Error submitting form: ' + result.message);
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert('An error occurred while submitting. Please try again.');
+        } finally {
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('loading').style.display = 'none';
+        }
+    });
+</script>
+
+</body>
+</html>
