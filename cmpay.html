@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CM Pay</title>
+  
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
+    .app-shell { height: 100%; width: 100%; overflow: hidden; position: relative; }
+    
+    /* Primary Brand Colors */
+    .brand-gradient { background: linear-gradient(135deg, #6e79eb 0%, #5a65d8 50%, #4651c4 100%); }
+    .brand-text { color: #6e79eb; }
+    .brand-bg { background-color: #6e79eb; }
+    .card-glass { background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.2); }
+    
+    .action-btn { transition: all 0.2s ease; cursor: pointer; }
+    .action-btn:active { transform: scale(0.96); }
+    
+    .slide-up { animation: slideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    @keyframes slideUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    
+    .screen { display: none; height: 100%; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+    .screen.active { display: flex; }
+    
+    /* App Chooser Modal Animation */
+    .modal-enter { animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .modal-exit { animation: modalSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes modalSlideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes modalSlideDown { from { transform: translateY(0); opacity: 1; } to { transform: translateY(100%); opacity: 0; } }
+    
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(110,121,235,0.3); border-radius: 4px; }
+  </style>
+</head>
+<body class="h-full">
+  <div class="app-shell" id="appShell">
+    
+    <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] hidden transition-opacity duration-300 w-[90%] max-w-sm">
+      <div class="px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium flex items-center gap-3 brand-gradient">
+        <i data-lucide="info" style="width:20px;height:20px;"></i> <span id="toastMsg" class="flex-1">Notification</span>
+      </div>
+    </div>
+
+    <div id="appChooserOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[90] hidden transition-opacity duration-300 opacity-0 flex flex-col justify-end" onclick="closeAppChooser(event)">
+      <div id="appChooserModal" class="bg-white rounded-t-3xl p-6 w-full max-w-md mx-auto transform translate-y-full transition-transform duration-300" onclick="event.stopPropagation()">
+        <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
+        <h3 class="text-lg font-bold text-slate-800 text-center mb-1">Select Payment App</h3>
+        <p class="text-xs text-slate-400 text-center mb-6 font-medium">Choose an app to complete your secure payment</p>
+        
+        <div class="grid grid-cols-3 gap-4 mb-4">
+          <button onclick="executePayment('tez')" class="flex flex-col items-center gap-2 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 action-btn">
+             <div class="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-blue-600 font-bold text-lg">G</div>
+             <span class="text-[10px] font-bold text-slate-700">GPay</span>
+          </button>
+          <button onclick="executePayment('phonepe')" class="flex flex-col items-center gap-2 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 action-btn">
+             <div class="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-purple-600 font-bold text-lg">P</div>
+             <span class="text-[10px] font-bold text-slate-700">PhonePe</span>
+          </button>
+          <button onclick="executePayment('paytmmp')" class="flex flex-col items-center gap-2 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 action-btn">
+             <div class="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-[#00b9f5] font-bold text-lg">Pay</div>
+             <span class="text-[10px] font-bold text-slate-700">Paytm</span>
+          </button>
+          <button onclick="executePayment('bhim')" class="flex flex-col items-center gap-2 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 action-btn">
+             <div class="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-orange-500 font-bold text-lg">B</div>
+             <span class="text-[10px] font-bold text-slate-700">BHIM</span>
+          </button>
+          <button onclick="executePayment('upi')" class="flex flex-col items-center gap-2 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 action-btn col-span-2">
+             <div class="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-slate-700">
+               <i data-lucide="layers" style="width:20px;height:20px;"></i>
+             </div>
+             <span class="text-[10px] font-bold text-slate-700">Super Money / Other Apps</span>
+          </button>
+        </div>
+        <button onclick="closeAppChooser()" class="w-full py-3 mt-2 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm action-btn">Cancel</button>
+      </div>
+    </div>
+
+    <div id="screenHome" class="screen active pb-24">
+      <div class="brand-gradient px-5 pt-6 pb-10 rounded-b-[2rem] relative overflow-hidden shadow-sm">
+        <div class="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 bg-white -translate-y-1/2 translate-x-1/4"></div>
+        <div class="flex items-center justify-between mb-6 slide-up relative z-10">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-md overflow-hidden p-1 relative">
+              <span class="brand-text font-bold text-lg flex items-center justify-center w-full h-full">CM</span>
+            </div>
+            <div>
+              <h1 class="text-white font-bold text-xl tracking-wide">CM Pay</h1>
+              <p class="text-white/80 text-[10px] font-medium uppercase tracking-wider">Secure UPI</p>
+            </div>
+          </div>
+          <button onclick="navigateTo('screenProfile')" class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center action-btn">
+            <i data-lucide="user" style="width:20px;height:20px;color:white;"></i>
+          </button>
+        </div>
+
+        <div class="card-glass rounded-2xl p-5 slide-up">
+          <p class="text-white/80 text-xs font-semibold uppercase tracking-wider mb-1">Total Balance</p>
+          <div class="flex items-center gap-2">
+            <span class="text-white text-3xl font-bold opacity-80">₹</span> 
+            <span class="text-white text-4xl font-bold tracking-tight">12,450.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-5 -mt-6 relative z-10 slide-up" style="animation-delay: 0.1s;">
+        <div class="grid grid-cols-4 gap-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+          <button onclick="navigateTo('screenSend')" class="flex flex-col items-center gap-2 action-btn">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-[#6e79eb]/10">
+              <i data-lucide="send" class="brand-text" style="width:22px;height:22px;"></i>
+            </div>
+            <span class="text-[11px] font-semibold text-slate-700">Send</span>
+          </button>
+          <button onclick="navigateTo('screenScan')" class="flex flex-col items-center gap-2 action-btn">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-[#6e79eb]/10">
+              <i data-lucide="qr-code" class="brand-text" style="width:22px;height:22px;"></i>
+            </div>
+            <span class="text-[11px] font-semibold text-slate-700">Scan</span>
+          </button>
+          <button onclick="navigateTo('screenReceive')" class="flex flex-col items-center gap-2 action-btn">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-[#6e79eb]/10">
+              <i data-lucide="smartphone-nfc" class="brand-text" style="width:22px;height:22px;"></i>
+            </div>
+            <span class="text-[11px] font-semibold text-slate-700">Receive</span>
+          </button>
+          <button onclick="navigateTo('screenHistory')" class="flex flex-col items-center gap-2 action-btn">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-[#6e79eb]/10">
+              <i data-lucide="history" class="brand-text" style="width:22px;height:22px;"></i>
+            </div>
+            <span class="text-[11px] font-semibold text-slate-700">History</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="px-5 mt-8 slide-up" style="animation-delay: 0.2s;">
+        <h2 class="text-sm font-bold text-slate-800 mb-4">Quick Pay</h2>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 text-center">
+           <i data-lucide="credit-card" class="mx-auto mb-3 text-slate-300" style="width:32px;height:32px;"></i>
+           <p class="text-sm font-medium text-slate-500">Scan a QR or enter a UPI ID to start paying.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="screenSend" class="screen bg-white">
+      <div class="brand-gradient px-5 pt-5 pb-6 flex items-center gap-3 shadow-sm">
+        <button onclick="navigateTo('screenHome')" class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center action-btn"> 
+          <i data-lucide="arrow-left" style="width:20px;height:20px;color:white;"></i> 
+        </button>
+        <h1 class="text-white font-bold text-lg">Send Money</h1>
+      </div>
+      <div class="flex-1 px-6 pt-8 pb-24">
+        <form class="space-y-6" onsubmit="return false;">
+          
+          <div>
+            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Recipient UPI ID</label> 
+            <div class="relative">
+              <i data-lucide="at-sign" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" style="width:18px;height:18px;"></i>
+              <input id="sendUpi" type="text" placeholder="e.g. name@bank" class="w-full pl-11 pr-4 py-3.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-sm font-medium focus:border-[#6e79eb] focus:ring-2 focus:ring-[#6e79eb]/20 outline-none transition" required>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Amount</label> 
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-bold text-slate-400">₹</span>
+              <input id="sendAmount" type="number" min="1" placeholder="0" class="w-full pl-10 pr-4 py-4 bg-white border border-slate-200 rounded-xl text-slate-800 text-3xl font-bold focus:border-[#6e79eb] focus:ring-2 focus:ring-[#6e79eb]/20 outline-none transition" required>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Pay For (Optional Note)</label> 
+            <input id="sendNote" type="text" placeholder="What's this for?" class="w-full px-4 py-3.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-sm font-medium focus:border-[#6e79eb] focus:ring-2 focus:ring-[#6e79eb]/20 outline-none transition">
+          </div>
+          
+          <button type="button" onclick="openAppChooser()" class="w-full py-4 rounded-xl text-white font-bold text-base action-btn shadow-lg shadow-[#6e79eb]/30 mt-4 flex justify-center items-center gap-2 brand-bg"> 
+            Choose App to Pay <i data-lucide="chevron-up" style="width:20px;height:20px;"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div id="screenReceive" class="screen bg-slate-50">
+      <div class="brand-gradient px-5 pt-5 pb-6 flex items-center gap-3 shadow-sm">
+        <button onclick="navigateTo('screenHome')" class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center action-btn"> 
+          <i data-lucide="arrow-left" style="width:20px;height:20px;color:white;"></i> 
+        </button>
+        <h1 class="text-white font-bold text-lg">Receive Money</h1>
+      </div>
+      <div class="flex-1 px-5 pt-6 pb-24 overflow-y-auto">
+        
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
+          <div class="space-y-4 mb-6" id="qrSettings">
+            <div>
+              <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Receive To (Your UPI ID)</label> 
+              <select id="genUpiId" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-sm font-medium outline-none">
+                </select>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Amount (Optional)</label> 
+                <input id="genAmount" type="number" placeholder="₹ Any amount" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-sm font-medium outline-none">
+              </div>
+              <div>
+                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Pay For (Note)</label> 
+                <input id="genNote" type="text" placeholder="e.g. Rent" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-sm font-medium outline-none">
+              </div>
+            </div>
+            <button onclick="generateQR()" class="w-full py-3 rounded-xl text-white font-bold text-sm action-btn brand-bg shadow-md">Generate QR</button>
+          </div>
+
+          <div class="border-t border-slate-100 pt-6 flex flex-col items-center">
+            <div class="bg-white p-3 rounded-2xl border-4 border-[#6e79eb]/10 shadow-sm relative">
+               <div id="qrcodeDisplay" class="w-48 h-48 flex items-center justify-center bg-slate-50 text-slate-300 rounded-xl">
+                 <i data-lucide="qr-code" style="width:48px;height:48px;"></i>
+               </div>
+            </div>
+            <p id="qrHelpText" class="text-xs text-slate-400 font-medium text-center mt-4">Enter details above and tap Generate to create your payment code.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="screenScan" class="screen bg-black">
+      <div class="px-5 pt-5 pb-4 flex items-center justify-between z-20 absolute top-0 w-full bg-gradient-to-b from-black/80 to-transparent">
+        <button onclick="navigateTo('screenHome')" class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center action-btn">
+          <i data-lucide="x" style="width:20px;height:20px;color:white;"></i>
+        </button>
+        <span class="text-white font-bold text-sm tracking-widest uppercase">Scan to Pay</span>
+        <div class="w-10"></div>
+      </div>
+      
+      <div class="flex-1 flex flex-col items-center justify-center relative">
+        <div id="qr-reader" class="w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border-2 border-[#6e79eb] bg-slate-900 mx-5"></div>
+        <div class="absolute bottom-24 left-0 w-full text-center px-8">
+          <div class="bg-black/60 backdrop-blur-md rounded-2xl p-4 inline-block border border-white/10">
+            <i data-lucide="scan" class="text-white mx-auto mb-2" style="width:24px;height:24px;"></i>
+            <p class="text-white/80 font-medium text-xs">Point your camera at a UPI QR Code</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="screenHistory" class="screen bg-slate-50">
+      <div class="brand-gradient px-5 pt-5 pb-6 shadow-sm"><h1 class="text-white font-bold text-lg">Transaction History</h1></div>
+      <div class="flex-1 flex items-center justify-center p-8"><p class="text-slate-400 font-medium text-sm text-center">Your transactions will appear here.</p></div>
+    </div>
+
+    <div id="screenProfile" class="screen bg-slate-50">
+      <div class="brand-gradient px-5 pt-5 pb-16 shadow-sm relative">
+        <div class="flex items-center justify-between mb-4">
+          <button onclick="navigateTo('screenHome')" class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center action-btn"> 
+            <i data-lucide="arrow-left" style="width:20px;height:20px;color:white;"></i> 
+          </button>
+          <h1 class="text-white font-bold text-lg">Profile & Settings</h1>
+          <div class="w-10"></div>
+        </div>
+      </div>
+      
+      <div class="px-5 -mt-10 relative z-10 flex-1 pb-24">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-6">
+          <div class="flex justify-between items-end mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-slate-800">My Receive UPI IDs</h3>
+              <p class="text-[10px] text-slate-400 mt-0.5">Add IDs to generate receiving QR codes.</p>
+            </div>
+            <span id="upiCount" class="text-[10px] font-bold px-2 py-1 bg-slate-100 text-slate-500 rounded-md">0/10</span>
+          </div>
+          <div class="flex gap-2 mb-4">
+            <input id="newUpiInput" type="text" placeholder="name@bank" class="flex-1 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:border-[#6e79eb] outline-none transition">
+            <button onclick="addUpiId()" id="addUpiBtn" class="brand-bg text-white px-4 py-2.5 rounded-lg text-sm font-bold action-btn whitespace-nowrap shadow-md">Add</button>
+          </div>
+          <ul id="upiList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-2 flex justify-between z-50 pb-safe">
+      <button onclick="navigateTo('screenHome')" class="nav-item flex flex-col items-center gap-1 py-1 px-3 action-btn brand-text"> 
+        <i data-lucide="home" style="width:20px;height:20px;"></i> <span class="text-[9px] font-bold uppercase tracking-wider">Home</span> 
+      </button> 
+      <button onclick="navigateTo('screenHistory')" class="nav-item flex flex-col items-center gap-1 py-1 px-3 text-slate-400 action-btn"> 
+        <i data-lucide="clock" style="width:20px;height:20px;"></i> <span class="text-[9px] font-bold uppercase tracking-wider">History</span> 
+      </button> 
+      <button onclick="navigateTo('screenScan')" class="flex flex-col items-center -mt-6 action-btn">
+        <div class="w-14 h-14 rounded-full flex items-center justify-center shadow-lg shadow-[#6e79eb]/40 border-4 border-white brand-bg">
+          <i data-lucide="qr-code" style="width:24px;height:24px;color:white;"></i>
+        </div>
+      </button> 
+      <button onclick="navigateTo('screenProfile')" class="nav-item flex flex-col items-center gap-1 py-1 px-3 text-slate-400 action-btn"> 
+        <i data-lucide="settings" style="width:20px;height:20px;"></i> <span class="text-[9px] font-bold uppercase tracking-wider">Settings</span> 
+      </button>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // ---- STATE ----
+    let savedUpiIds = JSON.parse(localStorage.getItem('cmPayUpiIds')) || [];
+    let qrCodeInstance = null;
+    let html5QrcodeScanner = null;
+
+    // ---- INIT ----
+    window.onload = () => {
+      renderUpiList();
+    };
+
+    // ---- NAVIGATION ----
+    function navigateTo(screenId) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+
+      if (screenId !== 'screenScan' && screenId !== 'screenSend' && screenId !== 'screenReceive') {
+        document.querySelectorAll('.nav-item').forEach(btn => {
+          btn.classList.remove('brand-text');
+          btn.classList.add('text-slate-400');
+        });
+        const labels = { 'screenHome': 'HOME', 'screenHistory': 'HISTORY', 'screenProfile': 'SETTINGS' };
+        document.querySelectorAll('.nav-item').forEach(btn => {
+          if (btn.innerText.includes(labels[screenId])) {
+             btn.classList.add('brand-text');
+             btn.classList.remove('text-slate-400');
+          }
+        });
+      }
+
+      if (screenId === 'screenScan') startScanner(); else stopScanner();
+      
+      // Update dropdown for the Receive screen
+      if (screenId === 'screenReceive') updateGenUpiDropdown();
+    }
+
+    // ---- TOAST ----
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = message;
+      toast.classList.remove('hidden');
+      toast.style.opacity = '1';
+      setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.classList.add('hidden'), 300); }, 3000);
+    }
+
+    // ---- PROFILE / UPI IDS ----
+    function renderUpiList() {
+      const listEl = document.getElementById('upiList');
+      const countEl = document.getElementById('upiCount');
+      const addBtn = document.getElementById('addUpiBtn');
+      const inputEl = document.getElementById('newUpiInput');
+      
+      listEl.innerHTML = '';
+      countEl.innerText = `${savedUpiIds.length}/10`;
+      
+      if (savedUpiIds.length >= 10) {
+        inputEl.disabled = true; inputEl.placeholder = "Limit reached";
+        addBtn.disabled = true; addBtn.classList.add('opacity-50');
+      } else {
+        inputEl.disabled = false; inputEl.placeholder = "name@bank";
+        addBtn.disabled = false; addBtn.classList.remove('opacity-50');
+      }
+
+      if (savedUpiIds.length === 0) {
+        listEl.innerHTML = `<li class="text-xs text-center text-slate-400 py-4">No UPI IDs added yet.</li>`;
+        return;
+      }
+
+      savedUpiIds.forEach((upi, index) => {
+        const li = document.createElement('li');
+        li.className = "flex justify-between items-center bg-slate-50 border border-slate-100 p-3 rounded-xl";
+        li.innerHTML = `
+          <div class="flex items-center gap-3 overflow-hidden">
+            <div class="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0"><i data-lucide="at-sign" class="brand-text" style="width:14px;height:14px;"></i></div>
+            <span class="text-sm font-semibold text-slate-700 truncate">${upi}</span>
+          </div>
+          <button onclick="removeUpiId(${index})" class="p-2 text-slate-400 hover:text-red-500 action-btn"><i data-lucide="trash-2" style="width:16px;height:16px;"></i></button>
+        `;
+        listEl.appendChild(li);
+      });
+      lucide.createIcons();
+    }
+
+    function addUpiId() {
+      const input = document.getElementById('newUpiInput');
+      const val = input.value.trim().toLowerCase();
+      if (!val || !val.includes('@')) return showToast("Invalid UPI format.");
+      if (savedUpiIds.includes(val)) return showToast("ID already exists.");
+      if (savedUpiIds.length >= 10) return;
+
+      savedUpiIds.push(val);
+      localStorage.setItem('cmPayUpiIds', JSON.stringify(savedUpiIds));
+      input.value = '';
+      renderUpiList();
+      showToast("UPI ID Added");
+    }
+
+    function removeUpiId(index) {
+      savedUpiIds.splice(index, 1);
+      localStorage.setItem('cmPayUpiIds', JSON.stringify(savedUpiIds));
+      renderUpiList();
+    }
+
+    // ---- APP CHOOSER (REQ 1) ----
+    function openAppChooser() {
+      const upiId = document.getElementById('sendUpi').value;
+      if (!upiId) return showToast("Please enter a Recipient UPI ID.");
+      
+      const overlay = document.getElementById('appChooserOverlay');
+      const modal = document.getElementById('appChooserModal');
+      overlay.classList.remove('hidden');
+      setTimeout(() => {
+        overlay.classList.remove('opacity-0');
+        modal.classList.remove('translate-y-full');
+      }, 10);
+    }
+
+    function closeAppChooser(e) {
+      if(e && e.target !== document.getElementById('appChooserOverlay')) return;
+      const overlay = document.getElementById('appChooserOverlay');
+      const modal = document.getElementById('appChooserModal');
+      
+      overlay.classList.add('opacity-0');
+      modal.classList.add('translate-y-full');
+      setTimeout(() => { overlay.classList.add('hidden'); }, 300);
+    }
+
+    function executePayment(appPrefix) {
+      const upiId = document.getElementById('sendUpi').value;
+      const amount = document.getElementById('sendAmount').value || '0';
+      const note = document.getElementById('sendNote').value || 'CM Pay';
+      
+      // Construct exact URL string. 'tez' forces GPay, 'phonepe' forces PhonePe, etc.
+      let upiUrl = `${appPrefix}://pay?pa=${encodeURIComponent(upiId)}&pn=Recipient&tn=${encodeURIComponent(note)}&am=${amount}&cu=INR`;
+      
+      showToast("Opening Payment App...");
+      closeAppChooser();
+      
+      setTimeout(() => { window.location.href = upiUrl; }, 400);
+    }
+
+    // ---- GENERATE QR (REQ 4) ----
+    function updateGenUpiDropdown() {
+      const drop = document.getElementById('genUpiId');
+      if (savedUpiIds.length === 0) {
+        drop.innerHTML = '<option value="">No UPI IDs saved (Go to Settings)</option>';
+        drop.disabled = true;
+      } else {
+        drop.disabled = false;
+        drop.innerHTML = '';
+        savedUpiIds.forEach(upi => { drop.innerHTML += `<option value="${upi}">${upi}</option>`; });
+      }
+    }
+
+    function generateQR() {
+      const upiId = document.getElementById('genUpiId').value;
+      const amount = document.getElementById('genAmount').value;
+      const note = document.getElementById('genNote').value || 'Payment';
+      
+      if (!upiId) return showToast("Please add a UPI ID in Settings first.");
+
+      let qrString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=User&tn=${encodeURIComponent(note)}&cu=INR`;
+      if (amount && amount > 0) qrString += `&am=${amount}`;
+
+      const display = document.getElementById('qrcodeDisplay');
+      display.innerHTML = ''; // clear old QR
+      display.className = "w-48 h-48 bg-white"; // remove placeholder styling
+      
+      document.getElementById('qrHelpText').innerText = amount ? `Scan to pay ₹${amount}` : `Scan to pay any amount`;
+
+      // Generate New QR
+      qrCodeInstance = new QRCode(display, {
+        text: qrString,
+        width: 192,
+        height: 192,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.M
+      });
+      showToast("QR Code Generated!");
+    }
+
+    // ---- SCANNER (REQ 3) ----
+    function startScanner() {
+      if (html5QrcodeScanner) return; 
+      html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 }, false);
+      html5QrcodeScanner.render(onScanSuccess, () => {});
+    }
+
+    function stopScanner() {
+      if (html5QrcodeScanner) {
+        html5QrcodeScanner.clear(); html5QrcodeScanner = null;
+      }
+    }
+
+    function onScanSuccess(decodedText) {
+      stopScanner(); 
+      if (decodedText.startsWith("upi://")) {
+        try {
+          const params = new URLSearchParams(decodedText.split('?')[1]);
+          const targetUpiId = params.get('pa');
+          const presetAmount = params.get('am');
+          
+          if (targetUpiId) {
+            document.getElementById('sendUpi').value = targetUpiId;
+            if(presetAmount) document.getElementById('sendAmount').value = presetAmount;
+            showToast("QR Scanned Successfully");
+            navigateTo('screenSend');
+          }
+        } catch (e) { showToast("Error parsing QR."); navigateTo('screenHome'); }
+      } else {
+        showToast("Invalid UPI format in QR."); navigateTo('screenHome');
+      }
+    }
+  </script>
+</body>
+</html>
