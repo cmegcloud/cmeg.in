@@ -135,7 +135,7 @@
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
           </button>
 
-          <button onclick="toggleTheme()" class="p-2 text-slate-400 hover:text-zohoyellow transition-colors">
+          <button onclick="toggleTheme()" class="p-2 text-slate-400 hover:text-primary transition-colors">
             <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
             </svg>
@@ -478,7 +478,8 @@
         </li>`;
         
         Object.keys(cachedDatabase).forEach(sheetName => {
-            if (sheetName.toUpperCase() === 'DROPDOWN' || sheetName.toUpperCase() === 'COMPANY' || sheetName === 'error') return; 
+            // EXCLUDE DROPDOWN AND INTERNAL ERROR ONLY. ALL OTHER SHEETS WILL BE SHOWN.
+            if (sheetName.toUpperCase() === 'DROPDOWN' || sheetName === 'error') return; 
             
             navList.innerHTML += `
             <li>
@@ -584,6 +585,7 @@
         sheetData.headers.forEach((header, index) => {
             if(!header) return;
             
+            // LOGIC FOR COLUMNS STARTING WITH # TO BE READ-ONLY
             let isReadOnly = header.startsWith('#');
             let cleanHeader = header.replace(/^#/, ''); 
             let baseClasses = "w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/50 dark:text-white text-sm transition-shadow focus:bg-white";
@@ -1109,7 +1111,7 @@
         }
         document.getElementById('pending-calendar-list').innerHTML = calHtml;
 
-        // Line Chart (Mimicking the Smooth "Cashflow" gradient from reference)
+        // Line Chart
         let transCounts = { "Receipts": 0, "Payments": 0, "Other": 0 };
         transData.forEach(t => {
             let type = String(getFieldValue(t, ['type', 'voucher'])).toLowerCase();
@@ -1121,9 +1123,8 @@
         if(chartInstance2) chartInstance2.destroy();
         
         let ctx = document.getElementById('chart2').getContext('2d');
-        // Create Purple Gradient
         let gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)'); // Primary Indigo
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)'); 
         gradient.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
 
         chartInstance2 = new Chart(ctx, {
@@ -1141,7 +1142,7 @@
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     fill: true,
-                    tension: 0.4 // Smooth Curves
+                    tension: 0.4 
                 }] 
             },
             options: { 
@@ -1151,7 +1152,7 @@
                     x: { ticks: { color: textColor, font: {size: 11} }, grid: { display: false } },
                     y: { 
                         ticks: { color: textColor, precision: 0, padding: 10 }, 
-                        grid: { color: gridColor, drawBorder: false, borderDash: [5, 5] } // Dashed lines
+                        grid: { color: gridColor, drawBorder: false, borderDash: [5, 5] } 
                     }
                 }
             }
