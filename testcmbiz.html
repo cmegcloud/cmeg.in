@@ -22,12 +22,11 @@
       theme: { 
         extend: { 
           colors: { 
-            primary: '#6366f1',     /* Cashiar Indigo */
+            primary: '#6366f1',     
             primaryHover: '#4f46e5',
-            pagebg: '#f8f9fa',      /* Soft light gray background */
+            pagebg: '#f8f9fa',      
             cardbg: '#ffffff',
-            sidebartext: '#64748b', /* Slate 500 */
-            /* Pastel Card Colors */
+            sidebartext: '#64748b', 
             cBlueBg: '#f0f4ff', cBlueText: '#3b82f6',
             cOrangeBg: '#fff7ed', cOrangeText: '#f97316',
             cRedBg: '#fff1f2', cRedText: '#e11d48',
@@ -52,15 +51,11 @@
     .dark ::-webkit-scrollbar-thumb { background: #475569; }
     input:focus, select:focus { border-color: #6366f1 !important; outline: none; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); }
     
-    /* Clean SaaS Sidebar Styling */
     .nav-active { background: #eef2ff; color: #4f46e5 !important; font-weight: 600; border-right: 3px solid #6366f1; }
     .dark .nav-active { background: rgba(99, 102, 241, 0.15); color: #818cf8 !important; }
     .nav-inactive { color: #64748b; border-right: 3px solid transparent; }
     .nav-inactive:hover { background: #f8fafc; color: #4f46e5; }
     .dark .nav-inactive:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
-    
-    .loader { border: 3px solid rgba(99, 102, 241, 0.2); border-top: 3px solid #6366f1; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     @media (max-width: 1024px) {
         .mobile-bottom-nav { display: flex; }
@@ -80,8 +75,9 @@
       
       <div class="p-5 flex items-center justify-center gap-3 shrink-0 border-b border-slate-50 dark:border-slate-800">
         <div class="flex flex-col items-center">
-            <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center mb-2 shadow-sm border border-indigo-100 dark:border-indigo-800">
-                <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+            <img src="logocmbiz.png" alt="CM Biz Logo" class="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 dark:border-slate-700 object-contain mb-2 p-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 hidden items-center justify-center mb-2 shadow-sm border border-indigo-100 dark:border-indigo-800">
+                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
             </div>
             <h1 class="text-xl font-bold text-slate-800 dark:text-white leading-tight tracking-tight">CM BIZ</h1>
         </div>
@@ -103,7 +99,6 @@
     <main class="flex-1 h-full flex flex-col relative min-w-0 bg-pagebg dark:bg-slate-900 transition-colors duration-200 main-wrapper">
       
       <header class="bg-white dark:bg-slate-900 shadow-sm px-6 py-3 flex items-center justify-between z-10 shrink-0 border-b border-slate-100 dark:border-slate-800">
-        
         <div class="flex items-center gap-4">
           <button onclick="toggleSidebar()" class="p-1.5 rounded text-slate-500 lg:hidden hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
@@ -116,25 +111,16 @@
         </div>
         
         <div class="flex items-center gap-1 sm:gap-3">
-          
           <button onclick="toggleDataView('form')" class="p-2 text-slate-400 hover:text-primary transition-colors tooltip" title="Quick Add">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
           </button>
-          
           <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block"></div>
-
           <button onclick="syncAllData()" class="p-2 text-slate-400 hover:text-primary transition-colors" title="Sync Data">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
           </button>
-          
           <button class="p-2 text-slate-400 hover:text-primary transition-colors hidden sm:block">
              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
           </button>
-
-          <button class="p-2 text-slate-400 hover:text-primary transition-colors hidden sm:block">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-          </button>
-
           <button onclick="toggleTheme()" class="p-2 text-slate-400 hover:text-primary transition-colors">
             <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
@@ -146,17 +132,22 @@
       <div class="flex-1 overflow-y-auto p-4 sm:p-6 w-full relative">
         
         <div id="loader" class="absolute inset-0 z-20 flex items-center justify-center bg-pagebg/90 dark:bg-slate-900/90 backdrop-blur-sm">
-            <div class="flex flex-col items-center gap-3">
-                <div class="loader"></div><p class="text-sm font-bold text-primary tracking-wide">Processing Data...</p>
+            <div class="flex flex-col items-center gap-4">
+                <img src="logocmbiz.png" alt="Loading..." class="w-16 h-16 animate-bounce drop-shadow-xl rounded-xl bg-white p-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="loader hidden"></div>
+                <p class="text-sm font-bold text-primary tracking-wide">Processing Data...</p>
             </div>
         </div>
 
         <div id="view-dashboard" class="fade-in w-full max-w-7xl mx-auto block">
           
           <div class="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div>
-                  <h3 class="text-xl font-bold text-slate-800 dark:text-white">Shortcut Report</h3>
-                  <p class="text-xs text-slate-500 mt-1" id="last-entry-display">Last Entry: Loading...</p>
+              <div class="flex items-center gap-3">
+                  <img src="logocmbiz.png" class="w-10 h-10 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 bg-white" alt="Logo">
+                  <div>
+                      <h3 class="text-xl font-bold text-slate-800 dark:text-white">Shortcut Report</h3>
+                      <p class="text-xs text-slate-500 mt-0.5" id="last-entry-display">Last Entry: Loading...</p>
+                  </div>
               </div>
               <div class="flex items-center gap-2 bg-white dark:bg-slate-800 p-1.5 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
                  <input type="date" id="dash-filter-from" class="text-sm p-1.5 bg-transparent text-slate-600 dark:text-slate-300 outline-none cursor-pointer" onchange="updateDashboardStats()">
@@ -167,7 +158,6 @@
           </div>
 
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-            
             <div class="bg-cBlueBg dark:bg-slate-800/50 rounded-xl p-5 shadow-sm border border-transparent dark:border-slate-700 flex flex-col">
               <div class="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center mb-4 shadow-sm">
                   <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -345,7 +335,7 @@
 
   <script>
     // ==========================================
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxO3x73xI4gxMSPF7FJrzKwYHGJ1xreWaDXp2hmPM4Og2J4rQgGaw6ztzKFmlXfMm7o/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwboI0dmNt1LRf5nO3JO3uOVWjVqJf8ZXdtBTCGj2i3MKgxFaXf1hOgrYWfhcDH5kpC/exec"; 
     // ==========================================
 
     let cachedDatabase = {}; 
@@ -435,7 +425,7 @@
             if(currentSheet !== "Dashboard") renderDataTab(currentSheet);
         } catch (e) {
             console.error(e);
-            alert("Network Error: Could not connect to Google Sheets.");
+            alert("Network Error: Could not connect to Google Sheets. Check your internet connection or Web App URL deployment permissions.");
         } finally {
             document.getElementById('loader').style.display = "none";
         }
@@ -478,8 +468,7 @@
         </li>`;
         
         Object.keys(cachedDatabase).forEach(sheetName => {
-            // EXCLUDE DROPDOWN AND INTERNAL ERROR ONLY. ALL OTHER SHEETS WILL BE SHOWN.
-            if (sheetName.toUpperCase() === 'DROPDOWN' || sheetName === 'error') return; 
+            if (sheetName.toUpperCase() === 'DROPDOWN' || sheetName.toUpperCase() === 'COMPANY' || sheetName === 'error') return; 
             
             navList.innerHTML += `
             <li>
@@ -585,7 +574,6 @@
         sheetData.headers.forEach((header, index) => {
             if(!header) return;
             
-            // LOGIC FOR COLUMNS STARTING WITH # TO BE READ-ONLY
             let isReadOnly = header.startsWith('#');
             let cleanHeader = header.replace(/^#/, ''); 
             let baseClasses = "w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/50 dark:text-white text-sm transition-shadow focus:bg-white";
@@ -775,7 +763,6 @@
         }
     }
 
-
     // ==========================================
     // PDF CUSTOM EXPORT LOGIC
     // ==========================================
@@ -904,7 +891,6 @@
         doc.save(`${currentSheet.replace(/\s+/g, '_')}_Report.pdf`);
         closePdfModal();
     }
-
 
     // ==========================================
     // FORM EDIT & SAVE
@@ -1041,11 +1027,13 @@
         }
 
         let pendingCount = 0;
+        let taskStatus = {};
         let upcomingTasks = [];
 
         taskData.forEach(t => { 
             let status = getFieldValue(t, ['status']);
             let statusLower = String(status).toLowerCase();
+            taskStatus[status] = (taskStatus[status] || 0) + 1; 
             
             if (statusLower.includes('pending') || statusLower.includes('false')) {
                 pendingCount++;
@@ -1111,7 +1099,33 @@
         }
         document.getElementById('pending-calendar-list').innerHTML = calHtml;
 
-        // Line Chart
+        let chart1Labels = Object.keys(taskStatus).length > 0 ? Object.keys(taskStatus) : ['No Data'];
+        let chart1BgColors = chart1Labels.map(label => {
+            let l = label.toLowerCase();
+            if (l.includes('pending') || l.includes('false')) return '#ef4444'; 
+            if (l.includes('completed') || l.includes('true')) return '#10b981'; 
+            return '#6366f1'; 
+        });
+
+        if(chartInstance1) chartInstance1.destroy();
+        chartInstance1 = new Chart(document.getElementById('chart1'), {
+            type: 'doughnut',
+            data: { 
+                labels: chart1Labels, 
+                datasets: [{ 
+                    data: Object.values(taskStatus).length > 0 ? Object.values(taskStatus) : [1], 
+                    backgroundColor: chart1BgColors,
+                    borderColor: isDark ? '#1e293b' : '#ffffff',
+                    borderWidth: 2,
+                    cutout: '75%' 
+                }] 
+            },
+            options: { 
+                maintainAspectRatio: false, 
+                plugins: { legend: { position: 'bottom', labels: { color: textColor, usePointStyle: true, boxWidth: 8 } } } 
+            }
+        });
+
         let transCounts = { "Receipts": 0, "Payments": 0, "Other": 0 };
         transData.forEach(t => {
             let type = String(getFieldValue(t, ['type', 'voucher'])).toLowerCase();
