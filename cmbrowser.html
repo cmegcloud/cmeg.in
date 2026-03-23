@@ -1,883 +1,263 @@
-<!doctype html>
-<html lang="en" class="h-full">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CM Browser</title>
-  <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQ00gQnJvd3NlciIsInNob3J0X25hbWUiOiJDTSBCcm93c2VyIiwiZGVzY3JpcHRpb24iOiJBIGZhc3QsIGNsZWFuLCBhbmQgbW9iaWxlLWZyaWVuZGx5IHdlYiBicm93c2VyIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwZjE3MmEiLCJ0aGVtZV9jb2xvciI6IiMwZWE1ZTkiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA1MTIgNTEyJyUzRSUzQ3JlY3Qgd2lkdGg9JzUxMicgaGVpZ2h0PSc1MTInIHJ4PSc5NicgZmlsbD0nJTIzMGYxNzJhJy8lM0UlM0NjaXJjbGUgY3g9JzI1NicgY3k9JzI1Nicgcj0nMTYwJyBmaWxsPSdub25lJyBzdHJva2U9JyUyMzBlYTVlOScgc3Ryb2tlLXdpZHRoPSczMicvJTNFJTNDcGF0aCBkPSdNMTYwIDI1NmgxOTJsMC0xMjAnIGZpbGw9J25vbmUnIHN0cm9rZT0nJTIzMzhmYmQ2JyBzdHJva2Utd2lkdGg9JzI0JyBzdHJva2UtbGluZWNhcD0ncm91bmQnLyUzRSUzQy9zdmclM0UiLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
-
-    .browser-tab {
-      transition: all 0.2s ease;
-    }
-    .browser-tab.active {
-      background: var(--surface-color);
-      border-bottom: 2px solid var(--accent-color);
-    }
-    .browser-tab:not(.active):hover {
-      background: rgba(255,255,255,0.05);
-    }
-
-    .url-bar {
-      transition: all 0.25s ease;
-    }
-    .url-bar:focus-within {
-      box-shadow: 0 0 0 2px var(--accent-color);
-    }
-
-    .speed-dial-card {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .speed-dial-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-    }
-    .speed-dial-card:active {
-      transform: scale(0.97);
-    }
-
-    .nav-btn {
-      transition: all 0.15s ease;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 36px;
-      height: 36px;
-    }
-    .nav-btn:hover { background: rgba(255,255,255,0.1); }
-    .nav-btn:active { transform: scale(0.9); }
-    .nav-btn.disabled { opacity: 0.3; pointer-events: none; }
-
-    .menu-overlay {
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-    .menu-overlay.show {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .menu-panel {
-      transform: translateY(100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .menu-overlay.show .menu-panel {
-      transform: translateY(0);
-    }
-
-    .menu-item {
-      transition: background 0.15s;
-    }
-    .menu-item:hover { background: rgba(255,255,255,0.08); }
-    .menu-item:active { background: rgba(255,255,255,0.12); }
-
-    .toast-msg {
-      animation: toastIn 0.3s ease, toastOut 0.3s ease 1.7s forwards;
-    }
-    @keyframes toastIn {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    @keyframes toastOut {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
-
-    .tab-panel {
-      animation: slideUp 0.25s ease;
-    }
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .logo-pulse {
-      animation: logoPulse 2s ease-in-out infinite;
-    }
-    @keyframes logoPulse {
-      0%, 100% { filter: drop-shadow(0 0 8px rgba(14,165,233,0.3)); }
-      50% { filter: drop-shadow(0 0 16px rgba(14,165,233,0.6)); }
-    }
-
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
-
-    .incognito-badge {
-      background: linear-gradient(135deg, #7c3aed, #4f46e5);
-    }
-  </style>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { outfit: ['Outfit', 'sans-serif'] }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CM Browser | Portal Dashboard</title>
+    <style>
+        :root {
+            --brand-gold: #B8860B; /* Goldish brown */
+            --brand-gold-hover: #996B09;
+            --bg-offwhite: #FAF9F6; /* Off-white */
+            --text-dark: #333333;
+            --card-bg: #FFFFFF;
         }
-      }
-    }
-  </script>
-  <style>body { box-sizing: border-box; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
- </head>
- <body class="h-full bg-slate-100 text-slate-900 font-outfit overflow-hidden">
-  <div id="app" class="h-full w-full flex flex-col" style="background: var(--bg-color, #0f172a);"><!-- Tab Bar -->
-   <header id="tab-bar" class="flex items-center gap-1 px-2 pt-2 pb-0 overflow-x-auto flex-shrink-0" style="background: var(--bg-color, #0f172a);">
-    <div id="tabs-container" class="flex gap-1 flex-1 overflow-x-auto min-w-0"></div><button id="new-tab-btn" class="nav-btn flex-shrink-0 ml-1" title="New Tab" style="color: var(--accent-color, #0ea5e9);"> <i data-lucide="plus" style="width:18px;height:18px;"></i> </button>
-   </header><!-- URL Bar -->
-   <div class="px-3 py-2 flex-shrink-0" style="background: var(--bg-color, #0f172a);">
-    <div class="url-bar flex items-center gap-2 rounded-xl px-3 py-2" style="background: var(--surface-color, #1e293b);"><i data-lucide="shield" style="width:16px;height:16px;color:var(--secondary-action-color, #64748b);flex-shrink:0;"></i> <input id="url-input" type="text" placeholder="Search or enter URL..." class="flex-1 bg-transparent outline-none text-sm" style="color: var(--text-color, #e2e8f0); caret-color: var(--accent-color, #0ea5e9);" autocomplete="off" spellcheck="false"> <button id="go-btn" class="flex-shrink-0" style="color: var(--accent-color, #0ea5e9);"> <i data-lucide="arrow-right-circle" style="width:20px;height:20px;"></i> </button>
-    </div>
-   </div><!-- Main Content Area -->
-   <main id="content-area" class="flex-1 overflow-auto relative" style="background: var(--bg-color, #0f172a);"><!-- Home / New Tab Page -->
-    <div id="home-page" class="h-full flex flex-col items-center px-4 pt-8"><!-- Logo -->
-     <div class="logo-pulse mb-6">
-      <svg width="80" height="80" viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><defs>
-        <lineargradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-         <stop offset="0%" style="stop-color:#0ea5e9" />
-         <stop offset="100%" style="stop-color:#38bdf8" />
-        </lineargradient>
-       </defs> <circle cx="256" cy="256" r="200" fill="none" stroke="url(#logoGrad)" stroke-width="28" /> <circle cx="256" cy="256" r="130" fill="none" stroke="url(#logoGrad)" stroke-width="18" opacity="0.4" /> <path d="M180 256 C180 200 220 160 256 136 C292 160 332 200 332 256" fill="none" stroke="url(#logoGrad)" stroke-width="24" stroke-linecap="round" /> <circle cx="256" cy="256" r="24" fill="url(#logoGrad)" /> <text x="256" y="400" text-anchor="middle" fill="#0ea5e9" font-family="Outfit, sans-serif" font-weight="700" font-size="72">
-        CM
-       </text>
-      </svg>
-     </div>
-     <h1 id="app-title" class="text-2xl font-bold mb-1" style="color: var(--text-color, #e2e8f0);">CM Browser</h1>
-     <p class="text-xs mb-8" style="color: var(--secondary-action-color, #64748b);">Fast · Private · Clean</p><!-- Search Bar (Home) -->
-     <div class="w-full max-w-md mb-8">
-      <div class="url-bar flex items-center gap-2 rounded-2xl px-4 py-3" style="background: var(--surface-color, #1e293b);"><i data-lucide="search" style="width:18px;height:18px;color:var(--secondary-action-color, #64748b);"></i> <input id="home-search" type="text" placeholder="Search the web..." class="flex-1 bg-transparent outline-none text-sm" style="color: var(--text-color, #e2e8f0);" autocomplete="off">
-      </div>
-     </div><!-- Speed Dial -->
-     <div class="w-full max-w-md">
-      <div id="speed-dial" class="grid grid-cols-4 gap-3"></div>
-     </div><!-- Quick Actions -->
-     <div class="flex gap-4 mt-8"><button id="incognito-btn" class="flex flex-col items-center gap-1.5 px-4 py-3 rounded-xl" style="background: var(--surface-color, #1e293b);"> <i data-lucide="eye-off" style="width:20px;height:20px;color:#a78bfa;"></i> <span class="text-xs" style="color: var(--text-color, #e2e8f0);">Private</span> </button> <button id="bookmarks-btn" class="flex flex-col items-center gap-1.5 px-4 py-3 rounded-xl" style="background: var(--surface-color, #1e293b);"> <i data-lucide="bookmark" style="width:20px;height:20px;color:#fb923c;"></i> <span class="text-xs" style="color: var(--text-color, #e2e8f0);">Bookmarks</span> </button> <button id="history-btn" class="flex flex-col items-center gap-1.5 px-4 py-3 rounded-xl" style="background: var(--surface-color, #1e293b);"> <i data-lucide="clock" style="width:20px;height:20px;color:#4ade80;"></i> <span class="text-xs" style="color: var(--text-color, #e2e8f0);">History</span> </button> <button id="downloads-btn" class="flex flex-col items-center gap-1.5 px-4 py-3 rounded-xl" style="background: var(--surface-color, #1e293b);"> <i data-lucide="download" style="width:20px;height:20px;color:#38bdf8;"></i> <span class="text-xs" style="color: var(--text-color, #e2e8f0);">Downloads</span> </button>
-     </div>
-    </div><!-- Browse Page (iframe simulation) -->
-    <div id="browse-page" class="h-full hidden">
-     <div id="page-loading" class="hidden flex flex-col items-center justify-center h-full gap-3">
-      <div class="w-8 h-8 border-2 rounded-full animate-spin" style="border-color: var(--surface-color, #1e293b); border-top-color: var(--accent-color, #0ea5e9);"></div><span class="text-sm" style="color: var(--secondary-action-color, #64748b);">Loading page...</span>
-     </div>
-     <div id="page-content" class="h-full p-4 overflow-auto"></div>
-    </div><!-- Bookmarks Panel -->
-    <div id="bookmarks-panel" class="h-full hidden tab-panel p-4">
-     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-semibold" style="color: var(--text-color, #e2e8f0);">Bookmarks</h2><button id="close-bookmarks" class="nav-btn" style="color: var(--secondary-action-color, #64748b);"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
-     </div>
-     <div id="bookmarks-list" class="space-y-2"></div>
-     <div id="bookmarks-empty" class="text-center py-12"><i data-lucide="bookmark" style="width:40px;height:40px;color:var(--secondary-action-color, #64748b);margin:0 auto 12px;display:block;"></i>
-      <p class="text-sm" style="color: var(--secondary-action-color, #64748b);">No bookmarks yet</p>
-     </div>
-    </div><!-- History Panel -->
-    <div id="history-panel" class="h-full hidden tab-panel p-4">
-     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-semibold" style="color: var(--text-color, #e2e8f0);">History</h2>
-      <div class="flex gap-2"><button id="clear-history" class="text-xs px-3 py-1 rounded-lg" style="background: var(--surface-color, #1e293b); color: var(--accent-color, #0ea5e9);">Clear All</button> <button id="close-history" class="nav-btn" style="color: var(--secondary-action-color, #64748b);"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
-      </div>
-     </div>
-     <div id="history-list" class="space-y-2"></div>
-     <div id="history-empty" class="text-center py-12"><i data-lucide="clock" style="width:40px;height:40px;color:var(--secondary-action-color, #64748b);margin:0 auto 12px;display:block;"></i>
-      <p class="text-sm" style="color: var(--secondary-action-color, #64748b);">No browsing history</p>
-     </div>
-    </div><!-- Downloads Panel -->
-    <div id="downloads-panel" class="h-full hidden tab-panel p-4">
-     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-semibold" style="color: var(--text-color, #e2e8f0);">Downloads</h2><button id="close-downloads" class="nav-btn" style="color: var(--secondary-action-color, #64748b);"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
-     </div>
-     <div class="text-center py-12"><i data-lucide="download" style="width:40px;height:40px;color:var(--secondary-action-color, #64748b);margin:0 auto 12px;display:block;"></i>
-      <p class="text-sm" style="color: var(--secondary-action-color, #64748b);">No downloads yet</p>
-      <p class="text-xs mt-1" style="color: var(--secondary-action-color, #64748b);">Demo — downloads not available</p>
-     </div>
-    </div>
-   </main><!-- Bottom Navigation -->
-   <nav class="flex items-center justify-around px-2 py-2 flex-shrink-0 border-t" style="background: var(--bg-color, #0f172a); border-color: var(--surface-color, #1e293b);"><button id="btn-back" class="nav-btn disabled" style="color: var(--text-color, #e2e8f0);"> <i data-lucide="chevron-left" style="width:22px;height:22px;"></i> </button> <button id="btn-forward" class="nav-btn disabled" style="color: var(--text-color, #e2e8f0);"> <i data-lucide="chevron-right" style="width:22px;height:22px;"></i> </button> <button id="btn-home" class="nav-btn" style="color: var(--accent-color, #0ea5e9);"> <i data-lucide="home" style="width:22px;height:22px;"></i> </button> <button id="btn-tabs" class="nav-btn relative" style="color: var(--text-color, #e2e8f0);"> <span id="tab-count" class="absolute -top-0.5 -right-0.5 text-[9px] font-bold rounded px-1" style="background: var(--accent-color, #0ea5e9); color: #fff;">1</span> <i data-lucide="layers" style="width:20px;height:20px;"></i> </button> <button id="btn-menu" class="nav-btn" style="color: var(--text-color, #e2e8f0);"> <i data-lucide="more-vertical" style="width:22px;height:22px;"></i> </button>
-   </nav><!-- Menu Overlay -->
-   <div id="menu-overlay" class="menu-overlay fixed inset-0 z-50" style="background:rgba(0,0,0,0.6);">
-    <div class="menu-panel absolute bottom-0 left-0 right-0 rounded-t-2xl p-4 pb-6 max-h-[70%] overflow-auto" style="background: var(--surface-color, #1e293b);">
-     <div class="w-10 h-1 rounded-full mx-auto mb-4" style="background: var(--secondary-action-color, #64748b);"></div>
-     <div class="grid grid-cols-4 gap-3 mb-4"><button class="menu-item flex flex-col items-center gap-1.5 p-3 rounded-xl" data-action="add-bookmark"> <i data-lucide="bookmark-plus" style="width:20px;height:20px;color:#fb923c;"></i> <span class="text-[10px]" style="color: var(--text-color, #e2e8f0);">Bookmark</span> </button> <button class="menu-item flex flex-col items-center gap-1.5 p-3 rounded-xl" data-action="share"> <i data-lucide="share-2" style="width:20px;height:20px;color:#4ade80;"></i> <span class="text-[10px]" style="color: var(--text-color, #e2e8f0);">Share</span> </button> <button class="menu-item flex flex-col items-center gap-1.5 p-3 rounded-xl" data-action="find"> <i data-lucide="search" style="width:20px;height:20px;color:#38bdf8;"></i> <span class="text-[10px]" style="color: var(--text-color, #e2e8f0);">Find</span> </button> <button class="menu-item flex flex-col items-center gap-1.5 p-3 rounded-xl" data-action="incognito"> <i data-lucide="eye-off" style="width:20px;height:20px;color:#a78bfa;"></i> <span class="text-[10px]" style="color: var(--text-color, #e2e8f0);">Private</span> </button>
-     </div>
-     <div class="space-y-1"><button class="menu-item w-full flex items-center gap-3 p-3 rounded-xl" data-action="autofill"> <i data-lucide="key" style="width:18px;height:18px;color:var(--secondary-action-color, #64748b);"></i> <span class="text-sm" style="color: var(--text-color, #e2e8f0);">Autofill Credentials</span> </button> <button class="menu-item w-full flex items-center gap-3 p-3 rounded-xl" data-action="desktop-mode"> <i data-lucide="monitor" style="width:18px;height:18px;color:var(--secondary-action-color, #64748b);"></i> <span class="text-sm" style="color: var(--text-color, #e2e8f0);">Desktop Mode</span>
-       <div id="desktop-toggle" class="ml-auto w-10 h-5 rounded-full relative" style="background: var(--secondary-action-color, #64748b);">
-        <div class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-all"></div>
-       </div></button> <button class="menu-item w-full flex items-center gap-3 p-3 rounded-xl" data-action="text-size"> <i data-lucide="type" style="width:18px;height:18px;color:var(--secondary-action-color, #64748b);"></i> <span class="text-sm" style="color: var(--text-color, #e2e8f0);">Text Size</span> </button> <button class="menu-item w-full flex items-center gap-3 p-3 rounded-xl" data-action="dark-mode"> <i data-lucide="moon" style="width:18px;height:18px;color:var(--secondary-action-color, #64748b);"></i> <span class="text-sm" style="color: var(--text-color, #e2e8f0);">Dark Mode</span>
-       <div id="dark-toggle" class="ml-auto w-10 h-5 rounded-full relative" style="background: var(--accent-color, #0ea5e9);">
-        <div class="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-white transition-all"></div>
-       </div></button> <button class="menu-item w-full flex items-center gap-3 p-3 rounded-xl" data-action="settings"> <i data-lucide="settings" style="width:18px;height:18px;color:var(--secondary-action-color, #64748b);"></i> <span class="text-sm" style="color: var(--text-color, #e2e8f0);">Settings</span> </button>
-     </div>
-    </div>
-   </div><!-- Tab Overview Overlay -->
-   <div id="tab-overview" class="fixed inset-0 z-40 hidden" style="background: var(--bg-color, #0f172a);">
-    <div class="flex items-center justify-between p-3">
-     <h2 class="text-lg font-semibold" style="color: var(--text-color, #e2e8f0);">Tabs</h2>
-     <div class="flex gap-2"><button id="new-tab-overview" class="nav-btn" style="color: var(--accent-color, #0ea5e9);"><i data-lucide="plus" style="width:20px;height:20px;"></i></button> <button id="close-tab-overview" class="nav-btn" style="color: var(--secondary-action-color, #64748b);"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
-     </div>
-    </div>
-    <div id="tab-grid" class="grid grid-cols-2 gap-3 p-3 overflow-auto" style="max-height: calc(100% - 56px);"></div>
-   </div><!-- Autofill Modal -->
-   <div id="autofill-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center" style="background: rgba(0,0,0,0.6);">
-    <div class="rounded-2xl p-6 max-w-sm w-11/12" style="background: var(--surface-color, #1e293b);">
-     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-semibold" style="color: var(--text-color, #e2e8f0);">Autofill Credentials</h2><button id="close-autofill" class="nav-btn" style="color: var(--secondary-action-color, #64748b);"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
-     </div>
-     <div class="space-y-3 mb-4">
-      <div><label class="block text-xs font-medium mb-1.5" style="color: var(--text-color, #e2e8f0);">Username / Email</label> <input id="autofill-username" type="text" placeholder="Enter GST username" class="w-full px-3 py-2 rounded-lg outline-none text-sm" style="background: var(--bg-color, #0f172a); color: var(--text-color, #e2e8f0); border: 1px solid var(--secondary-action-color, #64748b);">
-      </div>
-      <div><label class="block text-xs font-medium mb-1.5" style="color: var(--text-color, #e2e8f0);">Password</label> <input id="autofill-password" type="password" placeholder="Enter password" class="w-full px-3 py-2 rounded-lg outline-none text-sm" style="background: var(--bg-color, #0f172a); color: var(--text-color, #e2e8f0); border: 1px solid var(--secondary-action-color, #64748b);">
-      </div>
-     </div>
-     <div class="flex items-center gap-2 mb-4 p-2 rounded-lg" style="background: var(--bg-color, #0f172a);"><input id="autofill-toggle" type="checkbox" style="accent-color: var(--accent-color, #0ea5e9);"> <label for="autofill-toggle" class="text-sm flex-1" style="color: var(--text-color, #e2e8f0);">Enable autofill for GST login</label>
-     </div>
-     <div class="flex gap-2"><button id="cancel-autofill" class="flex-1 px-4 py-2 rounded-lg text-sm font-medium" style="background: var(--bg-color, #0f172a); color: var(--text-color, #e2e8f0);">Cancel</button> <button id="save-autofill" class="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white" style="background: var(--accent-color, #0ea5e9);">Save</button>
-     </div>
-    </div>
-   </div><!-- Toast Container -->
-   <div id="toast-container" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none"></div>
-  </div>
-  <script>
-    // ===== STATE =====
-    let tabs = [];
-    let activeTabId = null;
-    let bookmarks = [];
-    let history = [];
-    let isIncognito = false;
-    let desktopMode = false;
-    let darkMode = true;
-    let tabIdCounter = 0;
-    let autoFillCredentials = { username: '', password: '', enabled: false };
 
-    const speedDialSites = [
-      { name: 'GST', icon: 'file-text', color: '#d97706', url: 'https://www.gst.gov.in' },
-      { name: 'Income Tax', icon: 'calculator', color: '#ea580c', url: 'https://www.incometaxindiaefiling.gov.in' },
-      { name: 'EPF', icon: 'briefcase', color: '#b45309', url: 'https://www.epfindia.gov.in' },
-      { name: 'ESI', icon: 'shield', color: '#92400e', url: 'https://www.esic.nic.in' },
-      { name: 'Udhyam', icon: 'trending-up', color: '#d97706', url: 'https://udyamregistration.gov.in' },
-      { name: 'MCA', icon: 'building-2', color: '#ea580c', url: 'https://www.mca.gov.in' },
-      { name: 'TDSRC', icon: 'file-check', color: '#b45309', url: 'https://www.tdscircle.gov.in' },
-      { name: 'Pan-TAN', icon: 'credit-card', color: '#92400e', url: 'https://www.incometaxindiaefiling.gov.in' },
-    ];
-
-    // ===== DOM REFS =====
-    const $tabsContainer = document.getElementById('tabs-container');
-    const $urlInput = document.getElementById('url-input');
-    const $homePage = document.getElementById('home-page');
-    const $browsePage = document.getElementById('browse-page');
-    const $pageLoading = document.getElementById('page-loading');
-    const $pageContent = document.getElementById('page-content');
-    const $menuOverlay = document.getElementById('menu-overlay');
-    const $tabOverview = document.getElementById('tab-overview');
-    const $tabGrid = document.getElementById('tab-grid');
-    const $tabCount = document.getElementById('tab-count');
-    const $homeSearch = document.getElementById('home-search');
-    const $speedDial = document.getElementById('speed-dial');
-    const $bookmarksPanel = document.getElementById('bookmarks-panel');
-    const $historyPanel = document.getElementById('history-panel');
-    const $downloadsPanel = document.getElementById('downloads-panel');
-    const $bookmarksList = document.getElementById('bookmarks-list');
-    const $historyList = document.getElementById('history-list');
-
-    // ===== TAB MANAGEMENT =====
-    function createTab(url = '', title = 'New Tab') {
-      const id = ++tabIdCounter;
-      const tab = { id, url, title, isHome: !url, navHistory: [], navIndex: -1 };
-      tabs.push(tab);
-      switchToTab(id);
-      renderTabs();
-      return tab;
-    }
-
-    function switchToTab(id) {
-      activeTabId = id;
-      const tab = tabs.find(t => t.id === id);
-      if (!tab) return;
-      if (tab.isHome) {
-        showHome();
-        $urlInput.value = '';
-      } else {
-        showBrowse(tab);
-        $urlInput.value = tab.url;
-      }
-      renderTabs();
-      updateNavButtons();
-    }
-
-    function closeTab(id) {
-      const idx = tabs.findIndex(t => t.id === id);
-      if (idx === -1) return;
-      tabs.splice(idx, 1);
-      if (tabs.length === 0) {
-        createTab();
-      } else if (activeTabId === id) {
-        switchToTab(tabs[Math.min(idx, tabs.length - 1)].id);
-      }
-      renderTabs();
-    }
-
-    function renderTabs() {
-      $tabsContainer.innerHTML = '';
-      tabs.forEach(tab => {
-        const el = document.createElement('div');
-        el.className = `browser-tab flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg cursor-pointer text-xs max-w-[140px] min-w-[60px] ${tab.id === activeTabId ? 'active' : ''}`;
-        el.style.color = 'var(--text-color, #e2e8f0)';
-        el.innerHTML = `
-          <span class="truncate flex-1">${tab.title}</span>
-          <button class="flex-shrink-0 hover:opacity-70" data-close="${tab.id}"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
-        `;
-        el.addEventListener('click', (e) => {
-          if (e.target.closest('[data-close]')) {
-            closeTab(tab.id);
-          } else {
-            switchToTab(tab.id);
-          }
-        });
-        $tabsContainer.appendChild(el);
-      });
-      $tabCount.textContent = tabs.length;
-      lucide.createIcons();
-    }
-
-    // ===== NAVIGATION =====
-    function navigate(url) {
-      if (!url) return;
-      // Normalize URL
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        if (url.includes('.') && !url.includes(' ')) {
-          url = 'https://' + url;
-        } else {
-          url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-offwhite);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-      }
 
-      const tab = tabs.find(t => t.id === activeTabId);
-      if (!tab) return;
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-      tab.url = url;
-      tab.isHome = false;
+        .header h1 {
+            color: var(--brand-gold);
+            margin: 0;
+            font-size: 2.5em;
+        }
 
-      // Extract title from URL
-      try {
-        const hostname = new URL(url).hostname.replace('www.', '');
-        tab.title = hostname.charAt(0).toUpperCase() + hostname.slice(1);
-      } catch {
-        tab.title = url.substring(0, 30);
-      }
+        .container {
+            display: flex;
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            flex-wrap: wrap;
+        }
 
-      // Nav history
-      tab.navHistory = tab.navHistory.slice(0, tab.navIndex + 1);
-      tab.navHistory.push(url);
-      tab.navIndex = tab.navHistory.length - 1;
+        /* Bookmarks Section */
+        .bookmarks-section {
+            flex: 2;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--brand-gold);
+        }
 
-      // Add to history
-      if (!isIncognito) {
-        history.unshift({ url, title: tab.title, time: new Date().toLocaleTimeString() });
-        if (history.length > 50) history.pop();
-      }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
 
-      $urlInput.value = url;
-      showBrowse(tab);
-      renderTabs();
-      updateNavButtons();
-    }
+        .bookmark-btn {
+            display: block;
+            background-color: var(--bg-offwhite);
+            color: var(--text-dark);
+            text-decoration: none;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
 
-    function goBack() {
-      const tab = tabs.find(t => t.id === activeTabId);
-      if (!tab || tab.navIndex <= 0) return;
-      tab.navIndex--;
-      const url = tab.navHistory[tab.navIndex];
-      tab.url = url;
-      $urlInput.value = url;
-      showBrowse(tab);
-      updateNavButtons();
-    }
+        .bookmark-btn:hover {
+            background-color: var(--brand-gold);
+            color: white;
+            border-color: var(--brand-gold);
+        }
 
-    function goForward() {
-      const tab = tabs.find(t => t.id === activeTabId);
-      if (!tab || tab.navIndex >= tab.navHistory.length - 1) return;
-      tab.navIndex++;
-      const url = tab.navHistory[tab.navIndex];
-      tab.url = url;
-      $urlInput.value = url;
-      showBrowse(tab);
-      updateNavButtons();
-    }
+        /* Credentials Section */
+        .vault-section {
+            flex: 1;
+            min-width: 300px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--brand-gold);
+        }
 
-    function updateNavButtons() {
-      const tab = tabs.find(t => t.id === activeTabId);
-      const backBtn = document.getElementById('btn-back');
-      const fwdBtn = document.getElementById('btn-forward');
-      backBtn.classList.toggle('disabled', !tab || tab.navIndex <= 0);
-      fwdBtn.classList.toggle('disabled', !tab || tab.navIndex >= tab.navHistory.length - 1);
-    }
+        .form-group {
+            margin-bottom: 15px;
+        }
 
-    // ===== VIEW MANAGEMENT =====
-    function hideAllPanels() {
-      $homePage.classList.add('hidden');
-      $browsePage.classList.add('hidden');
-      $bookmarksPanel.classList.add('hidden');
-      $historyPanel.classList.add('hidden');
-      $downloadsPanel.classList.add('hidden');
-    }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
 
-    function showHome() {
-      hideAllPanels();
-      $homePage.classList.remove('hidden');
-      $urlInput.value = '';
-    }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
 
-    function showBrowse(tab) {
-      hideAllPanels();
-      $browsePage.classList.remove('hidden');
-      $pageContent.classList.add('hidden');
-      $pageLoading.classList.remove('hidden');
+        button {
+            background-color: var(--brand-gold);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
 
-      setTimeout(() => {
-        $pageLoading.classList.add('hidden');
-        $pageContent.classList.remove('hidden');
-        renderPageContent(tab);
-      }, 800 + Math.random() * 600);
-    }
+        button:hover {
+            background-color: var(--brand-gold-hover);
+        }
 
-    function renderPageContent(tab) {
-      let hostname = '';
-      try { hostname = new URL(tab.url).hostname; } catch { hostname = tab.url; }
+        .action-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        hr {
+            border: 0;
+            border-top: 1px solid #eee;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
 
-      $pageContent.innerHTML = `
-        <div class="rounded-xl p-5 mb-4" style="background: var(--surface-color, #1e293b);">
-          <div class="flex items-center gap-2 mb-3">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold" style="background: var(--accent-color, #0ea5e9); color: #fff;">
-              ${hostname.charAt(0).toUpperCase()}
+    <div class="header">
+        <h1>CM Browser</h1>
+        <p>Quick-Access Portal & Client Vault</p>
+    </div>
+
+    <div class="container">
+        <div class="bookmarks-section">
+            <h2>Government Portals</h2>
+            <div class="grid">
+                <a href="https://services.gst.gov.in/services/login" target="_blank" class="bookmark-btn">GST Portal</a>
+                <a href="https://eportal.incometax.gov.in/iec/foservices/#/login" target="_blank" class="bookmark-btn">Income Tax</a>
+                <a href="https://unifiedportal-emp.epfindia.gov.in/epfo/" target="_blank" class="bookmark-btn">EPF (Employer)</a>
+                <a href="https://www.esic.in/ESICInsurance1/ESICInsurancePortal/PortalLogin.aspx" target="_blank" class="bookmark-btn">ESI Portal</a>
+                <a href="https://udyamregistration.gov.in/" target="_blank" class="bookmark-btn">Udyam Registration</a>
+                <a href="https://ipindiaonline.gov.in/eregister/eregister.aspx" target="_blank" class="bookmark-btn">Trademark Search</a>
+                <a href="https://kswift.kerala.gov.in/" target="_blank" class="bookmark-btn">K-SWIFT (Kerala)</a>
             </div>
-            <div>
-              <p class="text-sm font-medium" style="color: var(--text-color, #e2e8f0);">${tab.title}</p>
-              <p class="text-xs truncate max-w-[250px]" style="color: var(--secondary-action-color, #64748b);">${tab.url}</p>
+        </div>
+
+        <div class="vault-section">
+            <h2>Client Vault</h2>
+            
+            <div class="form-group">
+                <label for="client-select">Select Client Profile:</label>
+                <select id="client-select" onchange="loadProfile()">
+                    <option value="">-- Select a Client --</option>
+                </select>
             </div>
-          </div>
-          <div class="rounded-lg p-4 text-center" style="background: var(--bg-color, #0f172a);">
-            <i data-lucide="globe" style="width:48px;height:48px;color:var(--accent-color, #0ea5e9);margin:0 auto 8px;display:block;"></i>
-            <p class="text-sm mb-1" style="color: var(--text-color, #e2e8f0);">Page Preview</p>
-            <p class="text-xs mb-3" style="color: var(--secondary-action-color, #64748b);">For security, pages are shown as previews in this demo</p>
-            <a href="${tab.url}" target="_blank" rel="noopener noreferrer"
-              class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white"
-              style="background: var(--accent-color, #0ea5e9);">
-              <i data-lucide="external-link" style="width:14px;height:14px;"></i>
-              Open in New Tab
-            </a>
-          </div>
+
+            <hr>
+
+            <div class="form-group">
+                <label for="profile-name">Client / Profile Name</label>
+                <input type="text" id="profile-name" placeholder="e.g., Client A - GST">
+            </div>
+            
+            <div class="form-group">
+                <label for="username">Username / ID</label>
+                <input type="text" id="username">
+                <div class="action-row">
+                    <button onclick="copyToClipboard('username')">Copy ID</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password">
+                <div class="action-row">
+                    <button onclick="copyToClipboard('password')">Copy Pass</button>
+                </div>
+            </div>
+
+            <button onclick="saveProfile()" style="margin-top: 15px;">Save / Update Profile</button>
         </div>
-        <div class="text-center py-4">
-          <p class="text-xs" style="color: var(--secondary-action-color, #64748b);">
-            ${isIncognito ? '🔒 Private browsing — no history saved' : ''}
-          </p>
-        </div>
-      `;
-      lucide.createIcons();
-    }
+    </div>
 
-    // ===== SPEED DIAL =====
-    function renderSpeedDial() {
-      $speedDial.innerHTML = '';
-      speedDialSites.forEach(site => {
-        const card = document.createElement('button');
-        card.className = 'speed-dial-card flex flex-col items-center gap-2 p-3 rounded-xl';
-        card.style.background = 'var(--surface-color, #1e293b)';
-        card.innerHTML = `
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:${site.color}22;">
-            <i data-lucide="${site.icon}" style="width:20px;height:20px;color:${site.color};"></i>
-          </div>
-          <span class="text-[10px] font-medium truncate w-full text-center" style="color: var(--text-color, #e2e8f0);">${site.name}</span>
-        `;
-        card.addEventListener('click', () => navigate(site.url));
-        $speedDial.appendChild(card);
-      });
-      lucide.createIcons();
-    }
+    <script>
+        // Initialize local storage array
+        let profiles = JSON.parse(localStorage.getItem('cm_profiles')) || [];
 
-    // ===== BOOKMARKS =====
-    function addBookmark() {
-      const tab = tabs.find(t => t.id === activeTabId);
-      if (!tab || tab.isHome) {
-        showToast('Navigate to a page first');
-        return;
-      }
-      if (bookmarks.some(b => b.url === tab.url)) {
-        showToast('Already bookmarked');
-        return;
-      }
-      bookmarks.push({ url: tab.url, title: tab.title });
-      showToast('Bookmark added ✓');
-    }
+        function updateDropdown() {
+            const select = document.getElementById('client-select');
+            select.innerHTML = '<option value="">-- Select a Client --</option>';
+            profiles.forEach((profile, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = profile.name;
+                select.appendChild(option);
+            });
+        }
 
-    function renderBookmarks() {
-      hideAllPanels();
-      $bookmarksPanel.classList.remove('hidden');
-      const empty = document.getElementById('bookmarks-empty');
-      if (bookmarks.length === 0) {
-        $bookmarksList.innerHTML = '';
-        empty.classList.remove('hidden');
-        return;
-      }
-      empty.classList.add('hidden');
-      $bookmarksList.innerHTML = '';
-      bookmarks.forEach((b, i) => {
-        const el = document.createElement('div');
-        el.className = 'flex items-center gap-3 p-3 rounded-xl cursor-pointer';
-        el.style.background = 'var(--surface-color, #1e293b)';
-        el.innerHTML = `
-          <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold" style="background: #fb923c22; color: #fb923c;">${b.title.charAt(0)}</div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium truncate" style="color: var(--text-color, #e2e8f0);">${b.title}</p>
-            <p class="text-xs truncate" style="color: var(--secondary-action-color, #64748b);">${b.url}</p>
-          </div>
-          <button class="nav-btn flex-shrink-0" data-del-bm="${i}" style="color: var(--secondary-action-color, #64748b);"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
-        `;
-        el.addEventListener('click', (e) => {
-          if (e.target.closest('[data-del-bm]')) {
-            bookmarks.splice(i, 1);
-            renderBookmarks();
-            return;
-          }
-          navigate(b.url);
-        });
-        $bookmarksList.appendChild(el);
-      });
-      lucide.createIcons();
-    }
+        function saveProfile() {
+            const name = document.getElementById('profile-name').value;
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
 
-    // ===== HISTORY =====
-    function renderHistory() {
-      hideAllPanels();
-      $historyPanel.classList.remove('hidden');
-      const empty = document.getElementById('history-empty');
-      if (history.length === 0) {
-        $historyList.innerHTML = '';
-        empty.classList.remove('hidden');
-        return;
-      }
-      empty.classList.add('hidden');
-      $historyList.innerHTML = '';
-      history.forEach(h => {
-        const el = document.createElement('div');
-        el.className = 'flex items-center gap-3 p-3 rounded-xl cursor-pointer';
-        el.style.background = 'var(--surface-color, #1e293b)';
-        el.innerHTML = `
-          <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold" style="background: #4ade8022; color: #4ade80;">${h.title.charAt(0)}</div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium truncate" style="color: var(--text-color, #e2e8f0);">${h.title}</p>
-            <p class="text-xs truncate" style="color: var(--secondary-action-color, #64748b);">${h.time} — ${h.url}</p>
-          </div>
-        `;
-        el.addEventListener('click', () => navigate(h.url));
-        $historyList.appendChild(el);
-      });
-      lucide.createIcons();
-    }
-
-    // ===== TAB OVERVIEW =====
-    function showTabOverview() {
-      $tabOverview.classList.remove('hidden');
-      $tabGrid.innerHTML = '';
-      tabs.forEach(tab => {
-        const card = document.createElement('div');
-        card.className = 'rounded-xl overflow-hidden cursor-pointer relative';
-        card.style.background = 'var(--surface-color, #1e293b)';
-        card.innerHTML = `
-          <div class="flex items-center justify-between px-3 py-2">
-            <span class="text-xs font-medium truncate flex-1" style="color: var(--text-color, #e2e8f0);">${tab.title}</span>
-            <button class="ml-1 flex-shrink-0" data-close-tab="${tab.id}" style="color: var(--secondary-action-color, #64748b);"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
-          </div>
-          <div class="h-28 flex items-center justify-center" style="background: var(--bg-color, #0f172a);">
-            ${tab.isHome
-              ? '<i data-lucide="home" style="width:32px;height:32px;color:var(--accent-color, #0ea5e9);"></i>'
-              : `<span class="text-2xl font-bold" style="color:var(--accent-color, #0ea5e9);">${tab.title.charAt(0)}</span>`
+            if (!name || !user || !pass) {
+                alert("Please fill in all fields.");
+                return;
             }
-          </div>
-          ${tab.id === activeTabId ? `<div class="absolute top-0 left-0 right-0 h-0.5" style="background: var(--accent-color, #0ea5e9);"></div>` : ''}
-        `;
-        card.addEventListener('click', (e) => {
-          if (e.target.closest('[data-close-tab]')) {
-            closeTab(tab.id);
-            if (tabs.length > 0) showTabOverview();
-            else $tabOverview.classList.add('hidden');
-            return;
-          }
-          $tabOverview.classList.add('hidden');
-          switchToTab(tab.id);
-        });
-        $tabGrid.appendChild(card);
-      });
-      lucide.createIcons();
-    }
 
-    // ===== TOAST =====
-    function showToast(msg) {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      toast.className = 'toast-msg px-4 py-2 rounded-xl text-sm font-medium mb-2 text-center';
-      toast.style.background = 'var(--surface-color, #1e293b)';
-      toast.style.color = 'var(--text-color, #e2e8f0)';
-      toast.style.boxShadow = '0 4px 16px rgba(0,0,0,0.4)';
-      toast.textContent = msg;
-      container.appendChild(toast);
-      setTimeout(() => toast.remove(), 2200);
-    }
+            // Check if updating existing or adding new
+            const select = document.getElementById('client-select');
+            if (select.value !== "") {
+                profiles[select.value] = { name, user, pass };
+            } else {
+                profiles.push({ name, user, pass });
+            }
 
-    // ===== EVENT LISTENERS =====
-    // URL bar submit
-    $urlInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        navigate($urlInput.value.trim());
-        $urlInput.blur();
-      }
-    });
-    document.getElementById('go-btn').addEventListener('click', () => {
-      navigate($urlInput.value.trim());
-      $urlInput.blur();
-    });
-
-    // Home search
-    $homeSearch.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const q = $homeSearch.value.trim();
-        if (q) navigate(q);
-        $homeSearch.value = '';
-      }
-    });
-
-    // Bottom nav
-    document.getElementById('btn-back').addEventListener('click', goBack);
-    document.getElementById('btn-forward').addEventListener('click', goForward);
-    document.getElementById('btn-home').addEventListener('click', () => {
-      const tab = tabs.find(t => t.id === activeTabId);
-      if (tab) {
-        tab.isHome = true;
-        tab.title = 'New Tab';
-        tab.url = '';
-      }
-      showHome();
-      renderTabs();
-      updateNavButtons();
-    });
-    document.getElementById('btn-tabs').addEventListener('click', showTabOverview);
-    document.getElementById('btn-menu').addEventListener('click', () => $menuOverlay.classList.add('show'));
-
-    // Tab overview buttons
-    document.getElementById('close-tab-overview').addEventListener('click', () => $tabOverview.classList.add('hidden'));
-    document.getElementById('new-tab-overview').addEventListener('click', () => {
-      $tabOverview.classList.add('hidden');
-      createTab();
-    });
-    document.getElementById('new-tab-btn').addEventListener('click', () => createTab());
-
-    // Menu overlay close
-    $menuOverlay.addEventListener('click', (e) => {
-      if (e.target === $menuOverlay) $menuOverlay.classList.remove('show');
-    });
-
-    // Menu actions
-    document.querySelectorAll('[data-action]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const action = btn.dataset.action;
-        $menuOverlay.classList.remove('show');
-        switch (action) {
-          case 'add-bookmark': addBookmark(); break;
-          case 'share':
-            showToast('Link copied to clipboard ✓');
-            break;
-          case 'find': $urlInput.focus(); $urlInput.select(); break;
-          case 'incognito':
-            isIncognito = !isIncognito;
-            showToast(isIncognito ? '🔒 Private mode on' : 'Private mode off');
-            break;
-          case 'autofill':
-            document.getElementById('autofill-modal').classList.remove('hidden');
-            document.getElementById('autofill-username').value = autoFillCredentials.username || '';
-            document.getElementById('autofill-password').value = autoFillCredentials.password || '';
-            document.getElementById('autofill-toggle').checked = autoFillCredentials.enabled || false;
-            break;
-          case 'desktop-mode':
-            desktopMode = !desktopMode;
-            const dt = document.getElementById('desktop-toggle');
-            dt.style.background = desktopMode ? 'var(--accent-color, #0ea5e9)' : 'var(--secondary-action-color, #64748b)';
-            dt.querySelector('div').style.left = desktopMode ? 'auto' : '2px';
-            dt.querySelector('div').style.right = desktopMode ? '2px' : 'auto';
-            showToast(desktopMode ? 'Desktop mode on' : 'Mobile mode');
-            break;
-          case 'dark-mode':
-            darkMode = !darkMode;
-            const config = window.elementSdk ? window.elementSdk.config : defaultConfig;
-            config.theme = darkMode ? 'dark' : 'light';
-            if (window.elementSdk) window.elementSdk.setConfig({ theme: config.theme });
-            applyConfig(config);
-            showToast(darkMode ? '🌙 Dark mode on' : '☀️ Light mode on');
-            break;
-          case 'text-size': showToast('Text size: Normal'); break;
-          case 'settings': showToast('Settings — coming soon'); break;
+            localStorage.setItem('cm_profiles', JSON.stringify(profiles));
+            updateDropdown();
+            alert("Profile saved locally!");
         }
-      });
-    });
 
-    // Quick action buttons
-    document.getElementById('bookmarks-btn').addEventListener('click', renderBookmarks);
-    document.getElementById('history-btn').addEventListener('click', renderHistory);
-    document.getElementById('downloads-btn').addEventListener('click', () => {
-      hideAllPanels();
-      $downloadsPanel.classList.remove('hidden');
-    });
-    document.getElementById('incognito-btn').addEventListener('click', () => {
-      isIncognito = !isIncognito;
-      showToast(isIncognito ? '🔒 Private mode on' : 'Private mode off');
-    });
+        function loadProfile() {
+            const select = document.getElementById('client-select');
+            if (select.value === "") {
+                document.getElementById('profile-name').value = "";
+                document.getElementById('username').value = "";
+                document.getElementById('password').value = "";
+                return;
+            }
+            const profile = profiles[select.value];
+            document.getElementById('profile-name').value = profile.name;
+            document.getElementById('username').value = profile.user;
+            document.getElementById('password').value = profile.pass;
+        }
 
-    // Panel close buttons
-    document.getElementById('close-bookmarks').addEventListener('click', () => {
-      const tab = tabs.find(t => t.id === activeTabId);
-      if (tab && tab.isHome) showHome(); else if (tab) showBrowse(tab);
-    });
-    document.getElementById('close-history').addEventListener('click', () => {
-      const tab = tabs.find(t => t.id === activeTabId);
-      if (tab && tab.isHome) showHome(); else if (tab) showBrowse(tab);
-    });
-    document.getElementById('close-downloads').addEventListener('click', () => {
-      const tab = tabs.find(t => t.id === activeTabId);
-      if (tab && tab.isHome) showHome(); else if (tab) showBrowse(tab);
-    });
-    document.getElementById('clear-history').addEventListener('click', () => {
-      history = [];
-      renderHistory();
-      showToast('History cleared');
-    });
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).value;
+            if (!text) return;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Copied to clipboard!");
+            });
+        }
 
-    // Autofill modal handlers
-    document.getElementById('close-autofill').addEventListener('click', () => {
-      document.getElementById('autofill-modal').classList.add('hidden');
-    });
-    document.getElementById('cancel-autofill').addEventListener('click', () => {
-      document.getElementById('autofill-modal').classList.add('hidden');
-    });
-    document.getElementById('save-autofill').addEventListener('click', () => {
-      autoFillCredentials.username = document.getElementById('autofill-username').value;
-      autoFillCredentials.password = document.getElementById('autofill-password').value;
-      autoFillCredentials.enabled = document.getElementById('autofill-toggle').checked;
-      document.getElementById('autofill-modal').classList.add('hidden');
-      showToast(autoFillCredentials.enabled ? '✓ Autofill enabled for GST' : '✓ Credentials saved');
-    });
-
-    // ===== ELEMENT SDK =====
-    // Light mode colors (off-white)
-    const lightModeConfig = {
-      background_color: '#f8f7f4',
-      surface_color: '#ffffff',
-      text_color: '#1a1a1a',
-      accent_color: '#d97706',
-      secondary_action_color: '#9ca3af'
-    };
-
-    // Dark mode colors (goldish-brown)
-    const darkModeConfig = {
-      background_color: '#1a1410',
-      surface_color: '#2a201a',
-      text_color: '#f5f1ed',
-      accent_color: '#d97706',
-      secondary_action_color: '#9a8875'
-    };
-
-    const defaultConfig = {
-      home_url: 'https://www.gst.gov.in',
-      search_engine_label: 'Google',
-      ...lightModeConfig,
-      font_family: 'Outfit',
-      font_size: 14,
-      theme: 'light' // 'light' or 'dark'
-    };
-
-    function applyConfig(config) {
-      const root = document.getElementById('app');
-      
-      // Determine theme and apply colors
-      const themeConfig = config.theme === 'dark' ? darkModeConfig : lightModeConfig;
-      const bg = config.background_color || themeConfig.background_color;
-      const surface = config.surface_color || themeConfig.surface_color;
-      const text = config.text_color || themeConfig.text_color;
-      const accent = config.accent_color || themeConfig.accent_color;
-      const secondary = config.secondary_action_color || themeConfig.secondary_action_color;
-      const font = config.font_family || defaultConfig.font_family;
-      const fontSize = config.font_size || defaultConfig.font_size;
-
-      root.style.setProperty('--bg-color', bg);
-      root.style.setProperty('--surface-color', surface);
-      root.style.setProperty('--text-color', text);
-      root.style.setProperty('--accent-color', accent);
-      root.style.setProperty('--secondary-action-color', secondary);
-
-      document.body.style.fontFamily = `${font}, Outfit, sans-serif`;
-      document.body.style.fontSize = `${fontSize}px`;
-
-      // Update specific styled elements
-      document.querySelectorAll('.browser-tab.active').forEach(el => el.style.background = surface);
-      document.querySelectorAll('.url-bar').forEach(el => el.style.background = surface);
-      document.querySelectorAll('.speed-dial-card').forEach(el => el.style.background = surface);
-
-      // Bottom nav
-      const nav = document.querySelector('nav');
-      if (nav) { nav.style.background = bg; nav.style.borderColor = surface; }
-
-      // Tab bar
-      const tabBar = document.getElementById('tab-bar');
-      if (tabBar) tabBar.style.background = bg;
-
-      // Update home_url title
-      const title = document.getElementById('app-title');
-      if (title) title.style.color = text;
-
-      // Search engine label
-      const searchLabel = config.search_engine_label || defaultConfig.search_engine_label;
-      if ($homeSearch) $homeSearch.placeholder = `Search with ${searchLabel}...`;
-    }
-
-    if (window.elementSdk) {
-      window.elementSdk.init({
-        defaultConfig,
-        onConfigChange: async (config) => { applyConfig(config); },
-        mapToCapabilities: (config) => ({
-          recolorables: [
-            { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
-            { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
-            { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
-            { get: () => config.accent_color || defaultConfig.accent_color, set: (v) => { config.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } },
-            { get: () => config.secondary_action_color || defaultConfig.secondary_action_color, set: (v) => { config.secondary_action_color = v; window.elementSdk.setConfig({ secondary_action_color: v }); } },
-          ],
-          borderables: [],
-          fontEditable: {
-            get: () => config.font_family || defaultConfig.font_family,
-            set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
-          },
-          fontSizeable: {
-            get: () => config.font_size || defaultConfig.font_size,
-            set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
-          }
-        }),
-        mapToEditPanelValues: (config) => new Map([
-          ['home_url', config.home_url || defaultConfig.home_url],
-          ['search_engine_label', config.search_engine_label || defaultConfig.search_engine_label],
-        ])
-      });
-    }
-
-    // ===== INIT =====
-    renderSpeedDial();
-    createTab();
-    applyConfig(defaultConfig);
-    lucide.createIcons();
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e09b67af41258b2',t:'MTc3NDIyOTg2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+        // Run on load
+        updateDropdown();
+    </script>
+</body>
 </html>
