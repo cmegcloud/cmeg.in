@@ -1,0 +1,21 @@
+/* ACCOUNTREE THEME */
+:root {
+  --brand-primary: #1a3c83;     /* Corporate Navy Blue */
+  --brand-secondary: #0d9821;   /* Growth Green */
+  --brand-dark: #112244;        /* Deep Navy */
+  --brand-accent: #0d9821;      /* Using the green as the action accent */
+  
+  --bg-main: #f4f7fb;
+  --bg-card-light: #ffffff;
+  --text-dark: #2c3e50;
+  --border-color: #dcdde1;
+}
+
+/* Dark Mode Override for ACCOUNTREE */
+body.dark-theme {
+  --bg-main: #0b1120;
+  --bg-card-light: #1e293b;
+  --text-dark: #f1f5f9;
+  --brand-dark: #94a3b8;
+  --border-color: #334155;
+}
