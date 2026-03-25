@@ -9,6 +9,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="./theme-cmeg.css">
+
   <style>
     html, body { height: 100%; }
     /* Mapping brand fonts to closest Google Fonts */
@@ -16,7 +19,7 @@
     .font-body { font-family: 'Jost', sans-serif; } /* Mimicking Futura Medium */
     
     .gradient-text {
-      background: linear-gradient(135deg, #A67C52 0%, #C7CBD1 100%);
+      background: linear-gradient(135deg, var(--color-brand-gold) 0%, var(--color-brand-silver) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -36,12 +39,12 @@
     }
     
     .stat-card {
-      background: #ffffff;
+      background: var(--bg-card-light);
       border: 1px solid rgba(199, 203, 209, 0.3);
     }
     
     .section-divider {
-      background: linear-gradient(90deg, transparent 0%, #A67C52 50%, transparent 100%);
+      background: linear-gradient(90deg, transparent 0%, var(--color-brand-gold) 50%, transparent 100%);
       height: 2px;
     }
     
@@ -67,7 +70,7 @@
     
     /* Custom interlocking geometric pattern inspired by the logo background */
     .pattern-bg {
-      background-color: #ffffff;
+      background-color: var(--bg-card-light);
       background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23A67C52' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     }
     
@@ -75,16 +78,19 @@
       scroll-behavior: smooth;
     }
   </style>
+  
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
             brand: {
-              dark: '#383431', /* Warm dark grey/brown */
-              gray: '#5E6665', /* Brand kit grey */
-              gold: '#A67C52', /* Brand kit gold */
-              silver: '#C7CBD1' /* Brand kit silver */
+              dark: 'var(--color-brand-dark)', 
+              gray: 'var(--color-brand-gray)', 
+              gold: 'var(--color-brand-gold)', 
+              silver: 'var(--color-brand-silver)',
+              primary: 'var(--brand-primary)',
+              accent: 'var(--brand-accent)'
             }
           }
         }
