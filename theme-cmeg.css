@@ -1,10 +1,16 @@
 /* CM EXPERTS GROUP (CMEG) THEME */
 :root {
-  --brand-primary: #a76e00;     /* Golden Brown */
-  --brand-secondary: #a67c52;   /* Muted Bronze */
-  --brand-dark: #5e6665;        /* Slate Grey */
-  --brand-accent: #e63946;      /* Highlight Red */
+  /* Core Brand Colors (Used by Tailwind) */
+  --color-brand-dark: #383431;     /* Warm dark grey/brown */
+  --color-brand-gray: #5E6665;     /* Slate Grey */
+  --color-brand-gold: #A67C52;     /* Muted Bronze / Gold */
+  --color-brand-silver: #C7CBD1;   /* Brand kit silver */
   
+  /* Additional Theme Colors */
+  --brand-primary: #a76e00;        /* Golden Brown */
+  --brand-accent: #e63946;         /* Highlight Red */
+  
+  /* Background & Structural Colors */
   --bg-main: #f9f9fb;
   --bg-card-light: #ffffff;
   --text-dark: #333333;
@@ -13,9 +19,11 @@
 
 /* Dark Mode Override for CMEG */
 body.dark-theme {
+  --color-brand-dark: #f5f5f5;
+  --color-brand-gray: #a0a0a0;
+  
   --bg-main: #121212;
   --bg-card-light: #1e1e1e;
   --text-dark: #f5f5f5;
-  --brand-dark: #a0a0a0;
   --border-color: #2a2a2a;
 }
