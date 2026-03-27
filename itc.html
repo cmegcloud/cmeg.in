@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Income Tax Compliance Portal | CM Tax Experts</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="theme-cmte.css">
 </head>
 <body>
 
@@ -71,7 +71,6 @@
                 </div>
 
                 <button type="submit" class="btn-primary">Submit Details</button>
-                <p class="helper-text">Target Sheet: 1iK-37xwChMgbxyTHvVtq9gLrWZLg5p5_TaifnErFu6A</p>
             </form>
         </section>
 
@@ -84,7 +83,6 @@
                     <input type="file" id="clientDocs" name="clientDocs" multiple required>
                 </div>
                 <button type="submit" class="btn-secondary">Upload to Vault</button>
-                <p class="helper-text">Target Drive Folder: 1kpZlbmB20O9nNKM9IgedLvOUIaKYVYMm</p>
             </form>
         </section>
 
@@ -104,5 +102,101 @@
         <p>&copy; 2026 CM Tax Experts. All Rights Reserved.</p>
     </footer>
 
+    <script>
+        // REPLACE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+        const WEB_APP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+        // --- 1. Handle Client Details Form ---
+        document.getElementById('itr-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = "Submitting...";
+            btn.disabled = true;
+
+            const checkboxes = document.querySelectorAll('input[name="incomeSource"]:checked');
+            let incomeSources = [];
+            checkboxes.forEach((cb) => incomeSources.push(cb.value));
+
+            const payload = {
+                action: "saveClient",
+                data: {
+                    ay: document.getElementById('ay').value,
+                    pan: document.getElementById('pan').value,
+                    aadhaar: document.getElementById('aadhaar').value,
+                    fullName: document.getElementById('fullName').value,
+                    mobile: document.getElementById('mobile').value,
+                    email: document.getElementById('email').value,
+                    incomeSources: incomeSources.join(", ")
+                }
+            };
+
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                alert("Client details submitted successfully!");
+                e.target.reset();
+            } catch (error) {
+                alert("Error submitting details. Check console for details.");
+                console.error(error);
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // --- 2. Handle File Uploads ---
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const fileInput = document.getElementById('clientDocs');
+            
+            if (fileInput.files.length === 0) {
+                alert("Please select a file to upload.");
+                return;
+            }
+
+            const originalText = btn.innerText;
+            btn.innerText = "Uploading...";
+            btn.disabled = true;
+
+            try {
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    let file = fileInput.files[i];
+                    let base64 = await toBase64(file);
+                    
+                    let payload = {
+                        action: "uploadFile",
+                        filename: file.name,
+                        mimeType: file.type,
+                        base64: base64.split("base64,")[1]
+                    };
+
+                    await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                }
+                alert("All files uploaded securely to the CM Vault!");
+                e.target.reset();
+            } catch (error) {
+                alert("Error uploading files. Check console for details.");
+                console.error(error);
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // Helper function to convert file to Base64
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    </script>
 </body>
 </html>
