@@ -107,12 +107,42 @@
         </div>
      </div>
 
+     <div id="insertModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-gray-900 rounded-lg shadow-2xl w-full max-w-lg" style="background:#1c2128;border:1px solid #21262d;">
+         <div class="flex items-center justify-between px-6 py-4 border-b" style="border-color:#21262d;">
+          <h2 class="text-lg font-semibold" style="color:#e6edf3;">Insert HTML Snippet</h2>
+          <button id="closeInsertModal" class="p-1 hover:bg-gray-800 rounded transition" style="background:#21262d;color:#c9d1d9;"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
+         </div>
+         <div class="p-6 grid grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+           <button class="insert-item p-4 text-left rounded-lg border transition" style="background:#0d1117;border-color:#21262d;" onmouseover="this.style.borderColor='#58a6ff'" onmouseout="this.style.borderColor='#21262d'" data-snippet="<button style='padding:8px 16px; background:#3182ce; color:white; border:none; border-radius:4px; cursor:pointer;'>Click Me</button>">
+              <div class="font-semibold text-sm" style="color:#e6edf3;">Button</div>
+              <div class="text-xs mt-1" style="color:#8b949e;">A standard styled button</div>
+           </button>
+           <button class="insert-item p-4 text-left rounded-lg border transition" style="background:#0d1117;border-color:#21262d;" onmouseover="this.style.borderColor='#58a6ff'" onmouseout="this.style.borderColor='#21262d'" data-snippet="<div style='padding:20px; background:white; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.1); color:black;'>\n  <h3 style='margin-top:0;'>Card Title</h3>\n  <p>Your content goes here.</p>\n</div>">
+              <div class="font-semibold text-sm" style="color:#e6edf3;">Card</div>
+              <div class="text-xs mt-1" style="color:#8b949e;">White box with shadow</div>
+           </button>
+           <button class="insert-item p-4 text-left rounded-lg border transition" style="background:#0d1117;border-color:#21262d;" onmouseover="this.style.borderColor='#58a6ff'" onmouseout="this.style.borderColor='#21262d'" data-snippet="<input type='text' placeholder='Enter value...' style='padding:8px 12px; border:1px solid #ccc; border-radius:4px; width:100%; max-width:250px;'>">
+              <div class="font-semibold text-sm" style="color:#e6edf3;">Input Field</div>
+              <div class="text-xs mt-1" style="color:#8b949e;">Text entry box</div>
+           </button>
+           <button class="insert-item p-4 text-left rounded-lg border transition" style="background:#0d1117;border-color:#21262d;" onmouseover="this.style.borderColor='#58a6ff'" onmouseout="this.style.borderColor='#21262d'" data-snippet="<img src='https://via.placeholder.com/300x150' alt='Placeholder' style='border-radius:8px; max-width:100%;'>">
+              <div class="font-semibold text-sm" style="color:#e6edf3;">Image</div>
+              <div class="text-xs mt-1" style="color:#8b949e;">Placeholder graphic</div>
+           </button>
+         </div>
+        </div>
+     </div>
+
      <h1 id="appTitle" class="text-sm font-semibold" style="color:#e6edf3;">HTML Dev App</h1>
     </div>
     
     <div class="flex items-center gap-1">
      <button id="btnNew" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#238636;color:#fff;" title="New blank file"> <i data-lucide="file-plus" style="width:14px;height:14px;"></i> New </button> 
      <button id="btnTemplate" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#21262d;color:#c9d1d9;" title="Starter template"> <i data-lucide="layout-template" style="width:14px;height:14px;"></i> Template </button> 
+     
+     <button id="btnInsert" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#a371f7;color:#fff;" title="Insert Elements"> <i data-lucide="plus-circle" style="width:14px;height:14px;"></i> Insert </button> 
+
      <button id="btnGas" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#21262d;color:#10b981;" title="Generate Apps Script Boilerplate"> <i data-lucide="server" style="width:14px;height:14px;"></i> GAS Deploy </button> 
      <button id="btnDownload" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#21262d;color:#c9d1d9;" title="Download HTML File"> <i data-lucide="download" style="width:14px;height:14px;"></i> Download </button> 
      <button id="btnRun" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#58a6ff;color:#0f1117;" title="Run code"> <i data-lucide="play" style="width:14px;height:14px;"></i> Run </button> 
@@ -179,12 +209,14 @@
     body {
       font-family: system-ui, sans-serif;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
       margin: 0;
       background: #f0f4f8;
       color: #1a202c;
+      gap: 20px;
     }
     .card {
       background: white;
@@ -225,11 +257,9 @@
       doc.write(code);
       doc.close();
 
-      // Feature: Direct Edit in View Initialization
       setTimeout(() => {
         if(!doc || !doc.body) return;
 
-        // Hover outline effect
         doc.body.addEventListener('mouseover', function(e) {
             if (e.target !== doc.body && e.target !== doc.documentElement) {
                 e.target.dataset.originalOutline = e.target.style.outline;
@@ -244,7 +274,6 @@
             }
         });
 
-        // Click to edit
         doc.body.addEventListener('click', function(e) {
           e.preventDefault();
           e.stopPropagation();
@@ -264,7 +293,6 @@
       charCount.textContent = `${editor.value.length} chars`;
     }
 
-    // Tab support
     editor.addEventListener('keydown', (e) => {
       if (e.key === 'Tab') {
         e.preventDefault();
@@ -305,7 +333,6 @@
       showToast('Template loaded');
     });
 
-    // Feature: Download HTML
     document.getElementById('btnDownload').addEventListener('click', () => {
       if (!editor.value) { showToast('No code to download', true); return; }
       const blob = new Blob([editor.value], { type: 'text/html' });
@@ -320,7 +347,6 @@
       showToast('HTML Downloaded!');
     });
 
-    // Feature: Generate GAS Script Modal
     document.getElementById('btnGas').addEventListener('click', () => {
       document.getElementById('gasModal').classList.remove('hidden');
     });
@@ -334,6 +360,34 @@
       navigator.clipboard.writeText(code).then(() => {
           showToast('Code.gs copied!');
           document.getElementById('gasModal').classList.add('hidden');
+      });
+    });
+
+    // --- NEW: Insert Snippet Logic ---
+    document.getElementById('btnInsert').addEventListener('click', () => {
+      document.getElementById('insertModal').classList.remove('hidden');
+    });
+
+    document.getElementById('closeInsertModal').addEventListener('click', () => {
+      document.getElementById('insertModal').classList.add('hidden');
+    });
+
+    document.querySelectorAll('.insert-item').forEach(btn => {
+      btn.addEventListener('click', function() {
+         const snippet = this.getAttribute('data-snippet');
+         
+         // Insert at cursor
+         const start = editor.selectionStart;
+         const end = editor.selectionEnd;
+         editor.value = editor.value.substring(0, start) + snippet + '\n' + editor.value.substring(end);
+         
+         // Move cursor to end of snippet
+         editor.selectionStart = editor.selectionEnd = start + snippet.length + 1;
+         
+         handleInput();
+         document.getElementById('insertModal').classList.add('hidden');
+         showToast('Element inserted!');
+         editor.focus();
       });
     });
 
@@ -357,7 +411,7 @@
       document.getElementById('noElements').style.display = 'none';
 
       elements.forEach((el) => {
-        if (el.offsetParent === null) return; // Skip hidden
+        if (el.offsetParent === null) return; 
         const tagName = el.tagName.toLowerCase();
         let displayText = el.textContent.trim().substring(0, 45);
         if (displayText.length === 45) displayText += '...';
@@ -405,21 +459,17 @@
       return '#' + [r, g, b].map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
     }
 
-    // Apply Edits -> Sync View AND Source Code
     document.getElementById('btnApplyEdit').addEventListener('click', () => {
       if (!currentEditElement) return;
       
-      // Update DOM
       currentEditElement.innerHTML = document.getElementById('editText').value;
       currentEditElement.style.color = document.getElementById('editTextColor').value;
       currentEditElement.style.backgroundColor = document.getElementById('editBgColor').value;
       currentEditElement.style.fontSize = document.getElementById('editFontSize').value + 'px';
-      currentEditElement.style.outline = ''; // clean up hover effect
+      currentEditElement.style.outline = ''; 
       delete currentEditElement.dataset.originalOutline;
 
-      // Sync DOM back to editor
       const doc = previewFrame.contentDocument;
-      // We grab outerHTML to ensure we keep the whole document structure
       const newSource = "<!DOCTYPE html>\n<html>\n" + doc.documentElement.innerHTML + "\n</html>";
       editor.value = newSource;
       updateCharCount();
@@ -432,7 +482,6 @@
       if (!currentEditElement) return;
       currentEditElement.remove();
       
-      // Sync DOM back to editor
       const doc = previewFrame.contentDocument;
       editor.value = "<!DOCTYPE html>\n<html>\n" + doc.documentElement.innerHTML + "\n</html>";
       updateCharCount();
@@ -465,8 +514,6 @@
       splitter.classList.add('dragging');
       document.body.style.cursor = 'col-resize';
       document.body.style.userSelect = 'none';
-      
-      // Prevent iframe from intercepting mouse movements while dragging
       previewFrame.style.pointerEvents = 'none'; 
       e.preventDefault();
     });
@@ -485,7 +532,7 @@
         splitter.classList.remove('dragging');
         document.body.style.cursor = '';
         document.body.style.userSelect = '';
-        previewFrame.style.pointerEvents = 'auto'; // Re-enable iframe clicks
+        previewFrame.style.pointerEvents = 'auto'; 
       }
     });
 
