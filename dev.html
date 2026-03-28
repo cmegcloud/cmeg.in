@@ -3,10 +3,9 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HTML Playground</title>
+  <title>HTML Dev App</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,7 +17,7 @@
     }
     .editor-area:focus { outline: none; }
     .tab-btn { transition: all 0.2s ease; }
-    .tab-btn.active { border-bottom: 2px solid; }
+    .tab-btn:hover { filter: brightness(1.1); }
     .toast-msg {
       animation: slideUp 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
     }
@@ -27,171 +26,155 @@
     .split-handle { cursor: col-resize; user-select: none; }
     .split-handle:hover, .split-handle.dragging { background: var(--accent) !important; }
   </style>
-  <style>body { box-sizing: border-box; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full overflow-hidden">
   <div id="app" class="h-full w-full flex flex-col" style="background:#0f1117; color:#c9d1d9; font-family:'Outfit',sans-serif;">
-   <!-- Header -->
+   
    <header class="flex items-center justify-between px-4 py-2 border-b" style="border-color:#21262d; background:#161b22;">
     <div class="flex items-center gap-2">
      <div class="w-7 h-7 rounded-md flex items-center justify-center" style="background:#58a6ff;">
       <i data-lucide="code-2" style="width:16px;height:16px;color:#0f1117;"></i>
-     </div><!-- Settings Modal -->
+     </div>
+
      <div id="settingsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden flex items-center justify-center p-4">
       <div class="bg-gray-900 rounded-lg shadow-2xl max-w-2xl w-full max-h-96 overflow-y-auto" style="background:#1c2128;border:1px solid #21262d;">
        <div class="flex items-center justify-between px-6 py-4 border-b" style="border-color:#21262d;">
-        <h2 class="text-lg font-semibold" style="color:#e6edf3;">HTML Elements Inspector</h2><button id="closeSettings" class="p-1 hover:bg-gray-800 rounded transition" style="background:#21262d;color:#c9d1d9;"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
+        <h2 class="text-lg font-semibold" style="color:#e6edf3;">HTML Elements Inspector</h2>
+        <button id="closeSettings" class="p-1 hover:bg-gray-800 rounded transition" style="background:#21262d;color:#c9d1d9;"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
        </div>
        <div id="inspectorContent" class="p-6" style="color:#c9d1d9;">
-        <div id="elementsList" class="space-y-3"><!-- Elements will be populated here -->
-        </div>
+        <div id="elementsList" class="space-y-3"></div>
         <div id="noElements" class="text-center py-8" style="color:#8b949e;">
          <p class="text-sm">No elements found. Run your HTML first to inspect elements.</p>
         </div>
        </div>
       </div>
-     </div><!-- Edit Element Modal -->
+     </div>
+
      <div id="editModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="bg-gray-900 rounded-lg shadow-2xl w-full max-w-md" style="background:#1c2128;border:1px solid #21262d;">
        <div class="flex items-center justify-between px-6 py-4 border-b" style="border-color:#21262d;">
-        <h2 class="text-lg font-semibold" style="color:#e6edf3;">Edit Element</h2><button id="closeEditModal" class="p-1 hover:bg-gray-800 rounded transition" style="background:#21262d;color:#c9d1d9;"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
+        <h2 class="text-lg font-semibold" style="color:#e6edf3;">Edit Element</h2>
+        <button id="closeEditModal" class="p-1 hover:bg-gray-800 rounded transition" style="background:#21262d;color:#c9d1d9;"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
        </div>
        <div class="p-6 space-y-4">
-        <div><label class="block text-xs font-medium mb-2" style="color:#8b949e;">Element Type</label> <input id="editType" type="text" readonly class="w-full px-3 py-2 rounded text-sm" style="background:#0d1117;border:1px solid #21262d;color:#c9d1d9;">
+        <div>
+            <label class="block text-xs font-medium mb-2" style="color:#8b949e;">Element Type</label> 
+            <input id="editType" type="text" readonly class="w-full px-3 py-2 rounded text-sm" style="background:#0d1117;border:1px solid #21262d;color:#c9d1d9;">
         </div>
-        <div><label class="block text-xs font-medium mb-2" style="color:#8b949e;">Text Content</label> <textarea id="editText" class="w-full px-3 py-2 rounded text-sm" style="background:#0d1117;border:1px solid #21262d;color:#c9d1d9;min-height:80px;font-family:'JetBrains Mono',monospace;"></textarea>
+        <div>
+            <label class="block text-xs font-medium mb-2" style="color:#8b949e;">Text Content</label> 
+            <textarea id="editText" class="w-full px-3 py-2 rounded text-sm" style="background:#0d1117;border:1px solid #21262d;color:#c9d1d9;min-height:80px;font-family:'JetBrains Mono',monospace;"></textarea>
         </div>
         <div class="grid grid-cols-2 gap-3">
-         <div><label class="block text-xs font-medium mb-2" style="color:#8b949e;">Text Color</label> <input id="editTextColor" type="color" class="w-full h-10 rounded cursor-pointer">
+         <div>
+            <label class="block text-xs font-medium mb-2" style="color:#8b949e;">Text Color</label> 
+            <input id="editTextColor" type="color" class="w-full h-10 rounded cursor-pointer">
          </div>
-         <div><label class="block text-xs font-medium mb-2" style="color:#8b949e;">Background Color</label> <input id="editBgColor" type="color" class="w-full h-10 rounded cursor-pointer">
+         <div>
+            <label class="block text-xs font-medium mb-2" style="color:#8b949e;">Background Color</label> 
+            <input id="editBgColor" type="color" class="w-full h-10 rounded cursor-pointer">
          </div>
         </div>
-        <div><label class="block text-xs font-medium mb-2" style="color:#8b949e;">Font Size (px)</label> <input id="editFontSize" type="number" class="w-full px-3 py-2 rounded text-sm" style="background:#0d1117;border:1px solid #21262d;color:#c9d1d9;" min="8" max="72">
+        <div>
+            <label class="block text-xs font-medium mb-2" style="color:#8b949e;">Font Size (px)</label> 
+            <input id="editFontSize" type="number" class="w-full px-3 py-2 rounded text-sm" style="background:#0d1117;border:1px solid #21262d;color:#c9d1d9;" min="8" max="72">
         </div>
-        <div class="flex gap-2 pt-4"><button id="btnApplyEdit" class="flex-1 px-4 py-2 rounded text-sm font-medium text-white" style="background:#238636;">Apply</button> <button id="btnDeleteElement" class="flex-1 px-4 py-2 rounded text-sm font-medium text-white" style="background:#da3633;">Delete</button>
+        <div class="flex gap-2 pt-4">
+            <button id="btnApplyEdit" class="flex-1 px-4 py-2 rounded text-sm font-medium text-white" style="background:#238636;">Apply to View & Code</button> 
+            <button id="btnDeleteElement" class="flex-1 px-4 py-2 rounded text-sm font-medium text-white" style="background:#da3633;">Delete</button>
         </div>
        </div>
       </div>
      </div>
-     <h1 id="appTitle" class="text-sm font-semibold" style="color:#e6edf3;">HTML Playground</h1>
+
+     <div id="gasModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-gray-900 rounded-lg shadow-2xl w-full max-w-lg" style="background:#1c2128;border:1px solid #21262d;">
+         <div class="flex items-center justify-between px-6 py-4 border-b" style="border-color:#21262d;">
+          <h2 class="text-lg font-semibold" style="color:#e6edf3;">Google Apps Script Web App</h2>
+          <button id="closeGasModal" class="p-1 hover:bg-gray-800 rounded transition" style="background:#21262d;color:#c9d1d9;"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
+         </div>
+         <div class="p-6 space-y-4">
+          <p class="text-sm" style="color:#8b949e;">Use this <b>Code.gs</b> to deploy your HTML as a Web App. Ensure your code is saved as <b>Index.html</b> in the script editor.</p>
+          <textarea id="gasCodeText" readonly class="w-full px-3 py-3 rounded text-sm font-mono" style="background:#0d1117;border:1px solid #21262d;color:#58a6ff;min-height:140px;">function doGet() {
+  return HtmlService.createHtmlOutputFromFile('Index')
+    .setTitle('CM Biz System')
+    .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}</textarea>
+          <button id="btnCopyGas" class="w-full px-4 py-2 rounded text-sm font-medium" style="background:#58a6ff;color:#0f1117;">Copy Code.gs</button>
+         </div>
+        </div>
+     </div>
+
+     <h1 id="appTitle" class="text-sm font-semibold" style="color:#e6edf3;">HTML Dev App</h1>
     </div>
+    
     <div class="flex items-center gap-1">
-     <button id="btnNew" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#238636;color:#fff;" title="New blank file"> <i data-lucide="file-plus" style="width:14px;height:14px;"></i> New </button> <button id="btnTemplate" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#21262d;color:#c9d1d9;" title="Starter template"> <i data-lucide="layout-template" style="width:14px;height:14px;"></i> Template </button> <button id="btnCopy" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#21262d;color:#c9d1d9;" title="Copy code"> <i data-lucide="copy" style="width:14px;height:14px;"></i> Copy </button> <button id="btnRun" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#58a6ff;color:#0f1117;" title="Run code"> <i data-lucide="play" style="width:14px;height:14px;"></i> Run </button> <button id="btnSettings" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#21262d;color:#c9d1d9;" title="View options"> <i data-lucide="settings" style="width:14px;height:14px;"></i> Options </button>
+     <button id="btnNew" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#238636;color:#fff;" title="New blank file"> <i data-lucide="file-plus" style="width:14px;height:14px;"></i> New </button> 
+     <button id="btnTemplate" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#21262d;color:#c9d1d9;" title="Starter template"> <i data-lucide="layout-template" style="width:14px;height:14px;"></i> Template </button> 
+     <button id="btnGas" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#21262d;color:#10b981;" title="Generate Apps Script Boilerplate"> <i data-lucide="server" style="width:14px;height:14px;"></i> GAS Deploy </button> 
+     <button id="btnDownload" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#21262d;color:#c9d1d9;" title="Download HTML File"> <i data-lucide="download" style="width:14px;height:14px;"></i> Download </button> 
+     <button id="btnRun" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#58a6ff;color:#0f1117;" title="Run code"> <i data-lucide="play" style="width:14px;height:14px;"></i> Run </button> 
+     <button id="btnSettings" class="tab-btn flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium" style="background:#21262d;color:#c9d1d9;" title="View options"> <i data-lucide="list-tree" style="width:14px;height:14px;"></i> Inspector </button>
     </div>
-   </header><!-- Main -->
+   </header>
+
    <div id="mainArea" class="flex flex-1 overflow-hidden" style="min-height:0;">
-    <!-- Editor Panel -->
     <div id="editorPanel" class="flex flex-col overflow-hidden" style="width:50%;min-width:200px;">
      <div class="flex items-center px-3 py-1.5 text-xs gap-3" style="background:#161b22;border-bottom:1px solid #21262d;color:#8b949e;">
-      <span class="flex items-center gap-1"><i data-lucide="file-code" style="width:12px;height:12px;"></i> index.html</span> <span id="charCount" class="ml-auto">0 chars</span>
+      <span class="flex items-center gap-1"><i data-lucide="file-code" style="width:12px;height:12px;"></i> index.html</span> 
+      <span id="charCount" class="ml-auto">0 chars</span>
      </div>
      <div class="flex-1 overflow-hidden relative">
       <textarea id="codeEditor" class="editor-area w-full h-full p-4 text-sm" style="background:#0d1117;color:#e6edf3;border:none;" spellcheck="false" placeholder="Paste or type your HTML here..."></textarea>
      </div>
-    </div><!-- Splitter -->
-    <div id="splitter" class="split-handle flex-shrink-0" style="width:5px;background:#21262d;"></div><!-- Preview Panel -->
+    </div>
+
+    <div id="splitter" class="split-handle flex-shrink-0 hover:bg-blue-500 transition-colors" style="width:5px;background:#21262d;"></div>
+    
     <div id="previewPanel" class="flex flex-col overflow-hidden" style="flex:1;min-width:200px;">
-     <div class="flex items-center px-3 py-1.5 text-xs" style="background:#161b22;border-bottom:1px solid #21262d;color:#8b949e;">
-      <span class="flex items-center gap-1"><i data-lucide="eye" style="width:12px;height:12px;"></i> Preview</span> <label class="ml-auto flex items-center gap-1 cursor-pointer"> <input type="checkbox" id="autoRun" checked class="accent-blue-500"> Auto-run </label>
+     <div class="flex items-center justify-between px-3 py-1.5 text-xs" style="background:#161b22;border-bottom:1px solid #21262d;color:#8b949e;">
+      <span class="flex items-center gap-1"><i data-lucide="eye" style="width:12px;height:12px;"></i> Live View (Click elements to edit)</span> 
+      <label class="flex items-center gap-1 cursor-pointer"> 
+          <input type="checkbox" id="autoRun" checked class="accent-blue-500"> Auto-run 
+      </label>
      </div>
      <div class="flex-1 overflow-hidden" style="background:#fff;">
-      <iframe id="previewFrame" class="w-full h-full border-0" sandbox="allow-scripts allow-same-origin"></iframe>
+      <iframe id="previewFrame" class="w-full h-full border-0" sandbox="allow-scripts allow-same-origin allow-modals"></iframe>
      </div>
     </div>
-   </div><!-- Toast container -->
+   </div>
+
    <div id="toastContainer" class="fixed bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-50 pointer-events-none"></div>
   </div>
+
   <script>
-    // --- Config & SDK ---
-    const defaultConfig = {
-      app_title: 'HTML Playground',
-      background_color: '#0f1117',
-      surface_color: '#161b22',
-      text_color: '#c9d1d9',
-      primary_action_color: '#58a6ff',
-      secondary_action_color: '#238636',
-      font_family: 'Outfit',
-      font_size: 14
-    };
-
-    function applyConfig(c) {
-      const app = document.getElementById('app');
-      app.style.background = c.background_color || defaultConfig.background_color;
-      app.style.color = c.text_color || defaultConfig.text_color;
-      app.style.fontFamily = `${c.font_family || defaultConfig.font_family}, sans-serif`;
-
-      document.getElementById('appTitle').textContent = c.app_title || defaultConfig.app_title;
-
-      document.querySelectorAll('header, [data-surface]').forEach(el => {
-        el.style.background = c.surface_color || defaultConfig.surface_color;
-      });
-      const header = document.querySelector('header');
-      if (header) header.style.background = c.surface_color || defaultConfig.surface_color;
-
-      const btnRun = document.getElementById('btnRun');
-      btnRun.style.background = c.primary_action_color || defaultConfig.primary_action_color;
-
-      const btnNew = document.getElementById('btnNew');
-      btnNew.style.background = c.secondary_action_color || defaultConfig.secondary_action_color;
-
-      const baseSize = c.font_size || defaultConfig.font_size;
-      document.getElementById('codeEditor').style.fontSize = `${baseSize}px`;
-    }
-
-    if (window.elementSdk) {
-      window.elementSdk.init({
-        defaultConfig,
-        onConfigChange: async (config) => applyConfig(config),
-        mapToCapabilities: (config) => ({
-          recolorables: [
-            { get: () => config.background_color || defaultConfig.background_color, set: v => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
-            { get: () => config.surface_color || defaultConfig.surface_color, set: v => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
-            { get: () => config.text_color || defaultConfig.text_color, set: v => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
-            { get: () => config.primary_action_color || defaultConfig.primary_action_color, set: v => { config.primary_action_color = v; window.elementSdk.setConfig({ primary_action_color: v }); } },
-            { get: () => config.secondary_action_color || defaultConfig.secondary_action_color, set: v => { config.secondary_action_color = v; window.elementSdk.setConfig({ secondary_action_color: v }); } }
-          ],
-          borderables: [],
-          fontEditable: {
-            get: () => config.font_family || defaultConfig.font_family,
-            set: v => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
-          },
-          fontSizeable: {
-            get: () => config.font_size || defaultConfig.font_size,
-            set: v => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
-          }
-        }),
-        mapToEditPanelValues: (config) => new Map([
-          ['app_title', config.app_title || defaultConfig.app_title]
-        ])
-      });
-    }
-
-    // --- Toast ---
-    function showToast(msg) {
+    // --- Toast Logic ---
+    function showToast(msg, isError = false) {
       const container = document.getElementById('toastContainer');
       const t = document.createElement('div');
-      t.className = 'toast-msg px-4 py-2 rounded-lg text-xs font-medium';
-      t.style.cssText = 'background:#238636;color:#fff;';
+      t.className = 'toast-msg px-4 py-2 rounded-lg text-xs font-medium shadow-lg';
+      t.style.cssText = isError ? 'background:#da3633;color:#fff;' : 'background:#238636;color:#fff;';
       t.textContent = msg;
       container.appendChild(t);
       setTimeout(() => t.remove(), 2100);
     }
 
-    // --- Editor Logic ---
+    // --- Editor & Preview Logic ---
     const editor = document.getElementById('codeEditor');
     const previewFrame = document.getElementById('previewFrame');
     const charCount = document.getElementById('charCount');
     const autoRunCb = document.getElementById('autoRun');
     let debounceTimer;
+    let currentEditElement = null;
 
     const starterTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Page</title>
+  <title>CM Biz Workspace</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -205,19 +188,32 @@
     }
     .card {
       background: white;
-      padding: 2rem 3rem;
+      padding: 2.5rem;
       border-radius: 1rem;
       box-shadow: 0 4px 24px rgba(0,0,0,0.08);
       text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s;
     }
-    h1 { margin: 0 0 0.5rem; }
+    .card:hover { transform: translateY(-2px); }
+    h1 { margin: 0 0 0.5rem; color: #2d3748; }
     p { color: #718096; }
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1.5rem;
+      background: #3182ce;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>Hello World 👋</h1>
-    <p>Start editing to see your changes live!</p>
+    <h1>Welcome to CM Biz App</h1>
+    <p>Click me directly in the preview to edit!</p>
+    <button>Get Started</button>
   </div>
 </body>
 </html>`;
@@ -228,13 +224,47 @@
       doc.open();
       doc.write(code);
       doc.close();
+
+      // Feature: Direct Edit in View Initialization
+      setTimeout(() => {
+        if(!doc || !doc.body) return;
+
+        // Hover outline effect
+        doc.body.addEventListener('mouseover', function(e) {
+            if (e.target !== doc.body && e.target !== doc.documentElement) {
+                e.target.dataset.originalOutline = e.target.style.outline;
+                e.target.style.outline = '2px dashed #58a6ff';
+                e.target.style.cursor = 'pointer';
+            }
+        });
+
+        doc.body.addEventListener('mouseout', function(e) {
+            if (e.target !== doc.body && e.target !== doc.documentElement) {
+                e.target.style.outline = e.target.dataset.originalOutline || '';
+            }
+        });
+
+        // Click to edit
+        doc.body.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const el = e.target;
+          if (el === doc.body || el === doc.documentElement) return;
+
+          currentEditElement = el;
+          const tagName = el.tagName.toLowerCase();
+          const computed = previewFrame.contentWindow.getComputedStyle(el);
+          
+          openEditModal(el, tagName, computed.color, computed.backgroundColor, computed.fontSize);
+        });
+      }, 50);
     }
 
     function updateCharCount() {
       charCount.textContent = `${editor.value.length} chars`;
     }
 
-    // Tab key support
+    // Tab support
     editor.addEventListener('keydown', (e) => {
       if (e.key === 'Tab') {
         e.preventDefault();
@@ -256,6 +286,7 @@
 
     editor.addEventListener('input', handleInput);
 
+    // Header Button Listeners
     document.getElementById('btnRun').addEventListener('click', () => { runCode(); showToast('Running!'); });
 
     document.getElementById('btnNew').addEventListener('click', () => {
@@ -274,19 +305,39 @@
       showToast('Template loaded');
     });
 
-    document.getElementById('btnCopy').addEventListener('click', () => {
-      if (!editor.value) return;
-      navigator.clipboard.writeText(editor.value).then(() => showToast('Copied!')).catch(() => {
-        // fallback
-        editor.select();
-        document.execCommand('copy');
-        showToast('Copied!');
+    // Feature: Download HTML
+    document.getElementById('btnDownload').addEventListener('click', () => {
+      if (!editor.value) { showToast('No code to download', true); return; }
+      const blob = new Blob([editor.value], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'index.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('HTML Downloaded!');
+    });
+
+    // Feature: Generate GAS Script Modal
+    document.getElementById('btnGas').addEventListener('click', () => {
+      document.getElementById('gasModal').classList.remove('hidden');
+    });
+    
+    document.getElementById('closeGasModal').addEventListener('click', () => {
+      document.getElementById('gasModal').classList.add('hidden');
+    });
+
+    document.getElementById('btnCopyGas').addEventListener('click', () => {
+      const code = document.getElementById('gasCodeText').value;
+      navigator.clipboard.writeText(code).then(() => {
+          showToast('Code.gs copied!');
+          document.getElementById('gasModal').classList.add('hidden');
       });
     });
 
-    // --- Element Inspector ---
-    let currentEditElement = null;
-
+    // --- Element Inspector & Editing ---
     function inspectElements() {
       const doc = previewFrame.contentDocument;
       if (!doc || !doc.body) {
@@ -303,22 +354,15 @@
         document.getElementById('noElements').style.display = 'block';
         return;
       }
-
       document.getElementById('noElements').style.display = 'none';
 
-      elements.forEach((el, idx) => {
-        const isVisible = el.offsetParent !== null;
-        if (!isVisible) return;
-
+      elements.forEach((el) => {
+        if (el.offsetParent === null) return; // Skip hidden
         const tagName = el.tagName.toLowerCase();
-        let displayText = el.textContent.substring(0, 50);
-        if (displayText.length === 50) displayText += '...';
+        let displayText = el.textContent.trim().substring(0, 45);
+        if (displayText.length === 45) displayText += '...';
         
         const computed = window.getComputedStyle(el);
-        const textColor = computed.color;
-        const bgColor = computed.backgroundColor;
-        const fontSize = computed.fontSize;
-
         const item = document.createElement('div');
         item.className = 'p-3 rounded border cursor-pointer hover:border-blue-400 transition';
         item.style.cssText = `background:#0d1117;border:1px solid #21262d;`;
@@ -327,33 +371,17 @@
           <div class="flex items-start justify-between mb-2">
             <div>
               <div class="font-mono text-xs font-semibold" style="color:#58a6ff;">&lt;${tagName}&gt;</div>
-              <div class="text-xs mt-1" style="color:#8b949e;">${displayText || '(empty)'}</div>
+              <div class="text-xs mt-1" style="color:#8b949e;">${displayText || '(empty or container)'}</div>
             </div>
-            <div class="flex gap-1">
-              <button class="edit-btn px-2 py-1 rounded text-xs" style="background:#238636;color:#fff;">Edit</button>
-            </div>
-          </div>
-          <div class="grid grid-cols-3 gap-2 text-xs">
-            <div>
-              <div style="color:#8b949e;">Text</div>
-              <div class="w-full h-5 rounded mt-1" style="background:${textColor};border:1px solid #21262d;"></div>
-            </div>
-            <div>
-              <div style="color:#8b949e;">BG</div>
-              <div class="w-full h-5 rounded mt-1" style="background:${bgColor};border:1px solid #21262d;"></div>
-            </div>
-            <div>
-              <div style="color:#8b949e;">Size</div>
-              <div class="mt-1" style="color:#c9d1d9;">${fontSize}</div>
-            </div>
+            <button class="edit-btn px-2 py-1 rounded text-xs" style="background:#238636;color:#fff;">Edit</button>
           </div>
         `;
 
-        const editBtn = item.querySelector('.edit-btn');
-        editBtn.addEventListener('click', (e) => {
+        item.querySelector('.edit-btn').addEventListener('click', (e) => {
           e.stopPropagation();
           currentEditElement = el;
-          openEditModal(el, tagName, textColor, bgColor, fontSize);
+          openEditModal(el, tagName, computed.color, computed.backgroundColor, computed.fontSize);
+          document.getElementById('settingsModal').classList.add('hidden');
         });
 
         elementsList.appendChild(item);
@@ -362,37 +390,55 @@
 
     function openEditModal(el, tagName, textColor, bgColor, fontSize) {
       document.getElementById('editType').value = tagName;
-      document.getElementById('editText').value = el.textContent;
+      document.getElementById('editText').value = el.innerHTML;
       document.getElementById('editTextColor').value = rgbToHex(textColor);
       document.getElementById('editBgColor').value = rgbToHex(bgColor);
-      document.getElementById('editFontSize').value = parseInt(fontSize);
+      document.getElementById('editFontSize').value = parseInt(fontSize) || 16;
       document.getElementById('editModal').classList.remove('hidden');
     }
 
     function rgbToHex(rgb) {
+      if (rgb === 'transparent' || rgb === 'rgba(0, 0, 0, 0)') return '#ffffff';
       const result = rgb.match(/\d+/g);
       if (!result || result.length < 3) return '#000000';
       const [r, g, b] = result;
       return '#' + [r, g, b].map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
     }
 
+    // Apply Edits -> Sync View AND Source Code
     document.getElementById('btnApplyEdit').addEventListener('click', () => {
       if (!currentEditElement) return;
-      currentEditElement.textContent = document.getElementById('editText').value;
+      
+      // Update DOM
+      currentEditElement.innerHTML = document.getElementById('editText').value;
       currentEditElement.style.color = document.getElementById('editTextColor').value;
       currentEditElement.style.backgroundColor = document.getElementById('editBgColor').value;
       currentEditElement.style.fontSize = document.getElementById('editFontSize').value + 'px';
+      currentEditElement.style.outline = ''; // clean up hover effect
+      delete currentEditElement.dataset.originalOutline;
+
+      // Sync DOM back to editor
+      const doc = previewFrame.contentDocument;
+      // We grab outerHTML to ensure we keep the whole document structure
+      const newSource = "<!DOCTYPE html>\n<html>\n" + doc.documentElement.innerHTML + "\n</html>";
+      editor.value = newSource;
+      updateCharCount();
+
       document.getElementById('editModal').classList.add('hidden');
-      showToast('Element updated!');
-      inspectElements();
+      showToast('Synced to Code Editor!');
     });
 
     document.getElementById('btnDeleteElement').addEventListener('click', () => {
       if (!currentEditElement) return;
       currentEditElement.remove();
+      
+      // Sync DOM back to editor
+      const doc = previewFrame.contentDocument;
+      editor.value = "<!DOCTYPE html>\n<html>\n" + doc.documentElement.innerHTML + "\n</html>";
+      updateCharCount();
+
       document.getElementById('editModal').classList.add('hidden');
-      showToast('Element deleted!');
-      inspectElements();
+      showToast('Element deleted & synced!');
     });
 
     document.getElementById('closeEditModal').addEventListener('click', () => {
@@ -408,7 +454,7 @@
       document.getElementById('settingsModal').classList.add('hidden');
     });
 
-    // --- Drag Splitter ---
+    // --- Resizable Splitter ---
     const splitter = document.getElementById('splitter');
     const editorPanel = document.getElementById('editorPanel');
     const mainArea = document.getElementById('mainArea');
@@ -419,6 +465,9 @@
       splitter.classList.add('dragging');
       document.body.style.cursor = 'col-resize';
       document.body.style.userSelect = 'none';
+      
+      // Prevent iframe from intercepting mouse movements while dragging
+      previewFrame.style.pointerEvents = 'none'; 
       e.preventDefault();
     });
 
@@ -436,12 +485,15 @@
         splitter.classList.remove('dragging');
         document.body.style.cursor = '';
         document.body.style.userSelect = '';
+        previewFrame.style.pointerEvents = 'auto'; // Re-enable iframe clicks
       }
     });
 
     // Init
     lucide.createIcons();
+    editor.value = starterTemplate;
     updateCharCount();
+    runCode();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e35431722416cbd',t:'MTc3NDY4NjUxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ </body>
 </html>
