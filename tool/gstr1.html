@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CM Experts Group - GSTR1 Converter</title>
+<title>CMEG - GSTR1 Converter</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -145,7 +145,7 @@ button:hover { background: #8f6a42; }
 
 <div class="header">
   <div class="header-left">
-    <img src="logonamecmeg.png" alt="Logo">
+    <img src="logocmeg.png" alt="Logo">
     <div>
       <a href="#">CM Experts Group</a><br>
       <span class="tagline">Count. Connect. Grow.</span>
@@ -267,7 +267,23 @@ function switchTab(tab, e){
 const cleanStr = (s) => (s !== undefined && s !== null) ? String(s).trim() : "";
 const cleanNum = (n) => { const val = parseFloat(n); return isNaN(val) ? 0 : val; };
 const extractStateCode = (pos) => cleanStr(pos).split("-")[0].trim();
-const findKey = (obj, keyword) => Object.keys(obj).find(k => k.toLowerCase().includes(keyword.toLowerCase()));
+
+// SMART COLUMN FINDER: Prevents picking up "Applicable % of Tax Rate" when searching for "Rate"
+const findKey = (obj, keyword) => {
+    let keys = Object.keys(obj);
+    let lowerKeyword = keyword.toLowerCase();
+    
+    // 1. Prioritize an exact match (e.g., exactly "rate")
+    let exact = keys.find(k => k.toLowerCase() === lowerKeyword);
+    if (exact) return exact;
+    
+    // 2. Fallback to partial match, but ignore columns with "applicable"
+    let partial = keys.find(k => k.toLowerCase().includes(lowerKeyword) && !k.toLowerCase().includes("applicable"));
+    if (partial) return partial;
+    
+    // 3. Absolute fallback
+    return keys.find(k => k.toLowerCase().includes(lowerKeyword));
+};
 
 function formatExcelDate(excelVal) {
   if (!excelVal) return "";
@@ -317,19 +333,18 @@ function parseSectionData(section, rows, userStateCode) {
 
   try {
       if (section === 'b2cs') {
-          // B2CS RE-ENGINEERED: Matches exact JSON standard (Aggregated correctly, missing fields populated)
           let arr = [];
           rows.forEach(row => {
               let posRaw = row[findKey(row, "place of supply")] || row[findKey(row, "place")];
               let pos = extractStateCode(posRaw);
               let rtRaw = row[findKey(row, "rate")];
-              let rt = rtRaw !== undefined && rtRaw !== "" ? cleanNum(rtRaw) : 0; // Fixed: Rate 0 considered
+              let rt = rtRaw !== undefined && rtRaw !== "" ? cleanNum(rtRaw) : 0; 
               let txval = cleanNum(row[findKey(row, "taxable value")] || row[findKey(row, "taxable")]);
               
               if (!pos || txval === 0) return;
 
               let typRaw = cleanStr(row[findKey(row, "type")]);
-              let typ = typRaw.toLowerCase().includes("e-commerce") ? "E" : "OE"; // 'OE' mapping enforced
+              let typ = typRaw.toLowerCase().includes("e-commerce") ? "E" : "OE";
               let csamt = cleanNum(row[findKey(row, "cess")]);
               let sply_ty = (pos === userStateCode) ? "INTRA" : "INTER";
 
@@ -338,7 +353,7 @@ function parseSectionData(section, rows, userStateCode) {
                   rt: rt,
                   typ: typ,
                   pos: pos,
-                  diffval: false, // Diffval explicitly added
+                  diffval: false,
                   txval: txval
               };
 
@@ -405,7 +420,6 @@ function parseSectionData(section, rows, userStateCode) {
           });
           gstData.b2b = Object.values(map);
       } 
-      // Simplified handlers for remaining tables
       else if (section === 'cdnr') {
           let map = {};
           rows.forEach(row => {
@@ -430,7 +444,6 @@ function parseSectionData(section, rows, userStateCode) {
           });
           gstData.cdnr = Object.values(map);
       }
-      // Expand other sections using standard offline logic if needed (hsn, doc, exp)
   } catch (error) {
       console.error(`Error parsing ${section}:`, error);
       throw new Error(`Failed parsing ${section}`);
@@ -461,11 +474,10 @@ function processExcelFile() {
               let targetSection = sheetMapping[cleanName] || sheetMapping[sheetName.toLowerCase()];
               
               if(targetSection) {
-                  // Standard GSTR-1 templates start data at row 4
                   let rawRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {range: 3, defval: ""});
                   let normalizedRows = normalizeRows(rawRows);
                   
-                  if (normalizedRows.length === 0) { // Fallback if no header gap
+                  if (normalizedRows.length === 0) { 
                        rawRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {defval: ""});
                        normalizedRows = normalizeRows(rawRows);
                   }
