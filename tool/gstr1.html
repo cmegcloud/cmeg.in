@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CMEG - GSTR1 Converter</title>
+<title>CM Experts Group - GSTR1 Converter</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -145,7 +145,7 @@ button:hover { background: #8f6a42; }
 
 <div class="header">
   <div class="header-left">
-    <img src="logocmeg.png" alt="Logo">
+    <img src="logonamecmeg.png" alt="Logo">
     <div>
       <a href="#">CM Experts Group</a><br>
       <span class="tagline">Count. Connect. Grow.</span>
@@ -268,7 +268,7 @@ const cleanStr = (s) => (s !== undefined && s !== null) ? String(s).trim() : "";
 const cleanNum = (n) => { const val = parseFloat(n); return isNaN(val) ? 0 : val; };
 const extractStateCode = (pos) => cleanStr(pos).split("-")[0].trim();
 
-// SMART COLUMN FINDER: Prevents picking up "Applicable % of Tax Rate" when searching for "Rate"
+// SMART COLUMN FINDER
 const findKey = (obj, keyword) => {
     let keys = Object.keys(obj);
     let lowerKeyword = keyword.toLowerCase();
@@ -348,14 +348,7 @@ function parseSectionData(section, rows, userStateCode) {
               let csamt = cleanNum(row[findKey(row, "cess")]);
               let sply_ty = (pos === userStateCode) ? "INTRA" : "INTER";
 
-              let b2csObj = {
-                  sply_ty: sply_ty,
-                  rt: rt,
-                  typ: typ,
-                  pos: pos,
-                  diffval: false,
-                  txval: txval
-              };
+              let b2csObj = { sply_ty: sply_ty, rt: rt, typ: typ, pos: pos, diffval: false, txval: txval };
 
               let taxAmt = Number((txval * rt / 100).toFixed(2));
               if (sply_ty === "INTRA") {
@@ -366,7 +359,6 @@ function parseSectionData(section, rows, userStateCode) {
               }
               b2csObj.csamt = csamt;
 
-              // Aggregate identical B2CS items
               let existing = arr.find(item => item.pos === pos && item.rt === rt && item.typ === typ);
               if (existing) {
                   existing.txval = Number((existing.txval + b2csObj.txval).toFixed(2));
@@ -419,7 +411,31 @@ function parseSectionData(section, rows, userStateCode) {
               invObj.itms.push({ num: invObj.itms.length + 1, itm_det });
           });
           gstData.b2b = Object.values(map);
-      } 
+      }
+      else if (section === 'b2cl') {
+          let map = {};
+          rows.forEach(row => {
+              let inum = cleanStr(row[findKey(row, "invoice number")]);
+              if (!inum) return;
+
+              let pos = extractStateCode(row[findKey(row, "place of supply")]);
+              let idt = formatExcelDate(row[findKey(row, "invoice date")]);
+              let val = cleanNum(row[findKey(row, "invoice value")]);
+              let rt = cleanNum(row[findKey(row, "rate")]);
+              let txval = cleanNum(row[findKey(row, "taxable value")]);
+              let csamt = cleanNum(row[findKey(row, "cess")]);
+
+              if (!map[pos]) map[pos] = { pos, inv: [] };
+              let invObj = map[pos].inv.find(i => i.inum === inum);
+              if (!invObj) {
+                  invObj = { inum, idt, val, itms: [] };
+                  map[pos].inv.push(invObj);
+              }
+              let itm_det = { txval, rt, iamt: Number((txval * rt / 100).toFixed(2)), csamt };
+              invObj.itms.push({ num: invObj.itms.length + 1, itm_det });
+          });
+          gstData.b2cl = Object.values(map);
+      }
       else if (section === 'cdnr') {
           let map = {};
           rows.forEach(row => {
@@ -443,6 +459,114 @@ function parseSectionData(section, rows, userStateCode) {
               ntObj.itms.push({ num: ntObj.itms.length + 1, itm_det });
           });
           gstData.cdnr = Object.values(map);
+      }
+      else if (section === 'cdnur') {
+          let arr = [];
+          rows.forEach(row => {
+              let nt_num = cleanStr(row[findKey(row, "note number")]);
+              if (!nt_num) return;
+
+              let typ = cleanStr(row[findKey(row, "ur type")]).includes("B2CL") ? "B2CL" : "EXPWP";
+              let nt_dt = formatExcelDate(row[findKey(row, "note date")]);
+              let ntty = cleanStr(row[findKey(row, "note type")]).charAt(0).toUpperCase();
+              let val = cleanNum(row[findKey(row, "note value")]);
+              let pos = extractStateCode(row[findKey(row, "place of supply")]);
+              let rt = cleanNum(row[findKey(row, "rate")]);
+              let txval = cleanNum(row[findKey(row, "taxable value")]);
+              let csamt = cleanNum(row[findKey(row, "cess")]);
+
+              let taxAmt = Number((txval * rt / 100).toFixed(2));
+              let itm_det = { txval, rt, csamt };
+              if(pos === userStateCode) { itm_det.camt = Number((taxAmt/2).toFixed(2)); itm_det.samt = Number((taxAmt/2).toFixed(2)); } else { itm_det.iamt = taxAmt; }
+              
+              arr.push({ typ, nt: [{ nt_num, nt_dt, ntty, val, pos, itms: [{ num: 1, itm_det }] }] });
+          });
+          gstData.cdnur = arr;
+      }
+      else if (section === 'exp') {
+          let map = {};
+          rows.forEach(row => {
+              let exp_typRaw = cleanStr(row[findKey(row, "export type")]);
+              let inum = cleanStr(row[findKey(row, "invoice number")]);
+              if (!exp_typRaw || !inum) return;
+
+              let exp_typ = exp_typRaw.includes("Without") ? "WOPAY" : "WPAY";
+              let idt = formatExcelDate(row[findKey(row, "invoice date")]);
+              let val = cleanNum(row[findKey(row, "invoice value")]);
+              let rt = cleanNum(row[findKey(row, "rate")]);
+              let txval = cleanNum(row[findKey(row, "taxable value")]);
+              let csamt = cleanNum(row[findKey(row, "cess")]);
+
+              if (!map[exp_typ]) map[exp_typ] = { exp_typ, inv: [] };
+              let invObj = map[exp_typ].inv.find(i => i.inum === inum);
+              if (!invObj) {
+                  invObj = { inum, idt, val, itms: [] };
+                  map[exp_typ].inv.push(invObj);
+              }
+              let itm_det = { txval, rt, csamt, iamt: (exp_typ === "WPAY") ? Number((txval * rt / 100).toFixed(2)) : 0 };
+              invObj.itms.push(itm_det);
+          });
+          gstData.exp = Object.values(map);
+      }
+      else if (section === 'hsn') {
+          let arr = [];
+          let count = 1;
+          rows.forEach(row => {
+              let hsn_sc = cleanStr(row[findKey(row, "hsn")]);
+              if(!hsn_sc) return;
+
+              arr.push({
+                  num: count++,
+                  hsn_sc: hsn_sc,
+                  desc: cleanStr(row[findKey(row, "description")]),
+                  uqc: cleanStr(row[findKey(row, "uqc")]),
+                  qty: cleanNum(row[findKey(row, "quantity")]),
+                  rt: cleanNum(row[findKey(row, "rate")]),
+                  txval: cleanNum(row[findKey(row, "taxable value")]),
+                  iamt: cleanNum(row[findKey(row, "integrated")]),
+                  camt: cleanNum(row[findKey(row, "central")]),
+                  samt: cleanNum(row[findKey(row, "state")]),
+                  csamt: cleanNum(row[findKey(row, "cess")])
+              });
+          });
+          gstData.hsn.hsn_b2b = arr;
+      }
+      else if (section === 'docs') {
+          let map = {};
+          rows.forEach(row => {
+              let doc_typRaw = row[findKey(row, "nature of document")] || row[findKey(row, "nature")];
+              let doc_typ = cleanStr(doc_typRaw);
+              if(!doc_typ) return;
+
+              const docTypes = [
+                  "Invoices for outward supply", "Invoices for inward supply from unregistered person", 
+                  "Revised Invoice", "Debit Note", "Credit Note", "Receipt Voucher", 
+                  "Payment Voucher", "Refund Voucher", "Delivery Challan for job work", 
+                  "Delivery Challan for supply on approval", "Delivery Challan in case of liquid gas", 
+                  "Delivery Challan in cases other than by way of supply"
+              ];
+              let doc_num = docTypes.indexOf(doc_typ) + 1;
+              if(doc_num === 0) doc_num = 1;
+
+              if(!map[doc_typ]) map[doc_typ] = { doc_num, doc_typ, docs: [] };
+
+              let fromVal = cleanStr(row[findKey(row, "from")]);
+              let toVal = cleanStr(row[findKey(row, "to")]);
+              let totnum = cleanNum(row[findKey(row, "total number")] || row[findKey(row, "total")]);
+              let cancel = cleanNum(row[findKey(row, "cancelled")] || row[findKey(row, "cancel")]);
+
+              if (fromVal) {
+                  map[doc_typ].docs.push({
+                      num: map[doc_typ].docs.length + 1,
+                      from: String(fromVal),
+                      to: String(toVal),
+                      totnum: totnum,
+                      cancel: cancel,
+                      net_issue: totnum - cancel
+                  });
+              }
+          });
+          gstData.doc_issue.doc_det = Object.values(map);
       }
   } catch (error) {
       console.error(`Error parsing ${section}:`, error);
@@ -566,8 +690,8 @@ function generateJSON() {
   if (gstData.cdnr.length > 0) finalJson.cdnr = gstData.cdnr;
   if (gstData.cdnur.length > 0) finalJson.cdnur = gstData.cdnur;
   if (gstData.exp.length > 0) finalJson.exp = gstData.exp;
-  if (gstData.hsn.hsn_b2b.length > 0) finalJson.hsn = gstData.hsn;
-  if (gstData.doc_issue.doc_det.length > 0) finalJson.doc_issue = gstData.doc_issue;
+  if (gstData.hsn.hsn_b2b && gstData.hsn.hsn_b2b.length > 0) finalJson.hsn = gstData.hsn;
+  if (gstData.doc_issue.doc_det && gstData.doc_issue.doc_det.length > 0) finalJson.doc_issue = gstData.doc_issue;
 
   if(Object.keys(finalJson).length === 4) {
       alert("No data processed! Please upload a file or paste data before downloading.");
