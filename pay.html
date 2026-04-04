@@ -15,30 +15,26 @@
 body{
 margin:0;
 font-family:Segoe UI,Arial;
-background:#f6f5f2;
+background:#FFF5F5;
 display:flex;
 justify-content:center;
 align-items:center;
 height:100vh;
-color:#5C4520;
+color:#5a1a1a;
 }
 
 .card{
-
 width:92%;
 max-width:420px;
-
 background:white;
-
 border-radius:20px;
-
 padding:30px;
-
-box-shadow:
-0 15px 40px rgba(0,0,0,0.08);
-
 text-align:center;
 
+border-top:4px solid #C8102E;
+
+box-shadow:
+0 15px 40px rgba(200,16,46,0.15);
 }
 
 .logo{
@@ -49,101 +45,74 @@ margin-bottom:10px;
 .title{
 font-size:20px;
 font-weight:600;
-color:#8B6A2F;
+color:#C8102E;
 }
 
 .subtitle{
 font-size:13px;
-color:#9a875e;
+color:#a94444;
 margin-bottom:20px;
 }
 
 .amountbox{
-
-background:linear-gradient(145deg,#8B6A2F,#B08D57);
-
+background:linear-gradient(145deg,#C8102E,#8B0000);
 border-radius:12px;
-
 padding:18px;
-
 color:white;
-
 margin-bottom:20px;
-
 }
 
 .amount{
-
 font-size:38px;
 font-weight:700;
-
 }
 
 .info{
-
-background:#f5f2ea;
-
+background:#ffeaea;
 padding:12px;
-
 border-radius:10px;
-
 margin-bottom:10px;
-
 }
 
 .info b{
-color:#8B6A2F;
+color:#C8102E;
 }
 
 .qr{
-
 background:white;
-
 padding:12px;
-
 border-radius:12px;
-
 display:inline-block;
-
 margin:20px 0;
-
 box-shadow:0 4px 10px rgba(0,0,0,0.05);
-
 }
 
 .paybtn{
-
 display:block;
-
 text-decoration:none;
-
-background:linear-gradient(145deg,#8B6A2F,#B08D57);
-
+background:linear-gradient(145deg,#C8102E,#8B0000);
 color:white;
-
 font-weight:600;
-
 padding:14px;
-
 border-radius:10px;
+transition:0.2s;
+}
 
+.paybtn:hover{
+opacity:0.9;
+transform:scale(1.02);
 }
 
 .footer{
-
 font-size:11px;
-
 margin-top:20px;
-
-color:#9a875e;
-
+color:#a94444;
 }
 
 </style>
 </head>
 
 <body>
-
 
 <div class="card">
 
@@ -153,11 +122,8 @@ color:#9a875e;
 <div class="subtitle">Compliance Payment Portal</div>
 
 <div class="amountbox">
-
 TOTAL PAYABLE
-
 <div class="amount" id="amt">₹0</div>
-
 </div>
 
 <div class="info">
@@ -183,7 +149,6 @@ www.cmtaxexperts.cmeg.in
 </div>
 
 </div>
-
 
 <script>
 
