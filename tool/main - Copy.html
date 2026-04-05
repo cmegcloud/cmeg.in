@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CM Experts Group - Your Business Guide from Start to Growth</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+                    colors: {
+                        cm: {
+                            red: '#c62828',         /* Professional Red */
+                            redHover: '#b71c1c',
+                            bgMuted: '#f1f5f9',     /* Muted Grey Background */
+                            surface: '#ffffff',
+                            textMain: '#1e293b',    /* Dark Slate */
+                            textMuted: '#64748b',   /* Muted Slate Grey */
+                            border: '#e2e8f0'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+        /* Form Input Styling */
+        .zoho-input {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #ffffff;
+            outline: none;
+            transition: all 0.2s;
+            color: #1e293b;
+        }
+        .zoho-input:focus { border-color: #c62828; box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1); }
+        .dark .zoho-input { background-color: #374151; border-color: #4b5563; color: white; }
+        .dark .zoho-input:focus { border-color: #ef5350; box-shadow: 0 0 0 3px rgba(239, 83, 80, 0.15); }
+
+        .zoho-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .dark .zoho-label { color: #9ca3af; }
+
+        /* Subtle Hover Effects */
+        .hover-card { transition: all 0.3s ease; }
+        .hover-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
+        .dark .hover-card:hover { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2); }
+    </style>
+</head>
+<body class="bg-cm-bgMuted dark:bg-gray-900 text-cm-textMain dark:text-gray-200 transition-colors duration-300">
+
+    <nav class="fixed w-full z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-cm-border dark:border-gray-800 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <div class="w-8 h-8 rounded bg-cm-red flex items-center justify-center text-white font-semibold text-lg shadow-sm">
+                        <i class="fa-solid fa-shapes"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-cm-textMain dark:text-white font-semibold text-lg tracking-tight leading-none">CMEG</h1>
+                        <span class="text-[9px] text-cm-textMuted dark:text-gray-400 font-medium uppercase tracking-widest block mt-0.5">CM Experts Group</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#about" class="text-sm font-medium text-cm-textMuted hover:text-cm-red dark:text-gray-300 dark:hover:text-cm-red transition">About</a>
+                    <a href="#services" class="text-sm font-medium text-cm-textMuted hover:text-cm-red dark:text-gray-300 dark:hover:text-cm-red transition">Initiatives</a>
+                    <a href="#why-us" class="text-sm font-medium text-cm-textMuted hover:text-cm-red dark:text-gray-300 dark:hover:text-cm-red transition">Why Choose Us</a>
+                    <a href="#contact" class="text-sm font-medium text-cm-textMuted hover:text-cm-red dark:text-gray-300 dark:hover:text-cm-red transition">Contact Us</a>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleTheme()" class="text-gray-500 hover:text-cm-red dark:text-gray-400 transition-colors h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                        <i class="fa-solid fa-moon dark:hidden"></i>
+                        <i class="fa-solid fa-sun hidden dark:block"></i>
+                    </button>
+                    <a href="#contact" class="hidden md:flex px-5 py-2 bg-cm-red text-white rounded-md font-medium text-sm hover:bg-cm-redHover transition-colors shadow-sm items-center gap-2">
+                        Get Started
+                    </a>
+                    <button id="mobile-menu-btn" class="md:hidden text-gray-600 dark:text-gray-300 text-xl focus:outline-none ml-2">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-900 border-b border-cm-border dark:border-gray-800 absolute w-full left-0 px-4 py-2 space-y-1 shadow-lg">
+            <a href="#about" class="block px-4 py-2.5 rounded-md text-sm font-medium text-cm-textMain dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800">About</a>
+            <a href="#services" class="block px-4 py-2.5 rounded-md text-sm font-medium text-cm-textMain dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800">Initiatives</a>
+            <a href="#why-us" class="block px-4 py-2.5 rounded-md text-sm font-medium text-cm-textMain dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800">Why Choose Us</a>
+            <a href="#contact" class="block px-4 py-2.5 rounded-md text-sm font-medium text-cm-red bg-red-50 dark:bg-red-900/20">Contact Us</a>
+        </div>
+    </nav>
+
+    <section class="pt-32 pb-16 lg:pt-40 lg:pb-24 bg-white dark:bg-gray-900 border-b border-cm-border dark:border-gray-800">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-semibold text-cm-textMain dark:text-white tracking-tight leading-tight mb-6">
+                Your Business Guide <br>
+                <span class="text-cm-red font-medium">from Start to Growth.</span>
+            </h1>
+            
+            <p class="max-w-2xl mx-auto text-sm sm:text-base text-cm-textMuted dark:text-gray-400 mb-8 leading-relaxed font-light">
+                Professional services in taxation, accounting, compliance management, and cloud-based ERP and CRM solutions. We help businesses simplify financial operations and implement modern digital systems.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-3 mb-12">
+                <a href="#contact" class="px-6 py-2.5 bg-cm-red text-white rounded-md font-medium text-sm hover:bg-cm-redHover transition-colors shadow-sm flex items-center justify-center gap-2">
+                    Talk to Experts <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <a href="#services" class="px-6 py-2.5 bg-white dark:bg-gray-800 text-cm-textMain dark:text-gray-200 border border-cm-border dark:border-gray-700 rounded-md font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm flex items-center justify-center gap-2">
+                    Explore Services
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto pt-8 border-t border-cm-border dark:border-gray-800">
+                <div>
+                    <h3 class="text-2xl font-semibold text-cm-textMain dark:text-white mb-1">15+</h3>
+                    <p class="text-xs text-cm-textMuted dark:text-gray-500 uppercase tracking-wide">Years Experience</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold text-cm-textMain dark:text-white mb-1">5000+</h3>
+                    <p class="text-xs text-cm-textMuted dark:text-gray-500 uppercase tracking-wide">Satisfied Clients</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-cm-textMain dark:text-white mb-1 mt-1">India & GCC</h3>
+                    <p class="text-xs text-cm-textMuted dark:text-gray-500 uppercase tracking-wide">Global Reach</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-20 bg-cm-bgMuted dark:bg-gray-800/50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                
+                <div>
+                    <h4 class="text-cm-red font-medium uppercase tracking-wider text-xs mb-3">About Us</h4>
+                    <h2 class="text-2xl md:text-3xl font-semibold text-cm-textMain dark:text-white mb-5 leading-snug">Simplifying operations with financial expertise & digital innovation.</h2>
+                    <p class="text-sm text-cm-textMuted dark:text-gray-400 mb-4 leading-relaxed font-light">
+                        CM Experts Group is a professional consulting firm specializing in tax compliance, accounting services, regulatory compliance, and business technology solutions.
+                    </p>
+                    <p class="text-sm text-cm-textMuted dark:text-gray-400 mb-6 leading-relaxed font-light">
+                        We work closely with entrepreneurs, startups, and established businesses to ensure their financial systems remain organized, compliant, and ready for sustainable growth.
+                    </p>
+                    
+                    <div class="flex gap-6">
+                        <div class="flex items-center gap-2 text-sm font-medium text-cm-textMain dark:text-gray-200">
+                            <i class="fa-solid fa-check text-cm-red"></i> Certified Experts
+                        </div>
+                        <div class="flex items-center gap-2 text-sm font-medium text-cm-textMain dark:text-gray-200">
+                            <i class="fa-solid fa-check text-cm-red"></i> Technology-Driven
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm border border-cm-border dark:border-gray-700 hover-card flex gap-4 items-start">
+                        <div class="w-10 h-10 rounded bg-red-50 dark:bg-red-900/20 text-cm-red flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-calculator"></i></div>
+                        <div>
+                            <h3 class="text-base font-semibold text-cm-textMain dark:text-white mb-1">Count</h3>
+                            <p class="text-xs text-cm-textMuted dark:text-gray-400 font-light leading-relaxed">We ensure accurate accounting and tax compliance to maintain clear and organized financial records.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm border border-cm-border dark:border-gray-700 hover-card flex gap-4 items-start">
+                        <div class="w-10 h-10 rounded bg-blue-50 dark:bg-blue-900/20 text-blue-500 flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-network-wired"></i></div>
+                        <div>
+                            <h3 class="text-base font-semibold text-cm-textMain dark:text-white mb-1">Connect</h3>
+                            <p class="text-xs text-cm-textMuted dark:text-gray-400 font-light leading-relaxed">We connect businesses with modern ERP systems and digital tools for efficient management.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm border border-cm-border dark:border-gray-700 hover-card flex gap-4 items-start">
+                        <div class="w-10 h-10 rounded bg-green-50 dark:bg-green-900/20 text-green-500 flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        <div>
+                            <h3 class="text-base font-semibold text-cm-textMain dark:text-white mb-1">Grow</h3>
+                            <p class="text-xs text-cm-textMuted dark:text-gray-400 font-light leading-relaxed">With expert advisory and compliance support, we help businesses grow confidently and sustainably.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="py-20 bg-white dark:bg-gray-900 border-t border-cm-border dark:border-gray-800">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <h4 class="text-cm-red font-medium uppercase tracking-wider text-xs mb-2">Core Areas & Divisions</h4>
+                <h2 class="text-2xl md:text-3xl font-semibold text-cm-textMain dark:text-white mb-3">Comprehensive Professional Services</h2>
+                <p class="text-sm text-cm-textMuted dark:text-gray-400 font-light">Tailored solutions to meet the specific compliance, financial, and technological needs of your growing business.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <div class="bg-cm-surface dark:bg-gray-800 rounded-xl p-6 border border-cm-border dark:border-gray-700 hover-card">
+                    <div class="w-12 h-12 rounded bg-red-50 dark:bg-red-900/20 text-cm-red flex items-center justify-center text-xl mb-5">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-cm-textMain dark:text-white mb-2">Tax Compliance & Advisory</h3>
+                    <p class="text-xs text-cm-textMuted dark:text-gray-400 mb-5 font-light leading-relaxed">Expert tax filings, regulatory compliance, and strategic tax planning to keep your business penalty-free.</p>
+                    <ul class="space-y-2 text-xs text-cm-textMain dark:text-gray-300">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> GST Registration & Returns</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> Income Tax Return Filing</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> TDS Compliance</li>
+                    </ul>
+                </div>
+
+                <div class="bg-cm-surface dark:bg-gray-800 rounded-xl p-6 border border-cm-border dark:border-gray-700 hover-card">
+                    <div class="w-12 h-12 rounded bg-red-50 dark:bg-red-900/20 text-cm-red flex items-center justify-center text-xl mb-5">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-cm-textMain dark:text-white mb-2">Accounting & Bookkeeping</h3>
+                    <p class="text-xs text-cm-textMuted dark:text-gray-400 mb-5 font-light leading-relaxed">Reliable accounting provides clarity about your business finances and supports better decision-making.</p>
+                    <ul class="space-y-2 text-xs text-cm-textMain dark:text-gray-300">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> Bookkeeping & Accounting</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> Financial Statements</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> Bank Reconciliation</li>
+                    </ul>
+                </div>
+
+                <div class="bg-cm-surface dark:bg-gray-800 rounded-xl p-6 border border-cm-border dark:border-gray-700 hover-card">
+                    <div class="w-12 h-12 rounded bg-red-50 dark:bg-red-900/20 text-cm-red flex items-center justify-center text-xl mb-5">
+                        <i class="fa-solid fa-cloud"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-cm-textMain dark:text-white mb-2">ERP & CRM Solutions</h3>
+                    <p class="text-xs text-cm-textMuted dark:text-gray-400 mb-5 font-light leading-relaxed">Implement modern cloud-based systems to streamline operations, automate tasks, and improve productivity.</p>
+                    <ul class="space-y-2 text-xs text-cm-textMain dark:text-gray-300">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> Cloud-Based ERP Systems</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> CRM for Client Management</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> Digital Document Mgmt.</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="why-us" class="py-20 bg-cm-bgMuted dark:bg-gray-800/50 border-t border-cm-border dark:border-gray-800">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12">
+            
+            <div>
+                <h4 class="text-cm-red font-medium uppercase tracking-wider text-xs mb-2">Industries We Serve</h4>
+                <h2 class="text-2xl font-semibold text-cm-textMain dark:text-white mb-6">Specialized expertise across sectors</h2>
+                
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-cm-border dark:border-gray-600 rounded text-xs text-cm-textMain dark:text-gray-300"><i class="fa-solid fa-shop mr-1 text-cm-textMuted"></i> Retail & Trading</span>
+                    <span class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-cm-border dark:border-gray-600 rounded text-xs text-cm-textMain dark:text-gray-300"><i class="fa-solid fa-utensils mr-1 text-cm-textMuted"></i> Restaurants</span>
+                    <span class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-cm-border dark:border-gray-600 rounded text-xs text-cm-textMain dark:text-gray-300"><i class="fa-solid fa-industry mr-1 text-cm-textMuted"></i> Manufacturing</span>
+                    <span class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-cm-border dark:border-gray-600 rounded text-xs text-cm-textMain dark:text-gray-300"><i class="fa-solid fa-cart-shopping mr-1 text-cm-textMuted"></i> E-commerce</span>
+                    <span class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-cm-border dark:border-gray-600 rounded text-xs text-cm-textMain dark:text-gray-300"><i class="fa-solid fa-rocket mr-1 text-cm-textMuted"></i> Startups</span>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-cm-red font-medium uppercase tracking-wider text-xs mb-2">Why Choose Us</h4>
+                <h2 class="text-2xl font-semibold text-cm-textMain dark:text-white mb-6">The CM Experts Advantage</h2>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-cm-border dark:border-gray-700">
+                        <i class="fa-solid fa-award text-cm-red mb-2"></i>
+                        <h3 class="text-sm font-semibold text-cm-textMain dark:text-white mb-1">15+ Years</h3>
+                        <p class="text-xs text-cm-textMuted dark:text-gray-400 font-light">Proven track record in tax and compliance.</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-cm-border dark:border-gray-700">
+                        <i class="fa-solid fa-users text-cm-red mb-2"></i>
+                        <h3 class="text-sm font-semibold text-cm-textMain dark:text-white mb-1">5000+ Clients</h3>
+                        <p class="text-xs text-cm-textMuted dark:text-gray-400 font-light">Trusted across diverse industries.</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-cm-border dark:border-gray-700">
+                        <i class="fa-solid fa-shield-halved text-cm-red mb-2"></i>
+                        <h3 class="text-sm font-semibold text-cm-textMain dark:text-white mb-1">Expert Knowledge</h3>
+                        <p class="text-xs text-cm-textMuted dark:text-gray-400 font-light">Up-to-date regulatory insights.</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-cm-border dark:border-gray-700">
+                        <i class="fa-solid fa-cloud text-cm-red mb-2"></i>
+                        <h3 class="text-sm font-semibold text-cm-textMain dark:text-white mb-1">Digital First</h3>
+                        <p class="text-xs text-cm-textMuted dark:text-gray-400 font-light">Cloud-based modern technology.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="contact" class="py-20 bg-white dark:bg-gray-900 border-t border-cm-border dark:border-gray-800">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                
+                <div>
+                    <h4 class="text-cm-red font-medium uppercase tracking-wider text-xs mb-2">Get In Touch</h4>
+                    <h2 class="text-2xl md:text-3xl font-semibold text-cm-textMain dark:text-white mb-4">Ready to Grow Your Business?</h2>
+                    <p class="text-sm text-cm-textMuted dark:text-gray-400 mb-8 leading-relaxed font-light">
+                        Connect with our experts today and discover how CM Experts Group can help streamline your business operations and ensure compliance.
+                    </p>
+
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded bg-cm-bgMuted dark:bg-gray-800 text-cm-textMain dark:text-gray-300 flex items-center justify-center border border-cm-border dark:border-gray-700"><i class="fa-solid fa-envelope"></i></div>
+                            <div>
+                                <p class="text-xs text-cm-textMuted dark:text-gray-400 font-medium">Email Us</p>
+                                <a href="mailto:support@cmeg.in" class="text-sm font-semibold text-cm-textMain dark:text-white hover:text-cm-red transition">support@cmeg.in</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded bg-cm-bgMuted dark:bg-gray-800 text-cm-textMain dark:text-gray-300 flex items-center justify-center border border-cm-border dark:border-gray-700"><i class="fa-solid fa-phone"></i></div>
+                            <div>
+                                <p class="text-xs text-cm-textMuted dark:text-gray-400 font-medium">Call Us</p>
+                                <p class="text-sm font-semibold text-cm-textMain dark:text-white">+91 99461 51111 / +91 98954 70148</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded bg-cm-bgMuted dark:bg-gray-800 text-cm-textMain dark:text-gray-300 flex items-center justify-center border border-cm-border dark:border-gray-700"><i class="fa-solid fa-globe"></i></div>
+                            <div>
+                                <p class="text-xs text-cm-textMuted dark:text-gray-400 font-medium">Serving Locations</p>
+                                <p class="text-sm font-semibold text-cm-textMain dark:text-white">India • GCC Countries</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-cm-surface dark:bg-gray-800 rounded-xl p-6 sm:p-8 border border-cm-border dark:border-gray-700 shadow-sm">
+                    <h3 class="text-lg font-semibold text-cm-textMain dark:text-white mb-5">Send Us a Message</h3>
+                    <form class="space-y-4" onsubmit="event.preventDefault(); alert('Message sent successfully!');">
+                        <div>
+                            <label class="zoho-label">Your Name</label>
+                            <input type="text" required class="zoho-input" placeholder="Enter your full name">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="zoho-label">Email Address</label>
+                                <input type="email" required class="zoho-input" placeholder="you@company.com">
+                            </div>
+                            <div>
+                                <label class="zoho-label">Phone Number</label>
+                                <input type="tel" required class="zoho-input" placeholder="+91 00000 00000">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="zoho-label">Service Interested In</label>
+                            <select class="zoho-input appearance-none font-medium" required>
+                                <option value="" disabled selected>Select a service...</option>
+                                <option>Tax Compliance & Advisory</option>
+                                <option>Accounting & Bookkeeping</option>
+                                <option>ERP & CRM Solutions</option>
+                                <option>Business Registration</option>
+                                <option>Other Inquiry</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="zoho-label">Your Message</label>
+                            <textarea rows="3" required class="zoho-input resize-none" placeholder="How can we help?"></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-2.5 bg-cm-red text-white rounded-md font-medium text-sm hover:bg-cm-redHover transition-colors shadow-sm flex items-center justify-center gap-2 mt-2">
+                            Send Message <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-50 dark:bg-gray-900 pt-12 pb-6 border-t border-cm-border dark:border-gray-800">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 border-b border-gray-200 dark:border-gray-800 pb-8">
+                
+                <div class="md:col-span-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded bg-cm-red flex items-center justify-center text-white font-semibold shadow-sm">
+                            <i class="fa-solid fa-shapes"></i>
+                        </div>
+                        <h1 class="text-cm-textMain dark:text-white font-semibold text-lg tracking-tight">CMEG</h1>
+                    </div>
+                    <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed mb-4 font-light">
+                        Professional consulting firm specializing in tax compliance, accounting, and business technology solutions.
+                    </p>
+                    <a href="https://www.cmeg.in" class="text-cm-red font-medium text-xs hover:underline">www.cmeg.in</a>
+                </div>
+
+                <div>
+                    <h3 class="text-cm-textMain dark:text-white font-semibold text-sm mb-4">Services</h3>
+                    <ul class="space-y-2 text-xs text-gray-500 dark:text-gray-400 font-light">
+                        <li><a href="#" class="hover:text-cm-red transition-colors">Tax Compliance</a></li>
+                        <li><a href="#" class="hover:text-cm-red transition-colors">Accounting</a></li>
+                        <li><a href="#" class="hover:text-cm-red transition-colors">ERP Solutions</a></li>
+                        <li><a href="#" class="hover:text-cm-red transition-colors">Business Registration</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-cm-textMain dark:text-white font-semibold text-sm mb-4">Quick Links</h3>
+                    <ul class="space-y-2 text-xs text-gray-500 dark:text-gray-400 font-light">
+                        <li><a href="#about" class="hover:text-cm-red transition-colors">About Us</a></li>
+                        <li><a href="#why-us" class="hover:text-cm-red transition-colors">Industries</a></li>
+                        <li><a href="#contact" class="hover:text-cm-red transition-colors">Contact</a></li>
+                        <li><a href="#" class="text-cm-red font-medium hover:underline">Client Login</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-cm-textMain dark:text-white font-semibold text-sm mb-4">Connect With Us</h3>
+                    <div class="flex gap-3">
+                        <a href="#" class="w-8 h-8 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 hover:text-cm-red transition-colors shadow-sm"><i class="fa-brands fa-linkedin-in text-sm"></i></a>
+                        <a href="#" class="w-8 h-8 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 hover:text-cm-red transition-colors shadow-sm"><i class="fa-brands fa-twitter text-sm"></i></a>
+                        <a href="#" class="w-8 h-8 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 hover:text-cm-red transition-colors shadow-sm"><i class="fa-brands fa-facebook-f text-sm"></i></a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-gray-500 dark:text-gray-400 font-light">
+                <p>© 2026 CM Experts Group. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="hover:text-cm-red transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-cm-red transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                menu.classList.add('hidden');
+            });
+        });
+
+        // Dark Mode Logic
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</body>
+</html>

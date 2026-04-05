@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Client Login - CM Biz Portal</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+                    colors: {
+                        cm: {
+                            red: '#c62828',         /* Professional Red */
+                            redHover: '#b71c1c',
+                            bgMuted: '#f1f5f9',     /* Muted Grey Background */
+                            surface: '#ffffff',
+                            textMain: '#1e293b',    /* Dark Slate */
+                            textMuted: '#64748b',   /* Muted Slate Grey */
+                            border: '#e2e8f0',
+                            sidebarBg: '#0f172a'    /* Deep Grey/Black for Branding Side */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        /* Form Input Styling (Theme Consistent) */
+        .zoho-input {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #ffffff;
+            outline: none;
+            transition: all 0.2s;
+            color: #1e293b;
+        }
+        .zoho-input:focus { border-color: #c62828; box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1); }
+        .dark .zoho-input { background-color: #374151; border-color: #4b5563; color: white; }
+        .dark .zoho-input:focus { border-color: #ef5350; box-shadow: 0 0 0 3px rgba(239, 83, 80, 0.15); }
+
+        .zoho-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .dark .zoho-label { color: #9ca3af; }
+
+        /* Custom Checkbox */
+        .custom-checkbox {
+            appearance: none;
+            background-color: #fff;
+            margin: 0;
+            font: inherit;
+            color: currentColor;
+            width: 1.15em;
+            height: 1.15em;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 0.25em;
+            display: grid;
+            place-content: center;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .dark .custom-checkbox { background-color: #374151; border-color: #4b5563; }
+        .custom-checkbox::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em white;
+            background-color: white;
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+        .custom-checkbox:checked { background-color: #c62828; border-color: #c62828; }
+        .custom-checkbox:checked::before { transform: scale(1); }
+
+    </style>
+</head>
+<body class="bg-cm-bgMuted dark:bg-gray-900 text-cm-textMain dark:text-gray-200 min-h-screen transition-colors duration-300 flex">
+
+    <div class="hidden lg:flex lg:w-1/2 bg-cm-sidebarBg relative overflow-hidden flex-col justify-between p-12">
+        
+        <div class="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-cm-red rounded-full mix-blend-multiply filter blur-[100px] opacity-20"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-blue-600 rounded-full mix-blend-multiply filter blur-[100px] opacity-10"></div>
+
+        <div class="relative z-10 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-cm-red flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                <i class="fa-solid fa-shapes"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-2xl tracking-tight leading-none">CM Experts Group</h1>
+            </div>
+        </div>
+
+        <div class="relative z-10 max-w-md">
+            <h2 class="text-4xl font-extrabold text-white mb-6 leading-tight">Welcome to your <br><span class="text-cm-red">Client Portal</span></h2>
+            <p class="text-gray-400 text-sm leading-relaxed mb-8">
+                Securely access your compliance calendar, view financial reports, download invoices, and manage your business documents all in one place.
+            </p>
+            
+            <div class="flex gap-4 text-gray-300">
+                <div class="flex items-center gap-2 text-xs font-medium">
+                    <i class="fa-solid fa-circle-check text-green-500"></i> Encrypted
+                </div>
+                <div class="flex items-center gap-2 text-xs font-medium">
+                    <i class="fa-solid fa-circle-check text-green-500"></i> 24/7 Access
+                </div>
+            </div>
+        </div>
+
+        <div class="relative z-10">
+            <p class="text-sm font-semibold text-gray-500 uppercase tracking-widest">Count <span class="text-cm-red px-1">•</span> Connect <span class="text-cm-red px-1">•</span> Grow</p>
+        </div>
+    </div>
+
+    <div class="w-full lg:w-1/2 flex flex-col relative justify-center items-center p-6 sm:p-12">
+        
+        <div class="absolute top-6 right-6">
+            <button onclick="toggleTheme()" class="text-gray-500 hover:text-cm-red dark:text-gray-400 transition-colors h-10 w-10 rounded-full bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center border border-cm-border dark:border-gray-700 focus:outline-none">
+                <i class="fa-solid fa-moon dark:hidden"></i>
+                <i class="fa-solid fa-sun hidden dark:block"></i>
+            </button>
+        </div>
+
+        <div class="lg:hidden flex items-center gap-3 mb-10 mt-8">
+            <div class="w-10 h-10 rounded-lg bg-cm-red flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                <i class="fa-solid fa-shapes"></i>
+            </div>
+            <div>
+                <h1 class="text-cm-textMain dark:text-white font-bold text-2xl tracking-tight leading-none">CM Experts</h1>
+            </div>
+        </div>
+
+        <div class="w-full max-w-md">
+            
+            <div class="mb-8 text-center lg:text-left">
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">Sign In</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Enter your credentials to access your account.</p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-cm-border dark:border-gray-700 p-6 sm:p-8">
+                
+                <form id="loginForm" class="space-y-6" onsubmit="event.preventDefault(); simulateLogin();">
+                    
+                    <div>
+                        <label class="zoho-label">Client ID / Email <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="clientId" required placeholder="e.g. CLT-1001 or email@domain.com" class="zoho-input pl-10 font-medium">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="zoho-label">Password <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="password" id="password" required placeholder="Enter your password" class="zoho-input pl-10 pr-10">
+                            <button type="button" onclick="togglePassword()" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition-colors rounded">
+                                <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between mt-2">
+                        <label class="flex items-center gap-2 cursor-pointer group">
+                            <input type="checkbox" class="custom-checkbox">
+                            <span class="text-xs font-medium text-gray-600 dark:text-gray-400 group-hover:text-cm-textMain dark:group-hover:text-white transition-colors">Remember me</span>
+                        </label>
+                        
+                        <a href="#" class="text-xs font-bold text-cm-red hover:text-cm-redHover transition-colors">Forgot Password?</a>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" id="loginBtn" class="w-full py-3 bg-cm-red text-white rounded-lg font-bold text-sm hover:bg-cm-redHover transition-colors shadow-md flex items-center justify-center gap-2">
+                            <span>Sign In to Portal</span> <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="mt-8 text-center">
+                <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                    Don't have an account? <a href="#" class="text-cm-red font-bold hover:underline">Contact Support</a>
+                </p>
+                <div class="mt-6 flex justify-center items-center gap-3 text-[10px] text-gray-400 dark:text-gray-500">
+                    <a href="#" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Terms of Service</a>
+                    <span>•</span>
+                    <a href="#" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Privacy Policy</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Dark Mode Logic
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Initialize Theme
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Toggle Password Visibility
+        function togglePassword() {
+            const pwdInput = document.getElementById('password');
+            const icon = document.getElementById('eyeIcon');
+            
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+                icon.classList.add('text-cm-red');
+            } else {
+                pwdInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.remove('text-cm-red');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Simulate Login Loading State
+        function simulateLogin() {
+            const btn = document.getElementById('loginBtn');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Authenticating...`;
+            btn.disabled = true;
+            btn.classList.add('opacity-80', 'cursor-wait');
+
+            // Simulate network request delay
+            setTimeout(() => {
+                btn.innerHTML = `<i class="fa-solid fa-check"></i> Login Successful!`;
+                btn.classList.replace('bg-cm-red', 'bg-green-600');
+                btn.classList.replace('hover:bg-cm-redHover', 'hover:bg-green-700');
+                
+                // Redirect logic would go here
+                setTimeout(() => {
+                    // window.location.href = '/dashboard';
+                    
+                    // Reset for demo purposes
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-80', 'cursor-wait', 'bg-green-600', 'hover:bg-green-700');
+                    btn.classList.add('bg-cm-red', 'hover:bg-cm-redHover');
+                }, 1500);
+
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

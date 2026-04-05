@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Task Management - CM Biz</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        zoho: {
+                            sidebar: '#1a1f36',
+                            active: '#2d334a',
+                            blue: '#3b82f6',
+                            yellow: '#f59e0b',
+                            bgLight: '#f4f5f7',
+                            cardBorder: '#e5e7eb'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+        /* Form Input Styling (Zoho Style) */
+        .zoho-input {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #ffffff;
+            transition: all 0.2s;
+            outline: none;
+        }
+        .zoho-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .dark .zoho-input {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f3f4f6;
+        }
+        .dark .zoho-input:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+
+        /* Readonly Fields */
+        .zoho-input[readonly] {
+            background-color: #f3f4f6;
+            color: #6b7280;
+            cursor: not-allowed;
+            border-color: #e5e7eb;
+        }
+        .dark .zoho-input[readonly] {
+            background-color: #1f2937;
+            color: #9ca3af;
+            border-color: #374151;
+        }
+
+        .zoho-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 6px;
+        }
+        .dark .zoho-label { color: #9ca3af; }
+
+        /* Smooth reveal for conditional sections */
+        .reveal-section {
+            transition: all 0.3s ease-in-out;
+            max-height: 500px;
+            opacity: 1;
+            overflow: hidden;
+        }
+        .reveal-section.hidden-section {
+            max-height: 0;
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+    </style>
+</head>
+<body class="bg-zoho-bgLight dark:bg-gray-900 text-gray-800 dark:text-gray-200 overflow-hidden flex h-screen transition-colors duration-300">
+
+    <aside class="bg-zoho-sidebar text-gray-300 w-64 flex-shrink-0 hidden lg:flex flex-col h-full shadow-xl z-50">
+        <div class="h-16 flex items-center px-6 border-b border-gray-700/50 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded bg-white flex items-center justify-center text-zoho-sidebar font-bold text-lg">
+                    <i class="fa-solid fa-shapes"></i>
+                </div>
+                <div>
+                    <h1 class="text-white font-bold text-lg tracking-wide leading-tight">CM Biz</h1>
+                    <span class="text-xs text-gray-400 font-medium">Version 1.0</span>
+                </div>
+            </div>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-white/5 transition-colors text-sm font-medium">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
+            </a>
+            <a href="#" class="bg-zoho-active border-left border-l-4 border-zoho-blue text-white flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors text-sm font-medium">
+                <i class="fa-solid fa-list-check w-5 text-center text-zoho-blue"></i> Task Manager
+            </a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-white/5 transition-colors text-sm font-medium">
+                <i class="fa-solid fa-users w-5 text-center"></i> Clients
+            </a>
+        </nav>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        
+        <header class="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 sm:px-6 z-10 shrink-0 transition-colors">
+            <div class="flex items-center gap-4">
+                <i class="fa-solid fa-bars text-xl text-gray-500 lg:hidden cursor-pointer"></i>
+                <h2 class="text-lg font-bold text-gray-800 dark:text-white hidden sm:block">Task Entry</h2>
+            </div>
+            <div class="flex items-center gap-4 sm:gap-6">
+                <button onclick="document.documentElement.classList.toggle('dark')" class="text-gray-500 hover:text-zoho-blue dark:text-gray-400 dark:hover:text-yellow-400 transition-colors h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block"></i>
+                </button>
+                <div class="w-8 h-8 rounded-full bg-zoho-blue text-white flex items-center justify-center font-bold text-sm shadow-sm cursor-pointer">
+                    H
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="max-w-5xl mx-auto">
+                
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Record / Update Task</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage client tasks, tracking, and closure statuses.</p>
+                </div>
+
+                <form class="bg-white dark:bg-gray-800 rounded-lg border border-zoho-cardBorder dark:border-gray-700 shadow-sm overflow-hidden">
+                    
+                    <div class="p-6 border-b border-zoho-cardBorder dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="zoho-label">Row Number</label>
+                                <input type="text" value="AUTO-GEN" readonly class="zoho-input font-mono text-center sm:text-left">
+                            </div>
+                            
+                            <div class="md:col-span-2">
+                                <label class="zoho-label">Client Name <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-building absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    <select id="clientSelect" class="zoho-input pl-9 appearance-none" required onchange="autoFillClientData()">
+                                        <option value="" disabled selected>Select Client...</option>
+                                        <option value="CLT-1001">Hexa Supermarket</option>
+                                        <option value="CLT-1002">TechNova Solutions</option>
+                                        <option value="CLT-1003">M/s ALFA</option>
+                                    </select>
+                                    <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-5 pt-5 border-t border-gray-200 dark:border-gray-700">
+                            <div>
+                                <label class="zoho-label">Client ID</label>
+                                <input type="text" id="clientId" readonly class="zoho-input text-xs font-mono">
+                            </div>
+                            <div>
+                                <label class="zoho-label">Mobile No.</label>
+                                <input type="text" id="clientMobile" readonly class="zoho-input text-xs">
+                            </div>
+                            <div>
+                                <label class="zoho-label">GSTIN</label>
+                                <input type="text" id="clientGst" readonly class="zoho-input text-xs font-mono uppercase">
+                            </div>
+                            <div>
+                                <label class="zoho-label">Portal Username</label>
+                                <input type="text" id="clientUser" class="zoho-input text-xs" placeholder="e.g. ITD login">
+                            </div>
+                            <div class="sm:col-span-2 md:col-span-4 relative">
+                                <label class="zoho-label">Portal Password</label>
+                                <div class="relative w-full md:w-1/4">
+                                    <input type="password" id="clientPass" class="zoho-input text-xs pr-10" placeholder="Password">
+                                    <button type="button" onclick="togglePassword()" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none">
+                                        <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        
+                        <div class="md:col-span-2">
+                            <label class="zoho-label">Task Name / Description <span class="text-red-500">*</span></label>
+                            <input type="text" placeholder="e.g. GST Return Filing, IT Return, Audit..." required class="zoho-input font-medium text-base">
+                        </div>
+
+                        <div>
+                            <label class="zoho-label">Task Date <span class="text-red-500">*</span></label>
+                            <input type="date" id="taskDate" required class="zoho-input">
+                        </div>
+
+                        <div>
+                            <label class="zoho-label">Period <span class="text-red-500">*</span></label>
+                            <input type="text" placeholder="e.g. Q1 2026, April 2026, FY 25-26" required class="zoho-input">
+                        </div>
+
+                        <div>
+                            <label class="zoho-label text-zoho-blue">Task Status <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <select id="taskStatus" required class="zoho-input appearance-none font-semibold border-zoho-blue/50 focus:border-zoho-blue" onchange="handleStatusChange()">
+                                    <option value="Pending" selected>Pending</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="On Hold">On Hold (Awaiting Docs)</option>
+                                    <option value="Completed" class="text-green-600 font-bold">Completed</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-zoho-blue pointer-events-none text-xs"></i>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div id="closingSection" class="reveal-section hidden-section bg-green-50/50 dark:bg-green-900/10 border-t border-green-100 dark:border-green-900/30 p-6">
+                        <h3 class="text-sm font-bold text-green-700 dark:text-green-500 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check"></i> Task Closure & Billing Details
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="zoho-label">Task Payment Status <span class="text-red-500">*</span></label>
+                                <select id="paymentStatus" class="zoho-input appearance-none">
+                                    <option value="" disabled selected>Select Payment Status...</option>
+                                    <option value="Paid">Paid in Full</option>
+                                    <option value="Pending">Payment Pending</option>
+                                    <option value="Billed">Billed / Invoiced</option>
+                                    <option value="Complimentary">Complimentary / FOC</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="zoho-label">Prepare Statement?</label>
+                                <div class="flex items-center gap-6 mt-2">
+                                    <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
+                                        <input type="radio" name="prepareStatement" value="Yes" class="w-4 h-4 text-zoho-blue border-gray-300 focus:ring-zoho-blue">
+                                        Yes, Generate Statement
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
+                                        <input type="radio" name="prepareStatement" value="No" checked class="w-4 h-4 text-zoho-blue border-gray-300 focus:ring-zoho-blue">
+                                        No
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-4 border-t border-zoho-cardBorder dark:border-gray-700 flex flex-col-reverse sm:flex-row justify-end gap-3 bg-white dark:bg-gray-800">
+                        <button type="button" class="px-5 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                            Cancel
+                        </button>
+                        <button type="submit" id="btnSave" class="px-6 py-2 rounded-md bg-zoho-blue text-white text-sm font-medium hover:bg-blue-600 transition shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-save"></i> Save Task
+                        </button>
+                        <button type="submit" id="btnClose" style="display: none;" class="px-6 py-2 rounded-md bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-lock"></i> Close & Finalize Task
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Set today's date
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('taskDate').value = new Date().toISOString().split('T')[0];
+        });
+
+        // Dummy Database for auto-filling based on Client Selection
+        const clientDB = {
+            "CLT-1001": { mobile: "+91 9876543210", gst: "22AAAAA0000A1Z5", user: "hexa_gst_login", pass: "Hexa@2026" },
+            "CLT-1002": { mobile: "+91 9123456789", gst: "29BBBBB1111B1Z5", user: "technova_tax", pass: "Tech#123" },
+            "CLT-1003": { mobile: "+91 9988776655", gst: "32CCCCC2222C1Z5", user: "alfa_compliance", pass: "Alfa@999" }
+        };
+
+        function autoFillClientData() {
+            const val = document.getElementById('clientSelect').value;
+            if (val && clientDB[val]) {
+                document.getElementById('clientId').value = val;
+                document.getElementById('clientMobile').value = clientDB[val].mobile;
+                document.getElementById('clientGst').value = clientDB[val].gst;
+                document.getElementById('clientUser').value = clientDB[val].user;
+                document.getElementById('clientPass').value = clientDB[val].pass;
+            }
+        }
+
+        // Toggle Password Visibility
+        function togglePassword() {
+            const pwdInput = document.getElementById('clientPass');
+            const icon = document.getElementById('eyeIcon');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Handle Status Change Logic (The core request requirement)
+        function handleStatusChange() {
+            const status = document.getElementById('taskStatus').value;
+            const closingSection = document.getElementById('closingSection');
+            const paymentSelect = document.getElementById('paymentStatus');
+            const btnSave = document.getElementById('btnSave');
+            const btnClose = document.getElementById('btnClose');
+
+            if (status === 'Completed') {
+                // Reveal Payment & Statement section
+                closingSection.classList.remove('hidden-section');
+                paymentSelect.setAttribute('required', 'required'); // Make payment status mandatory on closing
+                
+                // Swap buttons
+                btnSave.style.display = 'none';
+                btnClose.style.display = 'flex';
+            } else {
+                // Hide section
+                closingSection.classList.add('hidden-section');
+                paymentSelect.removeAttribute('required');
+                
+                // Swap buttons
+                btnSave.style.display = 'flex';
+                btnClose.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

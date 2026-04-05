@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard - CM Biz</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        cm: {
+                            red: '#c62828',         /* Professional Red */
+                            redHover: '#b71c1c',
+                            bgMuted: '#f1f5f9',     /* Muted Grey Background */
+                            surface: '#ffffff',
+                            textMain: '#1e293b',    /* Dark Slate */
+                            textMuted: '#64748b',   /* Muted Slate Grey */
+                            border: '#e2e8f0',
+                            sidebarBg: '#0f172a'    /* Deep Grey/Black for Sidebar */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+        /* Sidebar Transitions */
+        .sidebar-transition { transition: transform 0.3s ease-in-out; }
+        
+        /* Nav Item Styles */
+        .nav-item.active {
+            background-color: rgba(198, 40, 40, 0.15); /* Faint Red */
+            border-right: 4px solid #c62828;
+            color: #c62828;
+            font-weight: 600;
+        }
+        .dark .nav-item.active {
+            background-color: rgba(198, 40, 40, 0.3);
+            color: #ef5350;
+            border-right-color: #ef5350;
+        }
+
+        .chart-wrapper { position: relative; height: 300px; width: 100%; }
+    </style>
+</head>
+<body class="bg-cm-bgMuted dark:bg-gray-900 text-cm-textMain dark:text-gray-200 overflow-hidden flex h-screen transition-colors duration-300">
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/60 dark:bg-black/80 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar" class="sidebar-transition bg-cm-sidebarBg text-gray-300 w-72 flex-shrink-0 fixed inset-y-0 left-0 z-50 transform -translate-x-full lg:relative lg:translate-x-0 flex flex-col h-full shadow-2xl">
+        
+        <div class="px-6 py-6 border-b border-gray-800 shrink-0">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-cm-red flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-white font-bold text-2xl tracking-tight leading-none">CM Biz</h1>
+                        <span class="text-[10px] text-gray-400 font-medium uppercase tracking-widest bg-gray-800 px-2 py-0.5 rounded mt-1 inline-block">v 1.0</span>
+                    </div>
+                </div>
+                <button class="lg:hidden text-gray-400 hover:text-white" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <p class="text-xs text-gray-400 mt-4 italic font-medium text-center tracking-wide text-cm-red">"Count . Connect . Grow"</p>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-sm">
+                <i class="fa-solid fa-gauge-high w-5 text-center"></i> Dashboard Overview
+            </a>
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm">
+                <i class="fa-solid fa-money-check-dollar w-5 text-center"></i> Vouchers & Payments
+            </a>
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm">
+                <i class="fa-solid fa-users w-5 text-center"></i> Clients Master
+            </a>
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm">
+                <i class="fa-solid fa-calendar-check w-5 text-center"></i> Compliances
+            </a>
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i> Financial Reports
+            </a>
+        </nav>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
+        
+        <header class="h-16 bg-white dark:bg-gray-800 border-b border-cm-border dark:border-gray-700 flex items-center justify-between px-4 sm:px-6 z-10 shrink-0 shadow-sm transition-colors">
+            
+            <div class="flex items-center gap-4">
+                <button class="text-gray-500 hover:text-cm-red dark:text-gray-400 lg:hidden focus:outline-none" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <h2 class="text-lg font-bold hidden sm:block text-cm-textMain dark:text-white">Dashboard</h2>
+            </div>
+
+            <div class="flex items-center gap-4 sm:gap-6">
+                <div class="hidden md:flex items-center gap-2 px-4 py-1.5 bg-slate-100 dark:bg-gray-700 rounded-full border border-slate-200 dark:border-gray-600">
+                    <i class="fa-regular fa-clock text-cm-red dark:text-red-400"></i>
+                    <span id="live-clock" class="text-xs font-semibold text-cm-textMain dark:text-gray-200 tracking-wide">Loading time...</span>
+                </div>
+
+                <button onclick="toggleTheme()" class="text-gray-500 hover:text-cm-red dark:text-gray-400 dark:hover:text-yellow-400 transition-colors h-9 w-9 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block"></i>
+                </button>
+                
+                <div class="w-9 h-9 rounded-full bg-cm-red text-white flex items-center justify-center font-bold text-sm shadow-md cursor-pointer border-2 border-white dark:border-gray-800">
+                    AD
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="max-w-7xl mx-auto space-y-6">
+                
+                <div class="bg-red-50 dark:bg-red-900/20 border-l-4 border-cm-red rounded-r-lg p-4 flex items-center justify-between shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center text-cm-red text-lg shrink-0">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-cm-red dark:text-red-400">Action Required</h3>
+                            <p class="text-xs text-gray-600 dark:text-gray-300 font-medium mt-0.5">You have <span class="font-bold text-lg mx-1">14</span> pending tasks and vouchers requiring approval.</p>
+                        </div>
+                    </div>
+                    <button class="hidden sm:block px-4 py-2 bg-cm-red text-white text-xs font-semibold rounded hover:bg-cm-redHover transition-colors shadow-sm">Review Now</button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-cm-border dark:border-gray-700 shadow-sm relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-full transition-transform group-hover:scale-150 z-0"></div>
+                        <div class="relative z-10 flex justify-between items-start">
+                            <div>
+                                <p class="text-xs font-bold text-cm-textMuted dark:text-gray-400 uppercase tracking-wider">Cash Balance</p>
+                                <h3 class="text-2xl font-bold text-cm-textMain dark:text-white mt-1">₹ 85,400</h3>
+                            </div>
+                            <div class="text-emerald-500 text-xl"><i class="fa-solid fa-wallet"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-cm-border dark:border-gray-700 shadow-sm relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-full transition-transform group-hover:scale-150 z-0"></div>
+                        <div class="relative z-10 flex justify-between items-start">
+                            <div>
+                                <p class="text-xs font-bold text-cm-textMuted dark:text-gray-400 uppercase tracking-wider">Bank Balance</p>
+                                <h3 class="text-2xl font-bold text-cm-textMain dark:text-white mt-1">₹ 14,50,000</h3>
+                            </div>
+                            <div class="text-blue-500 text-xl"><i class="fa-solid fa-building-columns"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-cm-border dark:border-gray-700 shadow-sm relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-full transition-transform group-hover:scale-150 z-0"></div>
+                        <div class="relative z-10 flex justify-between items-start">
+                            <div>
+                                <p class="text-xs font-bold text-cm-textMuted dark:text-gray-400 uppercase tracking-wider">Total Payables</p>
+                                <h3 class="text-2xl font-bold text-cm-textMain dark:text-white mt-1">₹ 3,20,500</h3>
+                            </div>
+                            <div class="text-cm-red text-xl"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-cm-border dark:border-gray-700 shadow-sm relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-amber-50 dark:bg-amber-900/20 rounded-full transition-transform group-hover:scale-150 z-0"></div>
+                        <div class="relative z-10 flex justify-between items-start">
+                            <div>
+                                <p class="text-xs font-bold text-cm-textMuted dark:text-gray-400 uppercase tracking-wider">Total Receivables</p>
+                                <h3 class="text-2xl font-bold text-cm-textMain dark:text-white mt-1">₹ 6,45,000</h3>
+                            </div>
+                            <div class="text-amber-500 text-xl"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl border border-cm-border dark:border-gray-700 shadow-sm p-5 lg:col-span-2">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-bold text-cm-textMain dark:text-white flex items-center gap-2">
+                                <i class="fa-solid fa-chart-area text-cm-red"></i> Financial Performance
+                            </h3>
+                            <select class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-xs rounded-md focus:ring-cm-red focus:border-cm-red outline-none px-2 py-1 font-medium">
+                                <option>Current FY</option>
+                                <option>Last 6 Months</option>
+                            </select>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="financialChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 rounded-xl border border-cm-border dark:border-gray-700 shadow-sm flex flex-col h-[380px]">
+                        <div class="p-5 border-b border-cm-border dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 rounded-t-xl shrink-0">
+                            <h3 class="text-sm font-bold text-cm-textMain dark:text-white flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days text-cm-red"></i> Compliance Calendar
+                            </h3>
+                            <p class="text-[10px] text-cm-textMuted dark:text-gray-400 font-medium mt-1">Upcoming deadlines (Next 10 Days)</p>
+                        </div>
+                        
+                        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+                            <div class="flex gap-3">
+                                <div class="flex flex-col items-center min-w-[40px]">
+                                    <span class="text-xs font-bold text-cm-red">Apr 07</span>
+                                    <div class="w-1.5 h-1.5 rounded-full bg-cm-red my-1"></div>
+                                    <div class="w-0.5 h-full bg-gray-200 dark:bg-gray-700"></div>
+                                </div>
+                                <div class="pb-4">
+                                    <h4 class="text-xs font-bold text-cm-textMain dark:text-white">TDS Payment</h4>
+                                    <p class="text-[10px] text-cm-textMuted dark:text-gray-400 mt-0.5">Deposit TDS for March 2026</p>
+                                    <span class="inline-block mt-1 px-2 py-0.5 bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 text-[9px] font-bold rounded">Due in 2 days</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <div class="flex flex-col items-center min-w-[40px]">
+                                    <span class="text-xs font-bold text-gray-800 dark:text-gray-200">Apr 10</span>
+                                    <div class="w-1.5 h-1.5 rounded-full bg-blue-500 my-1"></div>
+                                    <div class="w-0.5 h-full bg-gray-200 dark:bg-gray-700"></div>
+                                </div>
+                                <div class="pb-4">
+                                    <h4 class="text-xs font-bold text-cm-textMain dark:text-white">GSTR-1 Filing</h4>
+                                    <p class="text-[10px] text-cm-textMuted dark:text-gray-400 mt-0.5">Outward supplies for March 2026</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <div class="flex flex-col items-center min-w-[40px]">
+                                    <span class="text-xs font-bold text-gray-800 dark:text-gray-200">Apr 15</span>
+                                    <div class="w-1.5 h-1.5 rounded-full bg-purple-500 my-1"></div>
+                                    <div class="w-0.5 h-full bg-transparent"></div>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-cm-textMain dark:text-white">PF / ESI Payment</h4>
+                                    <p class="text-[10px] text-cm-textMuted dark:text-gray-400 mt-0.5">Statutory dues for March 2026</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            
+            <footer class="mt-10 py-6 border-t border-cm-border dark:border-gray-800 text-center">
+                <p class="text-xs font-semibold text-cm-textMuted dark:text-gray-500">Powered by <span class="text-cm-textMain dark:text-gray-300">CM Experts Group</span>.</p>
+                <div class="flex items-center justify-center gap-2 mt-1 text-[10px] text-gray-400 font-medium">
+                    <a href="https://www.cmeg.in" target="_blank" class="hover:text-cm-red transition-colors">www.cmeg.in</a>
+                    <span>|</span>
+                    <span>cmeg@2026 All Rights Reserved.</span>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // --- 1. LIVE CLOCK SCRIPT ---
+        function updateClock() {
+            const now = new Date();
+            const options = { 
+                weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true 
+            };
+            document.getElementById('live-clock').textContent = now.toLocaleString('en-IN', options);
+        }
+        setInterval(updateClock, 1000);
+        updateClock(); // Initial call
+
+        // --- 2. SIDEBAR TOGGLE ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                overlay.classList.add('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-0'), 10);
+            }
+        }
+
+        // --- 3. DARK MODE TOGGLE ---
+        function toggleTheme() {
+            const htmlElement = document.documentElement;
+            if (htmlElement.classList.contains('dark')) {
+                htmlElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                htmlElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            updateChartTheme(); // Update chart colors dynamically
+        }
+
+        // Check local storage on load
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // --- 4. CHART.JS SETUP (Income, Expense, Profit) ---
+        let financialChart;
+        function initChart() {
+            const ctx = document.getElementById('financialChart').getContext('2d');
+            const isDark = document.documentElement.classList.contains('dark');
+            
+            const gridColor = isDark ? '#374151' : '#e2e8f0';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            financialChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'Net Profit',
+                            data: [35000, 42000, 38000, 50000, 55000, 48000],
+                            borderColor: '#c62828', // CM Red
+                            backgroundColor: '#c62828',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            pointRadius: 4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Income',
+                            data: [120000, 140000, 130000, 160000, 175000, 150000],
+                            backgroundColor: '#3b82f6', // Blue
+                            borderRadius: 4,
+                            barPercentage: 0.6,
+                            yAxisID: 'y'
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Expenses',
+                            data: [85000, 98000, 92000, 110000, 120000, 102000],
+                            backgroundColor: '#94a3b8', // Muted Grey
+                            borderRadius: 4,
+                            barPercentage: 0.6,
+                            yAxisID: 'y'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: textColor,
+                                font: { family: "'Poppins', sans-serif", size: 11, weight: '500' },
+                                usePointStyle: true,
+                                boxWidth: 8
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                            titleColor: isDark ? '#ffffff' : '#1e293b',
+                            bodyColor: isDark ? '#cbd5e1' : '#475569',
+                            borderColor: gridColor,
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ₹ ' + context.parsed.y.toLocaleString('en-IN');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false, drawBorder: false },
+                            ticks: { color: textColor, font: { family: "'Poppins', sans-serif", size: 11 } }
+                        },
+                        y: {
+                            grid: { color: gridColor, drawBorder: false, borderDash: [5, 5] },
+                            ticks: {
+                                color: textColor,
+                                font: { family: "'Poppins', sans-serif", size: 11 },
+                                callback: function(value) {
+                                    return value >= 100000 ? '₹' + (value / 100000) + 'L' : '₹' + (value/1000) + 'k';
+                                }
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChartTheme() {
+            if (financialChart) {
+                const isDark = document.documentElement.classList.contains('dark');
+                const gridColor = isDark ? '#374151' : '#e2e8f0';
+                const textColor = isDark ? '#94a3b8' : '#64748b';
+
+                financialChart.options.scales.x.ticks.color = textColor;
+                financialChart.options.scales.y.ticks.color = textColor;
+                financialChart.options.scales.y.grid.color = gridColor;
+                financialChart.options.plugins.legend.labels.color = textColor;
+                financialChart.options.plugins.tooltip.backgroundColor = isDark ? '#1e293b' : '#ffffff';
+                financialChart.options.plugins.tooltip.titleColor = isDark ? '#ffffff' : '#1e293b';
+                financialChart.options.plugins.tooltip.bodyColor = isDark ? '#cbd5e1' : '#475569';
+                financialChart.options.plugins.tooltip.borderColor = gridColor;
+                financialChart.update();
+            }
+        }
+
+        // Init chart on load
+        window.onload = function() {
+            initChart();
+        };
+    </script>
+</body>
+</html>

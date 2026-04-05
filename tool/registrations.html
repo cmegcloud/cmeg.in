@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Business Registrations - CM Biz</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+                    colors: {
+                        cm: {
+                            red: '#c62828',         /* Professional Red */
+                            redHover: '#b71c1c',
+                            bgMuted: '#f1f5f9',     /* Muted Grey Background */
+                            surface: '#ffffff',
+                            textMain: '#1e293b',    /* Dark Slate */
+                            textMuted: '#64748b',   /* Muted Slate Grey */
+                            border: '#e2e8f0',
+                            sidebarBg: '#0f172a'    /* Deep Grey/Black for Sidebar */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+        .sidebar-transition { transition: transform 0.3s ease-in-out; }
+        
+        .nav-item.active {
+            background-color: rgba(198, 40, 40, 0.15);
+            border-right: 4px solid #c62828;
+            color: #c62828;
+            font-weight: 600;
+        }
+        .dark .nav-item.active {
+            background-color: rgba(198, 40, 40, 0.3);
+            color: #ef5350;
+            border-right-color: #ef5350;
+        }
+
+        /* Service Card Hover Effect */
+        .service-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.05);
+            border-color: rgba(198, 40, 40, 0.3);
+        }
+        .dark .service-card:hover {
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+            border-color: rgba(239, 83, 80, 0.4);
+        }
+
+        /* Modal Transitions */
+        .modal-overlay {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-panel {
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .modal-overlay.active .modal-panel {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body class="bg-cm-bgMuted dark:bg-gray-900 text-cm-textMain dark:text-gray-200 overflow-hidden flex h-screen transition-colors duration-300">
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/60 dark:bg-black/80 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar" class="sidebar-transition bg-cm-sidebarBg text-gray-300 w-64 flex-shrink-0 fixed inset-y-0 left-0 z-50 transform -translate-x-full lg:relative lg:translate-x-0 flex flex-col h-full shadow-2xl">
+        <div class="px-6 py-6 border-b border-gray-800 shrink-0">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-cm-red flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                        <i class="fa-solid fa-shapes"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-white font-bold text-2xl tracking-tight leading-none">CM Biz</h1>
+                        <span class="text-[10px] text-gray-400 font-medium uppercase tracking-widest bg-gray-800 px-2 py-0.5 rounded mt-1 inline-block">Client Portal</span>
+                    </div>
+                </div>
+                <button class="lg:hidden text-gray-400 hover:text-white" onclick="toggleSidebar()"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm">
+                <i class="fa-solid fa-gauge-high w-5 text-center"></i> Dashboard
+            </a>
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-sm">
+                <i class="fa-solid fa-file-signature w-5 text-center"></i> New Registrations
+            </a>
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm">
+                <i class="fa-solid fa-calendar-check w-5 text-center"></i> Compliances
+            </a>
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm">
+                <i class="fa-solid fa-credit-card w-5 text-center"></i> Make Payment
+            </a>
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm">
+                <i class="fa-solid fa-headset w-5 text-center"></i> Support Tickets
+            </a>
+        </nav>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
+        
+        <header class="h-16 bg-white dark:bg-gray-800 border-b border-cm-border dark:border-gray-700 flex items-center justify-between px-4 sm:px-6 z-10 shrink-0 shadow-sm transition-colors">
+            <div class="flex items-center gap-4">
+                <button class="text-gray-500 hover:text-cm-red dark:text-gray-400 lg:hidden focus:outline-none" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <h2 class="text-lg font-bold hidden sm:block text-cm-textMain dark:text-white">Service Catalog</h2>
+            </div>
+            <div class="flex items-center gap-4 sm:gap-6">
+                <div class="hidden md:flex relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" placeholder="Search services..." class="pl-9 pr-4 py-1.5 bg-gray-100 dark:bg-gray-700 border-none rounded-md text-sm outline-none focus:ring-2 focus:ring-cm-red/30 text-gray-800 dark:text-gray-200 w-64">
+                </div>
+
+                <button onclick="toggleTheme()" class="text-gray-500 hover:text-cm-red dark:text-gray-400 dark:hover:text-yellow-400 transition-colors h-9 w-9 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block"></i>
+                </button>
+                <div class="w-9 h-9 rounded-full bg-cm-red text-white flex items-center justify-center font-bold text-sm shadow-md border-2 border-white dark:border-gray-800 cursor-pointer">
+                    SK
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="max-w-[1200px] mx-auto space-y-8">
+                
+                <div class="bg-gradient-to-r from-gray-900 to-cm-sidebarBg rounded-2xl p-8 sm:p-10 shadow-lg text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-cm-red rounded-full mix-blend-multiply filter blur-[80px] opacity-40"></div>
+                    <div class="relative z-10">
+                        <h2 class="text-2xl sm:text-3xl font-extrabold mb-2">Business & Tax Registrations</h2>
+                        <p class="text-gray-300 max-w-2xl text-sm sm:text-base">Start your entrepreneurial journey or expand your compliance footprint. Select a service below to view required documents, timelines, and initiate the process securely.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-3">
+                    <button class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-xs font-bold text-gray-700 dark:text-gray-300 hover:border-cm-red hover:text-cm-red transition-colors shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-building"></i> Company Formation
+                    </button>
+                    <button class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-xs font-bold text-gray-700 dark:text-gray-300 hover:border-cm-red hover:text-cm-red transition-colors shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-percent"></i> Tax Registrations
+                    </button>
+                    <button class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-xs font-bold text-gray-700 dark:text-gray-300 hover:border-cm-red hover:text-cm-red transition-colors shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-copyright"></i> IP & Trademark
+                    </button>
+                    <button class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-xs font-bold text-gray-700 dark:text-gray-300 hover:border-cm-red hover:text-cm-red transition-colors shadow-sm flex items-center gap-2 ml-auto">
+                        <i class="fa-solid fa-file-arrow-down"></i> Download Common Forms
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="servicesGrid">
+                    </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="serviceModal" class="modal-overlay fixed inset-0 z-[100] flex justify-end">
+        <div class="absolute inset-0 bg-gray-900/60 dark:bg-black/80 backdrop-blur-sm" onclick="closeModal()"></div>
+        
+        <div class="modal-panel relative w-full max-w-md h-full bg-white dark:bg-gray-800 shadow-2xl flex flex-col border-l border-cm-border dark:border-gray-700 z-10">
+            
+            <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700 flex items-start justify-between bg-gray-50 dark:bg-gray-900/50">
+                <div class="flex gap-4">
+                    <div id="m-icon" class="w-12 h-12 rounded-lg bg-red-100 dark:bg-red-900/30 text-cm-red flex items-center justify-center text-2xl shrink-0">
+                        </div>
+                    <div>
+                        <h3 id="m-title" class="text-xl font-bold text-gray-900 dark:text-white leading-tight">Service Title</h3>
+                        <p id="m-category" class="text-xs font-semibold text-cm-red uppercase tracking-wider mt-1">Category</p>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 space-y-8">
+                
+                <div>
+                    <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-2 border-b border-gray-100 dark:border-gray-700 pb-2">Overview</h4>
+                    <p id="m-desc" class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Description goes here.</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 rounded-xl p-4">
+                        <i class="fa-regular fa-clock text-blue-600 dark:text-blue-400 mb-2 text-lg"></i>
+                        <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">Estimated Time</p>
+                        <p id="m-time" class="text-sm font-bold text-gray-900 dark:text-white mt-0.5">3 - 7 Days</p>
+                    </div>
+                    <div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/50 rounded-xl p-4">
+                        <i class="fa-solid fa-indian-rupee-sign text-emerald-600 dark:text-emerald-400 mb-2 text-lg"></i>
+                        <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">Professional Fee</p>
+                        <p id="m-price" class="text-sm font-bold text-gray-900 dark:text-white mt-0.5">₹ 1,499</p>
+                        <p class="text-[9px] text-gray-500 mt-0.5">+ Govt Fees (if any)</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-3 border-b border-gray-100 dark:border-gray-700 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-file-circle-check text-cm-red"></i> Documents Required
+                    </h4>
+                    <ul id="m-docs" class="space-y-3">
+                        </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">How it works</h4>
+                    <div class="relative border-l-2 border-gray-200 dark:border-gray-700 ml-3 space-y-5 pb-4">
+                        <div class="relative pl-6">
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white dark:bg-gray-800 border-2 border-cm-red"></span>
+                            <p class="text-xs font-bold text-gray-800 dark:text-gray-200">1. Make Payment</p>
+                            <p class="text-[10px] text-gray-500 dark:text-gray-400">Initiate the request by paying the professional fee.</p>
+                        </div>
+                        <div class="relative pl-6">
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white dark:bg-gray-800 border-2 border-cm-red"></span>
+                            <p class="text-xs font-bold text-gray-800 dark:text-gray-200">2. Upload Documents</p>
+                            <p class="text-[10px] text-gray-500 dark:text-gray-400">Upload required docs securely via the portal.</p>
+                        </div>
+                        <div class="relative pl-6">
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white dark:bg-gray-800 border-2 border-cm-red"></span>
+                            <p class="text-xs font-bold text-gray-800 dark:text-gray-200">3. Application Filing</p>
+                            <p class="text-[10px] text-gray-500 dark:text-gray-400">Our experts verify and file the application with Govt.</p>
+                        </div>
+                        <div class="relative pl-6">
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white dark:bg-gray-800 border-2 border-cm-red"></span>
+                            <p class="text-xs font-bold text-gray-800 dark:text-gray-200">4. Certificate Issuance</p>
+                            <p class="text-[10px] text-gray-500 dark:text-gray-400">Receive your registration certificate digitally.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/80 shrink-0">
+                <button onclick="proceedToPayment()" class="w-full py-3.5 bg-cm-red text-white rounded-lg font-bold text-sm hover:bg-cm-redHover transition-colors shadow-md flex items-center justify-center gap-2">
+                    Proceed to Payment <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <p class="text-center text-[10px] text-gray-500 mt-3"><i class="fa-solid fa-lock text-green-500 mr-1"></i> Secure 256-bit SSL encrypted payment</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Theme & Sidebar Logic ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                overlay.classList.add('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-0'), 10);
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // --- Services Database ---
+        const services = [
+            {
+                id: 'gst',
+                title: 'GST Registration',
+                category: 'Tax Registration',
+                icon: '<i class="fa-solid fa-percent"></i>',
+                desc: 'Mandatory for businesses crossing threshold limits or engaging in inter-state/e-commerce supply. Includes dedicated expert support until ARN generation.',
+                time: '3 - 7 Working Days',
+                price: '1,499',
+                docs: [
+                    'PAN Card of Business / Applicant',
+                    'Aadhaar Card of Authorized Signatory',
+                    'Passport size photograph',
+                    'Proof of Business Address (Rent Agreement / Electricity Bill)',
+                    'Bank Account Proof (Cancelled Cheque / Passbook)'
+                ]
+            },
+            {
+                id: 'pvtltd',
+                title: 'Private Limited Company',
+                category: 'Company Formation',
+                icon: '<i class="fa-solid fa-building"></i>',
+                desc: 'The most popular legal structure for startups in India. Includes DIN, DSC, Name Approval, MoA, AoA, PAN & TAN of company.',
+                time: '10 - 15 Working Days',
+                price: '14,999',
+                docs: [
+                    'PAN Card of all Directors',
+                    'Aadhaar / Voter ID / Passport of Directors',
+                    'Latest Bank Statement (Not older than 2 months)',
+                    'Passport size photograph of Directors',
+                    'Registered Office Proof (Utility Bill + NOC)'
+                ]
+            },
+            {
+                id: 'udyam',
+                title: 'Udyam (MSME) Registration',
+                category: 'Business Registration',
+                icon: '<i class="fa-solid fa-industry"></i>',
+                desc: 'Get recognized by the Ministry of MSME to avail government subsidies, collateral-free loans, and protection against delayed payments.',
+                time: '1 - 2 Working Days',
+                price: '999',
+                docs: [
+                    'Aadhaar Card (Linked with Mobile Number)',
+                    'PAN Card of the Business / Proprietor',
+                    'Bank Account Details (IFSC & A/c No)',
+                    'Basic Business Details (NIC Code, Investment value)'
+                ]
+            },
+            {
+                id: 'trademark',
+                title: 'Trademark Registration',
+                category: 'Intellectual Property',
+                icon: '<i class="fa-regular fa-registered"></i>',
+                desc: 'Protect your brand name, logo, or slogan from being copied. Includes comprehensive trademark search, class selection, and filing.',
+                time: '3 - 5 Days (Filing)',
+                price: '6,999',
+                docs: [
+                    'Copy of Logo / Wordmark',
+                    'Signed Form TM-48 (Power of Attorney)',
+                    'Identity Proof of Signatory',
+                    'Udyam Certificate (to claim 50% Govt fee discount)',
+                    'User Affidavit (if claiming prior use)'
+                ]
+            },
+            {
+                id: 'fssai',
+                title: 'FSSAI (Food License)',
+                category: 'Licenses',
+                icon: '<i class="fa-solid fa-utensils"></i>',
+                desc: 'Mandatory compliance for food Business Operators (FBOs). Basic registration for small businesses and petty retailers.',
+                time: '7 - 10 Working Days',
+                price: '2,499',
+                docs: [
+                    'Photo of Food Business Operator',
+                    'Document for Identity Proof like Ration Card, Voter ID, PAN Card, Driving License, Passport, Aadhar Card, Senior Citizen Card, Dept Issued ID',
+                    'Supporting Documents (if any:- NOC by Municipality/Panchayat, Health NOC)'
+                ]
+            },
+            {
+                id: 'llp',
+                title: 'Limited Liability Partnership',
+                category: 'Company Formation',
+                icon: '<i class="fa-solid fa-handshake"></i>',
+                desc: 'A corporate business vehicle that provides the benefits of limited liability but allows its members the flexibility of organizing their internal structure as a partnership.',
+                time: '12 - 15 Working Days',
+                price: '9,999',
+                docs: [
+                    'PAN Card of all Partners',
+                    'Address Proof of Partners (Voter ID/Passport/Aadhaar)',
+                    'Latest Bank Statement of Partners',
+                    'Registered Office Proof (Utility Bill + NOC from owner)'
+                ]
+            }
+        ];
+
+        // --- Render Services Grid ---
+        function renderServices() {
+            const grid = document.getElementById('servicesGrid');
+            let html = '';
+            
+            services.forEach(srv => {
+                html += `
+                    <div class="service-card bg-white dark:bg-gray-800 rounded-xl border border-cm-border dark:border-gray-700 shadow-sm p-6 cursor-pointer flex flex-col h-full" onclick="openModal('${srv.id}')">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-red-50 dark:bg-red-900/20 text-cm-red flex items-center justify-center text-xl">
+                                ${srv.icon}
+                            </div>
+                            <span class="px-2.5 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded text-[10px] font-bold uppercase tracking-wider">${srv.category}</span>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-1">${srv.title}</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-3 mb-4 flex-1">${srv.desc}</p>
+                        
+                        <div class="border-t border-gray-100 dark:border-gray-700 pt-4 mt-auto flex items-end justify-between">
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-semibold uppercase mb-0.5">Starting From</p>
+                                <p class="text-lg font-extrabold text-cm-textMain dark:text-white">₹ ${srv.price}</p>
+                            </div>
+                            <button class="w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-700 text-cm-red flex items-center justify-center group-hover:bg-cm-red group-hover:text-white transition-colors">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+
+        // --- Modal Logic ---
+        let currentServiceId = '';
+
+        function openModal(id) {
+            const srv = services.find(s => s.id === id);
+            if(!srv) return;
+            
+            currentServiceId = id;
+
+            // Populate Modal Data
+            document.getElementById('m-icon').innerHTML = srv.icon;
+            document.getElementById('m-title').textContent = srv.title;
+            document.getElementById('m-category').textContent = srv.category;
+            document.getElementById('m-desc').textContent = srv.desc;
+            document.getElementById('m-time').textContent = srv.time;
+            document.getElementById('m-price').textContent = '₹ ' + srv.price;
+            
+            // Build Document List
+            const docsHtml = srv.docs.map(doc => `
+                <li class="flex items-start gap-3">
+                    <i class="fa-solid fa-check text-green-500 mt-0.5 text-xs"></i>
+                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300">${doc}</span>
+                </li>
+            `).join('');
+            document.getElementById('m-docs').innerHTML = docsHtml;
+
+            // Show Modal
+            document.getElementById('serviceModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('serviceModal').classList.remove('active');
+        }
+
+        // Redirect to Payment Portal
+        function proceedToPayment() {
+            const srv = services.find(s => s.id === currentServiceId);
+            // Example redirection passing data via query string
+            alert(`Redirecting to Payment Gateway for: ${srv.title}\nAmount: ₹${srv.price}`);
+            
+            // In real app:
+            // window.location.href = `payment-portal.html?service=${encodeURIComponent(srv.title)}&amount=${srv.price.replace(',','')}`;
+        }
+
+        // Init
+        window.onload = renderServices;
+    </script>
+</body>
+</html>

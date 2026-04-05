@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Secure Payment Portal - CM Experts Group</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+                    colors: {
+                        cm: {
+                            red: '#c62828',         /* Professional Red */
+                            redHover: '#b71c1c',
+                            bgMuted: '#f1f5f9',     /* Muted Grey Background */
+                            surface: '#ffffff',
+                            textMain: '#1e293b',    /* Dark Slate */
+                            textMuted: '#64748b',   /* Muted Slate Grey */
+                            border: '#e2e8f0'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        .zoho-input {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #ffffff;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .zoho-input:focus { border-color: #c62828; box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1); }
+        .dark .zoho-input { background-color: #374151; border-color: #4b5563; color: white; }
+        .dark .zoho-input:focus { border-color: #ef5350; box-shadow: 0 0 0 3px rgba(239, 83, 80, 0.15); }
+
+        .zoho-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .dark .zoho-label { color: #9ca3af; }
+
+        /* Loader for QR */
+        .qr-loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #c62828;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-cm-bgMuted dark:bg-gray-900 text-cm-textMain dark:text-gray-200 min-h-screen flex flex-col transition-colors duration-300">
+
+    <header class="bg-white dark:bg-gray-800 border-b border-cm-border dark:border-gray-700 py-4 px-6 shadow-sm shrink-0">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-cm-red flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    <i class="fa-solid fa-shapes"></i>
+                </div>
+                <div>
+                    <h1 class="text-cm-textMain dark:text-white font-bold text-xl tracking-tight leading-none">CM Experts Group</h1>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">Secure Payment Gateway</span>
+                </div>
+            </div>
+            
+            <button onclick="toggleTheme()" class="text-gray-500 hover:text-cm-red dark:text-gray-400 transition-colors h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                <i class="fa-solid fa-moon dark:hidden"></i>
+                <i class="fa-solid fa-sun hidden dark:block"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 flex items-center justify-center p-4 sm:p-8 relative">
+        
+        <div class="absolute top-0 left-0 w-full h-64 bg-cm-red opacity-10 dark:opacity-20 pointer-events-none" style="clip-path: polygon(0 0, 100% 0, 100% 40%, 0 100%);"></div>
+
+        <div class="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-cm-border dark:border-gray-700 overflow-hidden relative z-10 flex flex-col lg:flex-row">
+            
+            <div class="p-6 sm:p-10 lg:w-3/5 flex flex-col justify-center">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Payment Details</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Please enter your details to generate your custom payment QR code.</p>
+                </div>
+
+                <form id="paymentForm" class="space-y-5" onsubmit="event.preventDefault(); updateQRCode();">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div class="sm:col-span-2">
+                            <label class="zoho-label">Client / Company Name <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <i class="fa-solid fa-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="clientName" required placeholder="Enter your name" class="zoho-input pl-9 font-medium">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="zoho-label">Mobile Number <span class="text-red-500">*</span></label>
+                            <input type="tel" id="mobileNo" required placeholder="10-digit mobile no." class="zoho-input">
+                        </div>
+
+                        <div>
+                            <label class="zoho-label">Invoice / Ref No.</label>
+                            <input type="text" id="invoiceNo" placeholder="e.g. INV-00123" class="zoho-input font-mono uppercase">
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="zoho-label">Amount to Pay (₹) <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-lg">₹</span>
+                                <input type="number" id="amount" required min="1" step="0.01" placeholder="0.00" class="zoho-input pl-9 text-lg font-bold text-gray-900 dark:text-white h-12">
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="zoho-label">Remarks (Optional)</label>
+                            <textarea id="remarks" rows="2" placeholder="Any message for us?" class="zoho-input resize-none"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-100 dark:border-gray-700 mt-6">
+                        <button type="submit" class="w-full py-3.5 bg-cm-red text-white rounded-lg font-bold text-sm hover:bg-cm-redHover transition-colors shadow-md flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-qrcode"></i> Generate Payment QR
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bg-gray-50 dark:bg-gray-900/50 p-6 sm:p-10 lg:w-2/5 border-l border-cm-border dark:border-gray-700 flex flex-col items-center justify-center text-center relative">
+                
+                <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2">Scan & Pay via UPI</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-8">Works with GPay, PhonePe, Paytm, and all UPI apps.</p>
+
+                <div class="bg-white p-4 rounded-xl shadow-md border border-gray-200 mb-6 relative">
+                    <div id="qrPlaceholder" class="w-48 h-48 bg-gray-100 border-2 border-dashed border-gray-300 rounded flex flex-col items-center justify-center text-gray-400">
+                        <i class="fa-solid fa-qrcode text-4xl mb-2 opacity-50"></i>
+                        <span class="text-xs font-medium px-4 text-center">Enter amount and generate to view QR</span>
+                    </div>
+                    
+                    <img id="qrImage" src="" alt="UPI QR Code" class="w-48 h-48 hidden">
+                    
+                    <div id="qrLoader" class="absolute inset-0 bg-white/80 flex items-center justify-center hidden rounded-xl">
+                        <div class="qr-loader block"></div>
+                    </div>
+                </div>
+
+                <div class="w-full max-w-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex items-center justify-between shadow-sm mb-6">
+                    <div class="text-left">
+                        <p class="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Verified UPI ID</p>
+                        <p class="text-sm font-semibold text-gray-900 dark:text-white font-mono mt-0.5" id="upiIdText">cmexpertsgroup@sbi</p>
+                    </div>
+                    <button onclick="copyUPI()" class="w-8 h-8 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:text-cm-red transition-colors flex items-center justify-center" title="Copy UPI ID">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
+
+                <div class="w-full max-w-xs hidden sm:block" id="mobilePaymentDiv">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-3">Or tap to pay directly on mobile:</p>
+                    <a href="#" id="payNowLink" class="w-full py-3 bg-gray-900 dark:bg-white dark:text-gray-900 text-white rounded-lg font-bold text-sm hover:opacity-90 transition-opacity shadow-md flex items-center justify-center gap-2 opacity-50 cursor-not-allowed pointer-events-none">
+                        <i class="fa-solid fa-mobile-screen-button"></i> Pay via UPI App
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="py-6 text-center shrink-0">
+        <p class="text-xs font-semibold text-cm-textMuted dark:text-gray-500">Secure Payment Gateway powered by <span class="text-cm-textMain dark:text-gray-300">CM Experts Group</span>.</p>
+        <div class="flex items-center justify-center gap-2 mt-1 text-[10px] text-gray-400 font-medium">
+            <i class="fa-solid fa-lock text-green-500"></i> 100% Secure Transaction
+        </div>
+    </footer>
+
+    <script>
+        const UPI_ID = "cmexpertsgroup@sbi";
+        const PAYEE_NAME = "CM Experts Group";
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Initialize Theme
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Copy UPI ID to clipboard
+        function copyUPI() {
+            navigator.clipboard.writeText(UPI_ID).then(() => {
+                alert("UPI ID copied to clipboard!");
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+
+        // Update QR Code dynamically based on input
+        function updateQRCode() {
+            const amount = document.getElementById('amount').value;
+            const invoiceNo = document.getElementById('invoiceNo').value;
+            const clientName = document.getElementById('clientName').value;
+            
+            if(!amount || amount <= 0) return;
+
+            // Show loader
+            document.getElementById('qrLoader').classList.remove('hidden');
+            
+            // Build UPI URI
+            let upiUri = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${amount}&cu=INR`;
+            
+            // Add Transaction Note if invoice exists
+            if (invoiceNo) {
+                upiUri += `&tr=${encodeURIComponent(invoiceNo)}&tn=Payment_for_${encodeURIComponent(invoiceNo)}`;
+            } else if (clientName) {
+                upiUri += `&tn=Payment_from_${encodeURIComponent(clientName)}`;
+            }
+
+            // Google Chart API (or alternative like qrserver) for generating QR from URL
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUri)}`;
+            
+            const qrImage = document.getElementById('qrImage');
+            qrImage.onload = function() {
+                // Hide loader, hide placeholder, show image
+                document.getElementById('qrLoader').classList.add('hidden');
+                document.getElementById('qrPlaceholder').classList.add('hidden');
+                qrImage.classList.remove('hidden');
+            };
+            qrImage.src = qrUrl;
+
+            // Enable Mobile Deep Link
+            const payLink = document.getElementById('payNowLink');
+            payLink.href = upiUri;
+            payLink.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+            
+            // Show mobile link if viewport is small
+            if (window.innerWidth < 640) {
+                document.getElementById('mobilePaymentDiv').classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

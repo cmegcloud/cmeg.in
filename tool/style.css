@@ -1,0 +1,42 @@
+/* style.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Sidebar Transitions */
+.sidebar-transition {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+html.dark ::-webkit-scrollbar-thumb {
+    background: #475569;
+}
+
+/* Chart Area Styling */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Active Menu Item Indicator */
+.nav-item.active {
+    background-color: #2d334a; /* zoho-active */
+    border-left: 4px solid #3b82f6; /* zoho-blue */
+    color: white;
+}
