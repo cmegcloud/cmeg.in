@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STRA CARE | Rebuild Your Health</title>
+    
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./logo-stracare.svg">
+    <meta name="theme-color" content="#009B95">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { colors: { brandTeal: '#009B95', brandNavy: '#1E3A5F', brandLight: '#F0F8F8' } }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased pb-20 md:pb-0">
+
+    <div id="splash-screen">
+        <img src="logo-stracare.svg" alt="Loading..." class="splash-logo">
+    </div>
+
+    <div class="bg-brandNavy text-white py-2 px-4 hidden md:flex justify-between items-center text-xs font-semibold tracking-wide">
+        <div class="flex space-x-6">
+            <a href="tel:+919744902555" class="hover:text-brandTeal transition"><i class="fa-solid fa-phone mr-1"></i> +91 9744902555</a>
+            <a href="mailto:info@stracare.com" class="hover:text-brandTeal transition"><i class="fa-solid fa-envelope mr-1"></i> info@stracare.com</a>
+        </div>
+        <div id="liveDateTime" class="bg-brandTeal px-3 py-1 rounded shadow-inner font-mono text-sm"></div>
+    </div>
+
+    <div class="ticker-wrap bg-brandTeal text-white">
+        <div class="ticker text-sm font-semibold tracking-wide">
+            LATEST UPDATE: Stra Care is now offering specialized Sports Injury rehabilitation! Walk-ins available at Mahe-Azhiyur and Chokli-Pallikuni branches. Book your consultation online today!
+        </div>
+    </div>
+
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center">
+                    <button onclick="toggleMobileMenu()" class="md:hidden text-brandNavy text-2xl mr-4 focus:outline-none">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <img src="logoname-stracare.svg" alt="STRA CARE" class="h-10 md:h-12 object-contain">
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="text-gray-600 hover:text-brandTeal font-medium transition">Home</a>
+                    <a href="#services" class="text-gray-600 hover:text-brandTeal font-medium transition">Services</a>
+                    <a href="#doctors" class="text-gray-600 hover:text-brandTeal font-medium transition">Doctors</a>
+                    <a href="#book" class="bg-brandTeal hover:bg-teal-700 text-white px-6 py-2 rounded-full font-medium transition shadow-lg">Book Consultation</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 z- hidden opacity-0 transition-opacity duration-300" onclick="toggleMobileMenu()">
+        <div id="mobileDrawer" class="fixed top-0 left-0 w-64 h-full bg-white shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col" onclick="event.stopPropagation()">
+            <div class="p-5 bg-brandLight flex justify-between items-center border-b border-gray-200">
+                <img src="logoname-stracare.svg" alt="STRA CARE" class="h-8">
+                <button onclick="toggleMobileMenu()" class="text-gray-500 hover:text-brandTeal text-2xl focus:outline-none">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="flex flex-col p-4 space-y-5 font-semibold text-gray-600 overflow-y-auto">
+                <a href="#home" onclick="toggleMobileMenu()" class="hover:text-brandTeal flex items-center"><i class="fa-solid fa-house w-8 text-center text-gray-400"></i> Home</a>
+                <a href="#services" onclick="toggleMobileMenu()" class="hover:text-brandTeal flex items-center"><i class="fa-solid fa-hand-holding-medical w-8 text-center text-gray-400"></i> Services</a>
+                <a href="#doctors" onclick="toggleMobileMenu()" class="hover:text-brandTeal flex items-center"><i class="fa-solid fa-user-doctor w-8 text-center text-gray-400"></i> Doctors</a>
+                <a href="#book" onclick="toggleMobileMenu()" class="text-brandTeal flex items-center"><i class="fa-solid fa-calendar-plus w-8 text-center"></i> Book Consultation</a>
+                <hr class="border-gray-200">
+                <a href="tel:+919744902555" class="hover:text-brandTeal flex items-center"><i class="fa-solid fa-phone w-8 text-center text-gray-400"></i> Call Us</a>
+                <a href="https://maps.app.goo.gl/rviYXjobvJ1Qd8zC9" target="_blank" class="hover:text-brandTeal flex items-center"><i class="fa-solid fa-location-dot w-8 text-center text-gray-400"></i> Locate Us</a>
+            </div>
+            <div class="mt-auto p-4 bg-gray-50 text-xs text-center text-gray-500 border-t border-gray-200">
+                App Designed by <a href="https://www.cmeg.in" class="text-brandTeal font-bold">CMEG</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-end pb-2 pt-2 z-50 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+        <a href="#home" class="flex flex-col items-center w-1/3 text-gray-500 hover:text-brandTeal transition">
+            <i class="fa-solid fa-house text-xl mb-1"></i><span class="text-[10px] font-semibold">Home</span>
+        </a>
+        <a href="#book" class="flex flex-col items-center w-1/3 text-brandTeal relative -top-5">
+            <div class="bg-brandTeal text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg shadow-teal-500/40 border-4 border-white transition transform hover:scale-105">
+                <i class="fa-solid fa-plus text-2xl"></i>
+            </div>
+            <span class="text-[10px] font-bold mt-1">Book</span>
+        </a>
+        <a href="#doctors" onclick="setTimeout(() => document.getElementById('doctorSearch').focus(), 500)" class="flex flex-col items-center w-1/3 text-gray-500 hover:text-brandTeal transition">
+            <i class="fa-solid fa-magnifying-glass text-xl mb-1"></i><span class="text-[10px] font-semibold">Search</span>
+        </a>
+    </div>
+
+    <a href="https://wa.me/919744902555" target="_blank" class="float-wa bottom-24 md:bottom-10" title="Chat with us on WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <section id="home" class="hero-bg py-32 flex flex-col justify-center text-white min-h-[600px]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center md:text-left">
+            <h2 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">Advanced Physiotherapy <br> & Sports Injury Care</h2>
+            <p class="text-xl mb-8 max-w-2xl text-gray-200 mx-auto md:mx-0">World-class rehabilitation tailored to your needs. Recover faster, move better, and rebuild your health.</p>
+            <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                <a href="#book" class="bg-white text-brandNavy hover:bg-gray-100 px-6 py-3 rounded-full text-lg font-bold transition shadow-xl flex items-center">
+                    <i class="fa-regular fa-calendar-check mr-2"></i> Book Online
+                </a>
+                <a href="tel:+919744902555" class="bg-brandNavy text-white hover:bg-gray-800 px-6 py-3 rounded-full text-lg font-bold transition shadow-xl border border-white/20 flex items-center">
+                    <i class="fa-solid fa-phone-volume mr-2"></i> Call Us
+                </a>
+                <a href="https://maps.app.goo.gl/rviYXjobvJ1Qd8zC9" target="_blank" class="bg-brandTeal text-white hover:bg-teal-700 px-6 py-3 rounded-full text-lg font-bold transition shadow-xl flex items-center">
+                    <i class="fa-solid fa-location-dot mr-2"></i> Locate Us
+                </a>
+            </div>
+            <div class="mt-4 md:text-left text-center">
+                <a href="https://wa.me/919744902555" target="_blank" class="inline-block text-white hover:text-green-400 font-semibold transition text-sm">
+                    <i class="fa-brands fa-whatsapp text-lg align-middle mr-1"></i> Prefer chat? WhatsApp us at +91 9744902555
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="py-20 bg-brandLight">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h3 class="text-3xl font-bold text-brandNavy">Our Specialties</h3>
+                <div class="w-24 h-1 bg-brandTeal mx-auto mt-4 rounded"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition border border-gray-100">
+                    <i class="fa-solid fa-person-walking text-4xl text-brandTeal mb-4"></i>
+                    <h4 class="text-xl font-bold text-brandNavy mb-2">Physiotherapy</h4>
+                    <p class="text-gray-600">Comprehensive assessment and treatment for musculoskeletal conditions to restore optimal movement.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition border border-gray-100">
+                    <i class="fa-solid fa-running text-4xl text-brandTeal mb-4"></i>
+                    <h4 class="text-xl font-bold text-brandNavy mb-2">Sports Injury Clinic</h4>
+                    <p class="text-gray-600">Specialized rehabilitation programs designed to get athletes safely back to their peak performance.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition border border-gray-100">
+                    <i class="fa-solid fa-child text-4xl text-brandTeal mb-4"></i>
+                    <h4 class="text-xl font-bold text-brandNavy mb-2">Pediatric Care</h4>
+                    <p class="text-gray-600">Gentle and effective physiotherapy tailored specifically for children and adolescents.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="doctors" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <h3 class="text-3xl font-bold text-brandNavy">Meet Our Experts</h3>
+                <div class="w-24 h-1 bg-brandTeal mx-auto mt-4 rounded"></div>
+            </div>
+            
+            <div class="max-w-xl mx-auto mb-12 flex shadow-sm rounded-full">
+                <div class="relative flex-grow">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="doctorSearch" onkeyup="searchDoctors()" placeholder="Search doctors by name or degree..." class="w-full pl-12 pr-4 py-3 rounded-l-full border border-r-0 border-gray-300 focus:border-brandTeal focus:ring-1 focus:ring-brandTeal outline-none transition text-gray-700 h-full">
+                </div>
+                <button onclick="searchDoctors()" class="bg-brandTeal hover:bg-teal-700 text-white px-6 py-3 rounded-r-full font-bold transition border border-brandTeal flex-shrink-0">
+                    Search
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10" id="doctorsGrid">
+                <div class="text-center doctor-card bg-gray-50 p-6 rounded-2xl border border-gray-100 hover:shadow-lg transition">
+                    <img src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=300&q=80" alt="Doctor" class="w-40 h-40 rounded-full mx-auto object-cover shadow-md mb-4 border-4 border-white">
+                    <h4 class="text-xl font-bold text-brandNavy doc-name">Dr. Sarah Jenkins</h4>
+                    <p class="text-brandTeal font-bold text-sm mb-1 doc-degree">BPT, MPT (Sports Medicine)</p>
+                    <p class="text-gray-500 text-sm mb-4 doc-desc">Lead Physiotherapist with 10+ years of experience.</p>
+                    <button onclick="document.getElementById('doctorSelect').value='Dr. Sarah Jenkins'; window.location.href='#book'" class="bg-white border border-brandTeal text-brandTeal hover:bg-brandTeal hover:text-white px-4 py-2 rounded-full text-sm font-semibold transition w-full">Book Dr. Jenkins</button>
+                </div>
+                <div class="text-center doctor-card bg-gray-50 p-6 rounded-2xl border border-gray-100 hover:shadow-lg transition">
+                    <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=300&q=80" alt="Doctor" class="w-40 h-40 rounded-full mx-auto object-cover shadow-md mb-4 border-4 border-white">
+                    <h4 class="text-xl font-bold text-brandNavy doc-name">Dr. Arun Kumar</h4>
+                    <p class="text-brandTeal font-bold text-sm mb-1 doc-degree">BPT, MIAP</p>
+                    <p class="text-gray-500 text-sm mb-4 doc-desc">Specialist in orthopedic rehabilitation.</p>
+                    <button onclick="document.getElementById('doctorSelect').value='Dr. Arun Kumar'; window.location.href='#book'" class="bg-white border border-brandTeal text-brandTeal hover:bg-brandTeal hover:text-white px-4 py-2 rounded-full text-sm font-semibold transition w-full">Book Dr. Kumar</button>
+                </div>
+                <div class="text-center doctor-card bg-gray-50 p-6 rounded-2xl border border-gray-100 hover:shadow-lg transition">
+                    <img src="https://images.unsplash.com/photo-1594824436998-058b231b611c?auto=format&fit=crop&w=300&q=80" alt="Doctor" class="w-40 h-40 rounded-full mx-auto object-cover shadow-md mb-4 border-4 border-white">
+                    <h4 class="text-xl font-bold text-brandNavy doc-name">Dr. Maya Menon</h4>
+                    <p class="text-brandTeal font-bold text-sm mb-1 doc-degree">BPT, Pediatric Specialist</p>
+                    <p class="text-gray-500 text-sm mb-4 doc-desc">Dedicated to pediatric developmental physical therapy.</p>
+                    <button onclick="document.getElementById('doctorSelect').value='Dr. Maya Menon'; window.location.href='#book'" class="bg-white border border-brandTeal text-brandTeal hover:bg-brandTeal hover:text-white px-4 py-2 rounded-full text-sm font-semibold transition w-full">Book Dr. Menon</button>
+                </div>
+            </div>
+            <p id="noDoctorMsg" class="text-center text-red-500 font-bold hidden mt-6">No doctors found matching your search.</p>
+        </div>
+    </section>
+
+    <section id="book" class="py-20 bg-brandNavy text-white">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row text-gray-800">
+                <div class="p-8 md:p-10 md:w-3/5 bg-brandLight">
+                    <h3 class="text-3xl font-bold text-brandNavy mb-2">Schedule Consultation</h3>
+                    <p class="text-gray-600 mb-6">Consultation Fee: <span class="font-bold text-brandTeal text-lg">₹500</span></p>
+                    
+                    <form id="bookingForm" class="space-y-5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Patient Name</label>
+                                <input type="text" id="patientName" required placeholder="Full Name" class="block w-full rounded-lg border-gray-300 shadow-sm border p-3 focus:border-brandTeal outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Phone Number</label>
+                                <input type="tel" id="patientPhone" required placeholder="+91 XXXXX XXXXX" class="block w-full rounded-lg border-gray-300 shadow-sm border p-3 focus:border-brandTeal outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Select Branch</label>
+                                <select id="branchSelect" class="block w-full rounded-lg border-gray-300 shadow-sm border p-3 bg-white focus:border-brandTeal outline-none cursor-pointer">
+                                    <option>Mahe - Azhiyur</option>
+                                    <option>Chokli - Pallikuni</option>
+                                    <option>Panoor - Arayakool</option>
+                                    <option>Kuthuparamba - Kottayampoyil</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Select Doctor</label>
+                                <select id="doctorSelect" class="block w-full rounded-lg border-gray-300 shadow-sm border p-3 bg-white focus:border-brandTeal outline-none cursor-pointer">
+                                    <option value="Any Available Doctor">Any Available Doctor</option>
+                                    <option value="Dr. Sarah Jenkins">Dr. Sarah Jenkins</option>
+                                    <option value="Dr. Arun Kumar">Dr. Arun Kumar</option>
+                                    <option value="Dr. Maya Menon">Dr. Maya Menon</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Appointment Date</label>
+                                <input type="date" id="appointDate" required class="block w-full rounded-lg border-gray-300 shadow-sm border p-3 focus:border-brandTeal outline-none text-gray-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Preferred Time</label>
+                                <input type="time" id="appointTime" required class="block w-full rounded-lg border-gray-300 shadow-sm border p-3 focus:border-brandTeal outline-none text-gray-700">
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="initiatePayment()" class="w-full bg-brandTeal hover:bg-teal-700 text-white font-bold py-4 px-4 rounded-xl transition mt-4 shadow-lg flex justify-center items-center gap-2">
+                            <i class="fa-solid fa-qrcode"></i> Pay ₹500 via UPI & Book
+                        </button>
+                    </form>
+                    <p id="statusMsg" class="mt-4 text-sm font-bold text-center hidden"></p>
+                </div>
+                <div class="p-8 md:p-10 md:w-2/5 flex flex-col justify-center items-center bg-gray-50 text-center border-l border-gray-200">
+                    <i class="fa-solid fa-shield-halved text-6xl text-brandTeal mb-6"></i>
+                    <h4 class="text-2xl font-bold text-brandNavy mb-3">Secure Payment</h4>
+                    <p class="text-gray-500 text-sm mb-6">Payments are processed securely via UPI directly to the clinic's verified account.</p>
+                    <div class="bg-white border-2 border-dashed border-gray-300 p-4 rounded-xl font-mono text-sm text-gray-700 w-full mb-4">
+                        <span class="block text-xs text-gray-400 font-sans mb-1 uppercase tracking-wider">UPI ID</span>
+                        <span class="font-bold text-lg">stracare@upi</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-900 text-gray-400 py-12 border-t-4 border-brandTeal">
+        <div class="max-w-7xl mx-auto px-4 text-center flex flex-col items-center">
+            <img src="logoname-stracare.svg" alt="STRA CARE" class="h-10 mb-6 brightness-0 invert opacity-80">
+            <div class="flex flex-wrap justify-center gap-3 text-xs font-medium mb-8">
+                <span class="bg-gray-800 px-4 py-2 rounded-full border border-gray-700">MAHE-AZHIYUR</span>
+                <span class="bg-gray-800 px-4 py-2 rounded-full border border-gray-700">CHOKLI-PALLIKUNI</span>
+                <span class="bg-gray-800 px-4 py-2 rounded-full border border-gray-700">PANOOR - ARAYAKOOL</span>
+                <span class="bg-gray-800 px-4 py-2 rounded-full border border-gray-700">KUTHUPARAMBA-KOTTAYAMPOYIL</span>
+            </div>
+            <div class="pt-8 border-t border-gray-800 text-xs w-full flex flex-col items-center space-y-3">
+                <p>© <span id="currentYear"></span> Stra Care Physiotherapy. All rights reserved.</p>
+                <div class="text-gray-500 mt-2">
+                    App Designed & Developed by <span class="font-bold text-gray-300">CMEG</span><br>
+                    <a href="https://www.cmeg.in" target="_blank" class="text-brandTeal hover:text-white transition">www.cmeg.in</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Splash Screen Removal
+        window.addEventListener('load', () => { setTimeout(() => { document.getElementById('splash-screen').classList.add('hidden-splash'); }, 1200); });
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW failed: ', err)); }); }
+
+        function toggleMobileMenu() {
+            const overlay = document.getElementById('mobileMenuOverlay');
+            const drawer = document.getElementById('mobileDrawer');
+            if (overlay.classList.contains('hidden')) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => { overlay.classList.remove('opacity-0'); drawer.classList.remove('-translate-x-full'); }, 10);
+            } else {
+                overlay.classList.add('opacity-0'); drawer.classList.add('-translate-x-full');
+                setTimeout(() => { overlay.classList.add('hidden'); }, 300); 
+            }
+        }
+
+        // Live Clock
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('liveDateTime').textContent = now.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        setInterval(updateDateTime, 1000); updateDateTime(); 
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        document.getElementById('appointDate').setAttribute('min', new Date().toISOString().split('T'));
+
+        // Search
+        function searchDoctors() {
+            let input = document.getElementById('doctorSearch').value.toLowerCase();
+            let cards = document.getElementsByClassName('doctor-card');
+            let hasVisibleCards = false;
+            for (let i = 0; i < cards.length; i++) {
+                let text = cards[i].innerText.toLowerCase();
+                if (text.includes(input)) { cards[i].style.display = ""; hasVisibleCards = true; } 
+                else { cards[i].style.display = "none"; }
+            }
+            document.getElementById('noDoctorMsg').style.display = hasVisibleCards ? "none" : "block";
+        }
+
+        // Payment (Mock Drive Upload)
+        function initiatePayment() {
+            const n = document.getElementById('patientName').value, p = document.getElementById('patientPhone').value, 
+                  b = document.getElementById('branchSelect').value, d = document.getElementById('doctorSelect').value, 
+                  dt = document.getElementById('appointDate').value, tm = document.getElementById('appointTime').value;
+            if(!n || !p || !dt || !tm) return alert("Please fill in all required fields.");
+            window.location.href = `upi://pay?pa=stracare@upi&pn=STRA%20CARE&tr=STRA${Date.now()}&am=500.00&cu=INR&tn=Consultation%20Fee`;
+            document.getElementById('statusMsg').textContent = "Booking scheduled & recorded successfully!";
+            document.getElementById('statusMsg').className = "mt-4 text-sm font-bold text-center text-green-600";
+            document.getElementById('statusMsg').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
