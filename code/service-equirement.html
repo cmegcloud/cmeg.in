@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CM codE - Requirement Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --zoho-yellow: #FFC107; 
+            --zoho-yellow-hover: #e0a800;
+            --dark-grey: #2d3748;
+            --lightning-blue: #0096FF;
+            --bg-color: #f8f9fa;
+            --container-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #1a202c;
+            --text-muted: #718096;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 52px;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -2px;
+        }
+        .logo .cm { color: var(--dark-grey); }
+        .logo .cod { color: var(--lightning-blue); }
+        .logo .expert {
+            background-color: var(--zoho-yellow);
+            color: var(--dark-grey);
+            padding: 0 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .powered-by {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: -5px;
+            margin-bottom: 8px;
+            text-align: right;
+            padding-right: 25%;
+        }
+        .tagline {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+        .title-container {
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .title {
+            margin: 0;
+            font-size: 22px;
+            color: var(--dark-grey);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .date-time {
+            text-align: right;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            font-weight: 500;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        .section {
+            margin-bottom: 35px;
+        }
+        .section-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--dark-grey);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--dark-grey);
+            font-weight: 600;
+            font-size: 13px;
+        }
+        input[type="text"], input[type="email"], input[type="tel"], textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: #fdfdfd;
+            color: var(--text-main);
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--lightning-blue);
+            background-color: #ffffff;
+        }
+        input[readonly] {
+            background-color: #f1f5f9;
+            color: var(--lightning-blue);
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: not-allowed;
+        }
+        input[readonly]:focus {
+            border-color: var(--border-color);
+        }
+        
+        /* Updated Checkbox Layout */
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .inline-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--text-main);
+            font-size: 14px;
+            font-weight: 700; /* Main Options are Bold */
+        }
+        .checkbox-item.sub {
+            font-weight: 400; /* Sub Options are Unbold */
+            opacity: 0.7; /* Light Opacity */
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            cursor: pointer;
+            margin: 0;
+            accent-color: var(--lightning-blue);
+        }
+
+        .sub-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            margin-top: 25px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .footer strong {
+            color: var(--dark-grey);
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 40px;
+        }
+        button {
+            padding: 14px 28px;
+            border-radius: 4px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: none;
+            background-color: var(--zoho-yellow);
+            color: var(--dark-grey);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button:hover {
+            background-color: var(--zoho-yellow-hover);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="pdf-content">
+        <div class="header">
+            <p class="logo"><span class="cm">CM </span><span class="cod">cod</span><span class="expert">E</span></p>
+            <p class="powered-by">powered by CMEG</p>
+            <p class="tagline">Architecting Digital Solutions</p>
+        </div>
+
+        <div class="title-container">
+            <h2 class="title">REQUIREMENT SHEET</h2>
+        </div>
+        
+        <div class="date-time" id="live-datetime"></div>
+
+        <form id="requirementForm">
+            <div class="section">
+                <h3 class="section-title">1. Client Information</h3>
+                
+                <div class="form-group">
+                    <label>Requirement ID</label>
+                    <input type="text" id="requirementId" readonly>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Client Name</label>
+                        <input type="text" id="clientName" placeholder="Enter client name">
+                    </div>
+                    <div class="form-group">
+                        <label>Project / Business Name</label>
+                        <input type="text" id="projectName" placeholder="Enter business name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Name of the Web or App</label>
+                    <input type="text" id="webAppName" placeholder="Enter the requested web or app name">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="tel" id="mobileNumber" placeholder="Enter mobile number">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="emailAddress" placeholder="Enter email address">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea id="address" rows="2" placeholder="Enter full address"></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">2. Required Services</h3>
+                
+                <div class="checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox" name="services" value="Domain"> Domain</label>
+                    <label class="checkbox-item"><input type="checkbox" name="services" value="Professional Email"> Professional Email</label>
+                    
+                    <div class="inline-row">
+                        <label class="checkbox-item"><input type="checkbox" name="services" value="Website Design"> Website Design</label>
+                        <label class="checkbox-item sub"><input type="checkbox" name="services" value="Basic Home page"> Basic Home page</label>
+                        <label class="checkbox-item sub"><input type="checkbox" name="services" value="Detailed"> Detailed</label>
+                    </div>
+
+                    <div class="inline-row">
+                        <label class="checkbox-item"><input type="checkbox" name="services" value="App"> App</label>
+                        <label class="checkbox-item sub"><input type="checkbox" name="services" value="Web App"> Web App</label>
+                        <label class="checkbox-item sub"><input type="checkbox" name="services" value="Android App"> Android App</label>
+                        <label class="checkbox-item sub"><input type="checkbox" name="services" value="IOS App"> IOS App</label>
+                    </div>
+                </div>
+
+                <h4 class="sub-section-title">Domain & Email Configuration Details</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>1. Requested Domain Name</label>
+                        <input type="text" id="requestedDomain" placeholder="e.g., yourbusiness.com">
+                    </div>
+                    <div class="form-group">
+                        <label>2. Email Name Prefix</label>
+                        <input type="text" id="emailPrefix" placeholder="e.g., info, admin, support">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Others (Any additional features or links)</label>
+                    <textarea id="otherServices" rows="2" placeholder="Specify any other services..."></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">3. Additional Notes</h3>
+                <div class="form-group">
+                    <label>Specific Needs & Details</label>
+                    <textarea id="additionalNotes" rows="4" placeholder="Enter specific needs and details here..."></textarea>
+                </div>
+            </div>
+
+            <div class="buttons" id="action-buttons">
+                <button type="button" onclick="generatePDFAndWhatsApp()">Submit & Send to Whatsapp</button>
+            </div>
+        </form>
+
+        <div class="footer">
+            <p><strong>CM Experts Group (CMEG)</strong><br>
+            Email: support@cmeg.in | Phone: +91 99461 51111</p>
+        </div>
+    </div>
+
+    <script>
+        // --- LIVE CLOCK SCRIPT ---
+        function updateClock() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('live-datetime').textContent = "Date & Time: " + now.toLocaleDateString('en-IN', options);
+        }
+        setInterval(updateClock, 1000);
+        updateClock(); // Initial call
+
+        // --- ID GENERATION SCRIPT ---
+        function getTodayDateString() {
+            const now = new Date();
+            const yy = String(now.getFullYear()).slice(-2);
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            return yy + mm + dd; // Format: YYMMDD
+        }
+
+        function setRequirementID() {
+            const dateString = getTodayDateString();
+            const storageKey = 'codE_req_count_' + dateString;
+            let currentCount = localStorage.getItem(storageKey);
+            
+            // If no count exists for today, start at 1
+            if (!currentCount) {
+                currentCount = 1;
+            }
+            
+            // Format ID: CODE4 + YYMMDD + 4 + Count
+            const generatedId = `CODE4${dateString}4${currentCount}`;
+            document.getElementById('requirementId').value = generatedId;
+        }
+        
+        function incrementRequirementCount() {
+            const dateString = getTodayDateString();
+            const storageKey = 'codE_req_count_' + dateString;
+            let currentCount = localStorage.getItem(storageKey);
+            
+            if (currentCount) {
+                localStorage.setItem(storageKey, parseInt(currentCount) + 1);
+            } else {
+                localStorage.setItem(storageKey, 2);
+            }
+        }
+
+        // Initialize ID on page load
+        setRequirementID();
+
+        // --- FORM & PDF LOGIC ---
+        function gatherFormData() {
+            const getVal = (id) => document.getElementById(id).value.trim() || 'Not Provided';
+            const serviceCheckboxes = document.querySelectorAll('input[name="services"]:checked');
+            const selectedServices = Array.from(serviceCheckboxes).map(cb => cb.value).join(', ') || 'None Selected';
+
+            return {
+                reqId: document.getElementById('requirementId').value,
+                clientName: getVal('clientName'),
+                projectName: getVal('projectName'),
+                webAppName: getVal('webAppName'),
+                mobileNumber: getVal('mobileNumber'),
+                emailAddress: getVal('emailAddress'),
+                address: getVal('address'),
+                reqDomain: getVal('requestedDomain'),
+                emailPrefix: getVal('emailPrefix'),
+                otherServices: getVal('otherServices'),
+                additionalNotes: getVal('additionalNotes'),
+                selectedServices: selectedServices
+            };
+        }
+
+        function formatMessage(data) {
+            let msg = `*CM codE - Requirement Sheet*\n`;
+            msg += `*ID:* ${data.reqId}\n\n`;
+            msg += `*1. Client Information*\n`;
+            msg += `- Client Name: ${data.clientName}\n`;
+            msg += `- Project/Business: ${data.projectName}\n`;
+            msg += `- Web/App Name: ${data.webAppName}\n`;
+            msg += `- Mobile: ${data.mobileNumber}\n`;
+            msg += `- Email: ${data.emailAddress}\n`;
+            msg += `- Address: ${data.address}\n\n`;
+            
+            msg += `*2. Required Services & Details*\n`;
+            msg += `- Selected Services: ${data.selectedServices}\n`;
+            msg += `- Requested Domain: ${data.reqDomain}\n`;
+            msg += `- Email Prefix: ${data.emailPrefix}\n`;
+            msg += `- Others: ${data.otherServices}\n\n`;
+            
+            msg += `*3. Additional Notes*\n`;
+            msg += `${data.additionalNotes}\n\n`;
+            msg += `_(The generated PDF requirement sheet will be attached below)_`;
+            return msg;
+        }
+
+        function generatePDFAndWhatsApp() {
+            // 1. Gather data and prep WhatsApp message
+            const data = gatherFormData();
+            const message = formatMessage(data);
+            const encodedMessage = encodeURIComponent(message);
+            
+            // 2. Hide the button container so it doesn't appear in the PDF
+            const btnContainer = document.getElementById('action-buttons');
+            btnContainer.style.display = 'none';
+
+            // 3. Configure PDF Options using the specified naming convention
+            const element = document.getElementById('pdf-content');
+            
+            // Ensure inputs don't have grey backgrounds on the printed PDF
+            const inputs = element.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.style.backgroundColor = '#ffffff';
+                input.style.border = 'none';
+                input.style.borderBottom = '1px solid #ccc';
+            });
+
+            // Name format: codE Form Requirement From [Client Name]_[ID].pdf
+            let safeClientName = data.clientName !== 'Not Provided' ? data.clientName.replace(/\s+/g, '_') : 'Client';
+            const pdfFileName = `codE Form Requirement From ${safeClientName}_${data.reqId}.pdf`;
+
+            const opt = {
+                margin:       0.3,
+                filename:     pdfFileName,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            // 4. Generate PDF, Download it, and Open WhatsApp
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Restore button visibility and input styles
+                btnContainer.style.display = 'flex';
+                inputs.forEach(input => {
+                    input.style.backgroundColor = '';
+                    input.style.border = '';
+                    input.style.borderBottom = '';
+                });
+
+                // Increment the counter for the next form submission
+                incrementRequirementCount();
+                
+                // Update the ID field visually so it shows the new number immediately
+                setRequirementID();
+
+                // Open WhatsApp chat
+                window.open(`https://wa.me/919946151111?text=${encodedMessage}`, '_blank');
+            });
+        }
+    </script>
+</body>
+</html>
