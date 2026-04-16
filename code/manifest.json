@@ -1,0 +1,23 @@
+{
+  "name": "Stra Care Physiotherapy",
+  "short_name": "Stra Care",
+  "description": "Professional Physiotherapy & Sports Injury Clinic",
+  "start_url": "./stracaremain.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#009B95",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo-stracare.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo-stracare.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
