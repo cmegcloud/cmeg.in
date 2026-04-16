@@ -1,0 +1,63 @@
+/* Custom Scrollbar */
+html { scroll-behavior: smooth; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #009B95; border-radius: 10px; }
+
+/* Splash Screen Animation */
+#splash-screen {
+    position: fixed;
+    inset: 0;
+    background-color: #ffffff;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+.splash-logo {
+    width: 150px;
+    height: auto;
+    animation: pulseLogo 1.5s infinite alternate ease-in-out;
+}
+@keyframes pulseLogo {
+    0% { transform: scale(0.9); opacity: 0.8; }
+    100% { transform: scale(1.1); opacity: 1; }
+}
+.hidden-splash {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Backgrounds & Utilities */
+.hero-bg {
+    background: linear-gradient(rgba(30, 58, 95, 0.8), rgba(0, 155, 149, 0.8)), url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;
+}
+.glass-panel { 
+    background: rgba(255, 255, 255, 0.95); 
+    backdrop-filter: blur(10px); 
+}
+.float-wa {
+    position: fixed; width: 60px; height: 60px; right: 20px; 
+    background-color: #25d366; color: #FFF; border-radius: 50px; text-align: center;
+    font-size: 30px; box-shadow: 2px 2px 3px #999; z-index: 90;
+    display: flex; align-items: center; justify-content: center; transition: transform 0.3s;
+}
+.float-wa:hover { transform: scale(1.1); }
+@media (min-width: 768px) {
+    .float-wa { right: 40px; bottom: 40px; }
+}
+
+/* Ticker */
+.ticker-wrap { width: 100%; overflow: hidden; padding: 5px 0; }
+.ticker { display: inline-block; white-space: nowrap; padding-left: 100%; animation: ticker 20s linear infinite; }
+@keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+
+/* Admin Calendar Grid */
+.calendar-grid { display: grid; grid-template-columns: 80px repeat(7, 1fr); gap: 1px; background-color: #e5e7eb; border: 1px solid #e5e7eb; }
+.calendar-header { background-color: #f9fafb; font-weight: bold; text-align: center; padding: 10px; font-size: 0.8rem; color: #374151; }
+.calendar-cell { background-color: #ffffff; min-height: 100px; padding: 8px; }
+.time-label { background-color: #f9fafb; font-size: 0.75rem; color: #6b7280; text-align: right; padding-right: 8px; font-weight: 600; }
+.shift-block { border-left: 4px solid; border-radius: 4px; padding: 6px; font-size: 0.75rem; margin-bottom: 4px; cursor: pointer; transition: transform 0.1s; }
+.shift-teal { background-color: #e0f2f1; border-color: #009B95; color: #004d40; }
+.shift-navy { background-color: #e1e7f0; border-color: #1E3A5F; color: #0f1d2f; }
+.shift-orange { background-color: #fff3e0; border-color: #f57c00; color: #e65100; }
