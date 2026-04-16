@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STRA CARE | Admin Dashboard</title>
+    
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#1E3A5F">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./styles.css">
+
+    <script>
+        tailwind.config = { theme: { extend: { colors: { brandTeal: '#009B95', brandNavy: '#1E3A5F', brandLight: '#F0F8F8' } } } }
+    </script>
+</head>
+<body class="text-gray-800 h-screen overflow-hidden flex flex-col">
+
+    <div id="splash-screen">
+        <img src="logo-stracare.svg" alt="Loading..." class="splash-logo">
+    </div>
+
+    <div id="loginScreen" class="fixed inset-0 bg-brandNavy flex items-center justify-center z- bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md mx-4 text-center">
+            <img src="logo-stracare.svg" alt="Logo" class="w-20 mx-auto mb-4">
+            <img src="logoname-stracare.svg" alt="STRA CARE" class="h-8 mx-auto mb-6">
+            
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="mb-5 text-left">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Access Password</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="password" id="adminPassword" required placeholder="Enter today's password" class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:border-brandTeal outline-none bg-gray-50">
+                    </div>
+                    <p id="loginError" class="text-red-500 text-xs font-bold mt-2 hidden">Incorrect password.</p>
+                </div>
+                <button type="submit" class="w-full bg-brandNavy text-white font-bold py-3 rounded-xl shadow-lg">Secure Login <i class="fa-solid fa-arrow-right"></i></button>
+            </form>
+            <p class="text-[10px] text-gray-400 mt-8">App Designed & Developed by <a href="https://www.cmeg.in" target="_blank" class="font-bold hover:text-brandTeal">CMEG</a></p>
+        </div>
+    </div>
+
+    <div id="dashboardScreen" class="hidden flex h-screen w-full relative">
+        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div>
+
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-brandNavy text-white flex flex-col shadow-2xl transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0">
+            <div class="p-6 border-b border-gray-700 flex justify-between items-center bg-white">
+                <img src="logoname-stracare.svg" alt="STRA CARE" class="h-8">
+                <button onclick="toggleSidebar()" class="md:hidden text-gray-400 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <button onclick="switchTab('bookings')" id="tab-bookings" class="w-full flex items-center gap-3 px-4 py-3 bg-brandTeal text-white rounded-xl font-semibold text-sm">
+                    <i class="fa-solid fa-list-check"></i> Bookings & UPI
+                </button>
+                <button onclick="switchTab('schedule')" id="tab-schedule" class="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-xl font-semibold text-sm">
+                    <i class="fa-regular fa-calendar-days"></i> Doctor Schedule
+                </button>
+            </nav>
+            <div class="p-4 border-t border-gray-700 text-center">
+                <button onclick="logout()" class="w-full py-2 text-gray-400 hover:text-white rounded-lg text-sm"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col h-screen overflow-hidden w-full">
+            <header class="glass-panel border-b border-gray-200 py-4 px-4 md:px-8 flex items-center justify-between z-10 w-full">
+                <div class="flex items-center">
+                    <button onclick="toggleSidebar()" class="md:hidden text-brandNavy text-2xl mr-4"><i class="fa-solid fa-bars"></i></button>
+                    <h2 id="pageTitle" class="text-lg md:text-xl font-bold text-brandNavy">Consultation Bookings</h2>
+                </div>
+                <div class="hidden md:block bg-white border border-gray-200 rounded-full px-4 py-1.5 text-sm font-semibold text-gray-600 shadow-sm">
+                    <i class="fa-regular fa-clock text-brandTeal mr-1"></i> <span id="currentDateDisplay"></span>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 w-full">
+                
+                <div id="view-bookings" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-teal-50 flex items-center justify-center text-brandTeal text-xl shrink-0"><i class="fa-solid fa-calendar-check"></i></div>
+                            <div><p class="text-[10px] md:text-xs font-bold text-gray-400 uppercase">Today's Appointments</p><p class="text-xl md:text-2xl font-bold text-brandNavy">14</p></div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-500 text-xl shrink-0"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                            <div><p class="text-[10px] md:text-xs font-bold text-gray-400 uppercase">UPI Collected</p><p class="text-xl md:text-2xl font-bold text-brandNavy">₹6,000</p></div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 text-xl shrink-0"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                            <div><p class="text-[10px] md:text-xs font-bold text-gray-400 uppercase">Pending Verification</p><p class="text-xl md:text-2xl font-bold text-brandNavy">2</p></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
+                            <h3 class="font-bold text-gray-800 text-sm md:text-base">Recent Bookings</h3>
+                            <button onclick="refreshData(event)" class="text-xs font-semibold text-brandTeal hover:text-teal-700 bg-teal-50 px-3 py-1.5 rounded-lg border border-teal-100"><i class="fa-solid fa-rotate-right mr-1"></i> Refresh</button>
+                        </div>
+                        <div class="overflow-x-auto w-full">
+                            <table class="w-full text-left border-collapse min-w-[800px]">
+                                <thead>
+                                    <tr class="bg-white border-b border-gray-200 text-[10px] md:text-xs uppercase font-bold text-gray-500">
+                                        <th class="p-3">Patient Details</th><th class="p-3">Doctor & Branch</th><th class="p-3">Date & Time</th><th class="p-3">UPI Ref ID</th><th class="p-3">Payment Status</th><th class="p-3 text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bookingsTableBody" class="divide-y divide-gray-100 text-xs md:text-sm text-gray-700"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-schedule" class="hidden space-y-6">
+                    <div class="flex flex-col md:flex-row md:justify-between items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-200">
+                        <div class="flex gap-2 w-full md:w-auto justify-center">
+                            <button class="px-4 py-2 bg-gray-100 rounded-lg text-sm font-semibold"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-bold shadow-sm flex-1 md:flex-none">Current Week</button>
+                            <button class="px-4 py-2 bg-gray-100 rounded-lg text-sm font-semibold"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="flex flex-wrap justify-center gap-3 text-xs font-semibold">
+                            <span class="flex items-center gap-1"><div class="w-3 h-3 bg-[#e0f2f1] border border-[#009B95] rounded"></div> Dr. Jenkins</span>
+                            <span class="flex items-center gap-1"><div class="w-3 h-3 bg-[#e1e7f0] border border-[#1E3A5F] rounded"></div> Dr. Kumar</span>
+                            <span class="flex items-center gap-1"><div class="w-3 h-3 bg-[#fff3e0] border border-[#f57c00] rounded"></div> Dr. Menon</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-x-auto w-full">
+                        <div class="calendar-grid min-w-[900px]">
+                            <div class="calendar-header bg-gray-100 border-b border-r border-gray-200">Time</div>
+                            <div class="calendar-header border-b border-gray-200">Mon</div><div class="calendar-header border-b border-gray-200">Tue</div><div class="calendar-header border-b border-gray-200">Wed</div><div class="calendar-header border-b border-gray-200 text-brandTeal">Thu (Today)</div><div class="calendar-header border-b border-gray-200">Fri</div><div class="calendar-header border-b border-gray-200">Sat</div><div class="calendar-header border-b border-gray-200 bg-gray-50">Sun</div>
+
+                            <div class="time-label border-r border-b border-gray-100 pt-2">09:00 AM</div>
+                            <div class="calendar-cell border-b border-r border-gray-100"><div class="shift-block shift-teal"><strong>Dr. Jenkins</strong><br>Mahe</div></div>
+                            <div class="calendar-cell border-b border-r border-gray-100"><div class="shift-block shift-teal"><strong>Dr. Jenkins</strong><br>Mahe</div></div>
+                            <div class="calendar-cell border-b border-r border-gray-100"><div class="shift-block shift-teal"><strong>Dr. Jenkins</strong><br>Panoor</div></div>
+                            <div class="calendar-cell border-b border-r border-gray-100 bg-teal-50/30"><div class="shift-block shift-teal"><strong>Dr. Jenkins</strong><br>Panoor</div><div class="shift-block shift-orange"><strong>Dr. Menon</strong><br>Chokli</div></div>
+                            <div class="calendar-cell border-b border-r border-gray-100"><div class="shift-block shift-teal"><strong>Dr. Jenkins</strong><br>Mahe</div></div>
+                            <div class="calendar-cell border-b border-r border-gray-100"></div><div class="calendar-cell border-b border-gray-100 bg-gray-50"></div>
+
+                            <div class="time-label border-r border-gray-100 pt-2">01:00 PM</div>
+                            <div class="calendar-cell border-r border-gray-100"><div class="shift-block shift-navy"><strong>Dr. Kumar</strong><br>Kuthuparamba</div></div>
+                            <div class="calendar-cell border-r border-gray-100"><div class="shift-block shift-navy"><strong>Dr. Kumar</strong><br>Kuthuparamba</div></div>
+                            <div class="calendar-cell border-r border-gray-100"><div class="shift-block shift-orange"><strong>Dr. Menon</strong><br>Chokli</div></div>
+                            <div class="calendar-cell border-r border-gray-100 bg-teal-50/30"><div class="shift-block shift-navy"><strong>Dr. Kumar</strong><br>Kuthuparamba</div></div>
+                            <div class="calendar-cell border-r border-gray-100"><div class="shift-block shift-navy"><strong>Dr. Kumar</strong><br>Panoor</div></div>
+                            <div class="calendar-cell border-r border-gray-100"><div class="shift-block shift-navy"><strong>Dr. Kumar</strong><br>Panoor</div></div>
+                            <div class="calendar-cell bg-gray-50"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <footer class="bg-white border-t border-gray-200 py-3 px-4 text-xs text-gray-500 flex flex-col md:flex-row justify-between items-center text-center gap-2">
+                <span>&copy; <span id="year"></span> STRA CARE Administration.</span>
+                <span>App Designed by <a href="https://www.cmeg.in" target="_blank" class="font-bold text-brandTeal">CMEG</a> | www.cmeg.in</span>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        window.addEventListener('load', () => { setTimeout(() => { document.getElementById('splash-screen').classList.add('hidden-splash'); }, 1200); });
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); }
+        document.getElementById('year').textContent = new Date().getFullYear();
+        document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        }
+
+        function switchTab(tabId) {
+            document.getElementById('view-bookings').classList.add('hidden'); document.getElementById('view-schedule').classList.add('hidden');
+            document.getElementById('tab-bookings').className = "w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-xl font-semibold text-sm";
+            document.getElementById('tab-schedule').className = "w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-xl font-semibold text-sm";
+            
+            document.getElementById('view-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).className = "w-full flex items-center gap-3 px-4 py-3 bg-brandTeal text-white rounded-xl font-semibold text-sm";
+            document.getElementById('pageTitle').textContent = tabId === 'bookings' ? 'Consultation Bookings' : 'Doctor Schedule';
+            
+            if(window.innerWidth < 768) { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebarOverlay').classList.add('hidden'); }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPassword').value;
+            const expected = "CM" + new Date().getDate();
+            if(pass === expected) {
+                document.getElementById('loginScreen').style.opacity = '0';
+                setTimeout(() => { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('dashboardScreen').classList.remove('hidden'); loadMockBookings(); }, 300);
+            } else { document.getElementById('loginError').classList.remove('hidden'); }
+        }
+        function logout() { location.reload(); }
+
+        const mockBookings = [
+            { id: "B-1001", patient: "Rahul Sharma", phone: "+91 98765 43210", doctor: "Dr. Sarah Jenkins", branch: "Mahe - Azhiyur", date: "Apr 17, 2026", time: "10:30 AM", upi: "STRA17920384", status: "Paid" },
+            { id: "B-1002", patient: "Priya Das", phone: "+91 91234 56789", doctor: "Dr. Arun Kumar", branch: "Kuthuparamba", date: "Apr 17, 2026", time: "01:00 PM", upi: "STRA17920455", status: "Paid" },
+            { id: "B-1003", patient: "Mohammed Ali", phone: "+91 99887 76655", doctor: "Dr. Maya Menon", branch: "Chokli - Pallikuni", date: "Apr 18, 2026", time: "09:00 AM", upi: "STRA18001122", status: "Pending" }
+        ];
+
+        function loadMockBookings() {
+            const tbody = document.getElementById('bookingsTableBody'); tbody.innerHTML = '';
+            mockBookings.forEach(b => {
+                const statusBadge = b.status === "Paid" 
+                    ? `<span class="bg-green-100 text-green-700 px-2 py-1 rounded-md font-bold text-[10px] border border-green-200">Paid</span>`
+                    : `<span class="bg-orange-100 text-orange-700 px-2 py-1 rounded-md font-bold text-[10px] border border-orange-200">Pending</span>`;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3"><p class="font-bold text-brandNavy">${b.patient}</p><p class="text-[10px] text-gray-500">${b.phone}</p></td>
+                    <td class="p-3"><p class="font-semibold text-gray-800">${b.doctor}</p><p class="text-[10px] text-gray-500">${b.branch}</p></td>
+                    <td class="p-3"><p class="font-semibold text-gray-800">${b.date}</p><p class="text-[10px] text-gray-500">${b.time}</p></td>
+                    <td class="p-3 font-mono text-[10px] bg-gray-50 rounded">${b.upi}</td><td class="p-3">${statusBadge}</td>
+                    <td class="p-3 text-center"><button class="text-gray-400 hover:text-brandTeal"><i class="fa-solid fa-eye"></i></button></td>
+                `; tbody.appendChild(tr);
+            });
+        }
+        function refreshData(e) {
+            const btn = e.currentTarget; btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Syncing...`;
+            setTimeout(() => { loadMockBookings(); btn.innerHTML = `<i class="fa-solid fa-rotate-right mr-1"></i> Refresh`; }, 800);
+        }
+    </script>
+</body>
+</html>
