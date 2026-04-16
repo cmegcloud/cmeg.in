@@ -19,13 +19,13 @@
 <body class="text-gray-800 h-screen overflow-hidden flex flex-col">
 
     <div id="splash-screen">
-        <img src="logo-stracare.svg" alt="Loading..." class="splash-logo">
+        <img src="logo-stracare.png" alt="Loading..." class="splash-logo">
     </div>
 
     <div id="loginScreen" class="fixed inset-0 bg-brandNavy flex items-center justify-center z- bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
         <div class="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md mx-4 text-center">
             <img src="logo-stracare.svg" alt="Logo" class="w-20 mx-auto mb-4">
-            <img src="logoname-stracare.svg" alt="STRA CARE" class="h-8 mx-auto mb-6">
+            <img src="logoname-stracare.png" alt="STRA CARE" class="h-8 mx-auto mb-6">
             
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="mb-5 text-left">
@@ -193,7 +193,7 @@
         function logout() { location.reload(); }
 
         const mockBookings = [
-            { id: "B-1001", patient: "Rahul Sharma", phone: "+91 98765 43210", doctor: "Dr. Sarah Jenkins", branch: "Mahe - Azhiyur", date: "Apr 17, 2026", time: "10:30 AM", upi: "STRA17920384", status: "Paid" },
+            { id: "B-1001", p\u003Cdiv class=\"calendar-cell border-r border-gray-100\">\u003Cdiv class=\"shift-block shift-navy\">\u003Cstrong>Dr. Kumar\u003C/strong>\u003Cbr>Kuthuparamba\u003C/div>\u003C/div>atient: "Rahul Sharma", phone: "+91 98765 43210", doctor: "Dr. Sarah Jenkins", branch: "Mahe - Azhiyur", date: "Apr 17, 2026", time: "10:30 AM", upi: "STRA17920384", status: "Paid" },
             { id: "B-1002", patient: "Priya Das", phone: "+91 91234 56789", doctor: "Dr. Arun Kumar", branch: "Kuthuparamba", date: "Apr 17, 2026", time: "01:00 PM", upi: "STRA17920455", status: "Paid" },
             { id: "B-1003", patient: "Mohammed Ali", phone: "+91 99887 76655", doctor: "Dr. Maya Menon", branch: "Chokli - Pallikuni", date: "Apr 18, 2026", time: "09:00 AM", upi: "STRA18001122", status: "Pending" }
         ];
