@@ -3,31 +3,6 @@ html { scroll-behavior: smooth; }
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-thumb { background: #009B95; border-radius: 10px; }
 
-/* Splash Screen Animation */
-#splash-screen {
-    position: fixed;
-    inset: 0;
-    background-color: #ffffff;
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
-}
-.splash-logo {
-    width: 150px;
-    height: auto;
-    animation: pulseLogo 1.5s infinite alternate ease-in-out;
-}
-@keyframes pulseLogo {
-    0% { transform: scale(0.9); opacity: 0.8; }
-    100% { transform: scale(1.1); opacity: 1; }
-}
-.hidden-splash {
-    opacity: 0;
-    visibility: hidden;
-}
-
 /* Backgrounds & Utilities */
 .hero-bg {
     background: linear-gradient(rgba(30, 58, 95, 0.8), rgba(0, 155, 149, 0.8)), url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;
@@ -43,9 +18,7 @@ html { scroll-behavior: smooth; }
     display: flex; align-items: center; justify-content: center; transition: transform 0.3s;
 }
 .float-wa:hover { transform: scale(1.1); }
-@media (min-width: 768px) {
-    .float-wa { right: 40px; bottom: 40px; }
-}
+@media (min-width: 768px) { .float-wa { right: 40px; bottom: 40px; } }
 
 /* Ticker */
 .ticker-wrap { width: 100%; overflow: hidden; padding: 5px 0; }
