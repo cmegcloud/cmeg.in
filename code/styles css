@@ -9,11 +9,6 @@ html { scroll-behavior: smooth; }
     backdrop-filter: blur(10px); 
 }
 
-/* Bulletproof Scrolling Ticker */
-.marquee-container { width: 100%; overflow: hidden; background: #009B95; color: white; padding: 8px 0; white-space: nowrap; box-sizing: border-box; }
-.marquee-content { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; }
-@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-
 /* Admin Calendar Grid */
 .calendar-grid { display: grid; grid-template-columns: 80px repeat(7, 1fr); gap: 1px; background-color: #e5e7eb; border: 1px solid #e5e7eb; }
 .calendar-header { background-color: #f9fafb; font-weight: bold; text-align: center; padding: 10px; font-size: 0.8rem; color: #374151; }
