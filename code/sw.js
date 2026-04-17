@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stracare-v6';
+const CACHE_NAME = 'stracare-v7';
 const ASSETS_TO_CACHE = [
     './stracaremain.html',
     './stracareadmin.html',
