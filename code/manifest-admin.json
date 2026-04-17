@@ -1,0 +1,23 @@
+{
+  "name": "Stra Care Admin Portal",
+  "short_name": "Stra Admin",
+  "description": "Admin Dashboard for Stra Care",
+  "start_url": "./stracareadmin.html",
+  "display": "standalone",
+  "background_color": "#1E3A5F",
+  "theme_color": "#1E3A5F",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo-stracare.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo-stracare.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
