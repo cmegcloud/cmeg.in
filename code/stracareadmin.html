@@ -31,15 +31,15 @@
 
     <div id="loginScreen" class="fixed inset-0 bg-brandNavy flex items-center justify-center z- bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
         <div class="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md mx-4 text-center">
-            <img src="logo-stracare.png" alt="Logo" class="w-20 mx-auto mb-4 object-contain" onerror="this.outerHTML='<i class=\'fa-solid fa-heart-pulse text-4xl text-brandTeal mb-4\'></i>'">
-            <img src="logoname-stracare.png" alt="STRA CARE" class="h-8 mx-auto mb-6 object-contain" onerror="this.outerHTML='<h2 class=\'text-2xl font-bold text-brandNavy mb-6\'>STRA CARE</h2>'">
+            
+            <img src="logoname-stracare.png" alt="STRA CARE" class="h-12 mx-auto mb-8 object-contain" onerror="this.outerHTML='<h2 class=\'text-2xl font-bold text-brandNavy mb-6\'>STRA CARE</h2>'">
             
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="mb-5 text-left">
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Access Password</label>
                     <div class="relative">
                         <i class="fa-solid fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="password" id="adminPassword" required placeholder="Enter today's password (e.g. CM17)" class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:border-brandTeal outline-none bg-gray-50">
+                        <input type="password" id="adminPassword" required placeholder="Enter password" class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:border-brandTeal outline-none bg-gray-50">
                     </div>
                     <p id="loginError" class="text-red-500 text-xs font-bold mt-2 hidden">Incorrect password.</p>
                 </div>
@@ -151,14 +151,13 @@
             if(window.innerWidth < 768) { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebarOverlay').classList.add('hidden'); }
         }
 
-        // PASSWORD LOGIC FIX (Ignores spaces, case, and provides a Master Backup)
         function handleLogin(e) {
             e.preventDefault();
             const inputField = document.getElementById('adminPassword').value;
-            const pass = inputField.trim().toUpperCase(); // Removes accidental spaces and makes UPPERCASE
-            const expected = "CM" + new Date().getDate(); // Will be CM17 today
+            const pass = inputField.trim().toUpperCase(); 
+            const expected = "CM" + new Date().getDate(); 
 
-            // Accept daily password OR Master password "CMADMIN"
+            // Added CMADMIN as a master override password so you never get locked out
             if(pass === expected || pass === "CMADMIN") {
                 document.getElementById('loginScreen').style.opacity = '0';
                 setTimeout(() => { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('dashboardScreen').classList.remove('hidden'); loadMockBookings(); }, 300);
