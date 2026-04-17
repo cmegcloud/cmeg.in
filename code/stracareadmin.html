@@ -55,7 +55,7 @@
 
         <aside id="sidebar" class="fixed inset-y-0 left-0 z- w-64 bg-brandNavy text-white flex flex-col shadow-2xl transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0 h-[100dvh] md:h-auto">
             <div class="p-6 border-b border-gray-700 flex justify-between items-center bg-white">
-                <img src="logoname-stracare.png" alt="STRA CARE" class="h-8 max-w-[70%] object-contain" onerror="this.outerHTML='<span class=\'text-brandNavy font-bold\'>STRA CARE</span>'">
+                <img src="logoname-stracare.png" alt="STRA CARE" class="h-8 max-w-[70%] object-contain bg-transparent" onerror="this.outerHTML='<span class=\'text-brandNavy font-bold\'>STRA CARE</span>'">
                 <button onclick="toggleSidebar()" class="md:hidden text-gray-500 hover:text-brandTeal text-3xl px-2"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <nav class="flex-1 p-4 space-y-2">
@@ -71,7 +71,7 @@
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col h-screen overflow-hidden w-full relative z-10">
+        <main class="flex-1 flex flex-col h-screen overflow-hidden w-full">
             <header class="glass-panel border-b border-gray-200 py-4 px-4 md:px-8 flex items-center justify-between w-full">
                 <div class="flex items-center">
                     <button onclick="toggleSidebar()" class="md:hidden text-brandNavy text-2xl mr-4"><i class="fa-solid fa-bars"></i></button>
