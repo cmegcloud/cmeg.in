@@ -17,7 +17,7 @@
     </script>
 
     <style>
-        #splash-screen { position: fixed; inset: 0; background-color: #ffffff; z-index: 99999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+        #splash-screen { position: fixed; inset: 0; background-color: #ffffff; z-index: 999999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
         .splash-logo { width: 60%; max-width: 250px; height: auto; object-fit: contain; animation: pulseLogo 1.5s infinite alternate ease-in-out; }
         @keyframes pulseLogo { 0% { transform: scale(0.9); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
         .hidden-splash { opacity: 0; visibility: hidden; }
@@ -50,9 +50,10 @@
     </div>
 
     <div id="dashboardScreen" class="hidden flex h-screen w-full relative">
-        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z- hidden md:hidden"></div>
+        
+        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z- hidden md:hidden transition-opacity duration-300"></div>
 
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z- w-64 bg-brandNavy text-white flex flex-col shadow-2xl transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z- w-64 bg-brandNavy text-white flex flex-col shadow-2xl transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0 h-[100dvh] md:h-auto">
             <div class="p-6 border-b border-gray-700 flex justify-between items-center bg-white">
                 <img src="logoname-stracare.png" alt="STRA CARE" class="h-8 max-w-[70%] object-contain" onerror="this.outerHTML='<span class=\'text-brandNavy font-bold\'>STRA CARE</span>'">
                 <button onclick="toggleSidebar()" class="md:hidden text-gray-500 hover:text-brandTeal text-3xl px-2"><i class="fa-solid fa-xmark"></i></button>
@@ -70,8 +71,8 @@
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col h-screen overflow-hidden w-full">
-            <header class="glass-panel border-b border-gray-200 py-4 px-4 md:px-8 flex items-center justify-between z-10 w-full">
+        <main class="flex-1 flex flex-col h-screen overflow-hidden w-full relative z-10">
+            <header class="glass-panel border-b border-gray-200 py-4 px-4 md:px-8 flex items-center justify-between w-full">
                 <div class="flex items-center">
                     <button onclick="toggleSidebar()" class="md:hidden text-brandNavy text-2xl mr-4"><i class="fa-solid fa-bars"></i></button>
                     <h2 id="pageTitle" class="text-lg md:text-xl font-bold text-brandNavy">Consultation Bookings</h2>
@@ -82,7 +83,6 @@
             </header>
 
             <div class="flex-1 overflow-y-auto p-4 md:p-8 w-full">
-                
                 <div id="view-bookings" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
@@ -118,7 +118,6 @@
                         <p class="text-gray-500 text-center">Schedule details displayed here.</p>
                     </div>
                 </div>
-
             </div>
             
             <footer class="bg-white border-t border-gray-200 py-3 px-4 text-xs text-gray-500 flex flex-col md:flex-row justify-between items-center text-center gap-2">
