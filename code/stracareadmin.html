@@ -22,6 +22,23 @@
         @keyframes pulseLogo { 0% { transform: scale(0.9); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
         .hidden-splash { opacity: 0; visibility: hidden; }
     </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script>
+        // --- PASTE YOUR FIREBASE CONFIG HERE ---
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
 </head>
 <body class="text-gray-800 h-screen overflow-hidden flex flex-col">
 
@@ -87,27 +104,28 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
                             <div class="w-12 h-12 rounded-full bg-teal-50 flex items-center justify-center text-brandTeal text-xl shrink-0"><i class="fa-solid fa-calendar-check"></i></div>
-                            <div><p class="text-[10px] md:text-xs font-bold text-gray-400 uppercase">Today's Appointments</p><p class="text-xl md:text-2xl font-bold text-brandNavy">14</p></div>
+                            <div><p class="text-[10px] md:text-xs font-bold text-gray-400 uppercase">Today's Appointments</p><p id="countToday" class="text-xl md:text-2xl font-bold text-brandNavy">0</p></div>
                         </div>
                         <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
                             <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-500 text-xl shrink-0"><i class="fa-solid fa-indian-rupee-sign"></i></div>
-                            <div><p class="text-[10px] md:text-xs font-bold text-gray-400 uppercase">UPI Collected</p><p class="text-xl md:text-2xl font-bold text-brandNavy">₹6,000</p></div>
+                            <div><p class="text-[10px] md:text-xs font-bold text-gray-400 uppercase">Total Revenue Collected</p><p id="totalRevenue" class="text-xl md:text-2xl font-bold text-brandNavy">₹0</p></div>
                         </div>
                     </div>
 
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                         <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
-                            <h3 class="font-bold text-gray-800 text-sm md:text-base">Recent Bookings</h3>
-                            <button onclick="refreshData(event)" class="text-xs font-semibold text-brandTeal hover:text-teal-700 bg-teal-50 px-3 py-1.5 rounded-lg border border-teal-100"><i class="fa-solid fa-rotate-right mr-1"></i> Refresh</button>
+                            <h3 class="font-bold text-gray-800 text-sm md:text-base">Recent Bookings (Live) <span class="relative flex h-3 w-3 ml-2 inline-block"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span></h3>
                         </div>
                         <div class="overflow-x-auto w-full">
                             <table class="w-full text-left border-collapse min-w-[800px]">
                                 <thead>
                                     <tr class="bg-white border-b border-gray-200 text-[10px] md:text-xs uppercase font-bold text-gray-500">
-                                        <th class="p-3">Patient Details</th><th class="p-3">Doctor & Branch</th><th class="p-3">Date & Time</th><th class="p-3">Payment Status</th>
+                                        <th class="p-3">Date Added</th><th class="p-3">Patient Details</th><th class="p-3">Doctor & Branch</th><th class="p-3">Appt Date & Time</th><th class="p-3">Payment Status</th>
                                     </tr>
                                 </thead>
-                                <tbody id="bookingsTableBody" class="divide-y divide-gray-100 text-xs md:text-sm text-gray-700"></tbody>
+                                <tbody id="bookingsTableBody" class="divide-y divide-gray-100 text-xs md:text-sm text-gray-700">
+                                    <tr><td colspan="5" class="p-4 text-center text-gray-400">Loading bookings from database...</td></tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -158,33 +176,86 @@
 
             if(pass === expected || pass === "CMADMIN") {
                 document.getElementById('loginScreen').style.opacity = '0';
-                setTimeout(() => { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('dashboardScreen').classList.remove('hidden'); loadMockBookings(); }, 300);
+                setTimeout(() => { 
+                    document.getElementById('loginScreen').classList.add('hidden'); 
+                    document.getElementById('dashboardScreen').classList.remove('hidden'); 
+                    startFirestoreListener(); // Fetch data upon successful login
+                }, 300);
             } else { 
                 document.getElementById('loginError').classList.remove('hidden'); 
             }
         }
         function logout() { location.reload(); }
 
-        const mockBookings = [
-            { id: "B-1001", patient: "Rahul Sharma", phone: "+91 98765 43210", doctor: "Dr. Sarah Jenkins", branch: "Mahe - Azhiyur", date: "Apr 17, 2026", time: "10:30 AM", upi: "STRA17920384", status: "Paid" },
-            { id: "B-1002", patient: "Priya Das", phone: "+91 91234 56789", doctor: "Dr. Arun Kumar", branch: "Kuthuparamba", date: "Apr 17, 2026", time: "01:00 PM", upi: "STRA17920455", status: "Paid" }
-        ];
+        // --- FIREBASE LIVE LISTENER ---
+        function startFirestoreListener() {
+            const tbody = document.getElementById('bookingsTableBody');
+            
+            // Listen to 'appointments' collection, ordered by creation date (newest first)
+            db.collection("appointments").orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
+                tbody.innerHTML = ''; // Clear table
+                let totalRev = 0;
+                let todayCount = 0;
+                const todayString = new Date().toISOString().split('T'); // "YYYY-MM-DD"
 
-        function loadMockBookings() {
-            const tbody = document.getElementById('bookingsTableBody'); tbody.innerHTML = '';
-            mockBookings.forEach(b => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="p-3"><p class="font-bold text-brandNavy">${b.patient}</p><p class="text-[10px] text-gray-500">${b.phone}</p></td>
-                    <td class="p-3"><p class="font-semibold text-gray-800">${b.doctor}</p><p class="text-[10px] text-gray-500">${b.branch}</p></td>
-                    <td class="p-3"><p class="font-semibold text-gray-800">${b.date}</p><p class="text-[10px] text-gray-500">${b.time}</p></td>
-                    <td class="p-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded-md font-bold text-[10px]">Paid</span></td>
-                `; tbody.appendChild(tr);
+                if(querySnapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-400">No bookings found in database.</td></tr>';
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const b = doc.data();
+                    
+                    // Parse data safely
+                    const name = b.name || "Unknown";
+                    const phone = b.phone || "N/A";
+                    const doctor = b.doctor || "N/A";
+                    const branch = b.branch || "N/A";
+                    const date = b.date || "N/A";
+                    const time = b.time || "N/A";
+                    const amount = Number(b.amount) || 0;
+                    const status = b.status || "Pending";
+                    const txId = b.transactionId || "N/A";
+                    
+                    // Calculate "Created At" nicely
+                    let createdStr = "N/A";
+                    if(b.createdAt) {
+                        const dateObj = b.createdAt.toDate();
+                        createdStr = dateObj.toLocaleDateString() + " " + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    }
+
+                    // Metrics Math
+                    totalRev += amount;
+                    if(date === todayString) todayCount++;
+
+                    // UI Badge formatting
+                    let statusBadge = '';
+                    if(status.toLowerCase().includes("paid") || status.toLowerCase().includes("success")) {
+                        statusBadge = `<span class="bg-green-100 text-green-700 px-2 py-1 rounded-md font-bold text-[10px]">Paid</span>`;
+                    } else {
+                        statusBadge = `<span class="bg-orange-100 text-orange-700 px-2 py-1 rounded-md font-bold text-[10px]">${status}</span>`;
+                    }
+
+                    // Build Row
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="p-3"><p class="text-[10px] text-gray-500 font-mono">${createdStr}</p><p class="text-[10px] text-gray-400">ID: ${txId}</p></td>
+                        <td class="p-3"><p class="font-bold text-brandNavy">${name}</p><p class="text-[10px] text-gray-500">${phone}</p></td>
+                        <td class="p-3"><p class="font-semibold text-gray-800">${doctor}</p><p class="text-[10px] text-gray-500">${branch}</p></td>
+                        <td class="p-3"><p class="font-semibold text-gray-800">${date}</p><p class="text-[10px] text-gray-500">${time}</p></td>
+                        <td class="p-3">${statusBadge}</td>
+                    `; 
+                    tbody.appendChild(tr);
+                });
+
+                // Update UI Metrics
+                document.getElementById('countToday').textContent = todayCount;
+                document.getElementById('totalRevenue').textContent = "₹" + totalRev.toLocaleString('en-IN');
+                
+            }, (error) => {
+                console.error("Error fetching Firestore data:", error);
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500 font-bold">Error loading database. Check configuration or permissions.</td></tr>`;
             });
-        }
-        function refreshData(e) {
-            const btn = e.currentTarget; btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin mr-1"></i>`;
-            setTimeout(() => { loadMockBookings(); btn.innerHTML = `<i class="fa-solid fa-rotate-right mr-1"></i> Refresh`; }, 800);
         }
     </script>
 </body>
