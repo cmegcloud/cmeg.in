@@ -31,16 +31,15 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script>
-        // --- PASTE YOUR FIREBASE CONFIG HERE ---
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyDwfmoDPvslFmTn3GjO56VAxhODRlem5bg",
+            authDomain: "stra-care.firebaseapp.com",
+            projectId: "stra-care",
+            storageBucket: "stra-care.firebasestorage.app",
+            messagingSenderId: "329966100049",
+            appId: "1:329966100049:web:ca8acc0fccdebac5da6270",
+            measurementId: "G-W2N89Z5SCY"
         };
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
     </script>
@@ -178,17 +177,17 @@
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <select id="branchSelect" class="w-full rounded-lg border-gray-300 border p-3 bg-white outline-none cursor-pointer">
-                                <option>Mahe - Azhiyur</option><option>Chokli - Pallikuni</option>
+                                <option>Mahe - Azhiyur</option><option>Chokli - Pallikuni</option><option>Panoor</option><option>Kuthuparamba</option>
                             </select>
                             <select id="doctorSelect" class="w-full rounded-lg border-gray-300 border p-3 bg-white outline-none cursor-pointer">
-                                <option>Any Doctor</option><option value="Dr. Sarah Jenkins">Dr. Sarah Jenkins</option>
+                                <option>Any Doctor</option><option value="Dr. Sarah Jenkins">Dr. Sarah Jenkins</option><option value="Dr. Arun Kumar">Dr. Arun Kumar</option>
                             </select>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <input type="date" id="appointDate" required class="w-full rounded-lg border-gray-300 border p-3 outline-none text-gray-700">
                             <input type="time" id="appointTime" required class="w-full rounded-lg border-gray-300 border p-3 outline-none text-gray-700">
                         </div>
-                        <button type="button" onclick="initiatePayment()" class="w-full bg-brandTeal text-white font-bold py-4 rounded-xl mt-4 shadow-lg flex justify-center items-center gap-2" id="payBtn"><i class="fa-solid fa-qrcode"></i> Pay ₹500 via UPI</button>
+                        <button type="button" onclick="initiatePayment()" id="payBtn" class="w-full bg-brandTeal text-white font-bold py-4 rounded-xl mt-4 shadow-lg flex justify-center items-center gap-2"><i class="fa-solid fa-qrcode"></i> Pay ₹500 via UPI</button>
                     </form>
                     <p id="statusMsg" class="mt-4 text-sm font-bold text-center hidden"></p>
                 </div>
@@ -265,7 +264,6 @@
             const amount = 500;
 
             try {
-                // Save to Firebase Firestore
                 await db.collection("appointments").add({
                     name: name,
                     phone: phone,
@@ -283,7 +281,6 @@
                 document.getElementById('statusMsg').className = "mt-4 text-sm font-bold text-center text-green-600";
                 document.getElementById('statusMsg').classList.remove('hidden');
 
-                // Redirect to UPI
                 setTimeout(() => {
                     window.location.href = `upi://pay?pa=stracare@upi&pn=STRA%20CARE&tr=${transactionRef}&am=${amount}.00&cu=INR&tn=Consultation`;
                     btn.innerHTML = '<i class="fa-solid fa-qrcode"></i> Pay ₹500 via UPI';
@@ -292,7 +289,7 @@
 
             } catch (error) {
                 console.error("Error adding document: ", error);
-                alert("Error saving booking. Please try again or contact support.");
+                alert("Error saving booking. Make sure your Firestore rules are updated.");
                 btn.innerHTML = '<i class="fa-solid fa-qrcode"></i> Pay ₹500 via UPI';
                 btn.disabled = false;
             }
