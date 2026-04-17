@@ -29,7 +29,7 @@
         <img src="logo-stracare.png" alt="Loading..." class="splash-logo" onerror="this.style.display='none'">
     </div>
 
-    <div id="loginScreen" class="fixed inset-0 bg-brandNavy flex items-center justify-center z- bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+    <div id="loginScreen" class="fixed inset-0 bg-brandNavy flex items-center justify-center bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" style="z-index: 100;">
         <div class="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md mx-4 text-center">
             
             <img src="logoname-stracare.png" alt="STRA CARE" class="h-12 mx-auto mb-8 object-contain" onerror="this.outerHTML='<h2 class=\'text-2xl font-bold text-brandNavy mb-6\'>STRA CARE</h2>'">
@@ -51,9 +51,9 @@
 
     <div id="dashboardScreen" class="hidden flex h-screen w-full relative">
         
-        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z- hidden md:hidden transition-opacity duration-300"></div>
+        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 hidden md:hidden transition-opacity duration-300" style="z-index: 40;"></div>
 
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z- w-64 bg-brandNavy text-white flex flex-col shadow-2xl transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0 h-[100dvh] md:h-auto">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-brandNavy text-white flex flex-col shadow-2xl transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0 h-[100dvh] md:h-auto" style="z-index: 50;">
             <div class="p-6 border-b border-gray-700 flex justify-between items-center bg-white">
                 <img src="logoname-stracare.png" alt="STRA CARE" class="h-8 max-w-[70%] object-contain bg-transparent" onerror="this.outerHTML='<span class=\'text-brandNavy font-bold\'>STRA CARE</span>'">
                 <button onclick="toggleSidebar()" class="md:hidden text-gray-500 hover:text-brandTeal text-3xl px-2"><i class="fa-solid fa-xmark"></i></button>
@@ -71,7 +71,7 @@
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col h-screen overflow-hidden w-full">
+        <main class="flex-1 flex flex-col h-screen overflow-hidden w-full relative">
             <header class="glass-panel border-b border-gray-200 py-4 px-4 md:px-8 flex items-center justify-between w-full">
                 <div class="flex items-center">
                     <button onclick="toggleSidebar()" class="md:hidden text-brandNavy text-2xl mr-4"><i class="fa-solid fa-bars"></i></button>
