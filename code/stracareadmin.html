@@ -17,7 +17,7 @@
     </script>
 
     <style>
-        #splash-screen { position: fixed; inset: 0; background-color: #ffffff; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+        #splash-screen { position: fixed; inset: 0; background-color: #ffffff; z-index: 99999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
         .splash-logo { width: 60%; max-width: 250px; height: auto; object-fit: contain; animation: pulseLogo 1.5s infinite alternate ease-in-out; }
         @keyframes pulseLogo { 0% { transform: scale(0.9); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
         .hidden-splash { opacity: 0; visibility: hidden; }
@@ -50,12 +50,12 @@
     </div>
 
     <div id="dashboardScreen" class="hidden flex h-screen w-full relative">
-        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div>
+        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z- hidden md:hidden"></div>
 
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-brandNavy text-white flex flex-col shadow-2xl transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z- w-64 bg-brandNavy text-white flex flex-col shadow-2xl transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0">
             <div class="p-6 border-b border-gray-700 flex justify-between items-center bg-white">
-                <img src="logoname-stracare.png" alt="STRA CARE" class="h-8 object-contain" onerror="this.outerHTML='<span class=\'text-brandNavy font-bold\'>STRA CARE</span>'">
-                <button onclick="toggleSidebar()" class="md:hidden text-gray-400 text-xl"><i class="fa-solid fa-xmark"></i></button>
+                <img src="logoname-stracare.png" alt="STRA CARE" class="h-8 max-w-[70%] object-contain" onerror="this.outerHTML='<span class=\'text-brandNavy font-bold\'>STRA CARE</span>'">
+                <button onclick="toggleSidebar()" class="md:hidden text-gray-500 hover:text-brandTeal text-3xl px-2"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <nav class="flex-1 p-4 space-y-2">
                 <button onclick="switchTab('bookings')" id="tab-bookings" class="w-full flex items-center gap-3 px-4 py-3 bg-brandTeal text-white rounded-xl font-semibold text-sm">
@@ -157,7 +157,6 @@
             const pass = inputField.trim().toUpperCase(); 
             const expected = "CM" + new Date().getDate(); 
 
-            // Added CMADMIN as a master override password so you never get locked out
             if(pass === expected || pass === "CMADMIN") {
                 document.getElementById('loginScreen').style.opacity = '0';
                 setTimeout(() => { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('dashboardScreen').classList.remove('hidden'); loadMockBookings(); }, 300);
