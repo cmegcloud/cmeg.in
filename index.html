@@ -1,480 +1,570 @@
-<!DOCTYPE html>
-<html lang="en" class="light">
+<!doctype html>
+<html lang="en" class="h-full">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CM Experts Group - Your Business Guide from Start to Growth</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CMEG | Tax | Accounting | Software Solutions</title>
+  <meta name="description" content="CMEG | Tax | Accounting | Software Solutions - Count . Connect . Grow">
+  
+  <link rel="icon" href="logo-cmeg.svg" type="image/svg+xml">
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Roboto', sans-serif; box-sizing: border-box; }
+    .font-display { font-family: 'Inter', sans-serif; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
     
-    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { poppins: ['Poppins', 'sans-serif'] },
-                    colors: {
-                        cm: {
-                            red: '#c62828',         /* Professional Red */
-                            redHover: '#b71c1c',
-                            bgMuted: '#f1f5f9',     /* Muted Grey Background */
-                            surface: '#ffffff',
-                            textMain: '#1e293b',    /* Dark Slate */
-                            textMuted: '#64748b',   /* Muted Slate Grey */
-                            border: '#e2e8f0'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    .anim-fade-up { animation: fadeUp 0.8s ease forwards; }
+    .anim-fade-up-d1 { animation: fadeUp 0.8s ease 0.15s forwards; opacity: 0; }
+    .anim-fade-up-d2 { animation: fadeUp 0.8s ease 0.3s forwards; opacity: 0; }
+    .anim-fade-up-d3 { animation: fadeUp 0.8s ease 0.45s forwards; opacity: 0; }
+    .anim-fade-in { animation: fadeIn 1s ease forwards; }
+    .anim-slide-right { animation: slideRight 0.8s ease forwards; }
+    .anim-scale-in { animation: scaleIn 0.6s ease forwards; }
+    .anim-float { animation: float 3s ease-in-out infinite; }
 
-    <style>
-        body { font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+    .division-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .division-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
 
-        /* Form Input Styling */
-        .zoho-input {
-            width: 100%;
-            padding: 10px 14px;
-            font-size: 14px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            background-color: #ffffff;
-            outline: none;
-            transition: all 0.2s;
-            color: #1e293b;
-        }
-        .zoho-input:focus { border-color: #c62828; box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1); }
-        .dark .zoho-input { background-color: #374151; border-color: #4b5563; color: white; }
-        .dark .zoho-input:focus { border-color: #ef5350; box-shadow: 0 0 0 3px rgba(239, 83, 80, 0.15); }
+    .nav-link {
+      position: relative;
+      transition: color 0.3s ease;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
 
-        .zoho-label {
-            display: block;
-            font-size: 12px;
-            font-weight: 500;
-            color: #4b5563;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .dark .zoho-label { color: #9ca3af; }
+    .stat-card {
+      transition: transform 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: scale(1.05);
+    }
 
-        /* Subtle Hover Effects */
-        .hover-card { transition: all 0.3s ease; }
-        .hover-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
-        .dark .hover-card:hover { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2); }
-    </style>
+    .testimonial-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .testimonial-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    }
+
+    .whatsapp-float {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 999;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .hero-gradient {
+      background: linear-gradient(135deg, #0f2027 0%, #203a43 40%, #2c5364 100%);
+    }
+
+    .gold-gradient {
+      background: linear-gradient(135deg, #c9a84c, #f0d68a, #c9a84c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .section-reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .mobile-menu.open {
+      max-height: 500px;
+    }
+  </style>
 </head>
-<body class="bg-cm-bgMuted dark:bg-gray-900 text-cm-textMain dark:text-gray-200 transition-colors duration-300">
-
-    <nav class="fixed w-full z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-cm-border dark:border-gray-800 transition-colors">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
-                    <div class="w-8 h-8 rounded bg-cm-red flex items-center justify-center text-white font-semibold text-lg shadow-sm">
-                        <i class="fa-solid fa-shapes"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-cm-textMain dark:text-white font-semibold text-lg tracking-tight leading-none">CMEG</h1>
-                        <span class="text-[9px] text-cm-textMuted dark:text-gray-400 font-medium uppercase tracking-widest block mt-0.5">CM Experts Group</span>
-                    </div>
-                </div>
-
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#about" class="text-sm font-medium text-cm-textMuted hover:text-cm-red dark:text-gray-300 dark:hover:text-cm-red transition">About</a>
-                    <a href="#services" class="text-sm font-medium text-cm-textMuted hover:text-cm-red dark:text-gray-300 dark:hover:text-cm-red transition">Initiatives</a>
-                    <a href="#why-us" class="text-sm font-medium text-cm-textMuted hover:text-cm-red dark:text-gray-300 dark:hover:text-cm-red transition">Why Choose Us</a>
-                    <a href="#contact" class="text-sm font-medium text-cm-textMuted hover:text-cm-red dark:text-gray-300 dark:hover:text-cm-red transition">Contact Us</a>
-                </div>
-
-                <div class="flex items-center gap-3">
-                    <button onclick="toggleTheme()" class="text-gray-500 hover:text-cm-red dark:text-gray-400 transition-colors h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                        <i class="fa-solid fa-moon dark:hidden"></i>
-                        <i class="fa-solid fa-sun hidden dark:block"></i>
-                    </button>
-                    <a href="#contact" class="hidden md:flex px-5 py-2 bg-cm-red text-white rounded-md font-medium text-sm hover:bg-cm-redHover transition-colors shadow-sm items-center gap-2">
-                        Get Started
-                    </a>
-                    <button id="mobile-menu-btn" class="md:hidden text-gray-600 dark:text-gray-300 text-xl focus:outline-none ml-2">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-900 border-b border-cm-border dark:border-gray-800 absolute w-full left-0 px-4 py-2 space-y-1 shadow-lg">
-            <a href="#about" class="block px-4 py-2.5 rounded-md text-sm font-medium text-cm-textMain dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800">About</a>
-            <a href="#services" class="block px-4 py-2.5 rounded-md text-sm font-medium text-cm-textMain dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800">Initiatives</a>
-            <a href="#why-us" class="block px-4 py-2.5 rounded-md text-sm font-medium text-cm-textMain dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800">Why Choose Us</a>
-            <a href="#contact" class="block px-4 py-2.5 rounded-md text-sm font-medium text-cm-red bg-red-50 dark:bg-red-900/20">Contact Us</a>
-        </div>
+<body class="h-full">
+  <div id="app-wrapper" class="w-full h-full overflow-auto" style="background-color: #0f2027;">
+    
+    <nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background: rgba(15,32,39,0.95); backdrop-filter: blur(12px);">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20">
+        <a href="#home" class="flex items-center gap-3">
+         <img src="logo-cmeg.svg" alt="CMEG Logo" class="h-10 w-auto object-contain">
+         <div>
+            <span id="nav-title" class="text-white font-bold text-lg tracking-wide">CMEG</span> 
+            <span class="block text-xs" style="color: #c9a84c;">CM Experts Group</span>
+         </div>
+        </a>
+       <div class="hidden md:flex items-center gap-8">
+        <a href="#home" class="nav-link text-sm font-medium" style="color: #c9a84c;">Home<span style="background: #c9a84c;" class="absolute bottom-[-4px] left-0 h-[2px]"></span></a> 
+        <a href="#about" class="nav-link text-white/80 hover:text-white text-sm font-medium" style="--after-bg: #c9a84c;">About Us<span style="background: #c9a84c;"></span></a> 
+        <a href="#divisions" class="nav-link text-white/80 hover:text-white text-sm font-medium">Divisions</a> 
+        <a href="#testimonials" class="nav-link text-white/80 hover:text-white text-sm font-medium">Clients</a> 
+        <a href="#career" class="nav-link text-white/80 hover:text-white text-sm font-medium">Career</a> 
+        <a href="#contact" class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105" style="background: linear-gradient(135deg, #c9a84c, #f0d68a); color: #0f2027;">Contact Us</a>
+       </div>
+       <button id="mobile-toggle" class="md:hidden text-white p-2" onclick="document.getElementById('mobile-menu').classList.toggle('open')"> 
+        <i data-lucide="menu" style="width:24px;height:24px;"></i> 
+       </button>
+      </div>
+      <div id="mobile-menu" class="mobile-menu md:hidden">
+       <div class="py-4 flex flex-col gap-3 border-t border-white/10">
+        <a href="#home" onclick="document.getElementById('mobile-menu').classList.remove('open')" class="text-white/80 hover:text-white text-sm py-2">Home</a> 
+        <a href="#about" onclick="document.getElementById('mobile-menu').classList.remove('open')" class="text-white/80 hover:text-white text-sm py-2">About Us</a> 
+        <a href="#divisions" onclick="document.getElementById('mobile-menu').classList.remove('open')" class="text-white/80 hover:text-white text-sm py-2">Divisions</a> 
+        <a href="#testimonials" onclick="document.getElementById('mobile-menu').classList.remove('open')" class="text-white/80 hover:text-white text-sm py-2">Clients</a> 
+        <a href="#career" onclick="document.getElementById('mobile-menu').classList.remove('open')" class="text-white/80 hover:text-white text-sm py-2">Career</a> 
+        <a href="#contact" onclick="document.getElementById('mobile-menu').classList.remove('open')" class="px-5 py-2 rounded-full text-sm font-semibold text-center" style="background: linear-gradient(135deg, #c9a84c, #f0d68a); color: #0f2027;">Contact Us</a>
+       </div>
+      </div>
+     </div>
     </nav>
 
-    <section class="pt-32 pb-16 lg:pt-40 lg:pb-24 bg-white dark:bg-gray-900 border-b border-cm-border dark:border-gray-800">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            
-            <h1 class="text-3xl md:text-4xl lg:text-5xl font-semibold text-cm-textMain dark:text-white tracking-tight leading-tight mb-6">
-                Your Business Guide <br>
-                <span class="text-cm-red font-medium">from Start to Growth.</span>
-            </h1>
-            
-            <p class="max-w-2xl mx-auto text-sm sm:text-base text-cm-textMuted dark:text-gray-400 mb-8 leading-relaxed font-light">
-                Professional services in taxation, accounting, compliance management, and cloud-based ERP and CRM solutions. We help businesses simplify financial operations and implement modern digital systems.
-            </p>
-            
-            <div class="flex flex-col sm:flex-row justify-center gap-3 mb-12">
-                <a href="#contact" class="px-6 py-2.5 bg-cm-red text-white rounded-md font-medium text-sm hover:bg-cm-redHover transition-colors shadow-sm flex items-center justify-center gap-2">
-                    Talk to Experts <i class="fa-solid fa-arrow-right"></i>
-                </a>
-                <a href="#services" class="px-6 py-2.5 bg-white dark:bg-gray-800 text-cm-textMain dark:text-gray-200 border border-cm-border dark:border-gray-700 rounded-md font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm flex items-center justify-center gap-2">
-                    Explore Services
-                </a>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto pt-8 border-t border-cm-border dark:border-gray-800">
-                <div>
-                    <h3 class="text-2xl font-semibold text-cm-textMain dark:text-white mb-1">15+</h3>
-                    <p class="text-xs text-cm-textMuted dark:text-gray-500 uppercase tracking-wide">Years Experience</p>
-                </div>
-                <div>
-                    <h3 class="text-2xl font-semibold text-cm-textMain dark:text-white mb-1">5000+</h3>
-                    <p class="text-xs text-cm-textMuted dark:text-gray-500 uppercase tracking-wide">Satisfied Clients</p>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold text-cm-textMain dark:text-white mb-1 mt-1">India & GCC</h3>
-                    <p class="text-xs text-cm-textMuted dark:text-gray-500 uppercase tracking-wide">Global Reach</p>
-                </div>
-            </div>
+    <section id="home" class="hero-gradient relative" style="min-height: 100%; display: flex; align-items: center;">
+     <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 50%, #c9a84c 1px, transparent 1px), radial-gradient(circle at 80% 20%, #c9a84c 1px, transparent 1px); background-size: 60px 60px;"></div>
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 sm:py-40 relative z-10 w-full">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+       <div>
+        <div class="anim-fade-up">
+            <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest mb-6 border" style="color: #c9a84c; border-color: #c9a84c33; background: #c9a84c11;">TRUSTED SINCE 2009</span>
         </div>
+        <h1 id="hero-title" class="font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight anim-fade-up-d1">CMEG</h1>
+        <p class="text-xl sm:text-2xl text-white/60 font-medium mt-2 anim-fade-up-d1" style="font-family: 'DM Sans', sans-serif;">CM Experts Group</p>
+        <p id="hero-tagline" class="text-2xl sm:text-3xl font-semibold mt-4 anim-fade-up-d2 gold-gradient">Count . Connect . Grow</p>
+        <p class="text-white/70 text-lg mt-6 max-w-lg leading-relaxed anim-fade-up-d2">Your trusted partner for Tax, Accounting, and Business Solutions. Serving India &amp; UAE with excellence.</p>
+        <div class="flex flex-wrap gap-4 mt-8 anim-fade-up-d3">
+            <a href="#divisions" class="px-8 py-3.5 rounded-full font-semibold text-base transition-all duration-300 hover:scale-105 hover:shadow-lg" style="background: linear-gradient(135deg, #c9a84c, #f0d68a); color: #0f2027;"> Explore Divisions </a> 
+            <a href="https://wa.me/919946151111" target="_blank" rel="noopener noreferrer" class="px-8 py-3.5 rounded-full font-semibold text-base border-2 transition-all duration-300 hover:scale-105" style="border-color: #c9a84c; color: #c9a84c;"> <span class="flex items-center gap-2"><i data-lucide="message-circle" style="width:18px;height:18px;"></i> Chat With Us</span> </a>
+        </div>
+        <div class="flex items-center gap-6 mt-10 anim-fade-up-d3">
+         <div class="flex items-center gap-2"><i data-lucide="globe" style="width:16px;height:16px;color:#c9a84c;"></i> <span class="text-white/60 text-sm">www.cmeg.in</span></div>
+         <div class="flex items-center gap-2"><i data-lucide="mail" style="width:16px;height:16px;color:#c9a84c;"></i> <span class="text-white/60 text-sm">Info@cmeg.in</span></div>
+        </div>
+       </div>
+       <div class="hidden lg:flex justify-center">
+        <div class="relative anim-float">
+         <div class="w-72 h-72 rounded-full opacity-20" style="background: radial-gradient(circle, #c9a84c, transparent 70%);"></div>
+         <div class="absolute inset-0 flex items-center justify-center">
+          <div class="text-center">
+           <div class="text-7xl font-display font-bold gold-gradient">15+</div>
+           <div class="text-white/60 mt-2 text-lg">Years of Excellence</div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="absolute bottom-0 left-0 right-0 h-32" style="background: linear-gradient(to bottom, transparent, #0a1a20);"></div>
     </section>
 
-    <section id="about" class="py-20 bg-cm-bgMuted dark:bg-gray-800/50">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                
-                <div>
-                    <h4 class="text-cm-red font-medium uppercase tracking-wider text-xs mb-3">About Us</h4>
-                    <h2 class="text-2xl md:text-3xl font-semibold text-cm-textMain dark:text-white mb-5 leading-snug">Simplifying operations with financial expertise & digital innovation.</h2>
-                    <p class="text-sm text-cm-textMuted dark:text-gray-400 mb-4 leading-relaxed font-light">
-                        CM Experts Group is a professional consulting firm specializing in tax compliance, accounting services, regulatory compliance, and business technology solutions.
-                    </p>
-                    <p class="text-sm text-cm-textMuted dark:text-gray-400 mb-6 leading-relaxed font-light">
-                        We work closely with entrepreneurs, startups, and established businesses to ensure their financial systems remain organized, compliant, and ready for sustainable growth.
-                    </p>
-                    
-                    <div class="flex gap-6">
-                        <div class="flex items-center gap-2 text-sm font-medium text-cm-textMain dark:text-gray-200">
-                            <i class="fa-solid fa-check text-cm-red"></i> Certified Experts
-                        </div>
-                        <div class="flex items-center gap-2 text-sm font-medium text-cm-textMain dark:text-gray-200">
-                            <i class="fa-solid fa-check text-cm-red"></i> Technology-Driven
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm border border-cm-border dark:border-gray-700 hover-card flex gap-4 items-start">
-                        <div class="w-10 h-10 rounded bg-red-50 dark:bg-red-900/20 text-cm-red flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-calculator"></i></div>
-                        <div>
-                            <h3 class="text-base font-semibold text-cm-textMain dark:text-white mb-1">Count</h3>
-                            <p class="text-xs text-cm-textMuted dark:text-gray-400 font-light leading-relaxed">We ensure accurate accounting and tax compliance to maintain clear and organized financial records.</p>
-                        </div>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm border border-cm-border dark:border-gray-700 hover-card flex gap-4 items-start">
-                        <div class="w-10 h-10 rounded bg-blue-50 dark:bg-blue-900/20 text-blue-500 flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-network-wired"></i></div>
-                        <div>
-                            <h3 class="text-base font-semibold text-cm-textMain dark:text-white mb-1">Connect</h3>
-                            <p class="text-xs text-cm-textMuted dark:text-gray-400 font-light leading-relaxed">We connect businesses with modern ERP systems and digital tools for efficient management.</p>
-                        </div>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm border border-cm-border dark:border-gray-700 hover-card flex gap-4 items-start">
-                        <div class="w-10 h-10 rounded bg-green-50 dark:bg-green-900/20 text-green-500 flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-arrow-trend-up"></i></div>
-                        <div>
-                            <h3 class="text-base font-semibold text-cm-textMain dark:text-white mb-1">Grow</h3>
-                            <p class="text-xs text-cm-textMuted dark:text-gray-400 font-light leading-relaxed">With expert advisory and compliance support, we help businesses grow confidently and sustainably.</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+    <section class="relative z-10 -mt-16">
+     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 section-reveal">
+       <div class="stat-card rounded-2xl p-6 text-center" style="background: #152a33; border: 1px solid #c9a84c22;">
+        <div class="text-3xl font-bold gold-gradient font-display">10K+</div>
+        <div class="text-white/60 text-sm mt-1">Individuals Served</div>
+       </div>
+       <div class="stat-card rounded-2xl p-6 text-center" style="background: #152a33; border: 1px solid #c9a84c22;">
+        <div class="text-3xl font-bold gold-gradient font-display">2K+</div>
+        <div class="text-white/60 text-sm mt-1">Businesses Served</div>
+       </div>
+       <div class="stat-card rounded-2xl p-6 text-center" style="background: #152a33; border: 1px solid #c9a84c22;">
+        <div class="text-3xl font-bold gold-gradient font-display">15+</div>
+        <div class="text-white/60 text-sm mt-1">Years Experience</div>
+       </div>
+       <div class="stat-card rounded-2xl p-6 text-center" style="background: #152a33; border: 1px solid #c9a84c22;">
+        <div class="text-3xl font-bold gold-gradient font-display">24/7</div>
+        <div class="text-white/60 text-sm mt-1">WhatsApp Support</div>
+       </div>
+      </div>
+     </div>
     </section>
 
-    <section id="services" class="py-20 bg-white dark:bg-gray-900 border-t border-cm-border dark:border-gray-800">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto mb-12">
-                <h4 class="text-cm-red font-medium uppercase tracking-wider text-xs mb-2">Core Areas & Divisions</h4>
-                <h2 class="text-2xl md:text-3xl font-semibold text-cm-textMain dark:text-white mb-3">Comprehensive Professional Services</h2>
-                <p class="text-sm text-cm-textMuted dark:text-gray-400 font-light">Tailored solutions to meet the specific compliance, financial, and technological needs of your growing business.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                <div class="bg-cm-surface dark:bg-gray-800 rounded-xl p-6 border border-cm-border dark:border-gray-700 hover-card">
-                    <div class="w-12 h-12 rounded bg-red-50 dark:bg-red-900/20 text-cm-red flex items-center justify-center text-xl mb-5">
-                        <i class="fa-solid fa-scale-balanced"></i>
-                    </div>
-                    <h3 class="text-lg font-semibold text-cm-textMain dark:text-white mb-2">Tax Compliance & Advisory</h3>
-                    <p class="text-xs text-cm-textMuted dark:text-gray-400 mb-5 font-light leading-relaxed">Expert tax filings, regulatory compliance, and strategic tax planning to keep your business penalty-free.</p>
-                    <ul class="space-y-2 text-xs text-cm-textMain dark:text-gray-300">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> GST Registration & Returns</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> Income Tax Return Filing</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> TDS Compliance</li>
-                    </ul>
-                </div>
-
-                <div class="bg-cm-surface dark:bg-gray-800 rounded-xl p-6 border border-cm-border dark:border-gray-700 hover-card">
-                    <div class="w-12 h-12 rounded bg-red-50 dark:bg-red-900/20 text-cm-red flex items-center justify-center text-xl mb-5">
-                        <i class="fa-solid fa-calculator"></i>
-                    </div>
-                    <h3 class="text-lg font-semibold text-cm-textMain dark:text-white mb-2">Accounting & Bookkeeping</h3>
-                    <p class="text-xs text-cm-textMuted dark:text-gray-400 mb-5 font-light leading-relaxed">Reliable accounting provides clarity about your business finances and supports better decision-making.</p>
-                    <ul class="space-y-2 text-xs text-cm-textMain dark:text-gray-300">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> Bookkeeping & Accounting</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> Financial Statements</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> Bank Reconciliation</li>
-                    </ul>
-                </div>
-
-                <div class="bg-cm-surface dark:bg-gray-800 rounded-xl p-6 border border-cm-border dark:border-gray-700 hover-card">
-                    <div class="w-12 h-12 rounded bg-red-50 dark:bg-red-900/20 text-cm-red flex items-center justify-center text-xl mb-5">
-                        <i class="fa-solid fa-cloud"></i>
-                    </div>
-                    <h3 class="text-lg font-semibold text-cm-textMain dark:text-white mb-2">ERP & CRM Solutions</h3>
-                    <p class="text-xs text-cm-textMuted dark:text-gray-400 mb-5 font-light leading-relaxed">Implement modern cloud-based systems to streamline operations, automate tasks, and improve productivity.</p>
-                    <ul class="space-y-2 text-xs text-cm-textMain dark:text-gray-300">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> Cloud-Based ERP Systems</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> CRM for Client Management</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-angle-right text-cm-red"></i> Digital Document Mgmt.</li>
-                    </ul>
-                </div>
-
-            </div>
+    <section id="about" class="py-24 sm:py-32" style="background: #0a1a20;">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-16 items-center section-reveal">
+       <div>
+        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest mb-4 border" style="color: #c9a84c; border-color: #c9a84c33; background: #c9a84c11;">OUR STORY</span>
+        <h2 id="about-heading" class="font-display text-4xl sm:text-5xl font-bold text-white mt-2">About Us</h2>
+        <div class="w-20 h-1 rounded-full mt-4 mb-8" style="background: linear-gradient(to right, #c9a84c, #f0d68a);"></div>
+        <div class="space-y-5 text-white/70 text-lg leading-relaxed">
+         <p><span id="founder-name" class="font-semibold" style="color: #c9a84c;">Mohammed Shanid C M</span> is the Founder of CMEG. With a Post Graduate degree in Master of Commerce (MCom) and over <strong class="text-white">15 years of experience</strong>, he is an Expert in GST &amp; Income Tax Laws with real-time updates. He is also a dedicated Commerce and Business Laws teacher for degree students.</p>
+         <p>Serving both <strong class="text-white">India and UAE</strong>, CMEG has built a reputation for excellence, trust, and comprehensive financial and business solutions.</p>
         </div>
+        <div class="grid grid-cols-2 gap-4 mt-8">
+         <div class="rounded-xl p-5" style="background: #152a33; border: 1px solid #c9a84c15;">
+            <i data-lucide="users" style="width:28px;height:28px;color:#c9a84c;" class="mb-3"></i>
+            <div class="text-2xl font-bold text-white font-display">10,000+</div>
+            <div class="text-white/50 text-sm mt-1">Happy Individuals</div>
+         </div>
+         <div class="rounded-xl p-5" style="background: #152a33; border: 1px solid #c9a84c15;">
+            <i data-lucide="building" style="width:28px;height:28px;color:#c9a84c;" class="mb-3"></i>
+            <div class="text-2xl font-bold text-white font-display">2,000+</div>
+            <div class="text-white/50 text-sm mt-1">Businesses Served</div>
+         </div>
+        </div>
+       </div>
+       <div class="flex justify-center">
+        <div class="relative">
+         <div class="w-80 h-96 rounded-3xl" style="background: linear-gradient(135deg, #152a33, #1e3a44); border: 1px solid #c9a84c22;"></div>
+         <div class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+          <div class="w-24 h-24 rounded-full flex items-center justify-center mb-6" style="background: linear-gradient(135deg, #c9a84c, #f0d68a);">
+            <span class="text-3xl font-bold" style="color: #0f2027;">SC</span>
+          </div>
+          <h3 class="text-white font-display text-xl font-bold">Mohammed Shanid C M</h3>
+          <p style="color: #c9a84c;" class="text-sm font-medium mt-1">Founder &amp; CEO</p>
+          <p class="text-white/50 text-sm mt-1">MCom | Tax Law Expert</p>
+          <div class="flex items-center gap-2 mt-4 px-4 py-2 rounded-full" style="background: #c9a84c15; border: 1px solid #c9a84c22;">
+            <i data-lucide="map-pin" style="width:14px;height:14px;color:#c9a84c;"></i> 
+            <span class="text-white/60 text-sm">India &amp; UAE</span>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
     </section>
 
-    <section id="why-us" class="py-20 bg-cm-bgMuted dark:bg-gray-800/50 border-t border-cm-border dark:border-gray-800">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12">
-            
-            <div>
-                <h4 class="text-cm-red font-medium uppercase tracking-wider text-xs mb-2">Industries We Serve</h4>
-                <h2 class="text-2xl font-semibold text-cm-textMain dark:text-white mb-6">Specialized expertise across sectors</h2>
-                
-                <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-cm-border dark:border-gray-600 rounded text-xs text-cm-textMain dark:text-gray-300"><i class="fa-solid fa-shop mr-1 text-cm-textMuted"></i> Retail & Trading</span>
-                    <span class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-cm-border dark:border-gray-600 rounded text-xs text-cm-textMain dark:text-gray-300"><i class="fa-solid fa-utensils mr-1 text-cm-textMuted"></i> Restaurants</span>
-                    <span class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-cm-border dark:border-gray-600 rounded text-xs text-cm-textMain dark:text-gray-300"><i class="fa-solid fa-industry mr-1 text-cm-textMuted"></i> Manufacturing</span>
-                    <span class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-cm-border dark:border-gray-600 rounded text-xs text-cm-textMain dark:text-gray-300"><i class="fa-solid fa-cart-shopping mr-1 text-cm-textMuted"></i> E-commerce</span>
-                    <span class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-cm-border dark:border-gray-600 rounded text-xs text-cm-textMain dark:text-gray-300"><i class="fa-solid fa-rocket mr-1 text-cm-textMuted"></i> Startups</span>
-                </div>
-            </div>
-
-            <div>
-                <h4 class="text-cm-red font-medium uppercase tracking-wider text-xs mb-2">Why Choose Us</h4>
-                <h2 class="text-2xl font-semibold text-cm-textMain dark:text-white mb-6">The CM Experts Advantage</h2>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-cm-border dark:border-gray-700">
-                        <i class="fa-solid fa-award text-cm-red mb-2"></i>
-                        <h3 class="text-sm font-semibold text-cm-textMain dark:text-white mb-1">15+ Years</h3>
-                        <p class="text-xs text-cm-textMuted dark:text-gray-400 font-light">Proven track record in tax and compliance.</p>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-cm-border dark:border-gray-700">
-                        <i class="fa-solid fa-users text-cm-red mb-2"></i>
-                        <h3 class="text-sm font-semibold text-cm-textMain dark:text-white mb-1">5000+ Clients</h3>
-                        <p class="text-xs text-cm-textMuted dark:text-gray-400 font-light">Trusted across diverse industries.</p>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-cm-border dark:border-gray-700">
-                        <i class="fa-solid fa-shield-halved text-cm-red mb-2"></i>
-                        <h3 class="text-sm font-semibold text-cm-textMain dark:text-white mb-1">Expert Knowledge</h3>
-                        <p class="text-xs text-cm-textMuted dark:text-gray-400 font-light">Up-to-date regulatory insights.</p>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-cm-border dark:border-gray-700">
-                        <i class="fa-solid fa-cloud text-cm-red mb-2"></i>
-                        <h3 class="text-sm font-semibold text-cm-textMain dark:text-white mb-1">Digital First</h3>
-                        <p class="text-xs text-cm-textMuted dark:text-gray-400 font-light">Cloud-based modern technology.</p>
-                    </div>
-                </div>
-            </div>
-
+    <section id="divisions" class="py-24 sm:py-32" style="background: linear-gradient(180deg, #0a1a20, #0f2027);">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center section-reveal">
+        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest mb-4 border" style="color: #c9a84c; border-color: #c9a84c33; background: #c9a84c11;">WHAT WE DO</span>
+        <h2 id="divisions-heading" class="font-display text-4xl sm:text-5xl font-bold text-white">Our Divisions</h2>
+        <div class="w-20 h-1 rounded-full mt-4 mx-auto" style="background: linear-gradient(to right, #c9a84c, #f0d68a);"></div>
+        <p class="text-white/60 text-lg mt-6 max-w-2xl mx-auto">Three specialized divisions working together to serve all your business needs.</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8 mt-16 section-reveal">
+        
+       <div class="division-card rounded-3xl overflow-hidden" style="background: #152a33; border: 1px solid #c9a84c15;">
+        <div class="h-2" style="background: linear-gradient(to right, #c9a84c, #f0d68a);"></div>
+        <div class="p-8">
+         <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6" style="background: #c9a84c15;"><i data-lucide="file-text" style="width:32px;height:32px;color:#c9a84c;"></i></div>
+         <h3 class="font-display text-2xl font-bold text-white">Tax Experts</h3>
+         <p class="text-white/60 mt-3 leading-relaxed">Experts in Tax &amp; Compliances. Comprehensive tax planning, filing, and advisory services for individuals and businesses.</p>
+         <div class="flex items-center gap-2 mt-6 text-sm" style="color: #c9a84c;"><i data-lucide="mail" style="width:14px;height:14px;"></i> <span>taxexperts@cmeg.in</span></div>
+         <a href="mailto:taxexperts@cmeg.in" class="mt-6 inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105" style="background: #c9a84c15; color: #c9a84c; border: 1px solid #c9a84c33;"> Learn More <i data-lucide="arrow-right" style="width:16px;height:16px;"></i> </a>
         </div>
+       </div>
+       
+       <div class="division-card rounded-3xl overflow-hidden" style="background: #152a33; border: 1px solid #c9a84c15;">
+        <div class="h-2" style="background: linear-gradient(to right, #f0d68a, #c9a84c);"></div>
+        <div class="p-8">
+         <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6" style="background: #c9a84c15;"><i data-lucide="calculator" style="width:32px;height:32px;color:#c9a84c;"></i></div>
+         <h3 class="font-display text-2xl font-bold text-white">Accountree</h3>
+         <p class="text-white/60 mt-3 leading-relaxed">Accounting &amp; ERP/CRM Solutions. Modern accounting services with cutting-edge technology integration.</p>
+         <div class="flex items-center gap-2 mt-6 text-sm" style="color: #c9a84c;"><i data-lucide="mail" style="width:14px;height:14px;"></i> <span>accountree@cmeg.in</span></div>
+         <a href="mailto:accountree@cmeg.in" class="mt-6 inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105" style="background: #c9a84c15; color: #c9a84c; border: 1px solid #c9a84c33;"> Learn More <i data-lucide="arrow-right" style="width:16px;height:16px;"></i> </a>
+        </div>
+       </div>
+
+       <div class="division-card rounded-3xl overflow-hidden" style="background: #152a33; border: 1px solid #c9a84c15;">
+        <div class="h-2" style="background: linear-gradient(to right, #c9a84c, #f0d68a);"></div>
+        <div class="p-8">
+         <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6" style="background: #c9a84c15;"><i data-lucide="code" style="width:32px;height:32px;color:#c9a84c;"></i></div>
+         <h3 class="font-display text-2xl font-bold text-white">Codit</h3>
+         <p class="text-white/60 mt-3 leading-relaxed">Design Your Dream Business. Complete business design, branding, and digital transformation solutions.</p>
+         <div class="flex items-center gap-2 mt-6 text-sm" style="color: #c9a84c;"><i data-lucide="mail" style="width:14px;height:14px;"></i> <span>codit@cmeg.in</span></div>
+         <a href="mailto:codit@cmeg.in" class="mt-6 inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105" style="background: #c9a84c15; color: #c9a84c; border: 1px solid #c9a84c33;"> Learn More <i data-lucide="arrow-right" style="width:16px;height:16px;"></i> </a>
+        </div>
+       </div>
+
+      </div>
+     </div>
     </section>
 
-    <section id="contact" class="py-20 bg-white dark:bg-gray-900 border-t border-cm-border dark:border-gray-800">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                
-                <div>
-                    <h4 class="text-cm-red font-medium uppercase tracking-wider text-xs mb-2">Get In Touch</h4>
-                    <h2 class="text-2xl md:text-3xl font-semibold text-cm-textMain dark:text-white mb-4">Ready to Grow Your Business?</h2>
-                    <p class="text-sm text-cm-textMuted dark:text-gray-400 mb-8 leading-relaxed font-light">
-                        Connect with our experts today and discover how CM Experts Group can help streamline your business operations and ensure compliance.
-                    </p>
-
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded bg-cm-bgMuted dark:bg-gray-800 text-cm-textMain dark:text-gray-300 flex items-center justify-center border border-cm-border dark:border-gray-700"><i class="fa-solid fa-envelope"></i></div>
-                            <div>
-                                <p class="text-xs text-cm-textMuted dark:text-gray-400 font-medium">Email Us</p>
-                                <a href="mailto:support@cmeg.in" class="text-sm font-semibold text-cm-textMain dark:text-white hover:text-cm-red transition">support@cmeg.in</a>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded bg-cm-bgMuted dark:bg-gray-800 text-cm-textMain dark:text-gray-300 flex items-center justify-center border border-cm-border dark:border-gray-700"><i class="fa-solid fa-phone"></i></div>
-                            <div>
-                                <p class="text-xs text-cm-textMuted dark:text-gray-400 font-medium">Call Us</p>
-                                <p class="text-sm font-semibold text-cm-textMain dark:text-white">+91 99461 51111 / +91 98954 70148</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded bg-cm-bgMuted dark:bg-gray-800 text-cm-textMain dark:text-gray-300 flex items-center justify-center border border-cm-border dark:border-gray-700"><i class="fa-solid fa-globe"></i></div>
-                            <div>
-                                <p class="text-xs text-cm-textMuted dark:text-gray-400 font-medium">Serving Locations</p>
-                                <p class="text-sm font-semibold text-cm-textMain dark:text-white">India • GCC Countries</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-cm-surface dark:bg-gray-800 rounded-xl p-6 sm:p-8 border border-cm-border dark:border-gray-700 shadow-sm">
-                    <h3 class="text-lg font-semibold text-cm-textMain dark:text-white mb-5">Send Us a Message</h3>
-                    <form class="space-y-4" onsubmit="event.preventDefault(); alert('Message sent successfully!');">
-                        <div>
-                            <label class="zoho-label">Your Name</label>
-                            <input type="text" required class="zoho-input" placeholder="Enter your full name">
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="zoho-label">Email Address</label>
-                                <input type="email" required class="zoho-input" placeholder="you@company.com">
-                            </div>
-                            <div>
-                                <label class="zoho-label">Phone Number</label>
-                                <input type="tel" required class="zoho-input" placeholder="+91 00000 00000">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="zoho-label">Service Interested In</label>
-                            <select class="zoho-input appearance-none font-medium" required>
-                                <option value="" disabled selected>Select a service...</option>
-                                <option>Tax Compliance & Advisory</option>
-                                <option>Accounting & Bookkeeping</option>
-                                <option>ERP & CRM Solutions</option>
-                                <option>Business Registration</option>
-                                <option>Other Inquiry</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="zoho-label">Your Message</label>
-                            <textarea rows="3" required class="zoho-input resize-none" placeholder="How can we help?"></textarea>
-                        </div>
-                        <button type="submit" class="w-full py-2.5 bg-cm-red text-white rounded-md font-medium text-sm hover:bg-cm-redHover transition-colors shadow-sm flex items-center justify-center gap-2 mt-2">
-                            Send Message <i class="fa-solid fa-paper-plane"></i>
-                        </button>
-                    </form>
-                </div>
-
-            </div>
+    <section id="testimonials" class="py-24 sm:py-32" style="background: #0a1a20;">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center section-reveal">
+        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest mb-4 border" style="color: #c9a84c; border-color: #c9a84c33; background: #c9a84c11;">TESTIMONIALS</span>
+        <h2 class="font-display text-4xl sm:text-5xl font-bold text-white">What Clients Say</h2>
+        <div class="w-20 h-1 rounded-full mt-4 mx-auto" style="background: linear-gradient(to right, #c9a84c, #f0d68a);"></div>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8 mt-16 section-reveal">
+       
+       <div class="testimonial-card rounded-2xl p-8" style="background: #152a33; border: 1px solid #c9a84c15;">
+        <div class="flex gap-1 mb-4">
+            <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i> <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i> <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i> <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i> <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i>
         </div>
+        <p class="text-white/70 leading-relaxed">"CMEG made our tax filing completely stress-free. Their expertise in Indian tax law is unmatched. Highly recommended!"</p>
+        <div class="flex items-center gap-3 mt-6">
+         <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm" style="background: #c9a84c22; color: #c9a84c;">RK</div>
+         <div>
+          <div class="text-white font-medium text-sm">Rajesh Kumar</div>
+          <div class="text-white/40 text-xs">Business Owner, Kerala</div>
+         </div>
+        </div>
+       </div>
+
+       <div class="testimonial-card rounded-2xl p-8" style="background: #152a33; border: 1px solid #c9a84c15;">
+        <div class="flex gap-1 mb-4">
+            <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i> <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i> <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i> <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i> <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i>
+        </div>
+        <p class="text-white/70 leading-relaxed">"Accountree transformed how we manage our books. Their ERP solution saved us hours every week. Amazing 24/7 support!"</p>
+        <div class="flex items-center gap-3 mt-6">
+         <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm" style="background: #c9a84c22; color: #c9a84c;">FA</div>
+         <div>
+          <div class="text-white font-medium text-sm">Fatima Al-Rashid</div>
+          <div class="text-white/40 text-xs">CEO, Dubai</div>
+         </div>
+        </div>
+       </div>
+
+       <div class="testimonial-card rounded-2xl p-8" style="background: #152a33; border: 1px solid #c9a84c15;">
+        <div class="flex gap-1 mb-4">
+            <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i> <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i> <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i> <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i> <i data-lucide="star" style="width:18px;height:18px;color:#c9a84c;fill:#c9a84c;"></i>
+        </div>
+        <p class="text-white/70 leading-relaxed">"Codit helped us build our brand from scratch. Professional, creative, and always available on WhatsApp. A true partner!"</p>
+        <div class="flex items-center gap-3 mt-6">
+         <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm" style="background: #c9a84c22; color: #c9a84c;">PS</div>
+         <div>
+          <div class="text-white font-medium text-sm">Priya Sharma</div>
+          <div class="text-white/40 text-xs">Startup Founder, Bangalore</div>
+         </div>
+        </div>
+       </div>
+
+      </div>
+     </div>
     </section>
 
-    <footer class="bg-gray-50 dark:bg-gray-900 pt-12 pb-6 border-t border-cm-border dark:border-gray-800">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 border-b border-gray-200 dark:border-gray-800 pb-8">
-                
-                <div class="md:col-span-1">
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="w-8 h-8 rounded bg-cm-red flex items-center justify-center text-white font-semibold shadow-sm">
-                            <i class="fa-solid fa-shapes"></i>
-                        </div>
-                        <h1 class="text-cm-textMain dark:text-white font-semibold text-lg tracking-tight">CMEG</h1>
-                    </div>
-                    <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed mb-4 font-light">
-                        Professional consulting firm specializing in tax compliance, accounting, and business technology solutions.
-                    </p>
-                    <a href="https://www.cmeg.in" class="text-cm-red font-medium text-xs hover:underline">www.cmeg.in</a>
-                </div>
+    <section id="career" class="py-24 sm:py-32" style="background: linear-gradient(180deg, #0f2027, #0a1a20);">
+     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center section-reveal">
+        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest mb-4 border" style="color: #c9a84c; border-color: #c9a84c33; background: #c9a84c11;">JOIN US</span>
+        <h2 class="font-display text-4xl sm:text-5xl font-bold text-white">Career With Us</h2>
+        <div class="w-20 h-1 rounded-full mt-4 mx-auto" style="background: linear-gradient(to right, #c9a84c, #f0d68a);"></div>
+        <p class="text-white/60 text-lg mt-6 max-w-2xl mx-auto">Join a growing team of experts. We're always looking for talented professionals who share our passion for excellence.</p>
+      </div>
+      <div class="mt-12 rounded-3xl p-8 sm:p-12 text-center section-reveal" style="background: #152a33; border: 1px solid #c9a84c15;">
+       <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style="background: #c9a84c15;"><i data-lucide="briefcase" style="width:36px;height:36px;color:#c9a84c;"></i></div>
+       <h3 class="font-display text-2xl font-bold text-white">We're Hiring!</h3>
+       <p class="text-white/60 mt-3 max-w-lg mx-auto">Whether you're a tax professional, accountant, or creative thinker — there's a place for you at CMEG.</p>
+       <div class="flex flex-wrap justify-center gap-3 mt-6">
+        <span class="px-4 py-2 rounded-full text-sm" style="background: #c9a84c11; color: #c9a84c; border: 1px solid #c9a84c22;">Tax Consultants</span> 
+        <span class="px-4 py-2 rounded-full text-sm" style="background: #c9a84c11; color: #c9a84c; border: 1px solid #c9a84c22;">Accountants</span> 
+        <span class="px-4 py-2 rounded-full text-sm" style="background: #c9a84c11; color: #c9a84c; border: 1px solid #c9a84c22;">Web Developers</span> 
+        <span class="px-4 py-2 rounded-full text-sm" style="background: #c9a84c11; color: #c9a84c; border: 1px solid #c9a84c22;">Designers</span>
+       </div>
+       <a href="mailto:career@cmeg.in?subject=Career%20Application" class="mt-8 inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-semibold transition-all duration-300 hover:scale-105" style="background: linear-gradient(135deg, #c9a84c, #f0d68a); color: #0f2027;"> <i data-lucide="send" style="width:18px;height:18px;"></i> Apply Now </a>
+      </div>
+     </div>
+    </section>
 
-                <div>
-                    <h3 class="text-cm-textMain dark:text-white font-semibold text-sm mb-4">Services</h3>
-                    <ul class="space-y-2 text-xs text-gray-500 dark:text-gray-400 font-light">
-                        <li><a href="#" class="hover:text-cm-red transition-colors">Tax Compliance</a></li>
-                        <li><a href="#" class="hover:text-cm-red transition-colors">Accounting</a></li>
-                        <li><a href="#" class="hover:text-cm-red transition-colors">ERP Solutions</a></li>
-                        <li><a href="#" class="hover:text-cm-red transition-colors">Business Registration</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="text-cm-textMain dark:text-white font-semibold text-sm mb-4">Quick Links</h3>
-                    <ul class="space-y-2 text-xs text-gray-500 dark:text-gray-400 font-light">
-                        <li><a href="#about" class="hover:text-cm-red transition-colors">About Us</a></li>
-                        <li><a href="#why-us" class="hover:text-cm-red transition-colors">Industries</a></li>
-                        <li><a href="#contact" class="hover:text-cm-red transition-colors">Contact</a></li>
-                        <li><a href="#" class="text-cm-red font-medium hover:underline">Client Login</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="text-cm-textMain dark:text-white font-semibold text-sm mb-4">Connect With Us</h3>
-                    <div class="flex gap-3">
-                        <a href="#" class="w-8 h-8 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 hover:text-cm-red transition-colors shadow-sm"><i class="fa-brands fa-linkedin-in text-sm"></i></a>
-                        <a href="#" class="w-8 h-8 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 hover:text-cm-red transition-colors shadow-sm"><i class="fa-brands fa-twitter text-sm"></i></a>
-                        <a href="#" class="w-8 h-8 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 hover:text-cm-red transition-colors shadow-sm"><i class="fa-brands fa-facebook-f text-sm"></i></a>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-gray-500 dark:text-gray-400 font-light">
-                <p>© 2026 CM Experts Group. All rights reserved.</p>
-                <div class="flex gap-4">
-                    <a href="#" class="hover:text-cm-red transition-colors">Privacy Policy</a>
-                    <a href="#" class="hover:text-cm-red transition-colors">Terms of Service</a>
-                </div>
-            </div>
+    <section id="contact" class="py-24 sm:py-32" style="background: #0a1a20;">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center section-reveal">
+        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest mb-4 border" style="color: #c9a84c; border-color: #c9a84c33; background: #c9a84c11;">GET IN TOUCH</span>
+        <h2 class="font-display text-4xl sm:text-5xl font-bold text-white">Contact Us</h2>
+        <div class="w-20 h-1 rounded-full mt-4 mx-auto" style="background: linear-gradient(to right, #c9a84c, #f0d68a);"></div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-12 mt-16 section-reveal">
+       <div class="space-y-6">
+        <div class="flex items-start gap-4 rounded-2xl p-6" style="background: #152a33; border: 1px solid #c9a84c15;">
+         <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background: #c9a84c15;"><i data-lucide="phone" style="width:22px;height:22px;color:#c9a84c;"></i></div>
+         <div>
+          <h4 class="text-white font-semibold">Call Us</h4>
+          <p class="text-white/60 mt-1">+91-9946151111</p>
+         </div>
         </div>
+        <div class="flex items-start gap-4 rounded-2xl p-6" style="background: #152a33; border: 1px solid #c9a84c15;">
+         <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background: #c9a84c15;"><i data-lucide="mail" style="width:22px;height:22px;color:#c9a84c;"></i></div>
+         <div>
+          <h4 class="text-white font-semibold">Email Us</h4>
+          <p class="text-white/60 mt-1">Info@cmeg.in</p>
+         </div>
+        </div>
+        <div class="flex items-start gap-4 rounded-2xl p-6" style="background: #152a33; border: 1px solid #c9a84c15;">
+         <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background: #c9a84c15;"><i data-lucide="globe" style="width:22px;height:22px;color:#c9a84c;"></i></div>
+         <div>
+          <h4 class="text-white font-semibold">Website</h4>
+          <p class="text-white/60 mt-1">www.cmeg.in</p>
+         </div>
+        </div>
+        <div class="flex items-start gap-4 rounded-2xl p-6" style="background: #152a33; border: 1px solid #c9a84c15;">
+         <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background: #c9a84c15;"><i data-lucide="headphones" style="width:22px;height:22px;color:#c9a84c;"></i></div>
+         <div>
+          <h4 class="text-white font-semibold">Client Support</h4>
+          <p class="text-white/60 mt-1">support@cmeg.in</p>
+         </div>
+        </div>
+        <div class="flex items-start gap-4 rounded-2xl p-6" style="background: #152a33; border: 1px solid #c9a84c15;">
+         <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background: #c9a84c15;"><i data-lucide="message-circle" style="width:22px;height:22px;color:#c9a84c;"></i></div>
+         <div>
+          <h4 class="text-white font-semibold">WhatsApp Support</h4>
+          <p class="text-white/60 mt-1">24×7 Available</p>
+          <a href="https://wa.me/919946151111" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 mt-2 text-sm font-semibold" style="color: #c9a84c;">Chat Now <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></a>
+         </div>
+        </div>
+       </div>
+
+       <div class="rounded-3xl p-8" style="background: #152a33; border: 1px solid #c9a84c15;">
+        <h3 class="font-display text-2xl font-bold text-white mb-6">Send a Message</h3>
+        <form id="contact-form" class="space-y-5">
+         <div>
+          <label for="cf-name" class="text-white/60 text-sm mb-1 block">Your Name</label> 
+          <input type="text" id="cf-name" placeholder="Enter your name" class="w-full px-4 py-3 rounded-xl text-white text-sm outline-none transition-all focus:ring-2" style="background: #0a1a20; border: 1px solid #c9a84c22; --tw-ring-color: #c9a84c;">
+         </div>
+         <div>
+          <label for="cf-email" class="text-white/60 text-sm mb-1 block">Email Address</label> 
+          <input type="email" id="cf-email" placeholder="Enter your email" class="w-full px-4 py-3 rounded-xl text-white text-sm outline-none transition-all focus:ring-2" style="background: #0a1a20; border: 1px solid #c9a84c22; --tw-ring-color: #c9a84c;">
+         </div>
+         <div>
+          <label for="cf-message" class="text-white/60 text-sm mb-1 block">Message</label> 
+          <textarea id="cf-message" rows="4" placeholder="How can we help you?" class="w-full px-4 py-3 rounded-xl text-white text-sm outline-none transition-all resize-none focus:ring-2" style="background: #0a1a20; border: 1px solid #c9a84c22; --tw-ring-color: #c9a84c;"></textarea>
+         </div>
+         <button type="submit" class="w-full py-3.5 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02]" style="background: linear-gradient(135deg, #c9a84c, #f0d68a); color: #0f2027;"> Send Message </button>
+         <div id="form-success" class="hidden text-center py-3 rounded-xl text-sm font-medium" style="background: #c9a84c15; color: #c9a84c;">
+          ✓ Message sent successfully! We'll get back to you soon.
+         </div>
+        </form>
+       </div>
+      </div>
+     </div>
+    </section>
+
+    <footer class="py-12 border-t" style="background: #0a1a20; border-color: #c9a84c15;">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 mb-10 pb-10 border-b" style="border-color: #c9a84c15;">
+       
+       <div class="md:col-span-4">
+        <div class="flex items-center gap-3 mb-4">
+         <img src="logo-cmeg.svg" alt="CMEG Logo" class="h-10 w-auto object-contain">
+         <div>
+          <span class="text-white font-bold tracking-wide">CMEG</span> 
+          <span class="block text-xs" style="color: #c9a84c;">Count . Connect . Grow</span>
+         </div>
+        </div>
+        <p class="text-white/50 text-sm leading-relaxed mb-6 max-w-xs">
+          Professional consulting firm specializing in tax compliance, accounting, and business technology solutions.
+        </p>
+        <div class="flex gap-3">
+         <a href="tel:+919946151111" class="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110" style="background: #c9a84c15;"> <i data-lucide="phone" style="width:16px;height:16px;color:#c9a84c;"></i> </a> 
+         <a href="mailto:Info@cmeg.in" class="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110" style="background: #c9a84c15;"> <i data-lucide="mail" style="width:16px;height:16px;color:#c9a84c;"></i> </a> 
+         <a href="https://wa.me/919946151111" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110" style="background: #c9a84c15;"> <i data-lucide="message-circle" style="width:16px;height:16px;color:#c9a84c;"></i> </a>
+        </div>
+       </div>
+
+       <div class="md:col-span-3">
+        <h3 class="text-white font-semibold text-sm mb-4 flex items-center gap-2">
+            <i data-lucide="building" style="width:16px;height:16px;color:#c9a84c;"></i> Head Office
+        </h3>
+        <address class="text-white/50 text-sm not-italic leading-relaxed font-light">
+         Indira Gandhi Rd,<br>
+         Arayidathupalam,<br>
+         Kozhikode, Kerala - 673004
+        </address>
+       </div>
+
+       <div class="md:col-span-5">
+        <h3 class="text-white font-semibold text-sm mb-4 flex items-center gap-2">
+            <i data-lucide="map-pin" style="width:16px;height:16px;color:#c9a84c;"></i> Branches
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <address class="text-white/50 text-sm not-italic leading-relaxed font-light">
+             <strong class="text-white/80 font-medium block mb-1">Thalassery</strong>
+             Tely Tower<br>
+             Kannur Dist<br>
+             Kerala - 670101
+            </address>
+            <address class="text-white/50 text-sm not-italic leading-relaxed font-light">
+             <strong class="text-white/80 font-medium block mb-1">Chokli</strong>
+             Shakthi Complex, Main Road<br>
+             Mahe Dist, Puducherry State<br>
+             670672
+            </address>
+        </div>
+       </div>
+
+      </div>
+
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-white/40 text-xs font-light">
+       <div>
+        © 2026 CMEG - CM Experts Group. All rights reserved.
+       </div>
+       <div class="flex items-center gap-1">
+        Designed by <span style="color: #c9a84c;" class="font-medium">Codit</span>
+       </div>
+      </div>
+
+     </div>
     </footer>
 
-    <script>
-        // Mobile Menu Toggle
-        const btn = document.getElementById('mobile-menu-btn');
-        const menu = document.getElementById('mobile-menu');
+    <a href="https://wa.me/919946151111" target="_blank" rel="noopener noreferrer" class="whatsapp-float w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all hover:scale-110" style="background: #25D366;"> 
+      <i data-lucide="message-circle" style="width:28px;height:28px;color:white;"></i> 
+    </a>
+  </div>
 
-        btn.addEventListener('click', () => {
-            menu.classList.toggle('hidden');
-        });
-
-        document.querySelectorAll('#mobile-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                menu.classList.add('hidden');
-            });
-        });
-
-        // Dark Mode Logic
-        function toggleTheme() {
-            const html = document.documentElement;
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            }
+  <script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
         }
+      });
+    }, { threshold: 0.1 });
 
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    </script>
+    document.querySelectorAll('.section-reveal').forEach(el => observer.observe(el));
+
+    // Contact form
+    document.getElementById('contact-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.getElementById('form-success').classList.remove('hidden');
+      e.target.reset();
+      setTimeout(() => {
+        document.getElementById('form-success').classList.add('hidden');
+      }, 4000);
+    });
+
+    // Init icons
+    lucide.createIcons();
+  </script>
 </body>
 </html>
