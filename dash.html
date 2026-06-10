@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CM Filings ERP & CRM</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+        /* Base Variables & Dark Mode Support */
+        :root {
+            --primary: #C8102E; 
+            --primary-light: #fcf1f3;
+            --secondary: #D4AF37; 
+            --secondary-light: #fbf8f0;
+            --danger: #dc2626;
+            --success: #059669;
+            --warning: #d97706;
+            
+            --bg-color: #f4f5f8;
+            --surface: #ffffff;
+            --text-dark: #111827;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --sidebar-bg: #ffffff;
+            --header-bg: rgba(255, 255, 255, 0.8);
+            --input-bg: #fdfdfd;
+        }
+
+        body.dark {
+            --bg-color: #111827;
+            --surface: #1f2937;
+            --text-dark: #f9fafb;
+            --text-muted: #9ca3af;
+            --border: #374151;
+            --sidebar-bg: #1f2937;
+            --header-bg: rgba(31, 41, 55, 0.8);
+            --input-bg: #374151;
+            --primary-light: rgba(200, 16, 46, 0.2);
+            --secondary-light: rgba(212, 175, 55, 0.1);
+        }
+
+        body { 
+            font-family: 'DM Sans', sans-serif; 
+            margin: 0; 
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .sidebar { width: 270px; transition: transform 0.3s ease; background: var(--sidebar-bg); box-shadow: 1px 0 10px rgba(0,0,0,0.03); z-index: 40; border-right: 1px solid var(--border); }
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; top: 0; left: 0; bottom: 0; transform: translateX(-100%); z-index: 50; width: 85vw; max-width: 270px; }
+            .sidebar.open { transform: translateX(0); }
+            .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 40; }
+            .overlay.open { display: block; }
+        }
+        @media (min-width: 769px) { .mobile-toggle, .overlay { display: none !important; } }
+        
+        /* Nav & Cards without colored borders on side/top */
+        .nav-item { padding: 12px 18px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; color: var(--text-muted); transition: all 0.2s ease; margin: 2px 8px; }
+        .nav-item:hover { background: var(--secondary-light); color: var(--secondary); transform: translateX(4px); }
+        .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 700; border-radius: 8px; }
+        .nav-section { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); padding: 20px 16px 8px; }
+        
+        .view { display: none; animation: fadeIn 0.4s ease; }
+        .view.active { display: block; }
+        
+        /* Inputs & Forms */
+        .form-input { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 14px; background: var(--input-bg); color: var(--text-dark); box-sizing: border-box; transition: all 0.2s; }
+        .form-input:focus { outline: none; border-color: var(--secondary); box-shadow: 0 0 0 3px var(--secondary-light); }
+        
+        /* Buttons */
+        .btn-primary { background: var(--primary); color: #fff; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary:hover { background: var(--secondary); color: #111; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25); transform: translateY(-1px); }
+        .btn-icon { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dark); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+        .btn-icon:hover { background: var(--secondary-light); color: var(--secondary); border-color: var(--secondary); }
+        
+        /* Tables */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--surface); color: var(--text-dark); }
+        .data-table th, .data-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); text-align: left; }
+        .data-table th { background: rgba(0,0,0,0.02); font-weight: 700; color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border); }
+        body.dark .data-table th { background: rgba(255,255,255,0.02); }
+        .data-table tr { transition: background 0.15s; }
+        .data-table tr:hover { background: var(--secondary-light); }
+        
+        /* Cards */
+        .kpi-card { background: var(--surface); border-radius: 12px; padding: 24px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: transform 0.2s; border: 1px solid var(--border); }
+        .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.05); }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        
+        /* Utilities */
+        .toast { position: fixed; bottom: 24px; right: 24px; background: var(--text-dark); color: var(--surface); padding: 16px 28px; border-radius: 8px; font-size: 14px; font-weight: 500; z-index: 999; display: none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-left: 4px solid var(--secondary); }
+        .toast.show { display: block; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px); z-index: 60; align-items: center; justify-content: center; }
+        .modal-overlay.open { display: flex; animation: fadeIn 0.2s; }
+        .modal-box { background: var(--surface); color: var(--text-dark); border-radius: 16px; padding: 32px; width: 90%; max-width: 560px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); border: 1px solid var(--border); }
+        
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* Overrides for generic elements to follow surface color */
+        .surface-box { background: var(--surface); border: 1px solid var(--border); }
+        .text-header { color: var(--text-dark); }
+    </style>
+ </head>
+ <body class="min-h-screen">
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+  <div class="toast" id="toast"></div>
+  
+  <div class="modal-overlay" id="modal">
+   <div class="modal-box">
+    <div class="flex justify-between items-center mb-6">
+     <h3 class="font-bold text-xl text-header" id="modal-title">Form</h3>
+     <button onclick="closeModal()" class="text-gray-400 hover:text-red-600 transition-colors p-2 rounded-full"><i data-lucide="x" style="width:18px;height:18px"></i></button>
+    </div>
+    <div id="modal-body"></div>
+   </div>
+  </div>
+
+  <div class="flex h-screen overflow-hidden">
+   
+   <aside class="sidebar flex flex-col overflow-y-auto shrink-0" id="sidebar">
+    <div class="p-6 border-b border-[var(--border)]">
+     <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-md" style="background: linear-gradient(135deg, var(--primary), #990a20); border: 1px solid var(--secondary)">
+          <i data-lucide="bar-chart-3" style="width:20px;height:20px;color:var(--secondary)"></i>
+      </div>
+      <div>
+          <span class="font-bold text-lg block tracking-tight">
+              <span style="color:var(--primary)">CM</span><span style="color:var(--secondary)">Filings</span>
+          </span>
+          <span class="text-[11px] text-[var(--text-muted)] block font-medium">Count • Connect • Grow</span>
+      </div>
+     </div>
+    </div>
+    <nav class="flex-1 p-4 space-y-1">
+     <div class="nav-section">Common</div>
+     <div class="nav-item active" onclick="switchView('dashboard',this)"><i data-lucide="layout-dashboard" style="width:18px;height:18px"></i> Dashboard</div>
+     <div class="nav-item" onclick="switchView('company',this)"><i data-lucide="building-2" style="width:18px;height:18px"></i> Company</div>
+     <div class="nav-item" onclick="switchView('branches',this)"><i data-lucide="git-branch" style="width:18px;height:18px"></i> Branches</div>
+     <div class="nav-section">CRM</div>
+     <div class="nav-item" onclick="switchView('clients',this)"><i data-lucide="users" style="width:18px;height:18px"></i> Client Data (G-Sheet)</div>
+     <div class="nav-item" onclick="switchView('credentials',this)"><i data-lucide="key" style="width:18px;height:18px"></i> Credentials</div>
+     <div class="nav-item" onclick="switchView('tasks',this)"><i data-lucide="check-square" style="width:18px;height:18px"></i> Tasks</div>
+     <div class="nav-section">Accounts</div>
+     <div class="nav-item" onclick="switchView('estimates',this)"><i data-lucide="file-text" style="width:18px;height:18px"></i> Estimates</div>
+     <div class="nav-item" onclick="switchView('invoices',this)"><i data-lucide="file-check" style="width:18px;height:18px"></i> Invoices</div>
+     <div class="nav-section">Reports & Print</div>
+     <div class="nav-item" onclick="switchView('print-invoice',this)"><i data-lucide="printer" style="width:18px;height:18px"></i> Invoice Print</div>
+    </nav>
+   </aside>
+
+   <main class="flex-1 overflow-y-auto">
+    
+    <header class="sticky top-0 backdrop-blur-md px-6 py-3 flex items-center justify-between z-30 shadow-sm border-b border-[var(--border)]" style="background: var(--header-bg);">
+     <div class="flex items-center gap-4">
+      <button class="mobile-toggle md:hidden btn-icon" onclick="toggleSidebar()"><i data-lucide="menu" style="width:20px;height:20px"></i></button>
+      <h1 class="font-bold text-xl text-header tracking-tight hidden md:block" id="page-header">Dashboard</h1>
+      
+      <div class="relative ml-2">
+          <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" style="width:16px;height:16px"></i>
+          <input type="text" id="master-search" oninput="handleMasterSearch(this.value)" placeholder="Search Client ID or Name..." class="form-input !pl-9 !py-1.5 w-48 focus:w-72 transition-all text-sm rounded-full bg-[var(--input-bg)]">
+      </div>
+     </div>
+
+     <div class="flex items-center gap-3">
+      <div class="hidden sm:flex items-center gap-2 text-sm font-semibold text-[var(--text-muted)] border-r border-[var(--border)] pr-4">
+          <i data-lucide="clock" style="width:16px;height:16px"></i>
+          <span id="live-time"></span>
+      </div>
+      <button onclick="fetchClientData()" class="btn-icon" title="Sync G-Sheet Data" id="btn-sync"><i data-lucide="refresh-cw" style="width:16px;height:16px"></i></button>
+      <button onclick="toggleDarkMode()" class="btn-icon" title="Toggle Theme"><i data-lucide="moon" id="theme-icon" style="width:16px;height:16px"></i></button>
+     </div>
+    </header>
+
+    <div class="p-6 md:p-8">
+     <div class="view active" id="view-dashboard">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+       <div class="kpi-card">
+        <div class="flex items-center gap-3 mb-3">
+         <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:var(--primary-light)"><i data-lucide="users" style="width:22px;height:22px;color:var(--primary)"></i></div>
+         <span class="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wide">Total Clients</span>
+        </div>
+        <h3 class="text-4xl font-bold text-header" id="kpi-clients">0</h3>
+       </div>
+       <div class="kpi-card">
+        <div class="flex items-center gap-3 mb-3">
+         <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:var(--secondary-light)"><i data-lucide="check-square" style="width:22px;height:22px;color:var(--secondary)"></i></div>
+         <span class="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wide">Pending Tasks</span>
+        </div>
+        <h3 class="text-4xl font-bold text-header" id="kpi-tasks">0</h3>
+       </div>
+      </div>
+     </div>
+
+     <div class="view" id="view-clients">
+      <div class="flex justify-between items-center mb-6">
+       <h3 class="font-bold text-xl text-header">Google Sheet Client Database</h3>
+       <button class="btn-primary" onclick="fetchClientData()"><i data-lucide="refresh-cw" style="width:16px;height:16px"></i> Sync Now</button>
+      </div>
+      <div class="surface-box rounded-2xl shadow-sm overflow-hidden">
+       <div class="overflow-x-auto">
+        <table class="data-table" id="gsheet-table">
+         <thead>
+             <tr>
+                 <th>ID</th>
+                 <th>Client Name</th>
+                 <th>Mobile</th>
+                 <th>Status</th>
+                 <th>Constitution</th>
+                 <th>PAN</th>
+                 <th>Timestamp</th>
+             </tr>
+         </thead>
+         <tbody id="clients-table-body">
+             <tr><td colspan="7" class="text-center py-8 text-[var(--text-muted)]">Click 'Sync Now' or wait for data to load...</td></tr>
+         </tbody>
+        </table>
+       </div>
+      </div>
+     </div>
+
+     <div class="view" id="view-credentials">
+      <div class="flex justify-between items-center mb-6">
+       <h3 class="font-bold text-xl text-header">Client Credentials</h3>
+       <button class="btn-primary" onclick="openForm('credential')"><i data-lucide="plus" style="width:16px;height:16px"></i> Add</button>
+      </div>
+      <div class="surface-box rounded-2xl shadow-sm overflow-hidden">
+        <table class="data-table"><thead><tr><th>Name</th><th>Type</th><th>Notes</th><th>Actions</th></tr></thead><tbody id="credentials-table"></tbody></table>
+      </div>
+     </div>
+     
+     <div class="view" id="view-print-invoice">
+      <div class="surface-box rounded-2xl p-8 max-w-4xl">
+       <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 pb-6 border-b border-[var(--border)]">
+        <h3 class="font-bold text-xl text-header">Invoice Generator</h3>
+        <div class="flex items-center gap-3">
+         <select class="form-input !py-2 !w-64" id="invoice-select" onchange="previewInvoice()"><option value="">-- Select Invoice --</option></select> 
+         <button class="btn-primary" onclick="printInvoice()"><i data-lucide="printer" style="width:16px;height:16px"></i> Print</button>
+        </div>
+       </div>
+       <div id="invoice-preview" class="mt-4 min-h-[200px]"></div>
+      </div>
+     </div>
+
+    </div>
+   </main>
+  </div>
+
+  <script>
+    // PRE-FILLED WITH YOUR EXACT URL
+    const GSHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6R770uXdHlHTpyERMbBlOJBrg4VkJoX9RZ7iIYEdVjv32hyD7VPFvw5kYCS7UHG-_/exec";
+    
+    let gSheetClients = [];
+    let allData = [];
+    let currentView = 'dashboard';
+    let isDark = false;
+
+    // UI Tools
+    function showToast(msg) { 
+        const t = document.getElementById('toast'); 
+        t.innerHTML = `<i data-lucide="info" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:8px;color:var(--secondary)"></i> ${msg}`; 
+        t.classList.add('show'); lucide.createIcons(); setTimeout(() => t.classList.remove('show'), 3000); 
+    }
+    
+    function toggleSidebar() { 
+        document.getElementById('sidebar').classList.toggle('open'); 
+        document.getElementById('overlay').classList.toggle('open'); 
+    }
+    
+    function toggleDarkMode() {
+        isDark = !isDark;
+        document.body.classList.toggle('dark', isDark);
+        document.getElementById('theme-icon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+        lucide.createIcons();
+    }
+
+    // Live Clock
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('live-time').textContent = now.toLocaleDateString('en-IN', { weekday:'short', day:'2-digit', month:'short' }) + ' ' + now.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function switchView(view, el) {
+        currentView = view;
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        const vEl = document.getElementById('view-' + view);
+        if (vEl) vEl.classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        if (el) el.classList.add('active');
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('overlay').classList.remove('open');
+        
+        if(view === 'clients' && gSheetClients.length === 0) fetchClientData();
+    }
+
+    // Google Sheet Integration (FIXED URL CHECK)
+    async function fetchClientData() {
+        if(!GSHEET_WEB_APP_URL || GSHEET_WEB_APP_URL === "https://script.google.com/macros/s/AKfycbyfXpXwF69xi8ZLMGU1X2OAoe2xi4LVprFEva7GwhKfdlimCgETArCrp_zcEk_Td10u/exec") {
+            showToast('Please insert your GAS Web App URL in the code.');
+            return;
+        }
+        
+        const btn = document.getElementById('btn-sync');
+        btn.querySelector('i').classList.add('animate-spin');
+        
+        try {
+            const response = await fetch(GSHEET_WEB_APP_URL + "?action=getClients");
+            const resData = await response.json();
+            if (resData.status === 'success') {
+                gSheetClients = resData.data;
+                renderGSheetClients(gSheetClients);
+                document.getElementById('kpi-clients').textContent = gSheetClients.length;
+                showToast('Client Data Synced!');
+            } else {
+                showToast('Failed to fetch from Sheet.');
+            }
+        } catch (err) {
+            showToast('Connection error linking to Google Sheets.');
+            console.error(err);
+        } finally {
+            btn.querySelector('i').classList.remove('animate-spin');
+        }
+    }
+
+    function renderGSheetClients(data) {
+        const tbody = document.getElementById('clients-table-body');
+        if(!tbody) return;
+        
+        tbody.innerHTML = data.length ? data.map(c => `
+            <tr>
+                <td class="font-medium text-[var(--primary)]">${c.Client_ID || '-'}</td>
+                <td class="font-bold">${c.Client_Name || '-'}</td>
+                <td>${c.Mobile || '-'}</td>
+                <td><span class="badge" style="background:var(--secondary-light);color:var(--warning)">${c.Status || '-'}</span></td>
+                <td>${c.Constitution_Type || '-'}</td>
+                <td class="font-mono text-xs">${c.Pan_No || '-'}</td>
+                <td class="text-xs text-[var(--text-muted)]">${c['#TimeStamp'] ? new Date(c['#TimeStamp']).toLocaleDateString('en-IN') : '-'}</td>
+            </tr>
+        `).join('') : `<tr><td colspan="7" class="text-center py-8 text-[var(--text-muted)] italic">No client records found.</td></tr>`;
+    }
+
+    // Master Search Feature
+    function handleMasterSearch(query) {
+        query = query.toLowerCase().trim();
+        if(currentView !== 'clients') switchView('clients', document.querySelector('.nav-item:nth-child(6)')); 
+        
+        if(!query) {
+            renderGSheetClients(gSheetClients);
+            return;
+        }
+        
+        const filtered = gSheetClients.filter(c => {
+            const id = (c.Client_ID || '').toString().toLowerCase();
+            const name = (c.Client_Name || '').toLowerCase();
+            return id.includes(query) || name.includes(query);
+        });
+        
+        renderGSheetClients(filtered);
+    }
+
+    // Invoice Rendering overrides to apply strict profile logic
+    function previewInvoice() {
+        const id = document.getElementById('invoice-select').value;
+        const inv = allData.find(d => d.__backendId === id) || { invoice_number: 'INV-001', name: 'Sample Client', amount: 15000, due_date: new Date().toISOString(), status: 'Sent' };
+        
+        const compName = 'CM Filings';
+        const contactEmail = 'support@cmfilings.com';
+
+        document.getElementById('invoice-preview').innerHTML = `<div id="invoice-preview-content" class="surface-box" style="padding:40px; border-radius:8px;">
+            <div style="text-align:center;border-bottom:4px solid var(--secondary);padding-bottom:20px;margin-bottom:24px">
+                <h2 style="margin:0;color:var(--primary);font-size:26px;font-weight:800;text-transform:uppercase;letter-spacing:1px">${compName}</h2>
+                <p style="margin:6px 0 0;font-size:12px;color:var(--text-muted);font-weight:500">Email: ${contactEmail}</p>
+            </div>
+            <div style="text-align:center;margin-bottom:24px;">
+                <h3 style="display:inline-block;margin:0;font-size:18px;font-weight:700;background:var(--primary);color:#fff;padding:6px 20px;border-radius:4px;letter-spacing:0.05em">TAX INVOICE</h3>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:24px;font-size:13px;line-height:1.6">
+                <div style="background:var(--secondary-light);padding:12px;border-radius:6px;border:1px solid var(--border);width:45%">
+                    <strong>Invoice No:</strong> <span style="color:var(--primary);font-weight:700">${inv.invoice_number}</span><br>
+                    <strong>Date:</strong> ${new Date(inv.due_date).toLocaleDateString('en-IN')}<br>
+                    <strong>Status:</strong> ${inv.status}
+                </div>
+                <div style="text-align:right;background:var(--secondary-light);padding:12px;border-radius:6px;border:1px solid var(--border);width:45%">
+                    <strong style="color:var(--text-muted);font-size:11px;text-transform:uppercase">Bill To:</strong><br>
+                    <strong style="font-size:14px">${inv.name}</strong>
+                </div>
+            </div>
+            <p style="text-align:center; color:var(--text-muted); font-size: 12px; margin-top:30px;">This is a generated preview applying the standard template.</p>
+        </div>`;
+    }
+
+    function printInvoice() {
+        const el = document.getElementById('invoice-preview-content');
+        if(!el) return;
+        const w = window.open('', '_blank');
+        w.document.write(`<html><head><title>Print Invoice</title></head><body style="font-family:sans-serif;">${el.innerHTML}</body></html>`);
+        w.document.close();
+        setTimeout(() => w.print(), 300);
+    }
+
+    function closeModal() { document.getElementById('modal').classList.remove('open'); }
+    function openForm(type) { document.getElementById('modal').classList.add('open'); }
+
+    window.onload = function() {
+        lucide.createIcons();
+        previewInvoice(); 
+    };
+  </script>
+ </body>
+</html>
