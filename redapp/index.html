@@ -23,6 +23,7 @@
             --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
             --sidebar-width: 280px;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; }
         
@@ -83,6 +84,8 @@
         .sub-stat { display: flex; flex-direction: column; gap: 4px; }
         .sub-stat .label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
         .sub-stat .val { font-size: 16px; font-weight: 700; color: var(--text-main); }
+        
+        /* Forms */
         .form-card { background: var(--surface); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 24px; }
         .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
         .input-group { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
@@ -93,8 +96,12 @@
         .readonly-input.editable:focus { border-color: var(--primary); background: var(--surface); }
         .btn-primary { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
         .btn-primary:active { opacity: 0.8; }
+        
+        /* Minimal Graph */
         .graph-container { width: 100%; height: 140px; margin-top: 8px; position: relative; }
         .x-axis-labels { display: flex; justify-content: space-between; margin-top: 12px; padding: 0 4px; color: var(--text-muted); font-size: 11px; font-weight: 500; }
+        
+        /* Table Elements */
         .table-container { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
         .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .table-header h4 { font-size: 16px; font-weight: 600; }
@@ -111,6 +118,8 @@
         .badge.completed::before { background: var(--grey-dark); }
         .badge.scheduled { background: var(--primary-light); color: var(--primary); }
         .badge.scheduled::before { background: var(--primary); }
+        
+        /* Bottom Mobile Nav */
         .bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--border); padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -4px 24px rgba(0,0,0,0.04); display: flex; justify-content: space-around; align-items: center; z-index: 950; }
         .bottom-item { text-align: center; color: var(--text-muted); padding: 12px 10px; cursor: pointer; flex: 1; border: none; background: transparent; }
         .bottom-item.active { color: var(--primary); }
@@ -470,12 +479,16 @@
 </nav>
 
 <script>
-    // SPA Routing Logic
+    // 1. SPA Routing Logic
     function switchView(targetId, clickedElement, isBottomNav = false) {
+        // Hide all views
         const allViews = document.querySelectorAll('.app-view');
         allViews.forEach(view => view.style.display = 'none');
+        
+        // Show target view
         document.getElementById(targetId).style.display = 'block';
 
+        // Update header dynamically
         const headerTitle = document.getElementById('header-title');
         const headerSubtitle = document.getElementById('header-subtitle');
         if (targetId === 'view-dashboard') { headerTitle.innerText = "Dashboard"; headerSubtitle.innerText = "Overview"; } 
@@ -483,11 +496,13 @@
         else if (targetId === 'view-clinic-details') { headerTitle.innerText = "Clinic Details"; headerSubtitle.innerText = "Settings"; }
         else if (targetId === 'view-appointments') { headerTitle.innerText = "Appointments"; headerSubtitle.innerText = "Schedule"; }
 
+        // Remove active state from all nav links
         const sidebarLinks = document.querySelectorAll('.sidebar-nav .nav-link');
         sidebarLinks.forEach(link => link.classList.remove('active'));
         const bottomLinks = document.querySelectorAll('.bottom-nav .bottom-item');
         bottomLinks.forEach(link => link.classList.remove('active'));
 
+        // Apply active state
         if (isBottomNav) {
             clickedElement.classList.add('active');
             const correspondingSidebar = document.querySelector(`.sidebar-nav .nav-link[data-target="${targetId}"]`);
@@ -499,12 +514,13 @@
             [cite_start]if (targetId === 'view-appointments') bottomLinks[2].classList.add('active');
         }
 
+        // Close sidebar automatically on mobile
         if(window.innerWidth < 1024 && document.getElementById('sidebar').classList.contains('active')) {
             toggleMenu();
         }
     }
 
-    // Mobile Toggle Logic
+    // 2. Mobile Menu Toggle
     function toggleMenu() {
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
@@ -513,7 +529,7 @@
         document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
     }
 
-    // Toggle Edit Mode for Clinic Details
+    // 3. Edit Mode for Clinic Details
     function toggleEditMode() {
         const inputs = document.querySelectorAll('#company-overview-form .readonly-input');
         const saveActions = document.getElementById('save-actions');
@@ -532,10 +548,10 @@
         saveActions.style.display = isEditing ? 'block' : 'none';
     }
 
-    // Save Company Details
+    // 4. Save Clinic Details Function
     function saveCompanyDetails() {
         alert("Company details updated successfully!");
-        toggleEditMode(); 
+        toggleEditMode(); // Resets back to readonly mode
     }
 </script>
 
