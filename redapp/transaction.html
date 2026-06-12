@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CMBooks - Transaction Entry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0"/>
+    <style>
+        :root {
+            --primary: #CD5C48;
+            --primary-light: #FCECE8;
+            --bg: #F8F5F1;
+            --surface: #ffffff;
+            --text-main: #222222;
+            --text-muted: #777777;
+            --border: #E8E5E1;
+            --grey-light: #F4F4F4;
+            --grey-med: #D9D9D9;
+            --grey-dark: #666666;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
+            --success: #34A853; 
+            --danger: #EA4335;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text-main); padding: 24px; display: flex; justify-content: center; }
+        .module-container { width: 100%; max-width: 800px; }
+
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
+        
+        .icon-btn { background: var(--surface); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; box-shadow: var(--shadow-sm); transition: 0.2s; }
+        .icon-btn:hover { color: var(--primary); border-color: var(--primary); }
+        
+        .form-card { background: var(--surface); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 24px; }
+        .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+        
+        .input-group { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
+        @media (min-width: 768px) { .input-group { grid-template-columns: 1fr 1fr; } }
+
+        .form-input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 14px; color: var(--text-main); background: #FAFAFA; outline: none; transition: border 0.2s; appearance: auto; }
+        .form-input:focus { border-color: var(--primary); background: var(--surface); }
+        .form-input:disabled { background: #F0F0F0; color: #999; cursor: not-allowed; }
+
+        .readonly-input { background: #F4F4F4; border: 1px solid var(--border); padding-left: 16px; font-weight: 700; color: var(--text-dark); pointer-events: none; }
+        .autofill-input { border-color: var(--primary-light); background: var(--primary-light); font-weight: 600; color: var(--text-main); pointer-events: none; }
+
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+        .btn-primary:active { opacity: 0.8; }
+        
+        .btn-verify { background: var(--text-main); color: #fff; border: none; padding: 0 20px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 13px;}
+        
+        .validation-msg { font-size: 12px; font-weight: 500; margin-top: 6px; display: none; }
+        .validation-msg.success { color: var(--success); display: block; }
+        .validation-msg.error { color: var(--danger); display: block; }
+    </style>
+</head>
+<body>
+
+<div class="module-container" id="transaction-module">
+    
+    <div class="section-title">
+        <h2>Transaction Entry</h2>
+        <div style="display: flex; gap: 8px;">
+            <button type="button" class="icon-btn" onclick="alert('Receipt Printed!')" title="Print Receipt">
+                <span class="material-symbols-rounded" style="font-size: 18px;">print</span>
+            </button>
+            <button type="button" class="icon-btn" onclick="alert('Saved as PDF!')" title="Save as PDF">
+                <span class="material-symbols-rounded" style="font-size: 18px;">picture_as_pdf</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <form id="transaction-form">
+            
+            <div class="input-group">
+                <div>
+                    <label class="form-label">Transaction ID</label>
+                    <input type="text" class="form-input readonly-input" value="TRN000001" readonly>
+                </div>
+                <div>
+                    <label class="form-label">Date (Indian Format)</label>
+                    <input type="date" class="form-input" id="txnDate" required lang="en-IN">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div>
+                    <label class="form-label">Patient Mobile No.</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="tel" id="mobileInput" class="form-input" placeholder="10-digit mobile" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required style="font-weight: 600;">
+                        <button type="button" class="btn-verify" onclick="searchPatient()">Search</button>
+                    </div>
+                    <div id="mobileValidationMsg" class="validation-msg"></div>
+                </div>
+                <div>
+                    <label class="form-label">Patient Name (Auto-fill)</label>
+                    <input type="text" id="patientName" class="form-input autofill-input" value="" placeholder="---" disabled>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div>
+                    <label class="form-label">Payment Mode</label>
+                    <select class="form-input">
+                        <option value="Cash">Cash</option>
+                        <option value="Bank">Bank (Card/UPI/Net Banking)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Reference / Transaction No.</label>
+                    <input type="text" class="form-input" placeholder="Ref/Cheque/UPI ID">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div>
+                    <label class="form-label">Cash In (Received/Debit)</label>
+                    <input type="number" class="form-input" placeholder="₹ 0.00" min="0" style="color: var(--success); font-weight: 700;">
+                </div>
+                <div>
+                    <label class="form-label">Cash Out (Refund/Credit)</label>
+                    <input type="number" class="form-input" placeholder="₹ 0.00" min="0" style="color: var(--danger); font-weight: 700;">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div style="grid-column: 1 / -1;">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-input" rows="3" placeholder="Remarks or descriptions..."></textarea>
+                </div>
+            </div>
+
+            <div style="text-align: right; margin-top: 24px;">
+                <button type="reset" class="btn-outline" style="background: var(--surface); color: var(--text-main); border: 1px solid var(--border); margin-right: 12px; box-shadow: none;" onclick="resetForm()">Clear</button>
+                <button type="button" class="btn-primary" onclick="saveTransaction()">Save Transaction</button>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+<script>
+    // Set Date Picker default value to Current Date (based on environment context: June 13, 2026)
+    document.getElementById("txnDate").value = "2026-06-13";
+
+    // Simulating Patient Name Autofill upon searching Mobile number
+    function searchPatient() {
+        const mobileInput = document.getElementById('mobileInput').value;
+        const nameField = document.getElementById('patientName');
+        const validationMsg = document.getElementById('mobileValidationMsg');
+        
+        validationMsg.className = 'validation-msg';
+
+        if(mobileInput.length !== 10) {
+            validationMsg.innerText = "Please enter a valid 10-digit number";
+            validationMsg.classList.add('error');
+            nameField.value = "";
+            nameField.disabled = true;
+            return;
+        }
+
+        // Mock database records check
+        if(mobileInput === "9876543210") {
+            validationMsg.innerText = "Patient found.";
+            validationMsg.classList.add('success');
+            nameField.value = "Sarah Jenkins";
+            nameField.disabled = false;
+        } else if(mobileInput === "8765432109") {
+            validationMsg.innerText = "Patient found.";
+            validationMsg.classList.add('success');
+            nameField.value = "Michael Chen";
+            nameField.disabled = false;
+        } else {
+            validationMsg.innerText = "Unregistered mobile number. Please register patient first.";
+            validationMsg.classList.add('error');
+            nameField.value = "";
+            nameField.disabled = true;
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('mobileValidationMsg').className = 'validation-msg';
+        document.getElementById('patientName').value = "";
+        document.getElementById('patientName').disabled = true;
+    }
+
+    function saveTransaction() {
+        alert('Transaction TRN000001 saved successfully!');
+        document.getElementById('transaction-form').reset();
+        resetForm();
+    }
+</script>
+
+</body>
+</html>
