@@ -1,11 +1,13 @@
 <div class="sidebar-header">
     <div class="sidebar-brand">
         <span class="material-symbols-rounded" style="color: var(--primary); font-size: 28px;">menu_book</span>
-        <h2>CMBooks</h2>
+        <h2 class="brand-name">CMBooks</h2> </div>
     </div>
-    <button class="close-menu" onclick="toggleMenu()">
-        <span class="material-symbols-rounded">close</span>
-    </button>
+
+<button class="nav-link" data-target="view-clinic-details" onclick="switchView('view-clinic-details', this)">
+    <span class="material-symbols-rounded">settings</span> Clinic Details
+</button>
+
 </div>
 
 <div class="sidebar-nav" id="sidebar-nav">
