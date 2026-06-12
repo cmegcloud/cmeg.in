@@ -104,6 +104,55 @@
         @media (min-width: 768px) { .input-group { grid-template-columns: 1fr 1fr; } }
         @media (min-width: 1024px) { .sidebar { transform: translateX(0); box-shadow: none; } .close-menu { display: none; } .main-content { margin-left: var(--sidebar-width); padding-bottom: 40px; } .dashboard-grid { grid-template-columns: repeat(3, 1fr); } .bottom-nav { display: none; } .overlay { display: none !important; } .chart-widget { grid-column: 1 / -1; } }
         @media (max-width: 767px) { .saas-table thead { display: none; } .saas-table, .saas-table tbody, .saas-table tr, .saas-table td { display: block; width: 100%; } .saas-table tr { padding: 16px; border-bottom: 1px solid var(--border); } .saas-table td { padding: 4px 0; border: none; display: flex; justify-content: space-between; align-items: center; } .saas-table td::before { content: attr(data-label); font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; } .saas-table td:nth-child(1) { padding-bottom: 12px; } .saas-table td:nth-child(1)::before { display: none; } .saas-table td:nth-child(1) .patient-info { flex-direction: row; align-items: baseline; gap: 8px; } }
+/* --- CMBooks Custom Font --- */
+@font-face {
+    font-family: 'Croogla';
+    /* Replace url with actual path if you have the font file downloaded */
+    src: local('Croogla'), url('fonts/croogla.ttf') format('truetype'); 
+}
+
+.brand-name {
+    font-family: 'Croogla', 'Inter', sans-serif; /* Fallbacks to Inter if Croogla isn't found */
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: 0.5px;
+}
+
+/* --- Form specific styling --- */
+.form-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+
+/* Read-only input styling to look like plain text until edited */
+.readonly-input {
+    background: transparent;
+    border: 1px dashed transparent;
+    padding-left: 0;
+    font-weight: 600;
+    color: var(--text-main);
+    pointer-events: none; /* Prevents clicking */
+    transition: all 0.3s ease;
+}
+
+/* Editable state when the edit icon is clicked */
+.readonly-input.editable {
+    background: #FAFAFA;
+    border: 1px solid var(--border);
+    padding-left: 16px;
+    pointer-events: auto;
+}
+.readonly-input.editable:focus {
+    border-color: var(--primary);
+    background: var(--surface);
+}
+
     </style>
 </head>
 <body>
