@@ -1,0 +1,76 @@
+<div id="view-clinic-details" class="app-view">
+    <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>Company Overview</h2>
+        <button type="button" class="icon-btn" onclick="toggleEditMode()" title="Edit Details" style="width: 36px; height: 36px;">
+            <span class="material-symbols-rounded" style="font-size: 18px; color: var(--text-muted);">edit</span>
+        </button>
+    </div>
+    
+    <div class="form-card">
+        <form id="company-overview-form">
+            <h4 style="color: var(--primary); margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">General Information</h4>
+            <div class="input-group">
+                <div>
+                    <label class="form-label">Company Name</label>
+                    <input type="text" class="form-input readonly-input" value="STRA CARE" readonly>
+                </div>
+                <div>
+                    <label class="form-label">Tagline</label>
+                    <input type="text" class="form-input readonly-input" value="Rebuild Your Health" readonly>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label class="form-label">Address</label>
+                    <textarea class="form-input readonly-input" rows="2" readonly placeholder="Enter full address..."></textarea>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label class="form-label">Branches</label>
+                    <input type="text" class="form-input readonly-input" value="Mahe | Chokli | Panoor | Koothuparamba | Nadapuram | Home Care" readonly>
+                </div>
+            </div>
+
+            <h4 style="color: var(--primary); margin-top: 24px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Contact Details</h4>
+            <div class="input-group">
+                <div>
+                    <label class="form-label">Primary Contact No</label>
+                    <input type="tel" class="form-input readonly-input" value="+91 97449 02555" readonly>
+                </div>
+                <div>
+                    <label class="form-label">Secondary Contact No</label>
+                    <input type="tel" class="form-input readonly-input" value="+91 90612 07871" readonly>
+                </div>
+                <div>
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input readonly-input" value="info@stracares.in" readonly>
+                </div>
+                <div>
+                    <label class="form-label">Website</label>
+                    <input type="text" class="form-input readonly-input" value="www.stracares.in" readonly>
+                </div>
+            </div>
+
+            <h4 style="color: var(--primary); margin-top: 24px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Bank Details</h4>
+            <div class="input-group">
+                <div>
+                    <label class="form-label">Account Name</label>
+                    <input type="text" class="form-input readonly-input" value="STRA CARE" readonly>
+                </div>
+                <div>
+                    <label class="form-label">Account Number</label>
+                    <input type="text" class="form-input readonly-input" value="50200120597389" readonly>
+                </div>
+                <div>
+                    <label class="form-label">IFSC Code</label>
+                    <input type="text" class="form-input readonly-input" value="HDFC0000465" readonly>
+                </div>
+                <div>
+                    <label class="form-label">UPI / Mobile</label>
+                    <input type="text" class="form-input readonly-input" value="9744902555@hdfc" readonly>
+                </div>
+            </div>
+
+            <div id="save-actions" style="display: none; margin-top: 24px; text-align: right;">
+                <button type="button" class="btn-primary" onclick="saveCompanyDetails()">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
