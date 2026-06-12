@@ -290,6 +290,34 @@
         overlay.classList.toggle('active');
         document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
     }
+
+// Toggle Edit Mode for Clinic Details
+function toggleEditMode() {
+    const inputs = document.querySelectorAll('#company-overview-form .readonly-input');
+    const saveActions = document.getElementById('save-actions');
+    
+    // Toggle the 'editable' class and remove the readonly attribute
+    let isEditing = false;
+    inputs.forEach(input => {
+        input.classList.toggle('editable');
+        if (input.hasAttribute('readonly')) {
+            input.removeAttribute('readonly');
+            isEditing = true;
+        } else {
+            input.setAttribute('readonly', true);
+        }
+    });
+
+    // Show or hide the save button
+    saveActions.style.display = isEditing ? 'block' : 'none';
+}
+
+function saveCompanyDetails() {
+    // Logic to save the data would go here
+    alert("Company details updated successfully!");
+    toggleEditMode(); // Revert back to read-only mode after saving
+}
+
 </script>
 
 </body>
