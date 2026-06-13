@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CMBooks - Attendance Tracking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0"/>
+    <style>
+        /* --- Core Theme Variables --- */
+        :root {
+            --primary: #CD5C48;
+            --primary-light: #FCECE8;
+            --bg: #F8F5F1;
+            --surface: #ffffff;
+            --text-main: #222222;
+            --text-muted: #777777;
+            --border: #E8E5E1;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
+            
+            /* Attendance Colors */
+            --present: #34A853;
+            --present-bg: #E6F4EA;
+            --absent: #EA4335;
+            --absent-bg: #FCE8E6;
+            --leave: #FBBC05;
+            --leave-bg: #FEF7E0;
+            --holiday: #9AA0A6;
+            --holiday-bg: #F1F3F4;
+            --locked: #F9F9F9;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text-main); padding: 24px; display: flex; justify-content: center; }
+        .module-container { width: 100%; max-width: 1200px; position: relative; }
+
+        /* --- UI Components --- */
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        
+        .form-card { background: var(--surface); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 24px; }
+        .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .input-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        .form-input { width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; color: var(--text-main); background: #FAFAFA; outline: none; transition: border 0.2s; appearance: auto; }
+        .form-input:focus { border-color: var(--primary); background: var(--surface); }
+
+        .btn-outline { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-outline:hover { background: #FAFAFA; border-color: #DDD; }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+        /* --- Table Styling & Sticky Left Column --- */
+        .table-container { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
+        .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #FAFAFA; }
+        .table-header h4 { font-size: 15px; font-weight: 700; margin: 0; color: var(--primary); }
+        
+        .table-scroll-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        
+        .month-table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; text-align: center; }
+        .month-table th { padding: 12px 8px; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); min-width: 44px; }
+        .month-table td { padding: 8px 4px; font-size: 12px; font-weight: 700; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); transition: 0.2s; }
+        
+        /* Sticky First Column */
+        .month-table th:first-child, .month-table td:first-child { 
+            position: sticky; left: 0; z-index: 2; background: #FAFAFA; text-align: left; min-width: 260px; padding: 12px 16px; box-shadow: 2px 0 5px rgba(0,0,0,0.04); border-right: 2px solid var(--border);
+        }
+        .month-table td:first-child { background: #FFFFFF; }
+        .month-table tr:hover td:first-child { background: #FDFDFD; }
+
+        /* --- Employee Inline Top Summaries --- */
+        .emp-name { font-size: 13px; font-weight: 700; color: var(--text-main); }
+        .emp-role { font-size: 10px; color: var(--text-muted); font-weight: 500; display: block; margin-top: 2px; margin-bottom: 8px; }
+        .emp-stats { display: flex; gap: 6px; align-items: center; }
+        .stat-badge { padding: 4px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; border: 1px solid var(--border); background: #FAFAFA; display: inline-flex; align-items: center; gap: 4px;}
+        .stat-badge.today { background: var(--primary-light); color: var(--primary); border-color: var(--primary-light); }
+
+        /* --- Cell Status & Lock UI --- */
+        .cell-p { background: var(--present-bg) !important; color: var(--present) !important; }
+        .cell-a { background: var(--absent-bg) !important; color: var(--absent) !important; }
+        .cell-l { background: var(--leave-bg) !important; color: var(--leave) !important; }
+        .cell-h { background: var(--holiday-bg) !important; color: var(--holiday) !important; }
+        
+        /* Highlight Today's Column */
+        .col-today { background: var(--primary-light); color: var(--primary); border-bottom: 2px solid var(--primary) !important; }
+        .editable-today { cursor: pointer; box-shadow: inset 0 0 0 2px var(--primary); }
+        
+        /* Locked Past Days */
+        .locked-cell { cursor: pointer; position: relative; opacity: 0.8; }
+        .locked-cell::after { content: 'lock'; font-family: 'Material Symbols Rounded'; font-size: 10px; position: absolute; top: 2px; right: 2px; color: rgba(0,0,0,0.2); }
+        .unlocked-cell { cursor: pointer; box-shadow: inset 0 0 0 2px var(--warning); opacity: 1; }
+        .future-cell { background: #F4F4F4 !important; color: #CCC !important; pointer-events: none; }
+
+        /* --- Modal Popup Styling --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .modal-card { background: var(--surface); width: 100%; max-width: 360px; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .modal-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;}
+        .modal-body { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
+
+        /* --- Print & PDF Export Rules --- */
+        @media print {
+            @page { size: landscape; margin: 10mm; }
+            body { background: white; padding: 0; margin: 0; }
+            .no-print { display: none !important; }
+            .form-card { display: none !important; }
+            .table-container { border: none; box-shadow: none; margin: 0; padding: 0; }
+            .table-scroll-wrapper { overflow: visible !important; width: 100%; }
+            .month-table th:first-child, .month-table td:first-child { position: static; box-shadow: none; }
+            .locked-cell::after { display: none; }
+            .month-table { min-width: auto; width: 100%; font-size: 10pt; }
+            .emp-stats { display: none; /* Hide interactive badges on print for a cleaner ledger */ }
+            .emp-role { margin-bottom: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="module-container">
+    
+    <div class="section-title">
+        <h2>Attendance Tracker</h2>
+        <div class="no-print" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn-outline" onclick="exportCSV()">
+                <span class="material-symbols-rounded" style="font-size: 18px; color: #34A853;">description</span> Export CSV
+            </button>
+            <button class="btn-outline" onclick="exportPDF()">
+                <span class="material-symbols-rounded" style="font-size: 18px; color: var(--danger);">picture_as_pdf</span> Export PDF
+            </button>
+            <button class="btn-primary" onclick="alert('Attendance database synced successfully!')">
+                <span class="material-symbols-rounded" style="font-size: 18px;">cloud_sync</span> Save Updates
+            </button>
+        </div>
+    </div>
+
+    <div class="form-card no-print">
+        <div class="input-group">
+            <div>
+                <label class="form-label">Select Month</label>
+                <input type="month" class="form-input" value="2026-06">
+            </div>
+            <div>
+                <label class="form-label">Employee Type</label>
+                <select class="form-input">
+                    <option value="All">All (Staff & Therapists)</option>
+                    <option value="Therapist">Therapist Only</option>
+                    <option value="Staff">Staff Only</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label">Branch Filter</label>
+                <select class="form-input">
+                    <option value="All">All Branches</option>
+                    <option value="Mahe">Mahe</option>
+                    <option value="Chokli">Chokli</option>
+                    <option value="Panoor">Panoor</option>
+                </select>
+            </div>
+            <div style="display: flex; align-items: flex-end;">
+                <button class="btn-outline" style="width: 100%; justify-content: center;">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">
+            <h4>June 2026 Register</h4>
+            <span class="no-print" style="font-size: 12px; color: var(--text-muted); font-weight: 500;">
+                <span class="material-symbols-rounded" style="font-size: 14px; vertical-align: middle;">lock</span> Past days locked
+            </span>
+        </div>
+        
+        <div class="table-scroll-wrapper">
+            <table class="month-table" id="attendanceTable">
+                <thead>
+                    <tr>
+                        <th>Employee Overview</th>
+                        <th>9</th><th>10</th><th>11</th><th>12</th><th class="col-today">13 (Today)</th><th>14</th><th>15</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="emp-name">Dr. Anjali V.</div>
+                            <div class="emp-role">Therapist • Mahe</div>
+                            <div class="emp-stats">
+                                <span class="stat-badge">Total P: 10</span>
+                                <span class="stat-badge">Total L: 2</span>
+                                <span class="stat-badge today" id="today-status-1">Today: P</span>
+                            </div>
+                        </td>
+                        <td class="day-cell cell-p" data-date="9">P</td>
+                        <td class="day-cell cell-p" data-date="10">P</td>
+                        <td class="day-cell cell-l" data-date="11">L</td>
+                        <td class="day-cell cell-l" data-date="12">L</td>
+                        <td class="day-cell cell-p" data-date="13" data-emp="1">P</td>
+                        <td class="day-cell" data-date="14">-</td>
+                        <td class="day-cell" data-date="15">-</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <div class="emp-name">Priya Sharma</div>
+                            <div class="emp-role">Front Desk Admin • Mahe</div>
+                            <div class="emp-stats">
+                                <span class="stat-badge">Total P: 12</span>
+                                <span class="stat-badge">Total L: 0</span>
+                                <span class="stat-badge today" id="today-status-2">Today: P</span>
+                            </div>
+                        </td>
+                        <td class="day-cell cell-p" data-date="9">P</td>
+                        <td class="day-cell cell-p" data-date="10">P</td>
+                        <td class="day-cell cell-p" data-date="11">P</td>
+                        <td class="day-cell cell-p" data-date="12">P</td>
+                        <td class="day-cell cell-p" data-date="13" data-emp="2">P</td>
+                        <td class="day-cell" data-date="14">-</td>
+                        <td class="day-cell" data-date="15">-</td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <div class="emp-name">Arun Kumar</div>
+                            <div class="emp-role">Clinic Assistant • Nadapuram</div>
+                            <div class="emp-stats">
+                                <span class="stat-badge">Total P: 6</span>
+                                <span class="stat-badge">Total L: 5</span>
+                                <span class="stat-badge today" id="today-status-3">Today: A</span>
+                            </div>
+                        </td>
+                        <td class="day-cell cell-p" data-date="9">P</td>
+                        <td class="day-cell cell-p" data-date="10">P</td>
+                        <td class="day-cell cell-p" data-date="11">P</td>
+                        <td class="day-cell cell-p" data-date="12">P</td>
+                        <td class="day-cell cell-a" data-date="13" data-emp="3">A</td>
+                        <td class="day-cell" data-date="14">-</td>
+                        <td class="day-cell" data-date="15">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="unlockModal">
+    <div class="modal-card">
+        <div class="modal-title">
+            <span class="material-symbols-rounded" style="color: #FBBC05;">lock_open</span> Unlock Record?
+        </div>
+        <div class="modal-body">
+            You are attempting to modify a saved attendance record for <strong id="modalDateTarget"></strong>. Do you want to unlock this day for editing?
+        </div>
+        <div class="modal-actions">
+            <button class="btn-outline" onclick="closeModal()">Cancel</button>
+            <button class="btn-primary" style="background: #FBBC05; color: #222;" onclick="confirmUnlock()">Unlock & Edit</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // System Context: Setting Today as the 13th
+    const TODAY_DATE = 13;
+    let targetLockedCell = null;
+
+    // --- Cell Toggle Logic ---
+    function toggleAttendanceStatus(cell) {
+        let state = cell.innerText.trim();
+        cell.className = 'day-cell'; // reset classes
+        
+        if (cell.classList.contains('unlocked-cell')) {
+            cell.classList.add('unlocked-cell');
+        } else if (cell.classList.contains('editable-today')) {
+            cell.classList.add('editable-today');
+        }
+
+        if (state === 'P') {
+            cell.innerText = 'A'; cell.classList.add('cell-a');
+        } else if (state === 'A') {
+            cell.innerText = 'L'; cell.classList.add('cell-l');
+        } else if (state === 'L') {
+            cell.innerText = 'H'; cell.classList.add('cell-h');
+        } else {
+            cell.innerText = 'P'; cell.classList.add('cell-p');
+        }
+
+        // Live update the "Today's Status" badge
+        if (cell.getAttribute('data-date') == TODAY_DATE) {
+            const empId = cell.getAttribute('data-emp');
+            document.getElementById(`today-status-${empId}`).innerText = `Today: ${cell.innerText}`;
+        }
+    }
+
+    // Initialize Table Cells
+    document.querySelectorAll('.day-cell').forEach(cell => {
+        const cellDate = parseInt(cell.getAttribute('data-date'));
+
+        if (cellDate === TODAY_DATE) {
+            cell.classList.add('editable-today');
+            cell.addEventListener('click', function() { toggleAttendanceStatus(this); });
+        } 
+        else if (cellDate < TODAY_DATE) {
+            cell.classList.add('locked-cell');
+            cell.addEventListener('click', function() {
+                if (this.classList.contains('unlocked-cell')) {
+                    toggleAttendanceStatus(this);
+                } else {
+                    targetLockedCell = this;
+                    document.getElementById('modalDateTarget').innerText = `June ${cellDate}, 2026`;
+                    document.getElementById('unlockModal').style.display = 'flex';
+                }
+            });
+        } 
+        else if (cellDate > TODAY_DATE) {
+            cell.classList.add('future-cell');
+        }
+    });
+
+    // Modal Control
+    function closeModal() {
+        document.getElementById('unlockModal').style.display = 'none';
+        targetLockedCell = null;
+    }
+
+    function confirmUnlock() {
+        if (targetLockedCell) {
+            targetLockedCell.classList.remove('locked-cell');
+            targetLockedCell.classList.add('unlocked-cell');
+            toggleAttendanceStatus(targetLockedCell);
+        }
+        closeModal();
+    }
+
+    // --- CSV Export Logic ---
+    function exportCSV() {
+        const table = document.getElementById("attendanceTable");
+        let csvData = [];
+        
+        // Loop through rows
+        for (let i = 0; i < table.rows.length; i++) {
+            let rowData = [];
+            let cols = table.rows[i].querySelectorAll("td, th");
+            
+            for (let j = 0; j < cols.length; j++) {
+                // Clean up data (especially the multi-line employee name/role column)
+                let text = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " | ").trim();
+                text = text.replace(/Today: [A-Z]/g, ""); // Remove the today status badge text for cleaner export
+                rowData.push('"' + text + '"');
+            }
+            csvData.push(rowData.join(","));
+        }
+        
+        // Download logic
+        let csvContent = "data:text/csv;charset=utf-8," + csvData.join("\n");
+        let encodedUri = encodeURI(csvContent);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "Attendance_Register_June2026.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // --- PDF Export Logic ---
+    function exportPDF() {
+        // Triggers the native print dialog optimized via @media print CSS for a flawless Landscape PDF
+        window.print();
+    }
+</script>
+
+</body>
+</html>
