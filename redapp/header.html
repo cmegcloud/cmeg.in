@@ -36,17 +36,25 @@
   .coral-pair .progress-arc { stroke: #e16349; }
   /* Pair 2: HH & MM (Zoho Yellow) */
   .yellow-pair .progress-arc { stroke: #FFC72C; }
+
+  /* --- Mobile Responsiveness --- */
+  @media (max-width: 768px) {
+      .desktop-only { display: none !important; }
+      .search-container { width: auto !important; background: transparent !important; border: none !important; padding: 0 !important; }
+      .search-input { display: none !important; }
+      .top-header { padding: 12px 16px !important; }
+  }
 </style>
 
 <header class="top-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: #FFFFFF; border-bottom: 1px solid #E8E5E1; position: sticky; top: 0; z-index: 100;">
     
-    <div style="display: flex; align-items: center; gap: 20px;">
+    <div style="display: flex; align-items: center; gap: 16px;">
         <button class="icon-action toggle-sidebar" onclick="toggleSidebar()" style="background: none; border: none; color: #0a0a0a; cursor: pointer; display: none;">
             <span class="material-symbols-rounded" style="font-size: 28px;">menu</span>
         </button>
 
-        <div style="display: flex; gap: 12px; align-items: center;">
-            <div class="coral-pair metric-round">
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <div class="coral-pair metric-round desktop-only">
                 <svg width="50" height="50" class="clock-svg" viewBox="0 0 50 50">
                     <circle cx="25" cy="25" r="21" class="bg-track"></circle>
                     <circle cx="25" cy="25" r="21" class="progress-arc" id="dd-arc" stroke-dasharray="131.95" stroke-dashoffset="131.95"></circle>
@@ -56,7 +64,7 @@
                     <span class="sub-label" id="dd-context">DD</span>
                 </div>
             </div>
-            <div class="coral-pair metric-round">
+            <div class="coral-pair metric-round desktop-only">
                 <svg width="50" height="50" class="clock-svg" viewBox="0 0 50 50">
                     <circle cx="25" cy="25" r="21" class="bg-track"></circle>
                     <circle cx="25" cy="25" r="21" class="progress-arc" id="mm-arc" stroke-dasharray="131.95" stroke-dashoffset="131.95"></circle>
@@ -89,11 +97,11 @@
         </div>
     </div>
 
-    <div class="header-actions" style="display: flex; align-items: center; gap: 16px; margin-left: auto;">
+    <div class="header-actions" style="display: flex; align-items: center; gap: 12px; margin-left: auto;">
         
-        <div class="search-bar" style="width: 192px; background: #FAFAFA; border: 1px solid #E8E5E1; border-radius: 8px; display: flex; align-items: center; padding: 8px 12px;">
-            <span class="material-symbols-rounded" style="font-size: 18px; color: #777777;">search</span>
-            <input type="text" placeholder="Search..." style="border: none; background: transparent; outline: none; width: 100%; font-size: 13px; margin-left: 8px; color: #0a0a0a;">
+        <div class="search-container" style="width: 192px; background: #FAFAFA; border: 1px solid #E8E5E1; border-radius: 8px; display: flex; align-items: center; padding: 8px 12px;">
+            <span class="material-symbols-rounded" style="font-size: 20px; color: #777777;">search</span>
+            <input type="text" class="search-input" placeholder="Search..." style="border: none; background: transparent; outline: none; width: 100%; font-size: 13px; margin-left: 8px; color: #0a0a0a;">
         </div>
 
         <div class="notification-wrapper" style="position: relative; cursor: pointer; display: flex; align-items: center;">
@@ -101,8 +109,8 @@
             <span style="position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: #e16349; border-radius: 50%; border: 2px solid #FFF;"></span>
         </div>
 
-        <div class="profile-menu" style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding-left: 16px; border-left: 1px solid #E8E5E1;">
-            <div style="width: 36px; height: 36px; background: #fef5e8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #e16349; font-weight: 700; font-size: 14px;">
+        <div class="profile-menu" style="display: flex; align-items: center; cursor: pointer; padding-left: 12px; border-left: 1px solid #E8E5E1;">
+            <div style="width: 34px; height: 34px; background: #fef5e8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #e16349; font-weight: 700; font-size: 14px;">
                 A
             </div>
         </div>
