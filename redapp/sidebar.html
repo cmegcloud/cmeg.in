@@ -1,13 +1,71 @@
+<style>
+    /* --- Sidebar Styles --- */
+    .sidebar {
+        display: flex;
+        flex-direction: column;
+        padding: 24px 16px;
+        height: 100%;
+        background: var(--surface, #ffffff);
+    }
+
+    .sidebar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        padding: 0 8px;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        color: var(--text-muted, #777777);
+        text-decoration: none; /* Removes the purple underlines */
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+    }
+
+    .nav-item .material-symbols-rounded {
+        font-size: 22px;
+        transition: color 0.2s ease;
+    }
+
+    /* Hover State */
+    .nav-item:hover {
+        background: #FAFAFA;
+        color: var(--text-main, #0a0a0a);
+    }
+
+    /* Active State */
+    .nav-item.active {
+        background: var(--primary-light, #fef5e8);
+        color: var(--primary, #e16349);
+    }
+    .nav-item.active .material-symbols-rounded {
+        font-variation-settings: 'FILL' 1;
+    }
+</style>
+
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <h2 class="brand-name" style="font-family: 'Croogla', 'Inter', sans-serif; font-size: 24px; font-weight: 800; color: #CD5C48; letter-spacing: 0.5px; margin: 0;">CMBooks</h2>
+        <h2 class="brand-name" style="font-family: 'Croogla', 'Inter', sans-serif; font-size: 24px; font-weight: 800; color: #e16349; letter-spacing: 0.5px; margin: 0;">CMBooks</h2>
         
         <button class="icon-action close-sidebar" onclick="toggleSidebar()" style="background: none; border: none; color: #777; cursor: pointer; display: none;">
             <span class="material-symbols-rounded">close</span>
         </button>
     </div>
 
-    <nav class="sidebar-nav" style="display: flex; flex-direction: column; gap: 8px; margin-top: 24px;">
+    <nav class="sidebar-nav">
         
         <a href="#" class="nav-item active" data-target="view-dashboard" onclick="switchView('view-dashboard', this)">
             <span class="material-symbols-rounded">dashboard</span> Dashboard
@@ -19,7 +77,7 @@
         
         <a href="#" class="nav-item" data-target="view-appointments" onclick="switchView('view-appointments', this)">
             <span class="material-symbols-rounded">calendar_month</span> Appointments
-            <span class="badge" style="background: #CD5C48; color: white; padding: 2px 6px; border-radius: 12px; font-size: 10px; font-weight: 700; margin-left: auto;">8</span>
+            <span class="badge" style="background: #e16349; color: white; padding: 2px 6px; border-radius: 12px; font-size: 10px; font-weight: 700; margin-left: auto;">8</span>
         </a>
         
         <a href="#" class="nav-item" data-target="view-transactions" onclick="switchView('view-transactions', this)">
@@ -28,7 +86,7 @@
         
         <a href="#" class="nav-item" data-target="view-billing" onclick="switchView('view-billing', this)">
             <span class="material-symbols-rounded">payments</span> Billing
-            <span class="badge" style="background: #FBBC05; color: #222; padding: 2px 6px; border-radius: 12px; font-size: 10px; font-weight: 700; margin-left: auto;">5</span>
+            <span class="badge" style="background: #ffdd88; color: #0a0a0a; padding: 2px 6px; border-radius: 12px; font-size: 10px; font-weight: 700; margin-left: auto;">5</span>
         </a>
         
         <a href="#" class="nav-item" data-target="view-branches" onclick="switchView('view-branches', this)">
@@ -51,60 +109,17 @@
             <span class="material-symbols-rounded">manage_accounts</span> Users
         </a>
         
-        <a href="#" class="nav-item" data-target="view-clinic-details" onclick="switchView('view-
+        <a href="#" class="nav-item" data-target="view-clinic-details" onclick="switchView('view-clinic-details', this)">
+            <span class="material-symbols-rounded">settings</span> Settings
+        </a>
+        
+        <a href="#" class="nav-item" onclick="alert('Exporting Data...')">
+            <span class="material-symbols-rounded">download</span> Export
+        </a>
+        
+        <a href="#" class="nav-item" data-target="view-app-info" onclick="switchView('view-app-info', this)">
+            <span class="material-symbols-rounded">info</span> App Info
+        </a>
 
-/* --- Sidebar Styles --- */
-.sidebar {
-    display: flex;
-    flex-direction: column;
-    padding: 24px 16px;
-    height: 100%;
-}
-
-.sidebar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    padding: 0 8px;
-}
-
-.sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    color: var(--text-muted, #777777);
-    text-decoration: none; /* Removes the purple underlines */
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-}
-
-.nav-item .material-symbols-rounded {
-    font-size: 22px;
-    transition: color 0.2s ease;
-}
-
-/* Hover State */
-.nav-item:hover {
-    background: #FAFAFA;
-    color: var(--text-main, #0a0a0a);
-}
-
-/* Active State */
-.nav-item.active {
-    background: var(--primary-light, #fef5e8);
-    color: var(--primary, #e16349);
-}
-.nav-item.active .material-symbols-rounded {
-    font-variation-settings: 'FILL' 1;
-}
-
+    </nav>
+</aside>
