@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CMBooks - Therapist Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0"/>
+    <style>
+        /* --- Core Theme Variables --- */
+        :root {
+            --primary: #CD5C48;
+            --primary-light: #FCECE8;
+            --bg: #F8F5F1;
+            --surface: #ffffff;
+            --text-main: #222222;
+            --text-muted: #777777;
+            --border: #E8E5E1;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
+            --danger: #EA4335;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text-main); padding: 24px; display: flex; justify-content: center; }
+        .module-container { width: 100%; max-width: 1120px; }
+
+        /* --- UI Components --- */
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
+        
+        .form-card { background: var(--surface); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 24px; }
+        .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+        
+        /* Grid Layouts */
+        .input-group { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
+        @media (min-width: 768px) { .input-group { grid-template-columns: 1fr 1fr 1fr; } }
+
+        .form-input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 14px; color: var(--text-main); background: #FAFAFA; outline: none; transition: border 0.2s; appearance: auto; }
+        .form-input:focus { border-color: var(--primary); background: var(--surface); }
+        .readonly-input { background: #F4F4F4; color: var(--text-muted); font-weight: 600; pointer-events: none; }
+
+        /* Buttons */
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary:active { opacity: 0.8; }
+        
+        .icon-action { color: var(--text-muted); cursor: pointer; font-size: 20px; transition: color 0.2s; }
+        .icon-action:hover { color: var(--primary); }
+        .icon-action.delete:hover { color: var(--danger); }
+
+        /* --- Table Styling --- */
+        .table-container { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
+        .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .table-header h4 { font-size: 16px; font-weight: 600; margin: 0; }
+        
+        .saas-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .saas-table th { padding: 12px 20px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); }
+        .saas-table td { padding: 16px 20px; font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--border); }
+        .saas-table tr:last-child td { border-bottom: none; }
+        
+        .t-id { font-size: 11px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 4px 8px; border-radius: 6px; }
+
+        /* Mobile Table Fix */
+        @media (max-width: 767px) {
+            .saas-table thead { display: none; }
+            .saas-table, .saas-table tbody, .saas-table tr, .saas-table td { display: block; width: 100%; }
+            .saas-table tr { padding: 16px; border-bottom: 1px solid var(--border); }
+            .saas-table td { padding: 6px 0; border: none; display: flex; justify-content: space-between; align-items: center; }
+            .saas-table td::before { content: attr(data-label); font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+            .saas-table td:nth-child(1) { padding-bottom: 12px; border-bottom: 1px dashed var(--border); margin-bottom: 8px;}
+            .saas-table td:nth-child(1)::before { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="module-container" id="therapist-module">
+    
+    <div class="section-title">
+        <h2>Manage Therapists</h2>
+    </div>
+
+    <div class="form-card">
+        <form id="therapist-form" onsubmit="event.preventDefault(); alert('Therapist saved successfully!');">
+            
+            <div class="input-group">
+                <div>
+                    <label class="form-label">Therapist ID</label>
+                    <input type="text" class="form-input readonly-input" value="TH-001" readonly>
+                </div>
+                
+                <div>
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" class="form-input" placeholder="e.g. Dr. Anjali V." required>
+                </div>
+
+                <div>
+                    <label class="form-label">Specialised In *</label>
+                    <input type="text" class="form-input" placeholder="e.g. Physiotherapy, Chiropractic" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div>
+                    <label class="form-label">Assign Branch *</label>
+                    <select class="form-input" required>
+                        <option value="">Select Branch</option>
+                        <option value="Mahe">Mahe</option>
+                        <option value="Chokli">Chokli</option>
+                        <option value="Panoor">Panoor</option>
+                        <option value="Koothuparamba">Koothuparamba</option>
+                        <option value="Nadapuram">Nadapuram</option>
+                        <option value="Home Care">Home Care</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="form-label">Contact No *</label>
+                    <input type="tel" class="form-input" placeholder="10-digit mobile number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                </div>
+
+                <div style="display: flex; align-items: flex-end; margin-top: 21px;">
+                    <button type="submit" class="btn-primary">
+                        <span class="material-symbols-rounded">person_add</span> Add Therapist
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">
+            <h4>Therapist Directory</h4>
+            <div style="background: #FAFAFA; border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; gap: 6px;">
+                <span class="material-symbols-rounded" style="font-size: 16px; color: var(--text-muted);">search</span>
+                <input type="text" placeholder="Search..." style="border: none; background: transparent; outline: none; font-size: 13px; width: 120px;">
+            </div>
+        </div>
+        <table class="saas-table">
+            <thead>
+                <tr>
+                    <th>Therapist Name</th>
+                    <th>Specialisation</th>
+                    <th>Branch</th>
+                    <th>Contact Info</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-label="Name">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="t-id">TH-001</span>
+                            <strong>Dr. Anjali V.</strong>
+                        </div>
+                    </td>
+                    <td data-label="Specialisation">Physiotherapy</td>
+                    <td data-label="Branch">Mahe</td>
+                    <td data-label="Contact">+91 9876543210</td>
+                    <td data-label="Actions" style="text-align: right;">
+                        <span class="material-symbols-rounded icon-action" title="Edit">edit</span>
+                        <span class="material-symbols-rounded icon-action delete" title="Remove" style="margin-left: 8px;">delete</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td data-label="Name">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="t-id">TH-002</span>
+                            <strong>Mr. Ramesh K.</strong>
+                        </div>
+                    </td>
+                    <td data-label="Specialisation">Advanced Rehabilitation</td>
+                    <td data-label="Branch">Chokli</td>
+                    <td data-label="Contact">+91 8765432109</td>
+                    <td data-label="Actions" style="text-align: right;">
+                        <span class="material-symbols-rounded icon-action" title="Edit">edit</span>
+                        <span class="material-symbols-rounded icon-action delete" title="Remove" style="margin-left: 8px;">delete</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>
