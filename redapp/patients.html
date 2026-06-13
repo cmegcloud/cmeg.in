@@ -94,14 +94,14 @@
             <div class="input-group three-cols">
                 <div>
                     <label class="form-label">Patient ID</label>
-                    <input type="text" class="form-input readonly-input" value="P0001" readonly tabindex="-1">
+                    <input type="text" id="patientIdInput" class="form-input readonly-input" value="Auto-Generated" readonly tabindex="-1">
                 </div>
 
                 <div style="grid-column: span 2;">
                     <label class="form-label">Mobile Number (Search / Validate) *</label>
                     <div style="display: flex; gap: 8px;">
                         <input type="tel" id="mobileInput" class="form-input" placeholder="Enter 10-digit mobile number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required style="font-weight: 600; letter-spacing: 1px;">
-                        <button type="button" class="btn-verify" onclick="window.verifyMobile()">Verify</button>
+                        <button type="button" class="btn-verify" id="verifyBtn" onclick="window.verifyMobile()">Verify</button>
                     </div>
                     <div id="mobileValidationMsg" class="validation-msg"></div>
                 </div>
@@ -111,18 +111,18 @@
                 <div class="input-group three-cols">
                     <div style="grid-column: span 2;">
                         <label class="form-label">Patient Name *</label>
-                        <input type="text" class="form-input" placeholder="Full Name" required>
+                        <input type="text" id="patientName" class="form-input" placeholder="Full Name" required>
                     </div>
                     <div>
                         <label class="form-label">Age</label>
-                        <input type="number" class="form-input" placeholder="Years" min="1" max="120">
+                        <input type="number" id="patientAge" class="form-input" placeholder="Years" min="1" max="120">
                     </div>
                 </div>
 
                 <div class="input-group">
                     <div>
                         <label class="form-label">Gender</label>
-                        <select class="form-input">
+                        <select id="patientGender" class="form-input">
                             <option value="">Select Gender</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
@@ -131,17 +131,17 @@
                     </div>
                     <div style="grid-column: 1 / -1;">
                         <label class="form-label">Address</label>
-                        <textarea class="form-input" rows="2" placeholder="Full residential address..."></textarea>
+                        <textarea id="patientAddress" class="form-input" rows="2" placeholder="Full residential address..."></textarea>
                     </div>
                     <div style="grid-column: 1 / -1;">
                         <label class="form-label">Notes / Medical History</label>
-                        <textarea class="form-input" rows="3" placeholder="Any specific notes or initial observations..."></textarea>
+                        <textarea id="patientNotes" class="form-input" rows="3" placeholder="Any specific notes or initial observations..."></textarea>
                     </div>
                 </div>
 
                 <div style="text-align: right; margin-top: 16px;">
                     <button type="reset" class="btn-outline" style="margin-right: 12px;" onclick="window.resetForm()">Clear Form</button>
-                    <button type="button" class="btn-primary" onclick="window.savePatient()">Save Patient</button>
+                    <button type="button" class="btn-primary" id="saveBtn" onclick="window.savePatient()">Save Patient</button>
                 </div>
             </fieldset>
         </form>
@@ -167,7 +167,7 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="patientTableBody">
                 <tr>
                     <td data-label="Patient"><div class="patient-info"><strong>Sarah Jenkins</strong><span class="pid">P0002</span></div></td>
                     <td data-label="Mobile">9876543210</td>
@@ -184,42 +184,137 @@
 
 </div>
 
-<script>
-    window.verifyMobile = function() {
-        const mobileInput = document.getElementById('mobileInput');
+<script type="module">
+    // Import the Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    // Your Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDwfmoDPvslFmTn3GjO56VAxhODRlem5bg",
+        authDomain: "stra-care.firebaseapp.com",
+        projectId: "stra-care",
+        storageBucket: "stra-care.firebasestorage.app",
+        messagingSenderId: "329966100049",
+        appId: "1:329966100049:web:d4b4dc7033f0ed12da6270",
+        measurementId: "G-TQ7YK3RVSR"
+    };
+
+    // Initialize Firebase and Firestore
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ==========================================
+    // VERIFY MOBILE NUMBER WITH FIRESTORE
+    // ==========================================
+    window.verifyMobile = async function() {
+        const mobileInput = document.getElementById('mobileInput').value;
         const validationMsg = document.getElementById('mobileValidationMsg');
         const fieldset = document.getElementById('patientDetailsFieldset');
+        const verifyBtn = document.getElementById('verifyBtn');
         
         validationMsg.className = 'validation-msg';
 
-        if (mobileInput.value.length !== 10) {
+        if (mobileInput.length !== 10) {
             validationMsg.innerText = "Please enter a valid 10-digit mobile number.";
             validationMsg.classList.add('error');
             fieldset.disabled = true;
             return;
         }
 
-        if (mobileInput.value === "9999999999") {
-            validationMsg.innerText = "Patient with this number already exists in the system!";
+        // Show loading state
+        verifyBtn.innerText = "Checking...";
+        verifyBtn.disabled = true;
+
+        try {
+            // Check Firestore database for this mobile number
+            const patientsRef = collection(db, "patients");
+            const q = query(patientsRef, where("mobile", "==", mobileInput));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                validationMsg.innerText = "Patient with this number already exists in the system!";
+                validationMsg.classList.add('error');
+                fieldset.disabled = true;
+            } else {
+                validationMsg.innerText = "Number is available. Please fill out the patient details.";
+                validationMsg.classList.add('success');
+                fieldset.disabled = false; // Unlocks the form
+                document.getElementById('patientName').focus(); // Move cursor to name automatically
+            }
+        } catch (error) {
+            console.error("Firebase Error:", error);
+            validationMsg.innerText = "Error checking database. Check console or Firestore permissions.";
             validationMsg.classList.add('error');
-            fieldset.disabled = true;
-        } else {
-            validationMsg.innerText = "Number is available. Please fill out the patient details.";
-            validationMsg.classList.add('success');
-            fieldset.disabled = false;
         }
+
+        // Reset button state
+        verifyBtn.innerText = "Verify";
+        verifyBtn.disabled = false;
     }
 
+    // ==========================================
+    // SAVE PATIENT DATA TO FIRESTORE
+    // ==========================================
+    window.savePatient = async function() {
+        const saveBtn = document.getElementById('saveBtn');
+        
+        // Gather form data
+        const mobile = document.getElementById('mobileInput').value;
+        const name = document.getElementById('patientName').value;
+        const age = document.getElementById('patientAge').value;
+        const gender = document.getElementById('patientGender').value;
+        const address = document.getElementById('patientAddress').value;
+        const notes = document.getElementById('patientNotes').value;
+
+        // Basic check
+        if (!name || !mobile) {
+            alert("Patient Name and Mobile Number are required!");
+            return;
+        }
+
+        saveBtn.innerText = "Saving...";
+        saveBtn.disabled = true;
+
+        try {
+            // Generate a fake Patient ID (you can change this logic later)
+            const generatedId = "P" + Math.floor(Math.random() * 90000 + 10000);
+
+            // Send data to Firestore "patients" collection
+            const docRef = await addDoc(collection(db, "patients"), {
+                patientId: generatedId,
+                mobile: mobile,
+                name: name,
+                age: age,
+                gender: gender,
+                address: address,
+                notes: notes,
+                createdAt: new Date()
+            });
+
+            alert(`Success! Patient ${name} saved with ID: ${generatedId}`);
+            
+            // Clear the form
+            document.getElementById('add-patient-form').reset();
+            window.resetForm();
+
+        } catch (error) {
+            console.error("Firebase Save Error:", error);
+            alert("Failed to save patient. Check Firestore rules/permissions.");
+        }
+
+        saveBtn.innerText = "Save Patient";
+        saveBtn.disabled = false;
+    }
+
+    // ==========================================
+    // RESET FORM UTILITY
+    // ==========================================
     window.resetForm = function() {
         document.getElementById('mobileValidationMsg').className = 'validation-msg';
         document.getElementById('patientDetailsFieldset').disabled = true;
     }
 
-    window.savePatient = function() {
-        alert('Patient P0001 saved successfully!');
-        document.getElementById('add-patient-form').reset();
-        window.resetForm();
-    }
 </script>
 
 </body>
