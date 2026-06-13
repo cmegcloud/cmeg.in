@@ -1,0 +1,54 @@
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h2 class="brand-name" style="font-family: 'Croogla', 'Inter', sans-serif; font-size: 24px; font-weight: 800; color: #CD5C48; letter-spacing: 0.5px; margin: 0;">CMBooks</h2>
+        
+        <button class="icon-action close-sidebar" onclick="toggleSidebar()" style="background: none; border: none; color: #777; cursor: pointer; display: none;">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+    </div>
+
+    <nav class="sidebar-nav" style="display: flex; flex-direction: column; gap: 8px; margin-top: 24px;">
+        
+        <a href="#" class="nav-item active" data-target="view-dashboard" onclick="switchView('view-dashboard', this)">
+            <span class="material-symbols-rounded">dashboard</span> Dashboard
+        </a>
+        
+        <a href="#" class="nav-item" data-target="view-patients" onclick="switchView('view-patients', this)">
+            <span class="material-symbols-rounded">group</span> Patient Data
+        </a>
+        
+        <a href="#" class="nav-item" data-target="view-appointments" onclick="switchView('view-appointments', this)">
+            <span class="material-symbols-rounded">calendar_month</span> Appointments
+            <span class="badge" style="background: #CD5C48; color: white; padding: 2px 6px; border-radius: 12px; font-size: 10px; font-weight: 700; margin-left: auto;">8</span>
+        </a>
+        
+        <a href="#" class="nav-item" data-target="view-transactions" onclick="switchView('view-transactions', this)">
+            <span class="material-symbols-rounded">receipt_long</span> Transactions
+        </a>
+        
+        <a href="#" class="nav-item" data-target="view-billing" onclick="switchView('view-billing', this)">
+            <span class="material-symbols-rounded">payments</span> Billing
+            <span class="badge" style="background: #FBBC05; color: #222; padding: 2px 6px; border-radius: 12px; font-size: 10px; font-weight: 700; margin-left: auto;">5</span>
+        </a>
+        
+        <a href="#" class="nav-item" data-target="view-branches" onclick="switchView('view-branches', this)">
+            <span class="material-symbols-rounded">store</span> Branches
+        </a>
+        
+        <a href="#" class="nav-item" data-target="view-therapists" onclick="switchView('view-therapists', this)">
+            <span class="material-symbols-rounded">medical_services</span> Doctors/Therapists
+        </a>
+        
+        <a href="#" class="nav-item" data-target="view-staffs" onclick="switchView('view-staffs', this)">
+            <span class="material-symbols-rounded">badge</span> Staffs
+        </a>
+
+        <a href="#" class="nav-item" data-target="view-attendance" onclick="switchView('view-attendance', this)">
+            <span class="material-symbols-rounded">how_to_reg</span> Attendance
+        </a>
+        
+        <a href="#" class="nav-item" data-target="view-users" onclick="switchView('view-users', this)">
+            <span class="material-symbols-rounded">manage_accounts</span> Users
+        </a>
+        
+        <a href="#" class="nav-item" data-target="view-clinic-details" onclick="switchView('view-
