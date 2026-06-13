@@ -1,0 +1,107 @@
+<style>
+    /* Bottom Navigation Bar Styles */
+    .bottom-nav {
+        display: none; /* Hidden on desktop */
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: #FFFFFF;
+        border-top: 1px solid #E8E5E1;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+        z-index: 1000;
+        
+        /* Native App Feel Enhancements */
+        padding-bottom: env(safe-area-inset-bottom);
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .bottom-nav-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 64px;
+    }
+
+    .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: #777777;
+        gap: 4px;
+        flex: 1;
+        height: 100%;
+        transition: color 0.2s;
+    }
+
+    .bottom-nav-item .material-symbols-rounded {
+        font-size: 24px;
+        transition: transform 0.2s;
+    }
+
+    .bottom-nav-item span:not(.material-symbols-rounded) {
+        font-size: 10px;
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Active State in Coral Theme */
+    .bottom-nav-item.active {
+        color: #CD5C48;
+    }
+    
+    .bottom-nav-item.active .material-symbols-rounded {
+        font-variation-settings: 'FILL' 1; /* Filled icon for active state */
+    }
+
+    /* Touch Feedback */
+    .bottom-nav-item:active .material-symbols-rounded {
+        transform: scale(0.9);
+    }
+
+    /* Only display on mobile screens */
+    @media (max-width: 768px) {
+        .bottom-nav {
+            display: block;
+        }
+    }
+</style>
+
+<nav class="bottom-nav">
+    <div class="bottom-nav-container">
+        <a href="#" class="bottom-nav-item active" data-target="view-dashboard" onclick="switchView('view-dashboard', this); updateBottomNav(this);">
+            <span class="material-symbols-rounded">dashboard</span>
+            <span>Home</span>
+        </a>
+        
+        <a href="#" class="bottom-nav-item" data-target="view-patients" onclick="switchView('view-patients', this); updateBottomNav(this);">
+            <span class="material-symbols-rounded">group</span>
+            <span>Patients</span>
+        </a>
+        
+        <a href="#" class="bottom-nav-item" data-target="view-appointments" onclick="switchView('view-appointments', this); updateBottomNav(this);">
+            <span class="material-symbols-rounded">calendar_month</span>
+            <span>Schedule</span>
+        </a>
+        
+        <a href="#" class="bottom-nav-item" onclick="toggleSidebar();">
+            <span class="material-symbols-rounded">menu</span>
+            <span>Menu</span>
+        </a>
+    </div>
+</nav>
+
+<script>
+    // Highlight the active icon in the bottom nav
+    function updateBottomNav(clickedElement) {
+        // Remove active class from all bottom nav items
+        document.querySelectorAll('.bottom-nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        // Add active class to the clicked item
+        clickedElement.classList.add('active');
+    }
+</script>
