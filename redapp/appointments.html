@@ -96,6 +96,7 @@
 
     <div class="form-card no-print">
         <form id="add-appointment-form" onsubmit="event.preventDefault();">
+            <input type="hidden" id="aptDocId" value="">
             
             <h4 style="color: var(--primary); margin: 0 0 16px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">1. Patient Details</h4>
             
@@ -152,8 +153,12 @@
                     </select>
                 </div>
                 <div id="reschedule-container">
-                    <label class="form-label" style="color: var(--danger);">Rescheduled Date</label>
+                    <label class="form-label" style="color: var(--danger);">Pick New Reschedule Date</label>
                     <input type="date" id="aptRescheduleDate" class="form-input" style="border-color: var(--danger);">
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label class="form-label">Administrative Notes / Symptoms</label>
+                    <textarea id="aptNotes" class="form-input" rows="2" placeholder="Record symptoms or log reschedule history here..."></textarea>
                 </div>
             </div>
 
@@ -173,7 +178,7 @@
             </div>
 
             <div style="text-align: right; margin-top: 24px;">
-                <button type="reset" class="btn-outline" style="margin-right: 12px; padding: 14px 24px;" onclick="window.resetAptForm()">Clear Form</button>
+                <button type="button" class="btn-outline" style="margin-right: 12px; padding: 14px 24px;" onclick="window.resetAptForm()">Clear Form</button>
                 <button type="button" class="btn-primary" id="saveAptBtn" onclick="window.saveAppointment()">Save Appointment</button>
             </div>
         </form>
@@ -226,7 +231,7 @@
                     <th>Patient Details</th>
                     <th>Branch / Therapist</th>
                     <th>Financials</th>
-                    <th>Status</th>
+                    <th>Status & Notes</th>
                     <th class="no-print">Actions</th>
                 </tr>
             </thead>
@@ -271,7 +276,18 @@
         }
 
         window.resetAptForm = function() {
+            document.getElementById('add-appointment-form').reset();
+            document.getElementById('aptDocId').value = ''; // Clear ID for new bookings
+            document.getElementById('saveAptBtn').innerText = "Save Appointment";
             document.getElementById('reschedule-container').classList.remove('active');
+        }
+
+        // Validate if a date/time is in the past
+        function isPastDateTime(dateStr, timeStr) {
+            if(!dateStr) return false;
+            const target = new Date(dateStr + 'T' + (timeStr || '00:00'));
+            const now = new Date();
+            return target < now;
         }
 
         // --- 2. AUTO-FILL FROM PATIENTS DATABASE ---
@@ -285,7 +301,6 @@
             try {
                 const pSnap = await getDocs(query(collection(db, "patients"), where("mobile", "==", mobile)));
                 if (!pSnap.empty) {
-                    // Patient found! Auto fill the name.
                     document.getElementById('aptName').value = pSnap.docs.data().name;
                     alert("Patient Found! Name auto-filled.");
                 } else {
@@ -303,7 +318,6 @@
             tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;">Loading appointments...</td></tr>';
 
             try {
-                // Fetch all, ordered by creation date
                 const q = query(collection(db, "appointments"), orderBy("date", "desc"));
                 const querySnapshot = await getDocs(q);
                 tableBody.innerHTML = ''; 
@@ -315,23 +329,28 @@
 
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
-                    const docId = docSnap.id; // Crucial for Bulk Updates
+                    const docId = docSnap.id; 
                     
                     let statusBadge = '';
                     if(data.status === 'Completed') statusBadge = '<span class="badge badge-completed">Completed</span>';
-                    else if(data.status === 'Rescheduled') statusBadge = `<span class="badge badge-rescheduled">Rescheduled to ${data.rescheduleDate}</span>`;
+                    else if(data.status === 'Rescheduled') statusBadge = `<span class="badge badge-rescheduled">Rescheduled</span>`;
                     else statusBadge = '<span class="badge badge-pending">Pending</span>';
 
-                    // Prepare WhatsApp Bill Script
+                    // Notes snippet for table
+                    let noteSnippet = data.notes ? `<div style="margin-top: 6px; font-size: 11px; color: var(--secondary); background: #FAFAFA; padding: 4px; border-radius: 4px;">${data.notes}</div>` : '';
+
+                    // Safe JSON stringify for the Edit function
+                    const safeDataStr = encodeURIComponent(JSON.stringify(data));
+
+                    // WhatsApp Message pre-filled
                     const waText = encodeURIComponent(`Hello ${data.name}, your appointment at STRA CARE (${data.branch}) is booked for ${data.date}. Total Fee: ₹${data.fee||0}, Advance: ₹${data.advance||0}, Balance: ₹${data.balance||0}.`);
 
                     const tr = document.createElement('tr');
-                    // Store searchable data securely in the row
                     tr.setAttribute("data-branch", data.branch.toUpperCase());
                     tr.setAttribute("data-search", `${data.name} ${data.mobile}`.toUpperCase());
 
                     tr.innerHTML = `
-                        <td class="no-print"><input type="checkbox" class="apt-checkbox" value="${docId}" style="transform: scale(1.2);"></td>
+                        <td class="no-print"><input type="checkbox" class="apt-checkbox" value="${docId}" data-current-date="${data.date}" data-notes="${encodeURIComponent(data.notes || '')}" style="transform: scale(1.2);"></td>
                         <td data-label="Date/Time"><strong>${data.date}</strong><br><span style="font-size:12px; color:var(--text-muted);">${data.time}</span></td>
                         <td data-label="Patient">
                             <span style="font-weight: 700; font-size: 15px;">${data.name}</span><br>
@@ -347,11 +366,11 @@
                             <span style="color: var(--success); font-size: 12px;">Adv: ₹${data.advance || 0}</span><br>
                             <strong style="color: var(--danger); font-size: 12px;">Bal: ₹${data.balance || 0}</strong>
                         </td>
-                        <td data-label="Status">${statusBadge}</td>
+                        <td data-label="Status">${statusBadge} ${noteSnippet}</td>
                         <td class="no-print" data-label="Actions">
                             <div style="display:flex; gap: 10px; align-items:center;">
                                 <span class="material-symbols-rounded" style="color: var(--primary); cursor: pointer; font-size: 22px;" title="Print Invoice" onclick="window.printInvoice('${data.name}', '${data.mobile}', '${data.date}', '${data.branch}', '${data.fee}', '${data.advance}', '${data.balance}')">receipt_long</span>
-                                <span class="material-symbols-rounded" style="color: var(--text-muted); cursor: pointer; font-size: 20px;" title="Edit">edit</span>
+                                <span class="material-symbols-rounded" style="color: var(--text-muted); cursor: pointer; font-size: 20px;" title="Edit" onclick="window.editAppointment('${docId}', '${safeDataStr}')">edit</span>
                             </div>
                         </td>
                     `;
@@ -359,32 +378,54 @@
                 });
             } catch (error) {
                 console.error("Firebase Read Error:", error);
-                tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: var(--danger);">Error loading data.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: var(--danger);">Error loading data. Check Firestore rules.</td></tr>';
             }
         };
 
         window.loadAppointments();
 
-        // --- 4. TABLE FILTERING (Branch + Search) ---
+        // --- 4. TABLE FILTERING ---
         window.filterTable = function() {
             const branchQuery = document.getElementById("branchFilterInput").value.toUpperCase();
             const textQuery = document.getElementById("aptSearchInput").value.toUpperCase();
             const trs = document.getElementById("aptTableBody").getElementsByTagName("tr");
 
             for (let i = 0; i < trs.length; i++) {
-                if (trs[i].cells.length === 1) continue; // Skip "loading" rows
-                
+                if (trs[i].cells.length === 1) continue; 
                 const rowBranch = trs[i].getAttribute("data-branch");
                 const rowSearch = trs[i].getAttribute("data-search");
 
                 const matchesBranch = (branchQuery === "" || rowBranch === branchQuery);
                 const matchesText = (rowSearch.indexOf(textQuery) > -1);
-
                 trs[i].style.display = (matchesBranch && matchesText) ? "" : "none";
             }
         }
 
-        // --- 5. BULK RESCHEDULE LOGIC ---
+        // --- 5. EDIT APPOINTMENT ---
+        window.editAppointment = function(docId, safeDataStr) {
+            const data = JSON.parse(decodeURIComponent(safeDataStr));
+            
+            document.getElementById('aptDocId').value = docId; // Set hidden ID
+            document.getElementById('aptMobile').value = data.mobile || '';
+            document.getElementById('aptName').value = data.name || '';
+            document.getElementById('aptBranch').value = data.branch || '';
+            document.getElementById('aptDate').value = data.date || '';
+            document.getElementById('aptTime').value = data.time || '';
+            document.getElementById('aptTherapist').value = data.therapist || '';
+            document.getElementById('aptStatus').value = data.status || 'Pending';
+            document.getElementById('aptFee').value = data.fee || '';
+            document.getElementById('aptAdvance').value = data.advance || '';
+            document.getElementById('aptBalance').value = data.balance || '';
+            document.getElementById('aptNotes').value = data.notes || '';
+
+            // Reset reschedule dropdown just in case
+            window.toggleReschedule(document.getElementById('aptStatus'));
+
+            document.getElementById('saveAptBtn').innerText = "Update Appointment";
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll back to form
+        }
+
+        // --- 6. BULK RESCHEDULE LOGIC ---
         window.toggleAllCheckboxes = function(masterCheckbox) {
             const checkboxes = document.querySelectorAll('.apt-checkbox');
             checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
@@ -400,22 +441,31 @@
             const newDate = document.getElementById('bulkDateInput').value;
             if (!newDate) return alert("Please pick a new date.");
 
+            if(isPastDateTime(newDate, '23:59')) {
+                return alert("Cannot bulk reschedule to a past date!");
+            }
+
             const checkboxes = document.querySelectorAll('.apt-checkbox:checked');
             
             try {
-                // Loop through selected and update Firestore
                 for (let cb of checkboxes) {
                     const docRef = doc(db, "appointments", cb.value);
+                    const oldDate = cb.getAttribute('data-current-date');
+                    const existingNotes = decodeURIComponent(cb.getAttribute('data-notes'));
+                    const updatedNotes = (existingNotes + `\n[Rescheduled from: ${oldDate}]`).trim();
+
                     await updateDoc(docRef, {
+                        date: newDate, 
                         status: "Rescheduled",
-                        rescheduleDate: newDate
+                        notes: updatedNotes,
+                        updatedAt: new Date()
                     });
                 }
                 
                 alert(`Successfully rescheduled ${checkboxes.length} appointments to ${newDate}!`);
                 document.getElementById('bulk-reschedule-container').classList.remove('active');
-                document.getElementById('bulkDateInput').value = ""; // clear
-                window.loadAppointments(); // Refresh table
+                document.getElementById('bulkDateInput').value = ""; 
+                window.loadAppointments(); 
 
             } catch(e) {
                 console.error("Bulk Update Error:", e);
@@ -423,44 +473,88 @@
             }
         }
 
-        // --- 6. INDIVIDUAL INVOICE PRINTING ---
+        // --- 7. INDIVIDUAL INVOICE PRINTING (Matches estimate.html Template) ---
         window.printInvoice = function(name, mobile, date, branch, fee, advance, balance) {
             const invoiceWindow = window.open('', '_blank');
             invoiceWindow.document.write(`
                 <html>
                 <head>
                     <title>Invoice - ${name}</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
                     <style>
-                        body { font-family: 'Helvetica Neue', sans-serif; padding: 40px; color: #222; }
-                        .header { border-bottom: 2px solid #e16349; padding-bottom: 20px; margin-bottom: 20px; }
-                        .header h1 { margin: 0; color: #e16349; text-transform: uppercase; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                        td { padding: 12px 0; border-bottom: 1px solid #eee; font-size: 16px;}
-                        .totals { float: right; width: 300px; margin-top: 30px; }
-                        .totals-row { display: flex; justify-content: space-between; padding: 10px 0; font-size: 16px; }
-                        .totals-row.balance { font-size: 20px; font-weight: bold; border-top: 2px solid #000; padding-top: 15px;}
+                        body { font-family: 'Inter', sans-serif; padding: 40px; color: #0a0a0a; margin: 0; background: #fff; }
+                        .header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e16349; padding-bottom: 24px; margin-bottom: 30px; }
+                        .logo-area h1 { margin: 0; color: #e16349; font-size: 32px; font-weight: 800; letter-spacing: 1px; }
+                        .logo-area p { margin: 4px 0 0 0; color: #777; font-weight: 600; font-size: 14px; text-transform: uppercase; }
+                        .company-info { text-align: right; font-size: 13px; color: #555; line-height: 1.6; }
+                        .bill-to { display: flex; justify-content: space-between; margin-bottom: 40px; }
+                        .bill-to h3 { margin: 0 0 8px 0; color: #e16349; font-size: 14px; text-transform: uppercase; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+                        th { background: #FAFAFA; color: #777; font-size: 12px; text-transform: uppercase; padding: 12px; text-align: left; border-bottom: 2px solid #E8E5E1; }
+                        td { padding: 16px 12px; font-size: 15px; border-bottom: 1px solid #E8E5E1; }
+                        .totals-box { float: right; width: 300px; }
+                        .totals-row { display: flex; justify-content: space-between; padding: 10px 0; font-size: 15px; }
+                        .totals-row.balance { font-size: 20px; font-weight: 800; color: #e16349; border-top: 2px solid #0a0a0a; padding-top: 15px; margin-top: 5px; }
+                        .bank-details { clear: both; margin-top: 60px; padding: 20px; background: #FAFAFA; border-radius: 8px; font-size: 13px; border: 1px solid #E8E5E1; }
+                        .bank-details h4 { margin: 0 0 10px 0; color: #e16349; text-transform: uppercase; font-size: 12px; }
+                        .footer-text { margin-top: 40px; text-align: center; font-size: 10px; color: #999; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.5px; }
                     </style>
                 </head>
                 <body>
-                    <div class="header">
-                        <h1>STRA CARE</h1>
-                        <p>Branch: ${branch} | Billing Invoice</p>
+                    <div class="header-row">
+                        <div class="logo-area">
+                            <img src="assets/logo-company.png" alt="" style="max-height: 50px; display: block; margin-bottom: 8px;">
+                            <h1>STRA CARE</h1>
+                            <p>Rebuild Your Health</p>
+                        </div>
+                        <div class="company-info">
+                            <strong>+91 97449 02555 | +91 90612 07871</strong><br>
+                            info@stracares.in | www.stracares.in<br>
+                            Branches: Mahe | Chokli | Panoor | Koothuparamba
+                        </div>
                     </div>
-                    <h3>Patient Details</h3>
-                    <p><strong>Name:</strong> ${name}</p>
-                    <p><strong>Mobile:</strong> ${mobile}</p>
-                    <p><strong>Date of Service:</strong> ${date}</p>
                     
-                    <div class="totals">
-                        <div class="totals-row"><span>Total Fee:</span> <span>₹${fee || 0}</span></div>
-                        <div class="totals-row"><span>Advance Paid:</span> <span>₹${advance || 0}</span></div>
-                        <div class="totals-row balance"><span>Balance Due:</span> <span>₹${balance || 0}</span></div>
+                    <div class="bill-to">
+                        <div>
+                            <h3>Billed To:</h3>
+                            <div style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">${name}</div>
+                            <div style="color: #555;">Mobile: +91 ${mobile}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <h3>Invoice Details</h3>
+                            <div style="margin-bottom: 4px;"><strong>Date:</strong> ${date}</div>
+                            <div style="color: #555;"><strong>Branch:</strong> ${branch}</div>
+                        </div>
                     </div>
-                    <div style="clear: both; margin-top: 60px; font-size: 12px; color: #777; text-align: center;">
+
+                    <table>
+                        <tr>
+                            <th>Description of Services</th>
+                            <th style="text-align: right;">Amount (₹)</th>
+                        </tr>
+                        <tr>
+                            <td>Consultation & Therapy Service</td>
+                            <td style="text-align: right;">${fee || '0.00'}</td>
+                        </tr>
+                    </table>
+
+                    <div class="totals-box">
+                        <div class="totals-row"><span>Advance Paid:</span> <span>₹${advance || '0.00'}</span></div>
+                        <div class="totals-row balance"><span>Balance Due:</span> <span>₹${balance || '0.00'}</span></div>
+                    </div>
+
+                    <div class="bank-details">
+                        <h4>Bank Details for Payment Remittance</h4>
+                        <strong>Account Name:</strong> STRA CARE <br>
+                        <strong>Account No:</strong> 50200120597389 | <strong>IFSC:</strong> HDFC0000465<br>
+                        <strong>UPI ID:</strong> 9744902555@hdfc
+                    </div>
+
+                    <div class="footer-text">
                         Generated on https://books.cmfilings.com
                     </div>
+
                     <script>
-                        // Auto-trigger print prompt
                         window.onload = function() { window.print(); }
                     <\/script>
                 </body>
@@ -469,14 +563,15 @@
             invoiceWindow.document.close();
         }
 
-        // --- 7. EXPORT WHOLE TABLE PDF ---
+        // --- 8. EXPORT WHOLE TABLE PDF ---
         window.exportAptPDF = function() {
             window.print();
         }
 
-        // --- 8. SAVE APPOINTMENT ---
+        // --- 9. SAVE OR UPDATE APPOINTMENT ---
         window.saveAppointment = async function() {
             const saveBtn = document.getElementById('saveAptBtn');
+            const docId = document.getElementById('aptDocId').value; // Check if editing
             
             const mobile = document.getElementById('aptMobile').value;
             const name = document.getElementById('aptName').value;
@@ -489,30 +584,56 @@
             const fee = document.getElementById('aptFee').value || 0;
             const advance = document.getElementById('aptAdvance').value || 0;
             const balance = document.getElementById('aptBalance').value || 0;
+            let notes = document.getElementById('aptNotes').value;
 
             if (!name || !mobile || !date || !branch) return alert("Please fill all required (*) fields!");
+
+            // Strict Validation: Block past dates for new bookings & rescheduling
+            if(!docId && isPastDateTime(date, time)) {
+                return alert("You cannot book a new appointment in the past!");
+            }
+            if(status === 'Rescheduled' && isPastDateTime(rescheduleDate, time)) {
+                return alert("You cannot reschedule to a past date!");
+            }
+
+            // Reschedule Logic: Swap Dates & Update Notes
+            let finalDate = date;
+            if (status === 'Rescheduled') {
+                if(!rescheduleDate) return alert("Please pick a new reschedule date.");
+                finalDate = rescheduleDate; // Overwrite main date
+                notes = (notes + `\n[Rescheduled from: ${date}]`).trim(); // Append old date to notes
+            }
 
             saveBtn.innerText = "Saving...";
             saveBtn.disabled = true;
 
-            try {
-                await addDoc(collection(db, "appointments"), {
-                    mobile: mobile,
-                    name: name,
-                    branch: branch,
-                    date: date,
-                    time: time,
-                    therapist: therapist,
-                    status: status,
-                    rescheduleDate: status === 'Rescheduled' ? rescheduleDate : '',
-                    fee: fee,
-                    advance: advance,
-                    balance: balance,
-                    createdAt: new Date()
-                });
+            const payload = {
+                mobile: mobile,
+                name: name,
+                branch: branch,
+                date: finalDate, // Saves the swapped date
+                time: time,
+                therapist: therapist,
+                status: status,
+                fee: fee,
+                advance: advance,
+                balance: balance,
+                notes: notes,
+                updatedAt: new Date()
+            };
 
-                alert(`Appointment saved successfully for ${name}!`);
-                document.getElementById('add-appointment-form').reset();
+            try {
+                if(docId) {
+                    // Updating an existing record
+                    await updateDoc(doc(db, "appointments", docId), payload);
+                    alert(`Appointment updated successfully for ${name}!`);
+                } else {
+                    // Creating a new record
+                    payload.createdAt = new Date();
+                    await addDoc(collection(db, "appointments"), payload);
+                    alert(`New appointment saved successfully for ${name}!`);
+                }
+                
                 window.resetAptForm();
                 window.loadAppointments();
 
