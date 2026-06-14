@@ -182,8 +182,8 @@
             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <h4>Schedule Directory</h4>
                 <div style="display: flex; gap: 8px;">
-                    <button class="btn-outline no-print" onclick="window.openBulkReschedule()" style="border-color: var(--danger); color: var(--danger); padding: 6px 12px; font-size: 12px;">
-                        <span class="material-symbols-rounded" style="font-size: 14px;">calendar_clock</span> Bulk Reschedule
+                    <button class="btn-outline no-print" onclick="window.openBulkReschedule()" style="border-color: var(--primary); color: var(--primary); padding: 6px 12px; font-size: 12px;">
+                        <span class="material-symbols-rounded" style="font-size: 14px;">event_repeat</span> Move to Next Schedule
                     </button>
                     <button class="btn-outline no-print" onclick="window.exportAptPDF()" style="padding: 6px 12px; font-size: 12px;">
                         <span class="material-symbols-rounded" style="font-size: 14px; color: var(--primary);">picture_as_pdf</span> Export
@@ -234,9 +234,9 @@
         </div>
 
         <div id="bulk-reschedule-container" class="no-print" style="background: #fef5e8; padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
-            <strong style="color: var(--danger); font-size: 14px;">Move selected to:</strong>
+            <strong style="color: var(--primary); font-size: 14px;">Copy selected to:</strong>
             <input type="date" id="bulkDateInput" class="form-input" style="width: auto; padding: 8px 12px;">
-            <button class="btn-primary" style="padding: 8px 16px;" onclick="window.executeBulkReschedule()">Confirm Reschedule</button>
+            <button class="btn-primary" style="padding: 8px 16px;" onclick="window.executeBulkReschedule()">Confirm Schedule</button>
             <button class="btn-outline" style="padding: 8px 16px; border: none; background: transparent;" onclick="document.getElementById('bulk-reschedule-container').classList.remove('active')">Cancel</button>
         </div>
 
@@ -277,7 +277,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Safe Memory Cache for Edits
+        // Safe Memory Cache for Edits & Copies
         window.appointmentsDataCache = {};
 
         // --- 1. FORM UI LOGIC ---
@@ -350,19 +350,18 @@
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     const docId = docSnap.id; 
-                    window.appointmentsDataCache[docId] = data; // Save to memory for Edit button
+                    window.appointmentsDataCache[docId] = data; // Save to memory for Edit & Copy buttons
                     
                     let statusBadge = '';
                     if(data.status === 'Completed') statusBadge = '<span class="badge badge-completed">Completed</span>';
                     else if(data.status === 'Rescheduled') statusBadge = `<span class="badge badge-rescheduled">Rescheduled</span>`;
                     else statusBadge = '<span class="badge badge-pending">Pending</span>';
 
-                    let noteSnippet = data.notes ? `<div style="margin-top: 6px; font-size: 11px; color: var(--secondary); background: #FAFAFA; padding: 4px; border-radius: 4px;">${data.notes}</div>` : '';
+                    let noteSnippet = data.notes ? `<div style="margin-top: 6px; font-size: 11px; color: var(--secondary); background: #FAFAFA; padding: 4px; border-radius: 4px; line-height: 1.4;">${data.notes}</div>` : '';
                     const waText = encodeURIComponent(`Hello ${data.name}, your appointment at STRA CARE (${data.branch}) is booked for ${data.date}. Total Fee: ₹${data.fee||0}, Advance: ₹${data.advance||0}, Balance: ₹${data.balance||0}.`);
 
                     const tr = document.createElement('tr');
                     
-                    // Attach Advanced Filter Data Directly to the Row
                     tr.setAttribute("data-branch", data.branch.toLowerCase());
                     tr.setAttribute("data-status", data.status.toLowerCase());
                     tr.setAttribute("data-date", data.date);
@@ -472,7 +471,6 @@
             window.toggleReschedule(document.getElementById('aptStatus'));
             document.getElementById('saveAptBtn').innerText = "Update Appointment";
             
-            // Smooth Scroll to Top inside the SPA container!
             const mainContent = document.getElementById('main-content');
             if (mainContent) {
                 mainContent.scrollTo({ top: 0, behavior: 'smooth' });
@@ -481,7 +479,7 @@
             }
         }
 
-        // --- 6. BULK RESCHEDULE LOGIC ---
+        // --- 6. MOVE TO NEXT SCHEDULE (COPY LOGIC) ---
         window.toggleAllCheckboxes = function(masterCheckbox) {
             const checkboxes = document.querySelectorAll('.apt-checkbox');
             checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
@@ -489,40 +487,51 @@
 
         window.openBulkReschedule = function() {
             const checked = document.querySelectorAll('.apt-checkbox:checked');
-            if (checked.length === 0) return alert("Please select at least one appointment to reschedule.");
+            if (checked.length === 0) return alert("Please select at least one appointment to move.");
             document.getElementById('bulk-reschedule-container').classList.add('active');
         }
 
         window.executeBulkReschedule = async function() {
             const newDate = document.getElementById('bulkDateInput').value;
             if (!newDate) return alert("Please pick a new date.");
-            if(isPastDateTime(newDate, '23:59')) return alert("Cannot bulk reschedule to a past date!");
+            if(isPastDateTime(newDate, '23:59')) return alert("Cannot schedule to a past date!");
 
             const checkboxes = document.querySelectorAll('.apt-checkbox:checked');
             
             try {
+                // Loop through selected items and CREATE completely new entries (Copy)
                 for (let cb of checkboxes) {
-                    const docRef = doc(db, "appointments", cb.value);
-                    const oldDate = cb.getAttribute('data-current-date');
-                    const existingNotes = decodeURIComponent(cb.getAttribute('data-notes'));
-                    const updatedNotes = (existingNotes + `\n[Rescheduled from: ${oldDate}]`).trim();
+                    const existingData = window.appointmentsDataCache[cb.value];
+                    if(!existingData) continue;
 
-                    await updateDoc(docRef, {
+                    const newAppointment = {
+                        mobile: existingData.mobile,
+                        name: existingData.name,
+                        branch: existingData.branch,
                         date: newDate, 
-                        status: "Rescheduled",
-                        notes: updatedNotes,
+                        time: existingData.time,
+                        therapist: existingData.therapist,
+                        status: "Pending", // New schedule starts as Pending
+                        fee: existingData.fee || 0,
+                        advance: existingData.advance || 0,
+                        balance: existingData.balance || 0,
+                        notes: (existingData.notes ? existingData.notes + '\n' : '') + `[Forwarded from: ${existingData.date}]`,
+                        createdAt: new Date(),
                         updatedAt: new Date()
-                    });
+                    };
+
+                    // Add as a new document. Old document remains exactly as is!
+                    await addDoc(collection(db, "appointments"), newAppointment);
                 }
                 
-                alert(`Successfully rescheduled ${checkboxes.length} appointments to ${newDate}!`);
+                alert(`Successfully copied ${checkboxes.length} appointments to ${newDate}!`);
                 document.getElementById('bulk-reschedule-container').classList.remove('active');
                 document.getElementById('bulkDateInput').value = ""; 
                 window.loadAppointments(); 
 
             } catch(e) {
-                console.error("Bulk Update Error:", e);
-                alert("Failed to perform bulk update.");
+                console.error("Bulk Copy Error:", e);
+                alert("Failed to perform bulk copy.");
             }
         }
 
