@@ -168,16 +168,6 @@
                 </tr>
             </thead>
             <tbody id="patientTableBody">
-                <tr>
-                    <td data-label="Patient"><div class="patient-info"><strong>Sarah Jenkins</strong><span class="pid">P0002</span></div></td>
-                    <td data-label="Mobile">9876543210</td>
-                    <td data-label="Demographics">34 Yrs / F</td>
-                    <td data-label="Address"><span style="color: var(--text-muted); font-size: 12px;">Mahe Clinic Area, Kerala</span></td>
-                    <td data-label="Actions">
-                        <span class="material-symbols-rounded" style="color: var(--primary); cursor: pointer; font-size: 20px;" title="View Notes">assignment</span>
-                        <span class="material-symbols-rounded" style="color: var(--text-muted); cursor: pointer; font-size: 20px; margin-left: 8px;" title="Edit">edit</span>
-                    </td>
-                </tr>
             </tbody>
         </table>
     </div>
@@ -185,27 +175,70 @@
 </div>
 
 <script type="module">
-    // Import the Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    // Your Firebase Configuration
+    // 🔴 NEW FIREBASE CONFIGURATION (cmf001stra) 🔴
     const firebaseConfig = {
-        apiKey: "AIzaSyDwfmoDPvslFmTn3GjO56VAxhODRlem5bg",
-        authDomain: "stra-care.firebaseapp.com",
-        projectId: "stra-care",
-        storageBucket: "stra-care.firebasestorage.app",
-        messagingSenderId: "329966100049",
-        appId: "1:329966100049:web:d4b4dc7033f0ed12da6270",
-        measurementId: "G-TQ7YK3RVSR"
+        apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
+        authDomain: "cmf001stra.firebaseapp.com",
+        projectId: "cmf001stra",
+        storageBucket: "cmf001stra.firebasestorage.app",
+        messagingSenderId: "763958641347",
+        appId: "1:763958641347:web:316876bc2340b26bd21876",
+        measurementId: "G-770FBR88LJ"
     };
 
-    // Initialize Firebase and Firestore
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     // ==========================================
-    // VERIFY MOBILE NUMBER WITH FIRESTORE
+    // LOAD EXISTING PATIENTS INTO TABLE
+    // ==========================================
+    window.loadPatients = async function() {
+        const tableBody = document.getElementById('patientTableBody');
+        tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Loading patients from database...</td></tr>';
+
+        try {
+            const patientsRef = collection(db, "patients");
+            // Fetch all patients
+            const querySnapshot = await getDocs(patientsRef);
+            
+            tableBody.innerHTML = ''; // Clear loading text
+            
+            if (querySnapshot.empty) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--text-muted);">No patients found in the system yet. Add one above!</td></tr>';
+                return;
+            }
+
+            // Loop through Firebase data and build table rows
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Patient"><div class="patient-info"><strong>${data.name}</strong><span class="pid">${data.patientId}</span></div></td>
+                    <td data-label="Mobile">${data.mobile}</td>
+                    <td data-label="Demographics">${data.age || '--'} Yrs / ${data.gender || '--'}</td>
+                    <td data-label="Address"><span style="color: var(--text-muted); font-size: 12px;">${data.address || '--'}</span></td>
+                    <td data-label="Actions">
+                        <span class="material-symbols-rounded" style="color: var(--primary); cursor: pointer; font-size: 20px;" title="View Notes">assignment</span>
+                        <span class="material-symbols-rounded" style="color: var(--text-muted); cursor: pointer; font-size: 20px; margin-left: 8px;" title="Edit">edit</span>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        } catch (error) {
+            console.error("Firebase Read Error:", error);
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--danger);">Error loading data. Check Firestore permissions.</td></tr>';
+        }
+    };
+
+    // Load data instantly when the module opens
+    window.loadPatients();
+
+    // ==========================================
+    // VERIFY MOBILE NUMBER
     // ==========================================
     window.verifyMobile = async function() {
         const mobileInput = document.getElementById('mobileInput').value;
@@ -222,12 +255,10 @@
             return;
         }
 
-        // Show loading state
         verifyBtn.innerText = "Checking...";
         verifyBtn.disabled = true;
 
         try {
-            // Check Firestore database for this mobile number
             const patientsRef = collection(db, "patients");
             const q = query(patientsRef, where("mobile", "==", mobileInput));
             const querySnapshot = await getDocs(q);
@@ -239,27 +270,25 @@
             } else {
                 validationMsg.innerText = "Number is available. Please fill out the patient details.";
                 validationMsg.classList.add('success');
-                fieldset.disabled = false; // Unlocks the form
-                document.getElementById('patientName').focus(); // Move cursor to name automatically
+                fieldset.disabled = false;
+                document.getElementById('patientName').focus();
             }
         } catch (error) {
             console.error("Firebase Error:", error);
-            validationMsg.innerText = "Error checking database. Check console or Firestore permissions.";
+            validationMsg.innerText = "Error checking database. Make sure Firestore rules are set to Test Mode.";
             validationMsg.classList.add('error');
         }
 
-        // Reset button state
         verifyBtn.innerText = "Verify";
         verifyBtn.disabled = false;
     }
 
     // ==========================================
-    // SAVE PATIENT DATA TO FIRESTORE
+    // SAVE NEW PATIENT TO FIRESTORE
     // ==========================================
     window.savePatient = async function() {
         const saveBtn = document.getElementById('saveBtn');
         
-        // Gather form data
         const mobile = document.getElementById('mobileInput').value;
         const name = document.getElementById('patientName').value;
         const age = document.getElementById('patientAge').value;
@@ -267,7 +296,6 @@
         const address = document.getElementById('patientAddress').value;
         const notes = document.getElementById('patientNotes').value;
 
-        // Basic check
         if (!name || !mobile) {
             alert("Patient Name and Mobile Number are required!");
             return;
@@ -277,11 +305,9 @@
         saveBtn.disabled = true;
 
         try {
-            // Generate a fake Patient ID (you can change this logic later)
             const generatedId = "P" + Math.floor(Math.random() * 90000 + 10000);
 
-            // Send data to Firestore "patients" collection
-            const docRef = await addDoc(collection(db, "patients"), {
+            await addDoc(collection(db, "patients"), {
                 patientId: generatedId,
                 mobile: mobile,
                 name: name,
@@ -297,6 +323,9 @@
             // Clear the form
             document.getElementById('add-patient-form').reset();
             window.resetForm();
+
+            // Refresh the table to show the new patient!
+            window.loadPatients();
 
         } catch (error) {
             console.error("Firebase Save Error:", error);
