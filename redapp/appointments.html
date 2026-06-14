@@ -43,50 +43,69 @@
         
         #appointment-module .btn-primary { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
         #appointment-module .btn-primary:disabled { background: var(--grey-med); cursor: not-allowed; }
-        #appointment-module .btn-outline { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
-        
+        #appointment-module .btn-outline { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+        #appointment-module .btn-verify { background: var(--text-main); color: #fff; border: none; padding: 0 20px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 13px;}
+
         /* Table Styles */
         #appointment-module .table-container { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
-        #appointment-module .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        #appointment-module .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
         #appointment-module .table-header h4 { font-size: 16px; font-weight: 600; margin: 0; }
         #appointment-module .saas-table { width: 100%; border-collapse: collapse; text-align: left; }
-        #appointment-module .saas-table th { padding: 12px 20px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); }
-        #appointment-module .saas-table td { padding: 16px 20px; font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--border); }
+        #appointment-module .saas-table th { padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); }
+        #appointment-module .saas-table td { padding: 16px; font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--border); vertical-align: top;}
         
-        /* Status Badges */
         .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
         .badge-pending { background: rgba(251, 146, 60, 0.1); color: var(--danger); }
         .badge-completed { background: rgba(16, 185, 129, 0.1); color: var(--success); }
         .badge-rescheduled { background: rgba(100, 116, 139, 0.1); color: var(--secondary); }
 
-        /* Conditional Reschedule Field */
-        #reschedule-container { display: none; }
-        #reschedule-container.active { display: block; animation: fadeIn 0.3s ease; }
+        .cta-link { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background: #FAFAFA; border: 1px solid var(--border); transition: 0.2s; text-decoration: none; }
+        .cta-link:hover { background: var(--surface); transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        #reschedule-container, #bulk-reschedule-container { display: none; }
+        #reschedule-container.active, #bulk-reschedule-container.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Mobile Table Fix */
+        /* Mobile View Fixes */
         @media (max-width: 767px) {
             #appointment-module .saas-table thead { display: none; }
             #appointment-module .saas-table, #appointment-module .saas-table tbody, #appointment-module .saas-table tr, #appointment-module .saas-table td { display: block; width: 100%; }
-            #appointment-module .saas-table tr { padding: 16px; border-bottom: 1px solid var(--border); }
-            #appointment-module .saas-table td { padding: 4px 0; border: none; display: flex; justify-content: space-between; align-items: center; }
-            #appointment-module .saas-table td::before { content: attr(data-label); font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+            #appointment-module .saas-table tr { padding: 16px; border-bottom: 1px solid var(--border); position: relative;}
+            #appointment-module .saas-table td { padding: 8px 0; border: none; display: flex; flex-direction: column; align-items: flex-start; }
+            #appointment-module .saas-table td::before { content: attr(data-label); font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+            /* Checkbox positioning for mobile */
+            .mobile-checkbox { position: absolute; top: 16px; right: 16px; transform: scale(1.5); }
+        }
+
+        /* Print CSS for Global Table Export */
+        @media print {
+            body { background: white; padding: 0; }
+            #sidebar-container, #header-container, #bottomnav-container, .form-card, .section-title, .no-print { display: none !important; }
+            .main-wrapper { flex: 1; display: block; overflow: visible; }
+            #main-content { padding: 0; overflow: visible; }
+            #appointment-module .table-container { box-shadow: none; border: none; margin: 0; }
+            #appointment-module .table-header { padding: 0 0 10px 0; border-bottom: 2px solid #000; }
+            #appointment-module .saas-table th { background: white; color: black; border-bottom: 1px solid #000; }
+            #appointment-module .saas-table td { border-bottom: 1px solid #E8E5E1; }
         }
     </style>
 
     <div class="section-title">
-        <h2 style="margin: 0;">Appointments</h2>
+        <h2 style="margin: 0;">Appointments & Scheduling</h2>
     </div>
 
-    <div class="form-card">
+    <div class="form-card no-print">
         <form id="add-appointment-form" onsubmit="event.preventDefault();">
             
-            <h4 style="color: var(--primary); margin: 0 0 16px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">1. Patient & Booking Details</h4>
+            <h4 style="color: var(--primary); margin: 0 0 16px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">1. Patient Details</h4>
             
             <div class="input-group three-cols">
                 <div>
-                    <label class="form-label">Patient Mobile *</label>
-                    <input type="tel" id="aptMobile" class="form-input" placeholder="10-digit number" maxlength="10" required>
+                    <label class="form-label">Patient Mobile (Auto-Fill) *</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="tel" id="aptMobile" class="form-input" placeholder="10-digit number" maxlength="10" required>
+                        <button type="button" class="btn-verify" id="verifyAptBtn" onclick="window.verifyPatientMobile()">Check</button>
+                    </div>
                 </div>
                 <div style="grid-column: span 2;">
                     <label class="form-label">Patient Name *</label>
@@ -108,16 +127,16 @@
                     </select>
                 </div>
                 <div>
-                    <label class="form-label">Preferred Date *</label>
+                    <label class="form-label">Scheduled Date *</label>
                     <input type="date" id="aptDate" class="form-input" required>
                 </div>
                 <div>
-                    <label class="form-label">Preferred Time *</label>
+                    <label class="form-label">Scheduled Time *</label>
                     <input type="time" id="aptTime" class="form-input" required>
                 </div>
             </div>
 
-            <h4 style="color: var(--primary); margin: 24px 0 16px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">2. Administration Processing</h4>
+            <h4 style="color: var(--primary); margin: 24px 0 16px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">2. Administration & Billing</h4>
 
             <div class="input-group three-cols">
                 <div>
@@ -154,27 +173,61 @@
             </div>
 
             <div style="text-align: right; margin-top: 24px;">
-                <button type="reset" class="btn-outline" style="margin-right: 12px;" onclick="window.resetAptForm()">Clear Form</button>
+                <button type="reset" class="btn-outline" style="margin-right: 12px; padding: 14px 24px;" onclick="window.resetAptForm()">Clear Form</button>
                 <button type="button" class="btn-primary" id="saveAptBtn" onclick="window.saveAppointment()">Save Appointment</button>
             </div>
         </form>
     </div>
 
     <div class="table-container">
+        
         <div class="table-header">
             <h4>Schedule Directory</h4>
-            <div style="background: #FAFAFA; border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center;">
-                <span class="material-symbols-rounded" style="font-size: 16px; color: var(--text-muted);">search</span>
-                <input type="text" placeholder="Search..." style="border: none; background: transparent; outline: none; font-size: 13px; width: 120px; margin-left: 6px;">
+            
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                
+                <button class="btn-outline no-print" onclick="window.openBulkReschedule()" style="border-color: var(--danger); color: var(--danger);">
+                    <span class="material-symbols-rounded" style="font-size: 16px;">calendar_clock</span> Bulk Reschedule
+                </button>
+
+                <button class="btn-outline no-print" onclick="window.exportAptPDF()">
+                    <span class="material-symbols-rounded" style="font-size: 16px; color: var(--primary);">picture_as_pdf</span> Export
+                </button>
+
+                <select id="branchFilterInput" class="form-input no-print" onchange="window.filterTable()" style="width: auto; padding: 8px 12px; border-radius: 8px; font-size: 13px;">
+                    <option value="">All Branches</option>
+                    <option value="Mahe">Mahe</option>
+                    <option value="Chokli">Chokli</option>
+                    <option value="Panoor">Panoor</option>
+                    <option value="Koothuparamba">Koothuparamba</option>
+                    <option value="Nadapuram">Nadapuram</option>
+                    <option value="Home Care">Home Care</option>
+                </select>
+
+                <div class="no-print" style="background: #FAFAFA; border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center;">
+                    <span class="material-symbols-rounded" style="font-size: 16px; color: var(--text-muted);">search</span>
+                    <input type="text" id="aptSearchInput" onkeyup="window.filterTable()" placeholder="Search..." style="border: none; background: transparent; outline: none; font-size: 13px; width: 100px; margin-left: 6px;">
+                </div>
             </div>
         </div>
+
+        <div id="bulk-reschedule-container" class="no-print" style="background: #fef5e8; padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
+            <strong style="color: var(--danger); font-size: 14px;">Move selected to:</strong>
+            <input type="date" id="bulkDateInput" class="form-input" style="width: auto; padding: 8px 12px;">
+            <button class="btn-primary" style="padding: 8px 16px;" onclick="window.executeBulkReschedule()">Confirm Reschedule</button>
+            <button class="btn-outline" style="padding: 8px 16px; border: none; background: transparent;" onclick="document.getElementById('bulk-reschedule-container').classList.remove('active')">Cancel</button>
+        </div>
+
         <table class="saas-table">
             <thead>
                 <tr>
+                    <th class="no-print"><input type="checkbox" onclick="window.toggleAllCheckboxes(this)" style="transform: scale(1.2);"></th>
                     <th>Date & Time</th>
-                    <th>Patient</th>
+                    <th>Patient Details</th>
                     <th>Branch / Therapist</th>
+                    <th>Financials</th>
                     <th>Status</th>
+                    <th class="no-print">Actions</th>
                 </tr>
             </thead>
             <tbody id="aptTableBody">
@@ -184,9 +237,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs, orderBy, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // 🔴 YOUR NEW FIREBASE CONFIGURATION (cmf001stra) 🔴
+        // CMF001STRA Config
         const firebaseConfig = {
             apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
             authDomain: "cmf001stra.firebaseapp.com",
@@ -200,7 +253,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- UI Logic Maps (Mandatory for SPA onclicks) ---
+        // --- 1. FORM UI LOGIC ---
         window.toggleReschedule = function(select) {
             const container = document.getElementById('reschedule-container');
             if (select.value === 'Rescheduled') {
@@ -221,54 +274,210 @@
             document.getElementById('reschedule-container').classList.remove('active');
         }
 
-        // --- Firebase Logic ---
+        // --- 2. AUTO-FILL FROM PATIENTS DATABASE ---
+        window.verifyPatientMobile = async function() {
+            const mobile = document.getElementById('aptMobile').value;
+            const btn = document.getElementById('verifyAptBtn');
+
+            if (mobile.length !== 10) return alert("Enter 10-digit mobile number first.");
+            
+            btn.innerText = "...";
+            try {
+                const pSnap = await getDocs(query(collection(db, "patients"), where("mobile", "==", mobile)));
+                if (!pSnap.empty) {
+                    // Patient found! Auto fill the name.
+                    document.getElementById('aptName').value = pSnap.docs.data().name;
+                    alert("Patient Found! Name auto-filled.");
+                } else {
+                    alert("No patient found. Please type the name manually.");
+                }
+            } catch(e) {
+                console.error(e);
+            }
+            btn.innerText = "Check";
+        }
+
+        // --- 3. LOAD APPOINTMENTS ---
         window.loadAppointments = async function() {
             const tableBody = document.getElementById('aptTableBody');
-            tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">Loading appointments...</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;">Loading appointments...</td></tr>';
 
             try {
-                const aptRef = collection(db, "appointments");
-                // Fetch appointments, ordered by date
-                const q = query(aptRef, orderBy("date", "desc"));
+                // Fetch all, ordered by creation date
+                const q = query(collection(db, "appointments"), orderBy("date", "desc"));
                 const querySnapshot = await getDocs(q);
-                
                 tableBody.innerHTML = ''; 
                 
                 if (querySnapshot.empty) {
-                    tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--text-muted);">No appointments booked yet in this new project.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: var(--text-muted);">No appointments booked yet.</td></tr>';
                     return;
                 }
 
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const docId = docSnap.id; // Crucial for Bulk Updates
                     
                     let statusBadge = '';
                     if(data.status === 'Completed') statusBadge = '<span class="badge badge-completed">Completed</span>';
-                    else if(data.status === 'Rescheduled') statusBadge = `<span class="badge badge-rescheduled">Rescheduled (${data.rescheduleDate})</span>`;
+                    else if(data.status === 'Rescheduled') statusBadge = `<span class="badge badge-rescheduled">Rescheduled to ${data.rescheduleDate}</span>`;
                     else statusBadge = '<span class="badge badge-pending">Pending</span>';
 
+                    // Prepare WhatsApp Bill Script
+                    const waText = encodeURIComponent(`Hello ${data.name}, your appointment at STRA CARE (${data.branch}) is booked for ${data.date}. Total Fee: ₹${data.fee||0}, Advance: ₹${data.advance||0}, Balance: ₹${data.balance||0}.`);
+
                     const tr = document.createElement('tr');
+                    // Store searchable data securely in the row
+                    tr.setAttribute("data-branch", data.branch.toUpperCase());
+                    tr.setAttribute("data-search", `${data.name} ${data.mobile}`.toUpperCase());
+
                     tr.innerHTML = `
+                        <td class="no-print"><input type="checkbox" class="apt-checkbox" value="${docId}" style="transform: scale(1.2);"></td>
                         <td data-label="Date/Time"><strong>${data.date}</strong><br><span style="font-size:12px; color:var(--text-muted);">${data.time}</span></td>
-                        <td data-label="Patient"><strong>${data.name}</strong><br><span style="font-size:12px; color:var(--text-muted);">${data.mobile}</span></td>
-                        <td data-label="Details">${data.branch}<br><span style="font-size:12px; color:var(--text-muted);">${data.therapist}</span></td>
+                        <td data-label="Patient">
+                            <span style="font-weight: 700; font-size: 15px;">${data.name}</span><br>
+                            <span style="font-size: 13px; color: var(--text-muted);">${data.mobile}</span>
+                            <div class="no-print" style="display: flex; gap: 8px; margin-top: 6px;">
+                                <a href="tel:${data.mobile}" class="cta-link" title="Call"><span class="material-symbols-rounded" style="font-size: 16px; color: var(--secondary);">call</span></a>
+                                <a href="https://wa.me/91${data.mobile}?text=${waText}" class="cta-link" target="_blank" title="Send Bill via WhatsApp"><span class="material-symbols-rounded" style="font-size: 16px; color: var(--success);">chat</span></a>
+                            </div>
+                        </td>
+                        <td data-label="Details"><strong>${data.branch}</strong><br><span style="font-size:12px; color:var(--text-muted);">${data.therapist}</span></td>
+                        <td data-label="Financials">
+                            Fee: ₹${data.fee || 0}<br>
+                            <span style="color: var(--success); font-size: 12px;">Adv: ₹${data.advance || 0}</span><br>
+                            <strong style="color: var(--danger); font-size: 12px;">Bal: ₹${data.balance || 0}</strong>
+                        </td>
                         <td data-label="Status">${statusBadge}</td>
+                        <td class="no-print" data-label="Actions">
+                            <div style="display:flex; gap: 10px; align-items:center;">
+                                <span class="material-symbols-rounded" style="color: var(--primary); cursor: pointer; font-size: 22px;" title="Print Invoice" onclick="window.printInvoice('${data.name}', '${data.mobile}', '${data.date}', '${data.branch}', '${data.fee}', '${data.advance}', '${data.balance}')">receipt_long</span>
+                                <span class="material-symbols-rounded" style="color: var(--text-muted); cursor: pointer; font-size: 20px;" title="Edit">edit</span>
+                            </div>
+                        </td>
                     `;
                     tableBody.appendChild(tr);
                 });
             } catch (error) {
                 console.error("Firebase Read Error:", error);
-                tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--danger);">Error loading data. Check Firestore rules.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: var(--danger);">Error loading data.</td></tr>';
             }
         };
 
-        // Load instantly on opening module
         window.loadAppointments();
 
+        // --- 4. TABLE FILTERING (Branch + Search) ---
+        window.filterTable = function() {
+            const branchQuery = document.getElementById("branchFilterInput").value.toUpperCase();
+            const textQuery = document.getElementById("aptSearchInput").value.toUpperCase();
+            const trs = document.getElementById("aptTableBody").getElementsByTagName("tr");
+
+            for (let i = 0; i < trs.length; i++) {
+                if (trs[i].cells.length === 1) continue; // Skip "loading" rows
+                
+                const rowBranch = trs[i].getAttribute("data-branch");
+                const rowSearch = trs[i].getAttribute("data-search");
+
+                const matchesBranch = (branchQuery === "" || rowBranch === branchQuery);
+                const matchesText = (rowSearch.indexOf(textQuery) > -1);
+
+                trs[i].style.display = (matchesBranch && matchesText) ? "" : "none";
+            }
+        }
+
+        // --- 5. BULK RESCHEDULE LOGIC ---
+        window.toggleAllCheckboxes = function(masterCheckbox) {
+            const checkboxes = document.querySelectorAll('.apt-checkbox');
+            checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
+        }
+
+        window.openBulkReschedule = function() {
+            const checked = document.querySelectorAll('.apt-checkbox:checked');
+            if (checked.length === 0) return alert("Please select at least one appointment to reschedule.");
+            document.getElementById('bulk-reschedule-container').classList.add('active');
+        }
+
+        window.executeBulkReschedule = async function() {
+            const newDate = document.getElementById('bulkDateInput').value;
+            if (!newDate) return alert("Please pick a new date.");
+
+            const checkboxes = document.querySelectorAll('.apt-checkbox:checked');
+            
+            try {
+                // Loop through selected and update Firestore
+                for (let cb of checkboxes) {
+                    const docRef = doc(db, "appointments", cb.value);
+                    await updateDoc(docRef, {
+                        status: "Rescheduled",
+                        rescheduleDate: newDate
+                    });
+                }
+                
+                alert(`Successfully rescheduled ${checkboxes.length} appointments to ${newDate}!`);
+                document.getElementById('bulk-reschedule-container').classList.remove('active');
+                document.getElementById('bulkDateInput').value = ""; // clear
+                window.loadAppointments(); // Refresh table
+
+            } catch(e) {
+                console.error("Bulk Update Error:", e);
+                alert("Failed to perform bulk update.");
+            }
+        }
+
+        // --- 6. INDIVIDUAL INVOICE PRINTING ---
+        window.printInvoice = function(name, mobile, date, branch, fee, advance, balance) {
+            const invoiceWindow = window.open('', '_blank');
+            invoiceWindow.document.write(`
+                <html>
+                <head>
+                    <title>Invoice - ${name}</title>
+                    <style>
+                        body { font-family: 'Helvetica Neue', sans-serif; padding: 40px; color: #222; }
+                        .header { border-bottom: 2px solid #e16349; padding-bottom: 20px; margin-bottom: 20px; }
+                        .header h1 { margin: 0; color: #e16349; text-transform: uppercase; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        td { padding: 12px 0; border-bottom: 1px solid #eee; font-size: 16px;}
+                        .totals { float: right; width: 300px; margin-top: 30px; }
+                        .totals-row { display: flex; justify-content: space-between; padding: 10px 0; font-size: 16px; }
+                        .totals-row.balance { font-size: 20px; font-weight: bold; border-top: 2px solid #000; padding-top: 15px;}
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>STRA CARE</h1>
+                        <p>Branch: ${branch} | Billing Invoice</p>
+                    </div>
+                    <h3>Patient Details</h3>
+                    <p><strong>Name:</strong> ${name}</p>
+                    <p><strong>Mobile:</strong> ${mobile}</p>
+                    <p><strong>Date of Service:</strong> ${date}</p>
+                    
+                    <div class="totals">
+                        <div class="totals-row"><span>Total Fee:</span> <span>₹${fee || 0}</span></div>
+                        <div class="totals-row"><span>Advance Paid:</span> <span>₹${advance || 0}</span></div>
+                        <div class="totals-row balance"><span>Balance Due:</span> <span>₹${balance || 0}</span></div>
+                    </div>
+                    <div style="clear: both; margin-top: 60px; font-size: 12px; color: #777; text-align: center;">
+                        Generated on https://books.cmfilings.com
+                    </div>
+                    <script>
+                        // Auto-trigger print prompt
+                        window.onload = function() { window.print(); }
+                    <\/script>
+                </body>
+                </html>
+            `);
+            invoiceWindow.document.close();
+        }
+
+        // --- 7. EXPORT WHOLE TABLE PDF ---
+        window.exportAptPDF = function() {
+            window.print();
+        }
+
+        // --- 8. SAVE APPOINTMENT ---
         window.saveAppointment = async function() {
             const saveBtn = document.getElementById('saveAptBtn');
             
-            // Gather data
             const mobile = document.getElementById('aptMobile').value;
             const name = document.getElementById('aptName').value;
             const branch = document.getElementById('aptBranch').value;
@@ -277,20 +486,16 @@
             const therapist = document.getElementById('aptTherapist').value;
             const status = document.getElementById('aptStatus').value;
             const rescheduleDate = document.getElementById('aptRescheduleDate').value;
-            const fee = document.getElementById('aptFee').value;
-            const advance = document.getElementById('aptAdvance').value;
-            const balance = document.getElementById('aptBalance').value;
+            const fee = document.getElementById('aptFee').value || 0;
+            const advance = document.getElementById('aptAdvance').value || 0;
+            const balance = document.getElementById('aptBalance').value || 0;
 
-            if (!name || !mobile || !date || !branch) {
-                alert("Please fill all required (*) fields!");
-                return;
-            }
+            if (!name || !mobile || !date || !branch) return alert("Please fill all required (*) fields!");
 
             saveBtn.innerText = "Saving...";
             saveBtn.disabled = true;
 
             try {
-                // Send to "appointments" collection
                 await addDoc(collection(db, "appointments"), {
                     mobile: mobile,
                     name: name,
@@ -309,7 +514,6 @@
                 alert(`Appointment saved successfully for ${name}!`);
                 document.getElementById('add-appointment-form').reset();
                 window.resetAptForm();
-                // Refresh table
                 window.loadAppointments();
 
             } catch (error) {
@@ -322,5 +526,6 @@
         }
     </script>
 
-</div> </body>
+</div>
+</body>
 </html>
