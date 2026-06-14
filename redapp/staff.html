@@ -2,220 +2,249 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>CMBooks - Staff Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0"/>
-    <style>
-        /* --- Core Theme Variables --- */
-        :root {
-            --primary: #CD5C48;
-            --primary-light: #FCECE8;
-            --bg: #F8F5F1;
-            --surface: #ffffff;
-            --text-main: #222222;
-            --text-muted: #777777;
-            --border: #E8E5E1;
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
-            --danger: #EA4335;
-            --success: #34A853;
-            --warning: #FBBC05;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text-main); padding: 24px; display: flex; justify-content: center; }
-        .module-container { width: 100%; max-width: 1120px; }
-
-        /* --- UI Components --- */
-        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
-        
-        .form-card { background: var(--surface); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 24px; }
-        .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
-        
-        /* Grid Layouts */
-        .input-group { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
-        @media (min-width: 768px) { .input-group { grid-template-columns: 1fr 1fr 1fr; } }
-
-        .form-input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 14px; color: var(--text-main); background: #FAFAFA; outline: none; transition: border 0.2s; appearance: auto; }
-        .form-input:focus { border-color: var(--primary); background: var(--surface); }
-        .readonly-input { background: #F4F4F4; color: var(--text-muted); font-weight: 600; pointer-events: none; }
-
-        /* Buttons & Actions */
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary:active { opacity: 0.8; }
-        
-        .icon-action { color: var(--text-muted); cursor: pointer; font-size: 20px; transition: color 0.2s; }
-        .icon-action:hover { color: var(--primary); }
-        .icon-action.delete:hover { color: var(--danger); }
-
-        /* Status Badges */
-        .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
-        .badge-active { background: rgba(52, 168, 83, 0.1); color: var(--success); }
-        .badge-leave { background: rgba(251, 188, 5, 0.15); color: #D29D00; }
-
-        /* --- Table Styling --- */
-        .table-container { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
-        .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .table-header h4 { font-size: 16px; font-weight: 600; margin: 0; }
-        
-        .saas-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .saas-table th { padding: 12px 20px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); }
-        .saas-table td { padding: 16px 20px; font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--border); }
-        .saas-table tr:last-child td { border-bottom: none; }
-        
-        .emp-id { font-size: 11px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 4px 8px; border-radius: 6px; }
-
-        /* Mobile Table Fix */
-        @media (max-width: 767px) {
-            .saas-table thead { display: none; }
-            .saas-table, .saas-table tbody, .saas-table tr, .saas-table td { display: block; width: 100%; }
-            .saas-table tr { padding: 16px; border-bottom: 1px solid var(--border); }
-            .saas-table td { padding: 6px 0; border: none; display: flex; justify-content: space-between; align-items: center; }
-            .saas-table td::before { content: attr(data-label); font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-            .saas-table td:nth-child(1) { padding-bottom: 12px; border-bottom: 1px dashed var(--border); margin-bottom: 8px;}
-            .saas-table td:nth-child(1)::before { display: none; }
-        }
-    </style>
 </head>
 <body>
 
 <div class="module-container" id="staff-module">
     
+    <style>
+        :root {
+            --primary: #e16349;
+            --primary-light: #fef5e8;
+            --bg: #F8F5F1;
+            --surface: #ffffff;
+            --text-main: #0a0a0a;
+            --text-muted: #777777;
+            --border: #E8E5E1;
+            --grey-med: #D9D9D9;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
+            --success: #10B981;
+            --danger: #FB923C;
+        }
+
+        #staff-module { font-family: 'Inter', sans-serif; width: 100%; max-width: 1120px; }
+        #staff-module .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
+        #staff-module .form-card { background: var(--surface); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 24px; }
+        #staff-module .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+        
+        #staff-module .input-group { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
+        @media (min-width: 768px) { #staff-module .input-group { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 1024px) { #staff-module .input-group.three-cols { grid-template-columns: 1fr 1fr 1fr; } }
+
+        #staff-module .form-input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 14px; color: var(--text-main); background: #FAFAFA; outline: none; transition: border 0.2s; appearance: auto; }
+        #staff-module .form-input:focus { border-color: var(--primary); background: var(--surface); }
+        #staff-module .readonly-input { background: transparent; border: 1px dashed transparent; padding-left: 0; font-weight: 700; color: var(--text-main); pointer-events: none; }
+        
+        #staff-module .btn-primary { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+        #staff-module .btn-primary:disabled { background: var(--grey-med); cursor: not-allowed; }
+        #staff-module .btn-outline { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        
+        /* Table Styles */
+        #staff-module .table-container { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
+        #staff-module .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        #staff-module .table-header h4 { font-size: 16px; font-weight: 600; margin: 0; }
+        #staff-module .saas-table { width: 100%; border-collapse: collapse; text-align: left; }
+        #staff-module .saas-table th { padding: 12px 20px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); }
+        #staff-module .saas-table td { padding: 16px 20px; font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--border); }
+        
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
+        .badge-active { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        
+        @media (max-width: 767px) {
+            #staff-module .saas-table thead { display: none; }
+            #staff-module .saas-table, #staff-module .saas-table tbody, #staff-module .saas-table tr, #staff-module .saas-table td { display: block; width: 100%; }
+            #staff-module .saas-table tr { padding: 16px; border-bottom: 1px solid var(--border); }
+            #staff-module .saas-table td { padding: 4px 0; border: none; display: flex; justify-content: space-between; align-items: center; }
+            #staff-module .saas-table td::before { content: attr(data-label); font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        }
+    </style>
+
     <div class="section-title">
-        <h2>Staff Management</h2>
+        <h2 style="margin: 0;">Staff Management</h2>
     </div>
 
     <div class="form-card">
-        <form id="staff-form" onsubmit="event.preventDefault(); alert('Staff member saved successfully!');">
+        <form id="add-staff-form" onsubmit="event.preventDefault();">
             
-            <div class="input-group">
+            <h4 style="color: var(--primary); margin: 0 0 16px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Register New Employee</h4>
+            
+            <div class="input-group three-cols">
                 <div>
                     <label class="form-label">Employee ID</label>
-                    <input type="text" class="form-input readonly-input" value="EMP-001" readonly>
+                    <input type="text" class="form-input readonly-input" value="Auto-Generated" readonly tabindex="-1">
                 </div>
-                
-                <div>
+                <div style="grid-column: span 2;">
                     <label class="form-label">Full Name *</label>
-                    <input type="text" class="form-input" placeholder="e.g. John Doe" required>
-                </div>
-
-                <div>
-                    <label class="form-label">Designation / Role *</label>
-                    <input type="text" class="form-input" placeholder="e.g. Receptionist, Nurse, Admin" required>
+                    <input type="text" id="staffName" class="form-input" placeholder="e.g. Priya Sharma" required>
                 </div>
             </div>
 
-            <div class="input-group">
+            <div class="input-group three-cols">
                 <div>
-                    <label class="form-label">Assign Branch *</label>
-                    <select class="form-input" required>
+                    <label class="form-label">Mobile Number *</label>
+                    <input type="tel" id="staffMobile" class="form-input" placeholder="10-digit number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                </div>
+                <div>
+                    <label class="form-label">Role / Position *</label>
+                    <select id="staffRole" class="form-input" required>
+                        <option value="">Select Role</option>
+                        <option value="Therapist">Therapist</option>
+                        <option value="Front Desk Admin">Front Desk Admin</option>
+                        <option value="Clinic Assistant">Clinic Assistant</option>
+                        <option value="Support Staff">Support Staff</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Assigned Branch *</label>
+                    <select id="staffBranch" class="form-input" required>
                         <option value="">Select Branch</option>
                         <option value="Mahe">Mahe</option>
                         <option value="Chokli">Chokli</option>
                         <option value="Panoor">Panoor</option>
                         <option value="Koothuparamba">Koothuparamba</option>
                         <option value="Nadapuram">Nadapuram</option>
-                        <option value="Home Care">Home Care</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="form-label">Contact No *</label>
-                    <input type="tel" class="form-input" placeholder="10-digit mobile number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
-                </div>
-
-                <div>
-                    <label class="form-label">Employment Type *</label>
-                    <select class="form-input" required>
-                        <option value="Full-Time">Full-Time</option>
-                        <option value="Part-Time">Part-Time</option>
-                        <option value="Contract">Contract</option>
                     </select>
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
-                <button type="submit" class="btn-primary" style="width: auto;">
-                    <span class="material-symbols-rounded">person_add</span> Add Staff Member
-                </button>
+            <div style="text-align: right; margin-top: 24px;">
+                <button type="reset" class="btn-outline" style="margin-right: 12px;">Clear Form</button>
+                <button type="button" class="btn-primary" id="saveStaffBtn" onclick="window.saveStaff()">Save Employee</button>
             </div>
-
         </form>
     </div>
 
     <div class="table-container">
         <div class="table-header">
-            <h4>Staff Directory & Attendance</h4>
-            <div style="background: #FAFAFA; border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; gap: 6px;">
+            <h4>Employee Directory</h4>
+            <div style="background: #FAFAFA; border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center;">
                 <span class="material-symbols-rounded" style="font-size: 16px; color: var(--text-muted);">search</span>
-                <input type="text" placeholder="Search staff..." style="border: none; background: transparent; outline: none; font-size: 13px; width: 120px;">
+                <input type="text" placeholder="Search..." style="border: none; background: transparent; outline: none; font-size: 13px; width: 120px; margin-left: 6px;">
             </div>
         </div>
         <table class="saas-table">
             <thead>
                 <tr>
-                    <th>Employee Name</th>
-                    <th>Role</th>
-                    <th>Branch</th>
+                    <th>Name & ID</th>
+                    <th>Role & Branch</th>
                     <th>Contact Info</th>
                     <th>Status</th>
-                    <th style="text-align: right;">Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td data-label="Name">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="emp-id">EMP-001</span>
-                            <strong>Priya Sharma</strong>
-                        </div>
-                    </td>
-                    <td data-label="Role">Front Desk Admin</td>
-                    <td data-label="Branch">Mahe</td>
-                    <td data-label="Contact">+91 9876543210</td>
-                    <td data-label="Status"><span class="badge badge-active">Present</span></td>
-                    <td data-label="Actions" style="text-align: right;">
-                        <span class="material-symbols-rounded icon-action" title="Edit">edit</span>
-                        <span class="material-symbols-rounded icon-action delete" title="Remove" style="margin-left: 8px;">delete</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td data-label="Name">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="emp-id">EMP-002</span>
-                            <strong>Arun Kumar</strong>
-                        </div>
-                    </td>
-                    <td data-label="Role">Clinic Assistant</td>
-                    <td data-label="Branch">Chokli</td>
-                    <td data-label="Contact">+91 8765432109</td>
-                    <td data-label="Status"><span class="badge badge-leave">On Leave</span></td>
-                    <td data-label="Actions" style="text-align: right;">
-                        <span class="material-symbols-rounded icon-action" title="Edit">edit</span>
-                        <span class="material-symbols-rounded icon-action delete" title="Remove" style="margin-left: 8px;">delete</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td data-label="Name">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="emp-id">EMP-003</span>
-                            <strong>Meera Nair</strong>
-                        </div>
-                    </td>
-                    <td data-label="Role">Accountant</td>
-                    <td data-label="Branch">Mahe</td>
-                    <td data-label="Contact">+91 7654321098</td>
-                    <td data-label="Status"><span class="badge badge-active">Present</span></td>
-                    <td data-label="Actions" style="text-align: right;">
-                        <span class="material-symbols-rounded icon-action" title="Edit">edit</span>
-                        <span class="material-symbols-rounded icon-action delete" title="Remove" style="margin-left: 8px;">delete</span>
-                    </td>
-                </tr>
-            </tbody>
+            <tbody id="staffTableBody">
+                </tbody>
         </table>
     </div>
 
 </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    // 🔴 REPLACE THIS WITH YOUR NEW FIREBASE CONFIG 🔴
+    const firebaseConfig = {
+        apiKey: "YOUR_NEW_API_KEY",
+        authDomain: "your-new-project.firebaseapp.com",
+        projectId: "your-new-project",
+        storageBucket: "your-new-project.firebasestorage.app",
+        messagingSenderId: "1234567890",
+        appId: "1:1234567890:web:abcdef123456",
+        measurementId: "G-NEW12345"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // --- Firebase Logic ---
+    window.loadStaff = async function() {
+        const tableBody = document.getElementById('staffTableBody');
+        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">Loading staff...</td></tr>';
+
+        try {
+            const staffRef = collection(db, "staff");
+            const q = query(staffRef, orderBy("createdAt", "desc"));
+            const querySnapshot = await getDocs(q);
+            
+            tableBody.innerHTML = ''; 
+            
+            if (querySnapshot.empty) {
+                tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--text-muted);">No employees registered yet.</td></tr>';
+                return;
+            }
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Name/ID"><strong>${data.name}</strong><br><span style="font-size:12px; color:var(--text-muted); font-weight: 700;">${data.empId}</span></td>
+                    <td data-label="Role/Branch"><strong>${data.role}</strong><br><span style="font-size:12px; color:var(--text-muted);">${data.branch}</span></td>
+                    <td data-label="Contact">${data.mobile}</td>
+                    <td data-label="Status"><span class="badge badge-active">Active</span></td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        } catch (error) {
+            console.error("Firebase Read Error:", error);
+            tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--danger);">Error loading data. Check Firestore rules.</td></tr>';
+        }
+    };
+
+    // Load instantly on opening module
+    window.loadStaff();
+
+    window.saveStaff = async function() {
+        const saveBtn = document.getElementById('saveStaffBtn');
+        
+        const name = document.getElementById('staffName').value;
+        const mobile = document.getElementById('staffMobile').value;
+        const role = document.getElementById('staffRole').value;
+        const branch = document.getElementById('staffBranch').value;
+
+        if (!name || !mobile || !role || !branch) {
+            alert("Please fill all required (*) fields!");
+            return;
+        }
+
+        if (mobile.length !== 10) {
+            alert("Please enter a valid 10-digit mobile number.");
+            return;
+        }
+
+        saveBtn.innerText = "Saving...";
+        saveBtn.disabled = true;
+
+        try {
+            const generatedEmpId = "EMP" + Math.floor(Math.random() * 9000 + 1000);
+
+            await addDoc(collection(db, "staff"), {
+                empId: generatedEmpId,
+                name: name,
+                mobile: mobile,
+                role: role,
+                branch: branch,
+                status: "Active",
+                createdAt: new Date()
+            });
+
+            alert(`Employee ${name} saved successfully with ID: ${generatedEmpId}`);
+            document.getElementById('add-staff-form').reset();
+            window.loadStaff();
+
+        } catch (error) {
+            console.error("Firebase Save Error:", error);
+            alert("Failed to save employee. Check your database.");
+        }
+
+        saveBtn.innerText = "Save Employee";
+        saveBtn.disabled = false;
+    }
+</script>
 
 </body>
 </html>
