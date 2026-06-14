@@ -28,6 +28,8 @@
         }
 
         #appointment-module { font-family: 'Inter', sans-serif; width: 100%; max-width: 1120px;}
+        
+        /* UI Components */
         #appointment-module .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
         #appointment-module .form-card { background: var(--surface); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 24px; }
         #appointment-module .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
@@ -51,6 +53,7 @@
         #appointment-module .saas-table th { padding: 12px 20px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); }
         #appointment-module .saas-table td { padding: 16px 20px; font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--border); }
         
+        /* Status Badges */
         .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
         .badge-pending { background: rgba(251, 146, 60, 0.1); color: var(--danger); }
         .badge-completed { background: rgba(16, 185, 129, 0.1); color: var(--success); }
@@ -61,6 +64,7 @@
         #reschedule-container.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
+        /* Mobile Table Fix */
         @media (max-width: 767px) {
             #appointment-module .saas-table thead { display: none; }
             #appointment-module .saas-table, #appointment-module .saas-table tbody, #appointment-module .saas-table tr, #appointment-module .saas-table td { display: block; width: 100%; }
@@ -178,143 +182,145 @@
         </table>
     </div>
 
-</div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // 🔴 YOUR NEW FIREBASE CONFIGURATION (cmf001stra) 🔴
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
+            authDomain: "cmf001stra.firebaseapp.com",
+            projectId: "cmf001stra",
+            storageBucket: "cmf001stra.firebasestorage.app",
+            messagingSenderId: "763958641347",
+            appId: "1:763958641347:web:316876bc2340b26bd21876",
+            measurementId: "G-770FBR88LJ"
+        };
 
-    // 🔴 REPLACE THIS WITH YOUR BRAND NEW FIREBASE CONFIG 🔴
-    const firebaseConfig = {
-        apiKey: "YOUR_NEW_API_KEY",
-        authDomain: "your-new-project.firebaseapp.com",
-        projectId: "your-new-project",
-        storageBucket: "your-new-project.firebasestorage.app",
-        messagingSenderId: "1234567890",
-        appId: "1:1234567890:web:abcdef123456",
-        measurementId: "G-NEW12345"
-    };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // --- UI Logic ---
-    window.toggleReschedule = function(select) {
-        const container = document.getElementById('reschedule-container');
-        if (select.value === 'Rescheduled') {
-            container.classList.add('active');
-        } else {
-            container.classList.remove('active');
-            document.getElementById('aptRescheduleDate').value = '';
+        // --- UI Logic Maps (Mandatory for SPA onclicks) ---
+        window.toggleReschedule = function(select) {
+            const container = document.getElementById('reschedule-container');
+            if (select.value === 'Rescheduled') {
+                container.classList.add('active');
+            } else {
+                container.classList.remove('active');
+                document.getElementById('aptRescheduleDate').value = '';
+            }
         }
-    }
 
-    window.calcBalance = function() {
-        const fee = parseFloat(document.getElementById('aptFee').value) || 0;
-        const advance = parseFloat(document.getElementById('aptAdvance').value) || 0;
-        document.getElementById('aptBalance').value = (fee - advance).toFixed(2);
-    }
+        window.calcBalance = function() {
+            const fee = parseFloat(document.getElementById('aptFee').value) || 0;
+            const advance = parseFloat(document.getElementById('aptAdvance').value) || 0;
+            document.getElementById('aptBalance').value = (fee - advance).toFixed(2);
+        }
 
-    window.resetAptForm = function() {
-        document.getElementById('reschedule-container').classList.remove('active');
-    }
+        window.resetAptForm = function() {
+            document.getElementById('reschedule-container').classList.remove('active');
+        }
 
-    // --- Firebase Logic ---
-    window.loadAppointments = async function() {
-        const tableBody = document.getElementById('aptTableBody');
-        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">Loading appointments...</td></tr>';
+        // --- Firebase Logic ---
+        window.loadAppointments = async function() {
+            const tableBody = document.getElementById('aptTableBody');
+            tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">Loading appointments...</td></tr>';
 
-        try {
-            const aptRef = collection(db, "appointments");
-            const q = query(aptRef, orderBy("date", "desc"));
-            const querySnapshot = await getDocs(q);
+            try {
+                const aptRef = collection(db, "appointments");
+                // Fetch appointments, ordered by date
+                const q = query(aptRef, orderBy("date", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                tableBody.innerHTML = ''; 
+                
+                if (querySnapshot.empty) {
+                    tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--text-muted);">No appointments booked yet in this new project.</td></tr>';
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    
+                    let statusBadge = '';
+                    if(data.status === 'Completed') statusBadge = '<span class="badge badge-completed">Completed</span>';
+                    else if(data.status === 'Rescheduled') statusBadge = `<span class="badge badge-rescheduled">Rescheduled (${data.rescheduleDate})</span>`;
+                    else statusBadge = '<span class="badge badge-pending">Pending</span>';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td data-label="Date/Time"><strong>${data.date}</strong><br><span style="font-size:12px; color:var(--text-muted);">${data.time}</span></td>
+                        <td data-label="Patient"><strong>${data.name}</strong><br><span style="font-size:12px; color:var(--text-muted);">${data.mobile}</span></td>
+                        <td data-label="Details">${data.branch}<br><span style="font-size:12px; color:var(--text-muted);">${data.therapist}</span></td>
+                        <td data-label="Status">${statusBadge}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("Firebase Read Error:", error);
+                tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--danger);">Error loading data. Check Firestore rules.</td></tr>';
+            }
+        };
+
+        // Load instantly on opening module
+        window.loadAppointments();
+
+        window.saveAppointment = async function() {
+            const saveBtn = document.getElementById('saveAptBtn');
             
-            tableBody.innerHTML = ''; 
-            
-            if (querySnapshot.empty) {
-                tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--text-muted);">No appointments booked yet.</td></tr>';
+            // Gather data
+            const mobile = document.getElementById('aptMobile').value;
+            const name = document.getElementById('aptName').value;
+            const branch = document.getElementById('aptBranch').value;
+            const date = document.getElementById('aptDate').value;
+            const time = document.getElementById('aptTime').value;
+            const therapist = document.getElementById('aptTherapist').value;
+            const status = document.getElementById('aptStatus').value;
+            const rescheduleDate = document.getElementById('aptRescheduleDate').value;
+            const fee = document.getElementById('aptFee').value;
+            const advance = document.getElementById('aptAdvance').value;
+            const balance = document.getElementById('aptBalance').value;
+
+            if (!name || !mobile || !date || !branch) {
+                alert("Please fill all required (*) fields!");
                 return;
             }
 
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                
-                let statusBadge = '';
-                if(data.status === 'Completed') statusBadge = '<span class="badge badge-completed">Completed</span>';
-                else if(data.status === 'Rescheduled') statusBadge = `<span class="badge badge-rescheduled">Rescheduled (${data.rescheduleDate})</span>`;
-                else statusBadge = '<span class="badge badge-pending">Pending</span>';
+            saveBtn.innerText = "Saving...";
+            saveBtn.disabled = true;
 
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td data-label="Date/Time"><strong>${data.date}</strong><br><span style="font-size:12px; color:var(--text-muted);">${data.time}</span></td>
-                    <td data-label="Patient"><strong>${data.name}</strong><br><span style="font-size:12px; color:var(--text-muted);">${data.mobile}</span></td>
-                    <td data-label="Details">${data.branch}<br><span style="font-size:12px; color:var(--text-muted);">${data.therapist}</span></td>
-                    <td data-label="Status">${statusBadge}</td>
-                `;
-                tableBody.appendChild(tr);
-            });
-        } catch (error) {
-            console.error("Firebase Read Error:", error);
-            tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--danger);">Error loading data. Check Firestore rules.</td></tr>';
+            try {
+                // Send to "appointments" collection
+                await addDoc(collection(db, "appointments"), {
+                    mobile: mobile,
+                    name: name,
+                    branch: branch,
+                    date: date,
+                    time: time,
+                    therapist: therapist,
+                    status: status,
+                    rescheduleDate: status === 'Rescheduled' ? rescheduleDate : '',
+                    fee: fee,
+                    advance: advance,
+                    balance: balance,
+                    createdAt: new Date()
+                });
+
+                alert(`Appointment saved successfully for ${name}!`);
+                document.getElementById('add-appointment-form').reset();
+                window.resetAptForm();
+                // Refresh table
+                window.loadAppointments();
+
+            } catch (error) {
+                console.error("Firebase Save Error:", error);
+                alert("Failed to save appointment. Check your database permissions.");
+            }
+
+            saveBtn.innerText = "Save Appointment";
+            saveBtn.disabled = false;
         }
-    };
+    </script>
 
-    // Load instantly on opening module
-    window.loadAppointments();
-
-    window.saveAppointment = async function() {
-        const saveBtn = document.getElementById('saveAptBtn');
-        
-        const mobile = document.getElementById('aptMobile').value;
-        const name = document.getElementById('aptName').value;
-        const branch = document.getElementById('aptBranch').value;
-        const date = document.getElementById('aptDate').value;
-        const time = document.getElementById('aptTime').value;
-        const therapist = document.getElementById('aptTherapist').value;
-        const status = document.getElementById('aptStatus').value;
-        const rescheduleDate = document.getElementById('aptRescheduleDate').value;
-        const fee = document.getElementById('aptFee').value;
-        const advance = document.getElementById('aptAdvance').value;
-        const balance = document.getElementById('aptBalance').value;
-
-        if (!name || !mobile || !date || !branch) {
-            alert("Please fill all required (*) fields!");
-            return;
-        }
-
-        saveBtn.innerText = "Saving...";
-        saveBtn.disabled = true;
-
-        try {
-            await addDoc(collection(db, "appointments"), {
-                mobile: mobile,
-                name: name,
-                branch: branch,
-                date: date,
-                time: time,
-                therapist: therapist,
-                status: status,
-                rescheduleDate: status === 'Rescheduled' ? rescheduleDate : '',
-                fee: fee,
-                advance: advance,
-                balance: balance,
-                createdAt: new Date()
-            });
-
-            alert(`Appointment saved successfully!`);
-            document.getElementById('add-appointment-form').reset();
-            window.resetAptForm();
-            window.loadAppointments();
-
-        } catch (error) {
-            console.error("Firebase Save Error:", error);
-            alert("Failed to save appointment. Check your database.");
-        }
-
-        saveBtn.innerText = "Save Appointment";
-        saveBtn.disabled = false;
-    }
-</script>
-
-</body>
+</div> </body>
 </html>
