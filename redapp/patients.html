@@ -26,13 +26,13 @@
             --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
             --success: #10B981;
             --danger: #FB923C;
+            --secondary: #64748B;
         }
 
         #patient-module { font-family: 'Inter', sans-serif; }
         
         /* --- UI Components --- */
         #patient-module .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
-        
         #patient-module .form-card { background: var(--surface); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 24px; }
         #patient-module .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
         
@@ -43,24 +43,21 @@
         #patient-module .form-input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 14px; color: var(--text-main); background: #FAFAFA; outline: none; transition: border 0.2s; appearance: auto; }
         #patient-module .form-input:focus { border-color: var(--primary); background: var(--surface); }
         #patient-module .form-input:disabled { background: #F0F0F0; color: #999; cursor: not-allowed; }
-
         #patient-module .readonly-input { background: transparent; border: 1px dashed transparent; padding-left: 0; font-weight: 700; color: var(--text-main); pointer-events: none; }
 
         #patient-module .btn-primary { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
         #patient-module .btn-primary:active { opacity: 0.8; }
         #patient-module .btn-primary:disabled { background: var(--grey-med); cursor: not-allowed; }
-        
-        #patient-module .btn-outline { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        #patient-module .btn-outline { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
         #patient-module .btn-verify { background: var(--text-main); color: #fff; border: none; padding: 0 20px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 13px;}
 
-        /* --- Validation Message --- */
         #patient-module .validation-msg { font-size: 12px; font-weight: 600; margin-top: 6px; display: none; }
         #patient-module .validation-msg.success { color: var(--success); display: block; }
         #patient-module .validation-msg.error { color: var(--danger); display: block; }
 
         /* --- Table Styling --- */
         #patient-module .table-container { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
-        #patient-module .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        #patient-module .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
         #patient-module .table-header h4 { font-size: 16px; font-weight: 600; margin: 0; }
         #patient-module .saas-table { width: 100%; border-collapse: collapse; text-align: left; }
         #patient-module .saas-table th { padding: 12px 20px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); }
@@ -69,7 +66,10 @@
         #patient-module .patient-info { display: flex; flex-direction: column; }
         #patient-module .patient-info .pid { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-weight: 700; }
 
-        /* Mobile Table Fix */
+        /* --- CTA Links --- */
+        .cta-link { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background: #FAFAFA; border: 1px solid var(--border); transition: 0.2s; }
+        .cta-link:hover { background: var(--surface); transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
         @media (max-width: 767px) {
             #patient-module .saas-table thead { display: none; }
             #patient-module .saas-table, #patient-module .saas-table tbody, #patient-module .saas-table tr, #patient-module .saas-table td { display: block; width: 100%; }
@@ -79,6 +79,18 @@
             #patient-module .saas-table td:nth-child(1) { padding-bottom: 12px; }
             #patient-module .saas-table td:nth-child(1)::before { display: none; }
             #patient-module .saas-table td:nth-child(1) .patient-info { flex-direction: row; align-items: baseline; gap: 8px; }
+        }
+
+        /* --- Clean Print Styling for PDF Export --- */
+        @media print {
+            body { background: white; padding: 0; }
+            #sidebar-container, #header-container, #bottomnav-container, .form-card, .section-title, .no-print { display: none !important; }
+            .main-wrapper { flex: 1; display: block; overflow: visible; }
+            #main-content { padding: 0; overflow: visible; }
+            #patient-module .table-container { box-shadow: none; border: none; margin: 0; }
+            #patient-module .table-header { padding: 0 0 10px 0; border-bottom: 2px solid #000; }
+            #patient-module .saas-table th { background: white; color: black; border-bottom: 1px solid #000; }
+            #patient-module .saas-table td { border-bottom: 1px solid #E8E5E1; }
         }
     </style>
 
@@ -90,7 +102,6 @@
         <h4 style="color: var(--primary); margin: 0 0 16px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Register New Patient</h4>
         
         <form id="add-patient-form" onsubmit="event.preventDefault();">
-            
             <div class="input-group three-cols">
                 <div>
                     <label class="form-label">Patient ID</label>
@@ -140,8 +151,8 @@
                 </div>
 
                 <div style="text-align: right; margin-top: 16px;">
-                    <button type="reset" class="btn-outline" style="margin-right: 12px;" onclick="window.resetForm()">Clear Form</button>
-                    <button type="button" class="btn-primary" id="saveBtn" onclick="window.savePatient()">Save Patient</button>
+                    <button type="reset" class="btn-outline no-print" style="display: inline-flex; margin-right: 12px; padding: 14px 24px;" onclick="window.resetForm()">Clear Form</button>
+                    <button type="button" class="btn-primary no-print" id="saveBtn" onclick="window.savePatient()">Save Patient</button>
                 </div>
             </fieldset>
         </form>
@@ -150,11 +161,17 @@
     <div class="table-container">
         <div class="table-header">
             <h4>Patient Directory</h4>
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <div style="background: #FAFAFA; border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; gap: 6px;">
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                
+                <button class="btn-outline no-print" onclick="window.exportPatientsPDF()">
+                    <span class="material-symbols-rounded" style="font-size: 16px; color: var(--primary);">picture_as_pdf</span> Export
+                </button>
+
+                <div class="no-print" style="background: #FAFAFA; border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; gap: 6px;">
                     <span class="material-symbols-rounded" style="font-size: 16px; color: var(--text-muted);">search</span>
-                    <input type="text" placeholder="Search..." style="border: none; background: transparent; outline: none; font-size: 13px; width: 120px;">
+                    <input type="text" id="patientSearchInput" onkeyup="window.searchTable()" placeholder="Search directory..." style="border: none; background: transparent; outline: none; font-size: 13px; width: 130px;">
                 </div>
+
             </div>
         </div>
         <table class="saas-table">
@@ -164,11 +181,11 @@
                     <th>Mobile No.</th>
                     <th>Age/Gender</th>
                     <th>Address Details</th>
-                    <th>Actions</th>
+                    <th class="no-print">Actions</th>
                 </tr>
             </thead>
             <tbody id="patientTableBody">
-            </tbody>
+                </tbody>
         </table>
     </div>
 
@@ -176,6 +193,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+        // Your Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
             authDomain: "cmf001stra.firebaseapp.com",
@@ -189,19 +207,37 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Load existing patients
+        // --- 1. LIVE SEARCH FUNCTION ---
+        window.searchTable = function() {
+            const input = document.getElementById("patientSearchInput").value.toUpperCase();
+            const table = document.getElementById("patientTableBody");
+            const tr = table.getElementsByTagName("tr");
+            
+            for (let i = 0; i < tr.length; i++) {
+                if (tr[i].innerText.toUpperCase().indexOf(input) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+
+        // --- 2. EXPORT PDF FUNCTION ---
+        window.exportPatientsPDF = function() {
+            window.print();
+        }
+
+        // --- 3. LOAD PATIENTS WITH CTA ICONS ---
         window.loadPatients = async function() {
             const tableBody = document.getElementById('patientTableBody');
-            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Loading patients from database...</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Loading patients...</td></tr>';
 
             try {
-                const patientsRef = collection(db, "patients");
-                const querySnapshot = await getDocs(patientsRef);
-                
+                const querySnapshot = await getDocs(collection(db, "patients"));
                 tableBody.innerHTML = ''; 
                 
                 if (querySnapshot.empty) {
-                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--text-muted);">No patients found. Add one above!</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--text-muted);">No patients found.</td></tr>';
                     return;
                 }
 
@@ -210,10 +246,16 @@
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td data-label="Patient"><div class="patient-info"><strong>${data.name}</strong><span class="pid">${data.patientId}</span></div></td>
-                        <td data-label="Mobile">${data.mobile}</td>
+                        <td data-label="Mobile">
+                            <strong>${data.mobile}</strong>
+                            <div class="no-print" style="display: flex; gap: 8px; margin-top: 6px;">
+                                <a href="tel:${data.mobile}" class="cta-link" title="Call"><span class="material-symbols-rounded" style="font-size: 16px; color: var(--secondary);">call</span></a>
+                                <a href="https://wa.me/91${data.mobile}" class="cta-link" target="_blank" title="WhatsApp"><span class="material-symbols-rounded" style="font-size: 16px; color: var(--success);">chat</span></a>
+                            </div>
+                        </td>
                         <td data-label="Demographics">${data.age || '--'} Yrs / ${data.gender || '--'}</td>
                         <td data-label="Address"><span style="color: var(--text-muted); font-size: 12px;">${data.address || '--'}</span></td>
-                        <td data-label="Actions">
+                        <td class="no-print" data-label="Actions">
                             <span class="material-symbols-rounded" style="color: var(--primary); cursor: pointer; font-size: 20px;" title="View Notes">assignment</span>
                             <span class="material-symbols-rounded" style="color: var(--text-muted); cursor: pointer; font-size: 20px; margin-left: 8px;" title="Edit">edit</span>
                         </td>
@@ -228,7 +270,7 @@
 
         window.loadPatients();
 
-        // Verify mobile
+        // --- 4. SMART VERIFY (CROSS-CHECKS BOTH DATABASES) ---
         window.verifyMobile = async function() {
             const mobileInput = document.getElementById('mobileInput').value;
             const validationMsg = document.getElementById('mobileValidationMsg');
@@ -248,19 +290,42 @@
             verifyBtn.disabled = true;
 
             try {
-                const patientsRef = collection(db, "patients");
-                const q = query(patientsRef, where("mobile", "==", mobileInput));
-                const querySnapshot = await getDocs(q);
+                // First: Check if they are already in the PATIENTS database
+                const pSnap = await getDocs(query(collection(db, "patients"), where("mobile", "==", mobileInput)));
 
-                if (!querySnapshot.empty) {
-                    validationMsg.innerText = "Patient with this number already exists!";
+                if (!pSnap.empty) {
+                    let existingName = pSnap.docs.data().name;
+                    validationMsg.innerHTML = `Patient already registered as <strong>${existingName}</strong>! Directory filtered below.`;
                     validationMsg.classList.add('error');
                     fieldset.disabled = true;
+                    
+                    // Auto-search the table to show them the duplicate
+                    document.getElementById('patientSearchInput').value = mobileInput;
+                    window.searchTable();
                 } else {
-                    validationMsg.innerText = "Number is available. Please fill out the details.";
-                    validationMsg.classList.add('success');
-                    fieldset.disabled = false;
-                    document.getElementById('patientName').focus();
+                    // Second: Check if they are in the APPOINTMENTS database but not registered
+                    const aSnap = await getDocs(query(collection(db, "appointments"), where("mobile", "==", mobileInput)));
+
+                    if (!aSnap.empty) {
+                        let aptName = aSnap.docs.data().name;
+                        validationMsg.innerHTML = `Found an appointment for <strong>${aptName}</strong>. You may save them as a registered patient now.`;
+                        validationMsg.classList.add('success');
+                        fieldset.disabled = false;
+                        
+                        // Auto-fill the patient name from the appointment!
+                        document.getElementById('patientName').value = aptName;
+                        document.getElementById('patientName').focus();
+                    } else {
+                        // Brand new number
+                        validationMsg.innerText = "Number is available. Please fill out the details.";
+                        validationMsg.classList.add('success');
+                        fieldset.disabled = false;
+                        document.getElementById('patientName').focus();
+                    }
+                    
+                    // Clear search if it was previously active
+                    document.getElementById('patientSearchInput').value = "";
+                    window.searchTable();
                 }
             } catch (error) {
                 console.error("Firebase Error:", error);
@@ -272,10 +337,9 @@
             verifyBtn.disabled = false;
         }
 
-        // Save patient
+        // --- 5. SAVE PATIENT ---
         window.savePatient = async function() {
             const saveBtn = document.getElementById('saveBtn');
-            
             const mobile = document.getElementById('mobileInput').value;
             const name = document.getElementById('patientName').value;
             const age = document.getElementById('patientAge').value;
@@ -293,7 +357,6 @@
 
             try {
                 const generatedId = "P" + Math.floor(Math.random() * 90000 + 10000);
-
                 await addDoc(collection(db, "patients"), {
                     patientId: generatedId,
                     mobile: mobile,
@@ -325,5 +388,6 @@
         }
     </script>
 
-</div> </body>
+</div>
+</body>
 </html>
