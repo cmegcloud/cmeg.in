@@ -172,179 +172,158 @@
         </table>
     </div>
 
-</div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
+            authDomain: "cmf001stra.firebaseapp.com",
+            projectId: "cmf001stra",
+            storageBucket: "cmf001stra.firebasestorage.app",
+            messagingSenderId: "763958641347",
+            appId: "1:763958641347:web:316876bc2340b26bd21876",
+            measurementId: "G-770FBR88LJ"
+        };
 
-    // 🔴 NEW FIREBASE CONFIGURATION (cmf001stra) 🔴
-    const firebaseConfig = {
-        apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
-        authDomain: "cmf001stra.firebaseapp.com",
-        projectId: "cmf001stra",
-        storageBucket: "cmf001stra.firebasestorage.app",
-        messagingSenderId: "763958641347",
-        appId: "1:763958641347:web:316876bc2340b26bd21876",
-        measurementId: "G-770FBR88LJ"
-    };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+        // Load existing patients
+        window.loadPatients = async function() {
+            const tableBody = document.getElementById('patientTableBody');
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Loading patients from database...</td></tr>';
 
-    // ==========================================
-    // LOAD EXISTING PATIENTS INTO TABLE
-    // ==========================================
-    window.loadPatients = async function() {
-        const tableBody = document.getElementById('patientTableBody');
-        tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Loading patients from database...</td></tr>';
+            try {
+                const patientsRef = collection(db, "patients");
+                const querySnapshot = await getDocs(patientsRef);
+                
+                tableBody.innerHTML = ''; 
+                
+                if (querySnapshot.empty) {
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--text-muted);">No patients found. Add one above!</td></tr>';
+                    return;
+                }
 
-        try {
-            const patientsRef = collection(db, "patients");
-            // Fetch all patients
-            const querySnapshot = await getDocs(patientsRef);
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td data-label="Patient"><div class="patient-info"><strong>${data.name}</strong><span class="pid">${data.patientId}</span></div></td>
+                        <td data-label="Mobile">${data.mobile}</td>
+                        <td data-label="Demographics">${data.age || '--'} Yrs / ${data.gender || '--'}</td>
+                        <td data-label="Address"><span style="color: var(--text-muted); font-size: 12px;">${data.address || '--'}</span></td>
+                        <td data-label="Actions">
+                            <span class="material-symbols-rounded" style="color: var(--primary); cursor: pointer; font-size: 20px;" title="View Notes">assignment</span>
+                            <span class="material-symbols-rounded" style="color: var(--text-muted); cursor: pointer; font-size: 20px; margin-left: 8px;" title="Edit">edit</span>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("Firebase Read Error:", error);
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--danger);">Error loading data.</td></tr>';
+            }
+        };
+
+        window.loadPatients();
+
+        // Verify mobile
+        window.verifyMobile = async function() {
+            const mobileInput = document.getElementById('mobileInput').value;
+            const validationMsg = document.getElementById('mobileValidationMsg');
+            const fieldset = document.getElementById('patientDetailsFieldset');
+            const verifyBtn = document.getElementById('verifyBtn');
             
-            tableBody.innerHTML = ''; // Clear loading text
-            
-            if (querySnapshot.empty) {
-                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--text-muted);">No patients found in the system yet. Add one above!</td></tr>';
+            validationMsg.className = 'validation-msg';
+
+            if (mobileInput.length !== 10) {
+                validationMsg.innerText = "Please enter a valid 10-digit mobile number.";
+                validationMsg.classList.add('error');
+                fieldset.disabled = true;
                 return;
             }
 
-            // Loop through Firebase data and build table rows
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td data-label="Patient"><div class="patient-info"><strong>${data.name}</strong><span class="pid">${data.patientId}</span></div></td>
-                    <td data-label="Mobile">${data.mobile}</td>
-                    <td data-label="Demographics">${data.age || '--'} Yrs / ${data.gender || '--'}</td>
-                    <td data-label="Address"><span style="color: var(--text-muted); font-size: 12px;">${data.address || '--'}</span></td>
-                    <td data-label="Actions">
-                        <span class="material-symbols-rounded" style="color: var(--primary); cursor: pointer; font-size: 20px;" title="View Notes">assignment</span>
-                        <span class="material-symbols-rounded" style="color: var(--text-muted); cursor: pointer; font-size: 20px; margin-left: 8px;" title="Edit">edit</span>
-                    </td>
-                `;
-                tableBody.appendChild(tr);
-            });
-        } catch (error) {
-            console.error("Firebase Read Error:", error);
-            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--danger);">Error loading data. Check Firestore permissions.</td></tr>';
-        }
-    };
+            verifyBtn.innerText = "Checking...";
+            verifyBtn.disabled = true;
 
-    // Load data instantly when the module opens
-    window.loadPatients();
+            try {
+                const patientsRef = collection(db, "patients");
+                const q = query(patientsRef, where("mobile", "==", mobileInput));
+                const querySnapshot = await getDocs(q);
 
-    // ==========================================
-    // VERIFY MOBILE NUMBER
-    // ==========================================
-    window.verifyMobile = async function() {
-        const mobileInput = document.getElementById('mobileInput').value;
-        const validationMsg = document.getElementById('mobileValidationMsg');
-        const fieldset = document.getElementById('patientDetailsFieldset');
-        const verifyBtn = document.getElementById('verifyBtn');
-        
-        validationMsg.className = 'validation-msg';
-
-        if (mobileInput.length !== 10) {
-            validationMsg.innerText = "Please enter a valid 10-digit mobile number.";
-            validationMsg.classList.add('error');
-            fieldset.disabled = true;
-            return;
-        }
-
-        verifyBtn.innerText = "Checking...";
-        verifyBtn.disabled = true;
-
-        try {
-            const patientsRef = collection(db, "patients");
-            const q = query(patientsRef, where("mobile", "==", mobileInput));
-            const querySnapshot = await getDocs(q);
-
-            if (!querySnapshot.empty) {
-                validationMsg.innerText = "Patient with this number already exists in the system!";
+                if (!querySnapshot.empty) {
+                    validationMsg.innerText = "Patient with this number already exists!";
+                    validationMsg.classList.add('error');
+                    fieldset.disabled = true;
+                } else {
+                    validationMsg.innerText = "Number is available. Please fill out the details.";
+                    validationMsg.classList.add('success');
+                    fieldset.disabled = false;
+                    document.getElementById('patientName').focus();
+                }
+            } catch (error) {
+                console.error("Firebase Error:", error);
+                validationMsg.innerText = "Error checking database.";
                 validationMsg.classList.add('error');
-                fieldset.disabled = true;
-            } else {
-                validationMsg.innerText = "Number is available. Please fill out the patient details.";
-                validationMsg.classList.add('success');
-                fieldset.disabled = false;
-                document.getElementById('patientName').focus();
             }
-        } catch (error) {
-            console.error("Firebase Error:", error);
-            validationMsg.innerText = "Error checking database. Make sure Firestore rules are set to Test Mode.";
-            validationMsg.classList.add('error');
+
+            verifyBtn.innerText = "Verify";
+            verifyBtn.disabled = false;
         }
 
-        verifyBtn.innerText = "Verify";
-        verifyBtn.disabled = false;
-    }
-
-    // ==========================================
-    // SAVE NEW PATIENT TO FIRESTORE
-    // ==========================================
-    window.savePatient = async function() {
-        const saveBtn = document.getElementById('saveBtn');
-        
-        const mobile = document.getElementById('mobileInput').value;
-        const name = document.getElementById('patientName').value;
-        const age = document.getElementById('patientAge').value;
-        const gender = document.getElementById('patientGender').value;
-        const address = document.getElementById('patientAddress').value;
-        const notes = document.getElementById('patientNotes').value;
-
-        if (!name || !mobile) {
-            alert("Patient Name and Mobile Number are required!");
-            return;
-        }
-
-        saveBtn.innerText = "Saving...";
-        saveBtn.disabled = true;
-
-        try {
-            const generatedId = "P" + Math.floor(Math.random() * 90000 + 10000);
-
-            await addDoc(collection(db, "patients"), {
-                patientId: generatedId,
-                mobile: mobile,
-                name: name,
-                age: age,
-                gender: gender,
-                address: address,
-                notes: notes,
-                createdAt: new Date()
-            });
-
-            alert(`Success! Patient ${name} saved with ID: ${generatedId}`);
+        // Save patient
+        window.savePatient = async function() {
+            const saveBtn = document.getElementById('saveBtn');
             
-            // Clear the form
-            document.getElementById('add-patient-form').reset();
-            window.resetForm();
+            const mobile = document.getElementById('mobileInput').value;
+            const name = document.getElementById('patientName').value;
+            const age = document.getElementById('patientAge').value;
+            const gender = document.getElementById('patientGender').value;
+            const address = document.getElementById('patientAddress').value;
+            const notes = document.getElementById('patientNotes').value;
 
-            // Refresh the table to show the new patient!
-            window.loadPatients();
+            if (!name || !mobile) {
+                alert("Patient Name and Mobile Number are required!");
+                return;
+            }
 
-        } catch (error) {
-            console.error("Firebase Save Error:", error);
-            alert("Failed to save patient. Check Firestore rules/permissions.");
+            saveBtn.innerText = "Saving...";
+            saveBtn.disabled = true;
+
+            try {
+                const generatedId = "P" + Math.floor(Math.random() * 90000 + 10000);
+
+                await addDoc(collection(db, "patients"), {
+                    patientId: generatedId,
+                    mobile: mobile,
+                    name: name,
+                    age: age,
+                    gender: gender,
+                    address: address,
+                    notes: notes,
+                    createdAt: new Date()
+                });
+
+                alert(`Success! Patient saved with ID: ${generatedId}`);
+                document.getElementById('add-patient-form').reset();
+                window.resetForm();
+                window.loadPatients();
+
+            } catch (error) {
+                console.error("Firebase Save Error:", error);
+                alert("Failed to save patient.");
+            }
+
+            saveBtn.innerText = "Save Patient";
+            saveBtn.disabled = false;
         }
 
-        saveBtn.innerText = "Save Patient";
-        saveBtn.disabled = false;
-    }
+        window.resetForm = function() {
+            document.getElementById('mobileValidationMsg').className = 'validation-msg';
+            document.getElementById('patientDetailsFieldset').disabled = true;
+        }
+    </script>
 
-    // ==========================================
-    // RESET FORM UTILITY
-    // ==========================================
-    window.resetForm = function() {
-        document.getElementById('mobileValidationMsg').className = 'validation-msg';
-        document.getElementById('patientDetailsFieldset').disabled = true;
-    }
-
-</script>
-
-</body>
+</div> </body>
 </html>
