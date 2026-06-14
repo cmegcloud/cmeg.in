@@ -61,24 +61,56 @@
         #patient-module .table-header h4 { font-size: 16px; font-weight: 600; margin: 0; }
         #patient-module .saas-table { width: 100%; border-collapse: collapse; text-align: left; }
         #patient-module .saas-table th { padding: 12px 20px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); }
-        #patient-module .saas-table td { padding: 16px 20px; font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--border); }
+        #patient-module .saas-table td { padding: 16px 20px; font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--border); vertical-align: top; }
         #patient-module .saas-table tr:last-child td { border-bottom: none; }
         #patient-module .patient-info { display: flex; flex-direction: column; }
         #patient-module .patient-info .pid { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-weight: 700; }
 
         /* --- CTA Links --- */
-        .cta-link { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background: #FAFAFA; border: 1px solid var(--border); transition: 0.2s; }
+        .cta-link { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background: #FAFAFA; border: 1px solid var(--border); transition: 0.2s; text-decoration: none; }
         .cta-link:hover { background: var(--surface); transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
+        /* --- UPDATED MOBILE TABLE FIX --- */
         @media (max-width: 767px) {
             #patient-module .saas-table thead { display: none; }
             #patient-module .saas-table, #patient-module .saas-table tbody, #patient-module .saas-table tr, #patient-module .saas-table td { display: block; width: 100%; }
             #patient-module .saas-table tr { padding: 16px; border-bottom: 1px solid var(--border); }
-            #patient-module .saas-table td { padding: 4px 0; border: none; display: flex; justify-content: space-between; align-items: center; }
-            #patient-module .saas-table td::before { content: attr(data-label); font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-            #patient-module .saas-table td:nth-child(1) { padding-bottom: 12px; }
+            
+            #patient-module .saas-table td { 
+                padding: 8px 0; /* Increased padding slightly for breathing room */
+                border: none; 
+                display: flex; 
+                flex-direction: column; /* Stack label and content vertically */
+                align-items: flex-start; /* Align content to the left */
+            }
+            
+            /* The label (e.g. "MOBILE NO.") */
+            #patient-module .saas-table td::before { 
+                content: attr(data-label); 
+                font-size: 10px; 
+                color: var(--text-muted); 
+                font-weight: 700; 
+                text-transform: uppercase; 
+                margin-bottom: 4px; /* Space between label and data */
+                letter-spacing: 0.5px;
+            }
+            
+            #patient-module .saas-table td:nth-child(1) { 
+                padding-bottom: 16px; 
+                border-bottom: 1px dashed var(--border); /* Visually separate the main ID */
+                margin-bottom: 8px;
+            }
+            
             #patient-module .saas-table td:nth-child(1)::before { display: none; }
-            #patient-module .saas-table td:nth-child(1) .patient-info { flex-direction: row; align-items: baseline; gap: 8px; }
+            #patient-module .saas-table td:nth-child(1) .patient-info { flex-direction: row; align-items: center; gap: 8px; font-size: 16px; }
+
+            /* Fix Mobile Layout Container for CTA Buttons */
+            .mobile-cta-container {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-top: 6px;
+            }
         }
 
         /* --- Clean Print Styling for PDF Export --- */
@@ -185,7 +217,7 @@
                 </tr>
             </thead>
             <tbody id="patientTableBody">
-                </tbody>
+            </tbody>
         </table>
     </div>
 
@@ -227,7 +259,7 @@
             window.print();
         }
 
-        // --- 3. LOAD PATIENTS WITH CTA ICONS ---
+        // --- 3. LOAD PATIENTS WITH UPDATED MOBILE CTA LAYOUT ---
         window.loadPatients = async function() {
             const tableBody = document.getElementById('patientTableBody');
             tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Loading patients...</td></tr>';
@@ -247,17 +279,19 @@
                     tr.innerHTML = `
                         <td data-label="Patient"><div class="patient-info"><strong>${data.name}</strong><span class="pid">${data.patientId}</span></div></td>
                         <td data-label="Mobile">
-                            <strong>${data.mobile}</strong>
-                            <div class="no-print" style="display: flex; gap: 8px; margin-top: 6px;">
+                            <span style="font-weight: 700; font-size: 15px;">${data.mobile}</span>
+                            <div class="mobile-cta-container no-print">
                                 <a href="tel:${data.mobile}" class="cta-link" title="Call"><span class="material-symbols-rounded" style="font-size: 16px; color: var(--secondary);">call</span></a>
                                 <a href="https://wa.me/91${data.mobile}" class="cta-link" target="_blank" title="WhatsApp"><span class="material-symbols-rounded" style="font-size: 16px; color: var(--success);">chat</span></a>
                             </div>
                         </td>
                         <td data-label="Demographics">${data.age || '--'} Yrs / ${data.gender || '--'}</td>
-                        <td data-label="Address"><span style="color: var(--text-muted); font-size: 12px;">${data.address || '--'}</span></td>
+                        <td data-label="Address"><span style="color: var(--text-muted); font-size: 12px; line-height: 1.4;">${data.address || '--'}</span></td>
                         <td class="no-print" data-label="Actions">
-                            <span class="material-symbols-rounded" style="color: var(--primary); cursor: pointer; font-size: 20px;" title="View Notes">assignment</span>
-                            <span class="material-symbols-rounded" style="color: var(--text-muted); cursor: pointer; font-size: 20px; margin-left: 8px;" title="Edit">edit</span>
+                            <div style="display:flex; gap: 12px; align-items:center; margin-top: 4px;">
+                                <span class="material-symbols-rounded" style="color: var(--primary); cursor: pointer; font-size: 20px;" title="View Notes">assignment</span>
+                                <span class="material-symbols-rounded" style="color: var(--text-muted); cursor: pointer; font-size: 20px;" title="Edit">edit</span>
+                            </div>
                         </td>
                     `;
                     tableBody.appendChild(tr);
