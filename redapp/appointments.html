@@ -46,11 +46,12 @@
         #appointment-module .btn-outline { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
         #appointment-module .btn-verify { background: var(--text-main); color: #fff; border: none; padding: 0 20px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 13px;}
 
-        /* Table Styles */
+        /* Table Styles - Native Horizontal Scroll Fix for Mobile */
         #appointment-module .table-container { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
-        #appointment-module .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-        #appointment-module .table-header h4 { font-size: 16px; font-weight: 600; margin: 0; }
-        #appointment-module .saas-table { width: 100%; border-collapse: collapse; text-align: left; }
+        #appointment-module .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        
+        #appointment-module .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 16px; }
+        #appointment-module .saas-table { width: 100%; min-width: 900px; border-collapse: collapse; text-align: left; }
         #appointment-module .saas-table th { padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); }
         #appointment-module .saas-table td { padding: 16px; font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--border); vertical-align: top;}
         
@@ -65,17 +66,6 @@
         #reschedule-container, #bulk-reschedule-container { display: none; }
         #reschedule-container.active, #bulk-reschedule-container.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Mobile View Fixes */
-        @media (max-width: 767px) {
-            #appointment-module .saas-table thead { display: none; }
-            #appointment-module .saas-table, #appointment-module .saas-table tbody, #appointment-module .saas-table tr, #appointment-module .saas-table td { display: block; width: 100%; }
-            #appointment-module .saas-table tr { padding: 16px; border-bottom: 1px solid var(--border); position: relative;}
-            #appointment-module .saas-table td { padding: 8px 0; border: none; display: flex; flex-direction: column; align-items: flex-start; }
-            #appointment-module .saas-table td::before { content: attr(data-label); font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
-            /* Checkbox positioning for mobile */
-            .mobile-checkbox { position: absolute; top: 16px; right: 16px; transform: scale(1.5); }
-        }
 
         /* Print CSS for Global Table Export */
         @media print {
@@ -85,6 +75,7 @@
             #main-content { padding: 0; overflow: visible; }
             #appointment-module .table-container { box-shadow: none; border: none; margin: 0; }
             #appointment-module .table-header { padding: 0 0 10px 0; border-bottom: 2px solid #000; }
+            #appointment-module .saas-table { min-width: 100%; }
             #appointment-module .saas-table th { background: white; color: black; border-bottom: 1px solid #000; }
             #appointment-module .saas-table td { border-bottom: 1px solid #E8E5E1; }
         }
@@ -94,7 +85,7 @@
         <h2 style="margin: 0;">Appointments & Scheduling</h2>
     </div>
 
-    <div class="form-card no-print">
+    <div class="form-card no-print" id="aptFormCard">
         <form id="add-appointment-form" onsubmit="event.preventDefault();">
             <input type="hidden" id="aptDocId" value="">
             
@@ -187,33 +178,59 @@
     <div class="table-container">
         
         <div class="table-header">
-            <h4>Schedule Directory</h4>
             
-            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                
-                <button class="btn-outline no-print" onclick="window.openBulkReschedule()" style="border-color: var(--danger); color: var(--danger);">
-                    <span class="material-symbols-rounded" style="font-size: 16px;">calendar_clock</span> Bulk Reschedule
-                </button>
-
-                <button class="btn-outline no-print" onclick="window.exportAptPDF()">
-                    <span class="material-symbols-rounded" style="font-size: 16px; color: var(--primary);">picture_as_pdf</span> Export
-                </button>
-
-                <select id="branchFilterInput" class="form-input no-print" onchange="window.filterTable()" style="width: auto; padding: 8px 12px; border-radius: 8px; font-size: 13px;">
-                    <option value="">All Branches</option>
-                    <option value="Mahe">Mahe</option>
-                    <option value="Chokli">Chokli</option>
-                    <option value="Panoor">Panoor</option>
-                    <option value="Koothuparamba">Koothuparamba</option>
-                    <option value="Nadapuram">Nadapuram</option>
-                    <option value="Home Care">Home Care</option>
-                </select>
-
-                <div class="no-print" style="background: #FAFAFA; border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center;">
-                    <span class="material-symbols-rounded" style="font-size: 16px; color: var(--text-muted);">search</span>
-                    <input type="text" id="aptSearchInput" onkeyup="window.filterTable()" placeholder="Search..." style="border: none; background: transparent; outline: none; font-size: 13px; width: 100px; margin-left: 6px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <h4>Schedule Directory</h4>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-outline no-print" onclick="window.openBulkReschedule()" style="border-color: var(--danger); color: var(--danger); padding: 6px 12px; font-size: 12px;">
+                        <span class="material-symbols-rounded" style="font-size: 14px;">calendar_clock</span> Bulk Reschedule
+                    </button>
+                    <button class="btn-outline no-print" onclick="window.exportAptPDF()" style="padding: 6px 12px; font-size: 12px;">
+                        <span class="material-symbols-rounded" style="font-size: 14px; color: var(--primary);">picture_as_pdf</span> Export
+                    </button>
                 </div>
             </div>
+
+            <div class="no-print" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: #FAFAFA; padding: 12px; border-radius: 8px; border: 1px solid var(--border); width: 100%;">
+                
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <input type="date" id="filterDate" class="form-input" onchange="window.filterTable()" style="padding: 8px; font-size: 12px; width: auto;" title="Filter by Date">
+                    <button class="btn-outline" onclick="window.setFilterToday()" style="padding: 8px 12px; font-size: 12px;">Today</button>
+                </div>
+                
+                <select id="filterStatus" class="form-input" onchange="window.filterTable()" style="padding: 8px; font-size: 12px; width: auto;">
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="completed">Completed</option>
+                    <option value="rescheduled">Rescheduled</option>
+                </select>
+
+                <select id="filterPayment" class="form-input" onchange="window.filterTable()" style="padding: 8px; font-size: 12px; width: auto;">
+                    <option value="">All Payments</option>
+                    <option value="pending">Balance Pending</option>
+                    <option value="paid">Fully Paid</option>
+                </select>
+
+                <select id="filterBranch" class="form-input" onchange="window.filterTable()" style="padding: 8px; font-size: 12px; width: auto;">
+                    <option value="">All Branches</option>
+                    <option value="mahe">Mahe</option>
+                    <option value="chokli">Chokli</option>
+                    <option value="panoor">Panoor</option>
+                    <option value="koothuparamba">Koothuparamba</option>
+                    <option value="nadapuram">Nadapuram</option>
+                    <option value="home care">Home Care</option>
+                </select>
+
+                <div style="display: flex; align-items: center; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; flex: 1; min-width: 200px;">
+                    <span class="material-symbols-rounded" style="font-size: 16px; color: var(--text-muted);">search</span>
+                    <input type="text" id="aptSearchInput" onkeyup="window.filterTable()" placeholder="Search Name, Mobile, Doctor..." style="border: none; background: transparent; outline: none; font-size: 12px; width: 100%; margin-left: 6px;">
+                </div>
+
+                <button class="btn-outline" onclick="window.clearFilters()" style="padding: 8px; font-size: 12px;" title="Clear Filters">
+                    <span class="material-symbols-rounded" style="font-size: 16px;">close</span>
+                </button>
+            </div>
+            
         </div>
 
         <div id="bulk-reschedule-container" class="no-print" style="background: #fef5e8; padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
@@ -223,21 +240,23 @@
             <button class="btn-outline" style="padding: 8px 16px; border: none; background: transparent;" onclick="document.getElementById('bulk-reschedule-container').classList.remove('active')">Cancel</button>
         </div>
 
-        <table class="saas-table">
-            <thead>
-                <tr>
-                    <th class="no-print"><input type="checkbox" onclick="window.toggleAllCheckboxes(this)" style="transform: scale(1.2);"></th>
-                    <th>Date & Time</th>
-                    <th>Patient Details</th>
-                    <th>Branch / Therapist</th>
-                    <th>Financials</th>
-                    <th>Status & Notes</th>
-                    <th class="no-print">Actions</th>
-                </tr>
-            </thead>
-            <tbody id="aptTableBody">
-                </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="saas-table">
+                <thead>
+                    <tr>
+                        <th class="no-print"><input type="checkbox" onclick="window.toggleAllCheckboxes(this)" style="transform: scale(1.2);"></th>
+                        <th>Date & Time</th>
+                        <th>Patient Details</th>
+                        <th>Branch / Therapist</th>
+                        <th>Financials</th>
+                        <th>Status & Notes</th>
+                        <th class="no-print">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="aptTableBody">
+                    </tbody>
+            </table>
+        </div>
     </div>
 
     <script type="module">
@@ -258,6 +277,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Safe Memory Cache for Edits
+        window.appointmentsDataCache = {};
+
         // --- 1. FORM UI LOGIC ---
         window.toggleReschedule = function(select) {
             const container = document.getElementById('reschedule-container');
@@ -277,12 +299,11 @@
 
         window.resetAptForm = function() {
             document.getElementById('add-appointment-form').reset();
-            document.getElementById('aptDocId').value = ''; // Clear ID for new bookings
+            document.getElementById('aptDocId').value = ''; 
             document.getElementById('saveAptBtn').innerText = "Save Appointment";
             document.getElementById('reschedule-container').classList.remove('active');
         }
 
-        // Validate if a date/time is in the past
         function isPastDateTime(dateStr, timeStr) {
             if(!dateStr) return false;
             const target = new Date(dateStr + 'T' + (timeStr || '00:00'));
@@ -306,9 +327,7 @@
                 } else {
                     alert("No patient found. Please type the name manually.");
                 }
-            } catch(e) {
-                console.error(e);
-            }
+            } catch(e) { console.error(e); }
             btn.innerText = "Check";
         }
 
@@ -321,6 +340,7 @@
                 const q = query(collection(db, "appointments"), orderBy("date", "desc"));
                 const querySnapshot = await getDocs(q);
                 tableBody.innerHTML = ''; 
+                window.appointmentsDataCache = {}; // Clear Cache
                 
                 if (querySnapshot.empty) {
                     tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: var(--text-muted);">No appointments booked yet.</td></tr>';
@@ -330,24 +350,24 @@
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     const docId = docSnap.id; 
+                    window.appointmentsDataCache[docId] = data; // Save to memory for Edit button
                     
                     let statusBadge = '';
                     if(data.status === 'Completed') statusBadge = '<span class="badge badge-completed">Completed</span>';
                     else if(data.status === 'Rescheduled') statusBadge = `<span class="badge badge-rescheduled">Rescheduled</span>`;
                     else statusBadge = '<span class="badge badge-pending">Pending</span>';
 
-                    // Notes snippet for table
                     let noteSnippet = data.notes ? `<div style="margin-top: 6px; font-size: 11px; color: var(--secondary); background: #FAFAFA; padding: 4px; border-radius: 4px;">${data.notes}</div>` : '';
-
-                    // Safe JSON stringify for the Edit function
-                    const safeDataStr = encodeURIComponent(JSON.stringify(data));
-
-                    // WhatsApp Message pre-filled
                     const waText = encodeURIComponent(`Hello ${data.name}, your appointment at STRA CARE (${data.branch}) is booked for ${data.date}. Total Fee: ₹${data.fee||0}, Advance: ₹${data.advance||0}, Balance: ₹${data.balance||0}.`);
 
                     const tr = document.createElement('tr');
-                    tr.setAttribute("data-branch", data.branch.toUpperCase());
-                    tr.setAttribute("data-search", `${data.name} ${data.mobile}`.toUpperCase());
+                    
+                    // Attach Advanced Filter Data Directly to the Row
+                    tr.setAttribute("data-branch", data.branch.toLowerCase());
+                    tr.setAttribute("data-status", data.status.toLowerCase());
+                    tr.setAttribute("data-date", data.date);
+                    tr.setAttribute("data-balance", data.balance || 0);
+                    tr.setAttribute("data-search", `${data.name} ${data.mobile} ${data.therapist}`.toLowerCase());
 
                     tr.innerHTML = `
                         <td class="no-print"><input type="checkbox" class="apt-checkbox" value="${docId}" data-current-date="${data.date}" data-notes="${encodeURIComponent(data.notes || '')}" style="transform: scale(1.2);"></td>
@@ -357,7 +377,7 @@
                             <span style="font-size: 13px; color: var(--text-muted);">${data.mobile}</span>
                             <div class="no-print" style="display: flex; gap: 8px; margin-top: 6px;">
                                 <a href="tel:${data.mobile}" class="cta-link" title="Call"><span class="material-symbols-rounded" style="font-size: 16px; color: var(--secondary);">call</span></a>
-                                <a href="https://wa.me/91${data.mobile}?text=${waText}" class="cta-link" target="_blank" title="Send Bill via WhatsApp"><span class="material-symbols-rounded" style="font-size: 16px; color: var(--success);">chat</span></a>
+                                <a href="https://wa.me/91${data.mobile}?text=${waText}" class="cta-link" target="_blank" title="WhatsApp"><span class="material-symbols-rounded" style="font-size: 16px; color: var(--success);">chat</span></a>
                             </div>
                         </td>
                         <td data-label="Details"><strong>${data.branch}</strong><br><span style="font-size:12px; color:var(--text-muted);">${data.therapist}</span></td>
@@ -370,7 +390,7 @@
                         <td class="no-print" data-label="Actions">
                             <div style="display:flex; gap: 10px; align-items:center;">
                                 <span class="material-symbols-rounded" style="color: var(--primary); cursor: pointer; font-size: 22px;" title="Print Invoice" onclick="window.printInvoice('${data.name}', '${data.mobile}', '${data.date}', '${data.branch}', '${data.fee}', '${data.advance}', '${data.balance}')">receipt_long</span>
-                                <span class="material-symbols-rounded" style="color: var(--text-muted); cursor: pointer; font-size: 20px;" title="Edit" onclick="window.editAppointment('${docId}', '${safeDataStr}')">edit</span>
+                                <span class="material-symbols-rounded" style="color: var(--text-muted); cursor: pointer; font-size: 20px;" title="Edit" onclick="window.editAppointment('${docId}')">edit</span>
                             </div>
                         </td>
                     `;
@@ -384,28 +404,59 @@
 
         window.loadAppointments();
 
-        // --- 4. TABLE FILTERING ---
+        // --- 4. ADVANCED TABLE FILTERING ---
         window.filterTable = function() {
-            const branchQuery = document.getElementById("branchFilterInput").value.toUpperCase();
-            const textQuery = document.getElementById("aptSearchInput").value.toUpperCase();
+            const branchQuery = document.getElementById("filterBranch").value.toLowerCase();
+            const statusQuery = document.getElementById("filterStatus").value.toLowerCase();
+            const paymentQuery = document.getElementById("filterPayment").value;
+            const dateQuery = document.getElementById("filterDate").value;
+            const textQuery = document.getElementById("aptSearchInput").value.toLowerCase();
+
             const trs = document.getElementById("aptTableBody").getElementsByTagName("tr");
 
             for (let i = 0; i < trs.length; i++) {
                 if (trs[i].cells.length === 1) continue; 
+                
                 const rowBranch = trs[i].getAttribute("data-branch");
+                const rowStatus = trs[i].getAttribute("data-status");
+                const rowDate = trs[i].getAttribute("data-date");
+                const rowBalance = parseFloat(trs[i].getAttribute("data-balance"));
                 const rowSearch = trs[i].getAttribute("data-search");
 
-                const matchesBranch = (branchQuery === "" || rowBranch === branchQuery);
-                const matchesText = (rowSearch.indexOf(textQuery) > -1);
-                trs[i].style.display = (matchesBranch && matchesText) ? "" : "none";
+                let show = true;
+
+                if (branchQuery && rowBranch !== branchQuery) show = false;
+                if (statusQuery && rowStatus !== statusQuery) show = false;
+                if (dateQuery && rowDate !== dateQuery) show = false;
+                if (paymentQuery === "pending" && rowBalance <= 0) show = false;
+                if (paymentQuery === "paid" && rowBalance > 0) show = false;
+                if (textQuery && rowSearch.indexOf(textQuery) === -1) show = false;
+
+                trs[i].style.display = show ? "" : "none";
             }
         }
 
-        // --- 5. EDIT APPOINTMENT ---
-        window.editAppointment = function(docId, safeDataStr) {
-            const data = JSON.parse(decodeURIComponent(safeDataStr));
+        window.setFilterToday = function() {
+            const today = new Date().toISOString().split('T');
+            document.getElementById("filterDate").value = today;
+            window.filterTable();
+        }
+
+        window.clearFilters = function() {
+            document.getElementById("filterBranch").value = "";
+            document.getElementById("filterStatus").value = "";
+            document.getElementById("filterPayment").value = "";
+            document.getElementById("filterDate").value = "";
+            document.getElementById("aptSearchInput").value = "";
+            window.filterTable();
+        }
+
+        // --- 5. EDIT APPOINTMENT & SMOOTH SCROLL ---
+        window.editAppointment = function(docId) {
+            const data = window.appointmentsDataCache[docId];
+            if(!data) return;
             
-            document.getElementById('aptDocId').value = docId; // Set hidden ID
+            document.getElementById('aptDocId').value = docId; 
             document.getElementById('aptMobile').value = data.mobile || '';
             document.getElementById('aptName').value = data.name || '';
             document.getElementById('aptBranch').value = data.branch || '';
@@ -418,11 +469,16 @@
             document.getElementById('aptBalance').value = data.balance || '';
             document.getElementById('aptNotes').value = data.notes || '';
 
-            // Reset reschedule dropdown just in case
             window.toggleReschedule(document.getElementById('aptStatus'));
-
             document.getElementById('saveAptBtn').innerText = "Update Appointment";
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll back to form
+            
+            // Smooth Scroll to Top inside the SPA container!
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
 
         // --- 6. BULK RESCHEDULE LOGIC ---
@@ -440,10 +496,7 @@
         window.executeBulkReschedule = async function() {
             const newDate = document.getElementById('bulkDateInput').value;
             if (!newDate) return alert("Please pick a new date.");
-
-            if(isPastDateTime(newDate, '23:59')) {
-                return alert("Cannot bulk reschedule to a past date!");
-            }
+            if(isPastDateTime(newDate, '23:59')) return alert("Cannot bulk reschedule to a past date!");
 
             const checkboxes = document.querySelectorAll('.apt-checkbox:checked');
             
@@ -473,7 +526,7 @@
             }
         }
 
-        // --- 7. INDIVIDUAL INVOICE PRINTING (Matches estimate.html Template) ---
+        // --- 7. INDIVIDUAL INVOICE PRINTING ---
         window.printInvoice = function(name, mobile, date, branch, fee, advance, balance) {
             const invoiceWindow = window.open('', '_blank');
             invoiceWindow.document.write(`
@@ -571,7 +624,7 @@
         // --- 9. SAVE OR UPDATE APPOINTMENT ---
         window.saveAppointment = async function() {
             const saveBtn = document.getElementById('saveAptBtn');
-            const docId = document.getElementById('aptDocId').value; // Check if editing
+            const docId = document.getElementById('aptDocId').value; 
             
             const mobile = document.getElementById('aptMobile').value;
             const name = document.getElementById('aptName').value;
@@ -588,7 +641,6 @@
 
             if (!name || !mobile || !date || !branch) return alert("Please fill all required (*) fields!");
 
-            // Strict Validation: Block past dates for new bookings & rescheduling
             if(!docId && isPastDateTime(date, time)) {
                 return alert("You cannot book a new appointment in the past!");
             }
@@ -596,12 +648,11 @@
                 return alert("You cannot reschedule to a past date!");
             }
 
-            // Reschedule Logic: Swap Dates & Update Notes
             let finalDate = date;
             if (status === 'Rescheduled') {
                 if(!rescheduleDate) return alert("Please pick a new reschedule date.");
-                finalDate = rescheduleDate; // Overwrite main date
-                notes = (notes + `\n[Rescheduled from: ${date}]`).trim(); // Append old date to notes
+                finalDate = rescheduleDate; 
+                notes = (notes + `\n[Rescheduled from: ${date}]`).trim(); 
             }
 
             saveBtn.innerText = "Saving...";
@@ -611,7 +662,7 @@
                 mobile: mobile,
                 name: name,
                 branch: branch,
-                date: finalDate, // Saves the swapped date
+                date: finalDate, 
                 time: time,
                 therapist: therapist,
                 status: status,
@@ -624,11 +675,9 @@
 
             try {
                 if(docId) {
-                    // Updating an existing record
                     await updateDoc(doc(db, "appointments", docId), payload);
                     alert(`Appointment updated successfully for ${name}!`);
                 } else {
-                    // Creating a new record
                     payload.createdAt = new Date();
                     await addDoc(collection(db, "appointments"), payload);
                     alert(`New appointment saved successfully for ${name}!`);
