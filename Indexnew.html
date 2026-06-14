@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CM Filings - Complete Solutions</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- CSS Variables --- */
+        :root {
+            --primary-red: #ba2b20;
+            --primary-red-hover: #9e231a;
+            --dark-grey: #3b3b3b;
+            --bg-light: #f4f0ef;
+            --bg-white: #ffffff;
+            --text-dark: #222222;
+            --text-grey: #666666;
+            --border-color: #e0e0e0;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --card-bg: #ffffff;
+            /* Footer specific variables so they don't break in dark mode */
+            --footer-bg: #1a1a1a;
+            --footer-text: #ffffff;
+            --footer-muted: #aaaaaa;
+        }
+
+        /* Dark Mode Variables */
+        .dark-mode {
+            --bg-light: #181616;
+            --bg-white: #222222;
+            --text-dark: #f0f0f0;
+            --text-grey: #bbbbbb;
+            --border-color: #444444;
+            --glass-bg: rgba(20, 20, 20, 0.85);
+            --dark-grey: #555555;
+            --card-bg: #2a2a2a;
+            /* Footer stays dark and readable */
+            --footer-bg: #0a0a0a;
+            --footer-text: #f0f0f0;
+            --footer-muted: #888888;
+        }
+
+        /* --- Global Reset --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, .brand-name {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* --- Sticky Glass Header --- */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: var(--primary-red);
+        }
+
+        .brand-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 25px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary-red);
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .header-icons button {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .header-icons button:hover {
+            color: var(--primary-red);
+        }
+
+        /* --- Reusable Section Styles --- */
+        section {
+            padding: 80px 5%;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+
+        .section-title span {
+            color: var(--primary-red);
+        }
+
+        .section-desc {
+            color: var(--text-grey);
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 15px;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            padding: 120px 5% 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            background-color: var(--bg-light);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            left: 20%;
+            width: 300px;
+            height: 300px;
+            border: 40px solid var(--dark-grey);
+            border-radius: 50%;
+            z-index: 0;
+            opacity: 0.1;
+        }
+
+        .hero-text-container {
+            flex: 1;
+            max-width: 600px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 4vw, 3.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .hero-title span {
+            color: var(--primary-red);
+        }
+
+        .hero-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 6px;
+            background-color: var(--text-dark);
+            margin-top: 15px;
+        }
+
+        .hero-subtitle {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+
+        .hero-desc {
+            font-size: 0.95rem;
+            color: var(--text-grey);
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--text-dark);
+            color: var(--bg-light);
+            padding: 14px 30px;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-decoration: none;
+            letter-spacing: 1px;
+            font-size: 13px;
+            border-radius: 2px;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-red);
+            transform: translateY(-2px);
+        }
+
+        /* --- Hero Graphic --- */
+        .hero-graphic-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            height: 500px;
+        }
+
+        .geometric-group {
+            position: relative;
+            width: 360px;
+            height: 360px;
+        }
+
+        .main-circle {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            height: 280px;
+            border-radius: 0 0 140px 140px;
+            background-color: var(--primary-red);
+            /* Updated to a corporate graphic chart image */
+            background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=80');
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .main-circle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 55%;
+            background-color: var(--primary-red);
+        }
+
+        .curved-line {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 360px;
+            height: 180px;
+            border: 22px solid var(--primary-red);
+            border-top: none;
+            border-radius: 0 0 180px 180px;
+            box-shadow: 0 15px 20px rgba(186, 43, 32, 0.2);
+        }
+
+        /* --- About Us --- */
+        .about-section {
+            background-color: var(--bg-white);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .about-stats {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            min-width: 300px;
+        }
+
+        .stat-box {
+            background: var(--bg-light);
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--primary-red);
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--primary-red);
+            font-family: 'Montserrat', sans-serif;
+            margin-bottom: 5px;
+        }
+
+        .stat-text {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-dark);
+        }
+
+        /* --- Expertise Section --- */
+        .expertise-section {
+            background-color: var(--bg-light);
+        }
+
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .expertise-card {
+            background: var(--card-bg);
+            padding: 40px 30px;
+            border-top: 5px solid var(--primary-red);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .expertise-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .expertise-icon {
+            font-size: 40px;
+            color: var(--primary-red);
+            margin-bottom: 20px;
+        }
+
+        .expertise-card h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .expertise-card p {
+            font-size: 14px;
+            color: var(--text-grey);
+        }
+
+        /* --- Services Section --- */
+        .services-section {
+            background-color: var(--bg-white);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .service-box {
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            background: var(--card-bg);
+        }
+
+        .service-box h3 {
+            font-size: 18px;
+            color: var(--primary-red);
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .service-box p {
+            font-size: 13px;
+            color: var(--text-grey);
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .service-box ul {
+            list-style: none;
+        }
+
+        .service-box ul li {
+            font-size: 14px;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .service-box ul li::before {
+            content: '\f105';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--primary-red);
+        }
+
+        /* --- Process Section (How We Serve) --- */
+        .process-section {
+            padding: 100px 5%;
+            background-color: var(--bg-light); 
+            text-align: center;
+        }
+
+        .process-subtitle {
+            color: var(--primary-red);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .process-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .process-title span {
+            color: var(--primary-red);
+        }
+
+        .process-desc {
+            color: var(--text-grey);
+            margin-bottom: 60px;
+        }
+
+        .process-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            position: relative;
+            gap: 20px;
+        }
+
+        .process-step {
+            flex: 1;
+            min-width: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .step-number {
+            background-color: var(--primary-red);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            position: absolute;
+            top: -10px;
+            z-index: 2;
+        }
+
+        .step-icon {
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--primary-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            background-color: var(--bg-white);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Connecting Arrows */
+        .process-step:not(:last-child)::after {
+            content: '\f061';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 40px;
+            right: -20px;
+            color: var(--text-grey);
+            font-size: 18px;
+            opacity: 0.5;
+        }
+
+        .step-title {
+            font-weight: 800;
+            font-size: 15px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .step-focus {
+            color: var(--primary-red);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .step-text {
+            font-size: 13px;
+            color: var(--text-grey);
+            line-height: 1.5;
+        }
+
+        /* --- Promise Banner --- */
+        .promise-banner {
+            margin-top: 80px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 30px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        }
+
+        .promise-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-right: 1px solid var(--border-color);
+            padding-right: 30px;
+            flex: 1;
+            min-width: 300px;
+            text-align: left;
+        }
+
+        .promise-icon {
+            background-color: var(--primary-red);
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .promise-text h4 {
+            color: var(--primary-red);
+            font-weight: 800;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .promise-text p {
+            font-size: 13px;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .promise-right {
+            display: flex;
+            justify-content: space-around;
+            flex: 2;
+            min-width: 300px;
+            gap: 20px;
+        }
+
+        .promise-item {
+            text-align: center;
+        }
+
+        /* Updated Icon Styles to ensure visibility */
+        .promise-item i {
+            font-size: 28px;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .promise-item span {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-transform: uppercase;
+        }
+
+        /* --- Industries --- */
+        .industries-section {
+            background-color: var(--bg-white);
+        }
+
+        .industries-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .industry-item {
+            background-color: var(--bg-light);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            color: var(--text-dark);
+            transition: all 0.3s;
+        }
+
+        .industry-item:hover {
+            background-color: var(--primary-red);
+            color: #ffffff;
+            border-color: var(--primary-red);
+        }
+
+        /* --- Testimonials --- */
+        .testimonials-section {
+            background-color: var(--bg-light);
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .testimonial-card {
+            background: var(--bg-white);
+            padding: 30px;
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+        }
+
+        .stars {
+            color: var(--primary-red);
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .quote-text {
+            font-size: 14px;
+            color: var(--text-dark);
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .client-name {
+            font-weight: 800;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .client-company {
+            font-size: 12px;
+            color: var(--text-grey);
+            text-transform: uppercase;
+        }
+
+        /* --- Careers & Final CTA --- */
+        .careers-section {
+            /* Keep it visually heavy and separate */
+            background-color: #222222; 
+            color: #ffffff;
+            padding: 60px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .careers-text h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .careers-text p {
+            color: #aaaaaa;
+            margin-bottom: 15px;
+        }
+
+        .careers-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            list-style: none;
+        }
+
+        .careers-list li {
+            background-color: rgba(255,255,255,0.1);
+            padding: 8px 15px;
+            font-size: 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .final-cta {
+            text-align: center;
+            padding: 80px 5%;
+            background-color: var(--bg-light);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .final-cta h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .final-cta p {
+            max-width: 800px;
+            margin: 0 auto 30px;
+            color: var(--text-grey);
+        }
+
+        .highlight-bar {
+            font-weight: 800;
+            color: var(--primary-red);
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 2px;
+            word-spacing: 10px;
+            font-size: 16px;
+        }
+
+        /* --- Footer --- */
+        footer {
+            /* Using strictly decoupled variables so it doesn't break in Dark Mode */
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            padding: 60px 5% 20px;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand h3 {
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            color: var(--footer-text);
+        }
+
+        .footer-brand p {
+            color: var(--footer-muted);
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .footer-contact p {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--footer-text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-contact i {
+            color: var(--primary-red);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 12px;
+            color: var(--footer-muted);
+        }
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 1024px) {
+            .process-step:not(:last-child)::after {
+                display: none;
+            }
+            .process-step {
+                min-width: 250px;
+                margin-bottom: 30px;
+            }
+            .promise-left {
+                border-right: none;
+                padding-right: 0;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding-top: 120px;
+            }
+            .hero-title::after {
+                margin: 15px auto 0;
+            }
+            .hero-text-container {
+                margin-bottom: 50px;
+            }
+            .nav-menu {
+                display: none; 
+            }
+            .promise-right {
+                flex-wrap: wrap;
+            }
+            .promise-item {
+                min-width: 100px;
+            }
+        }
+        
+        @media (max-width: 500px) {
+            .geometric-group {
+                transform: scale(0.8);
+            }
+            .about-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="#home" class="logo">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span class="brand-name">CM Filings</span>
+        </a>
+
+        <ul class="nav-menu">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#expertise">Expertise</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#careers">Careers</a></li>
+            <li><a href="#contact">Contact Us</a></li>
+        </ul>
+
+        <div class="header-icons">
+            <button aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button id="theme-toggle" aria-label="Toggle Dark Mode"><i class="fa-solid fa-moon"></i></button>
+        </div>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="hero-text-container">
+            <h1 class="hero-title">COMPLETE <span>SOLUTIONS</span></h1>
+            <p class="hero-subtitle">Financial, Compliance & Technology</p>
+            <p class="hero-desc">
+                Expert Guidance for Individuals, Professionals, Startups & Businesses. From Income Tax Returns and TDS compliance for individuals to business registration, accounting, audit, ERP, CRM, websites, and custom software development, CM Filings delivers end-to-end solutions under one roof.
+            </p>
+            <a href="#services" class="btn">Discover More</a>
+        </div>
+
+        <div class="hero-graphic-container">
+            <div class="geometric-group">
+                <div class="main-circle"></div>
+                <div class="curved-line"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section" id="about">
+        <div class="about-text">
+            <h2 class="section-title">BUILT ON <span>TRUST</span>.<br>POWERED BY <span>EXPERTISE</span>.</h2>
+            <p class="section-desc" style="margin: 0; text-align: left;">
+                Founded in 2013 by Mohammed Shanid CM, CM Filings combines taxation, compliance, finance, and technology expertise to help clients navigate regulatory requirements while achieving sustainable growth.
+            </p>
+        </div>
+        <div class="about-stats">
+            <div class="stat-box">
+                <div class="stat-number">10,000+</div>
+                <div class="stat-text">Individuals Served</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">250+</div>
+                <div class="stat-text">Corporate Clients</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">16+</div>
+                <div class="stat-text">Years Experience</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">100%</div>
+                <div class="stat-text">Commitment</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="expertise-section" id="expertise">
+        <div class="section-header">
+            <h2 class="section-title">OUR <span>EXPERTISE</span></h2>
+            <p class="section-desc">Delivering specialized knowledge across critical business functions.</p>
+        </div>
+        <div class="expertise-grid">
+            <div class="expertise-card">
+                <i class="fa-solid fa-scale-balanced expertise-icon"></i>
+                <h3>Compliance & Tax</h3>
+                <p>Income Tax Returns, TDS, GST, Company Registration, ROC Filings, Licenses, Tax Planning, NRI Tax Services.</p>
+            </div>
+            <div class="expertise-card">
+                <i class="fa-solid fa-calculator expertise-icon"></i>
+                <h3>Accounting & Advisory</h3>
+                <p>Bookkeeping, Financial Reporting, Audit Support, MIS Reporting, CFO Services, Business Strategy & Growth Planning.</p>
+            </div>
+            <div class="expertise-card">
+                <i class="fa-solid fa-microchip expertise-icon"></i>
+                <h3>Technology & Automation</h3>
+                <p>Websites, Mobile Applications, ERP Solutions, CRM Systems, Cloud Applications, Custom Business Software.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="services-section" id="services">
+        <div class="section-header">
+            <h2 class="section-title">COMPREHENSIVE <span>SERVICES</span></h2>
+            <p class="section-desc">Tailored solutions to meet your specific individual or business needs.</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-box">
+                <h3>Individual Tax Services</h3>
+                <p>Helping salaried employees, professionals, investors, freelancers, and NRIs manage taxes efficiently.</p>
+                <ul>
+                    <li>Income Tax Return Filing</li>
+                    <li>TDS Return Filing</li>
+                    <li>Tax Planning</li>
+                    <li>Capital Gain Computation</li>
+                    <li>Tax Notices & Assessments</li>
+                    <li>NRI Tax Services</li>
+                </ul>
+            </div>
+            <div class="service-box">
+                <h3>Business Compliance & Growth</h3>
+                <p>Supporting businesses from registration to expansion.</p>
+                <ul>
+                    <li>Company Registration</li>
+                    <li>LLP Registration</li>
+                    <li>GST Registration</li>
+                    <li>Trademark Registration</li>
+                    <li>ROC Compliance</li>
+                    <li>Payroll Compliance</li>
+                </ul>
+            </div>
+            <div class="service-box">
+                <h3>Accounting & Audit</h3>
+                <p>Delivering accurate financial information for informed decision-making.</p>
+                <ul>
+                    <li>Bookkeeping</li>
+                    <li>Financial Statements</li>
+                    <li>Internal Audit</li>
+                    <li>MIS Reports</li>
+                    <li>Budgeting & Forecasting</li>
+                    <li>Virtual CFO Services</li>
+                </ul>
+            </div>
+            <div class="service-box">
+                <h3>Technology & Automation</h3>
+                <p>Building digital solutions that improve productivity and scalability.</p>
+                <ul>
+                    <li>Business Websites</li>
+                    <li>Mobile Applications</li>
+                    <li>ERP Development</li>
+                    <li>CRM Development</li>
+                    <li>Inventory Systems</li>
+                    <li>Custom Software</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="process-section">
+        <div class="process-subtitle">Our Business</div>
+        <h2 class="process-title">HOW WE <span>SERVE</span> YOUR BUSINESS</h2>
+        <p class="process-desc">From Start to Success &ndash; We're With You at Every Step</p>
+
+        <div class="process-grid">
+            <div class="process-step">
+                <div class="step-number">01</div>
+                <div class="step-icon"><i class="fa-regular fa-comments"></i></div>
+                <div class="step-title">Understand</div>
+                <div class="step-focus">Your Business</div>
+                <div class="step-text">We listen, analyze and understand your goals, challenges and requirements.</div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-number">02</div>
+                <div class="step-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+                <div class="step-title">Plan & Advise</div>
+                <div class="step-focus">The Right Strategy</div>
+                <div class="step-text">Our experts create a customized plan and guide you with the best solutions.</div>
+            </div>
+
+            <div class="process-step">
+                <div class="step-number">03</div>
+                <div class="step-icon"><i class="fa-solid fa-file-circle-check"></i></div>
+                <div class="step-title">Setup & Register</div>
+                <div class="step-focus">Build the Foundation</div>
+                <div class="step-text">Business registration, licenses, bank, GST and other mandatory setups – we handle it all.</div>
+            </div>
+
+            <div class="process-step">
+                <div class="step-number">04</div>
+                <div class="step-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="step-title">Manage & Comply</div>
+                <div class="step-focus">Stay Compliant</div>
+                <div class="step-text">We manage your accounting, taxation, payroll and all regulatory compliances accurately and on time.</div>
+            </div>
+
+            <div class="process-step">
+                <div class="step-number">05</div>
+                <div class="step-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="step-title">Analyze & Advise</div>
+                <div class="step-focus">Make Better Decisions</div>
+                <div class="step-text">We provide insights, reports and expert advice to help you make smart business decisions.</div>
+            </div>
+
+            <div class="process-step">
+                <div class="step-number">06</div>
+                <div class="step-icon"><i class="fa-solid fa-mountain-sun"></i></div>
+                <div class="step-title">Grow & Succeed</div>
+                <div class="step-focus">Scale Your Business</div>
+                <div class="step-text">With the right strategy and expert support, we help your business grow with confidence.</div>
+            </div>
+        </div>
+
+        <div class="promise-banner">
+            <div class="promise-left">
+                <div class="promise-icon"><i class="fa-regular fa-handshake"></i></div>
+                <div class="promise-text">
+                    <h4>OUR PROMISE</h4>
+                    <p>Expert Guidance. Timely Compliance.<br>Smart Solutions. Business Growth.</p>
+                </div>
+            </div>
+            <div class="promise-right">
+                <div class="promise-item">
+                    <i class="fa-solid fa-user-tie"></i>
+                    <span>Expert<br>Team</span>
+                </div>
+                <div class="promise-item">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Trust &<br>Transparency</span>
+                </div>
+                <div class="promise-item">
+                    <i class="fa-solid fa-laptop-code"></i>
+                    <span>Technology<br>Driven</span>
+                </div>
+                <div class="promise-item">
+                    <i class="fa-solid fa-headset"></i>
+                    <span>End-To-End<br>Support</span>
+                </div>
+                <div class="promise-item">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    <span>Growth<br>Focused</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="industries-section">
+        <div class="section-header">
+            <h2 class="section-title">INDUSTRIES WE <span>SERVE</span></h2>
+        </div>
+        <div class="industries-grid">
+            <div class="industry-item">Individuals & NRIs</div>
+            <div class="industry-item">Professionals & Consultants</div>
+            <div class="industry-item">Startups & Entrepreneurs</div>
+            <div class="industry-item">Retail & E-Commerce</div>
+            <div class="industry-item">Manufacturing & Trading</div>
+            <div class="industry-item">Construction & Real Estate</div>
+            <div class="industry-item">Healthcare & Medical</div>
+            <div class="industry-item">Education & Training</div>
+            <div class="industry-item">Hospitality & Food</div>
+            <div class="industry-item">Logistics & Transport</div>
+            <div class="industry-item">IT & Software</div>
+            <div class="industry-item">NGOs & Trusts</div>
+        </div>
+    </section>
+
+    <section class="testimonials-section">
+        <div class="section-header">
+            <h2 class="section-title">CLIENT <span>TESTIMONIALS</span></h2>
+            <p class="section-desc">See what our clients say about our services.</p>
+        </div>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p class="quote-text">"Very prompt and professional service. They simplified our tax filing process entirely. Highly recommended for corporate compliance."</p>
+                <div class="client-name">Mrs. Sreekala</div>
+                <div class="client-company">Pondicherry University</div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p class="quote-text">"Handled US stock and crypto tax filings perfectly. Extremely reliable tax experts who know exactly how to manage complex modern assets."</p>
+                <div class="client-name">Miss Akshara</div>
+                <div class="client-company">US Stocks Trader</div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p class="quote-text">"Providing excellent GST services since day one. A trustworthy team that completely took the burden of monthly filings off our shoulders."</p>
+                <div class="client-name">Mr. Fajinas</div>
+                <div class="client-company">Truewell Marketing</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="careers-section" id="careers">
+        <div class="careers-text">
+            <h2>JOIN A TEAM THAT HELPS BUSINESSES GROW</h2>
+            <p>We are always looking for talented professionals.</p>
+            <ul class="careers-list">
+                <li>Tax & Compliance</li>
+                <li>Accounting & Finance</li>
+                <li>Software Development</li>
+                <li>ERP & CRM Consulting</li>
+                <li>Client Relations</li>
+                <li>Business Development</li>
+            </ul>
+        </div>
+        <div class="careers-action">
+            <a href="mailto:careers@cmfilings.com" class="btn" style="background-color: var(--primary-red); color: white;">Send Resume</a>
+        </div>
+    </section>
+
+    <section class="final-cta">
+        <h2>Your Growth Partner for Tax, Compliance, Finance & Technology</h2>
+        <p>Whether you're filing a personal tax return, starting a new business, managing finances, or implementing ERP and CRM solutions, CM Filings provides expert guidance every step of the way.</p>
+        <div class="highlight-bar">
+            FILE &bull; REGISTER &bull; MANAGE &bull; AUTOMATE &bull; GROW
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>CM Filings</h3>
+                <p>Compliance &bull; Finance &bull; Technology</p>
+            </div>
+            
+            <div class="footer-contact">
+                <p><i class="fa-solid fa-envelope"></i> info@cmfilings.com</p>
+                <p><i class="fa-solid fa-phone"></i> +91 9946 151 111 / +91 9895 470 148</p>
+                <p><i class="fa-solid fa-location-dot"></i> Shakthi Complex, Mahe, Kannur Dist, Kerala 670672</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 CM Filings. All rights reserved. Designed by CMwebXperts.
+        </div>
+    </footer>
+
+    <script>
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeIcon = themeToggleBtn.querySelector('i');
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    </script>
+</body>
+</html>
