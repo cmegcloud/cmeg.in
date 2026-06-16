@@ -9,8 +9,8 @@
     <style>
         /* --- Core Theme Variables --- */
         :root {
-            --primary: #CD5C48;
-            --primary-light: #FCECE8;
+            --primary: #e16349;
+            --primary-light: #fef5e8;
             --bg: #F8F5F1;
             --surface: #ffffff;
             --text-main: #222222;
@@ -45,7 +45,9 @@
 
         .btn-outline { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
         .btn-outline:hover { background: #FAFAFA; border-color: #DDD; }
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn-primary:active { opacity: 0.8; }
+        .btn-primary:disabled { background: var(--grey-med); cursor: not-allowed; }
 
         /* --- Table Styling & Sticky Left Column --- */
         .table-container { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
@@ -68,7 +70,7 @@
         /* --- Employee Inline Top Summaries --- */
         .emp-name { font-size: 13px; font-weight: 700; color: var(--text-main); }
         .emp-role { font-size: 10px; color: var(--text-muted); font-weight: 500; display: block; margin-top: 2px; margin-bottom: 8px; }
-        .emp-stats { display: flex; gap: 6px; align-items: center; }
+        .emp-stats { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
         .stat-badge { padding: 4px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; border: 1px solid var(--border); background: #FAFAFA; display: inline-flex; align-items: center; gap: 4px;}
         .stat-badge.today { background: var(--primary-light); color: var(--primary); border-color: var(--primary-light); }
 
@@ -79,13 +81,13 @@
         .cell-h { background: var(--holiday-bg) !important; color: var(--holiday) !important; }
         
         /* Highlight Today's Column */
-        .col-today { background: var(--primary-light); color: var(--primary); border-bottom: 2px solid var(--primary) !important; }
+        .col-today { background: var(--primary-light) !important; color: var(--primary) !important; border-bottom: 2px solid var(--primary) !important; }
         .editable-today { cursor: pointer; box-shadow: inset 0 0 0 2px var(--primary); }
         
         /* Locked Past Days */
         .locked-cell { cursor: pointer; position: relative; opacity: 0.8; }
         .locked-cell::after { content: 'lock'; font-family: 'Material Symbols Rounded'; font-size: 10px; position: absolute; top: 2px; right: 2px; color: rgba(0,0,0,0.2); }
-        .unlocked-cell { cursor: pointer; box-shadow: inset 0 0 0 2px var(--warning); opacity: 1; }
+        .unlocked-cell { cursor: pointer; box-shadow: inset 0 0 0 2px var(--leave); opacity: 1; }
         .future-cell { background: #F4F4F4 !important; color: #CCC !important; pointer-events: none; }
 
         /* --- Modal Popup Styling --- */
@@ -106,26 +108,22 @@
             .month-table th:first-child, .month-table td:first-child { position: static; box-shadow: none; }
             .locked-cell::after { display: none; }
             .month-table { min-width: auto; width: 100%; font-size: 10pt; }
-            .emp-stats { display: none; /* Hide interactive badges on print for a cleaner ledger */ }
+            .emp-stats { display: none; }
             .emp-role { margin-bottom: 0; }
         }
 
     </style>
-</head>
-<body>
 
-<div class="module-container">
-    
     <div class="section-title">
         <h2>Attendance Tracker</h2>
         <div class="no-print" style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <button class="btn-outline" onclick="exportCSV()">
+            <button class="btn-outline" onclick="window.exportCSV()">
                 <span class="material-symbols-rounded" style="font-size: 18px; color: #34A853;">description</span> Export CSV
             </button>
-            <button class="btn-outline" onclick="exportPDF()">
+            <button class="btn-outline" onclick="window.exportPDF()">
                 <span class="material-symbols-rounded" style="font-size: 18px; color: var(--danger);">picture_as_pdf</span> Export PDF
             </button>
-            <button class="btn-primary" onclick="alert('Attendance database synced successfully!')">
+            <button class="btn-primary" id="saveBtn" onclick="window.saveAttendance()">
                 <span class="material-symbols-rounded" style="font-size: 18px;">cloud_sync</span> Save Updates
             </button>
         </div>
@@ -135,11 +133,11 @@
         <div class="input-group">
             <div>
                 <label class="form-label">Select Month</label>
-                <input type="month" class="form-input" value="2026-06">
+                <input type="month" id="monthFilter" class="form-input" onchange="window.loadAttendanceData()">
             </div>
             <div>
                 <label class="form-label">Employee Type</label>
-                <select class="form-input">
+                <select id="typeFilter" class="form-input" onchange="window.renderTable()">
                     <option value="All">All (Staff & Therapists)</option>
                     <option value="Therapist">Therapist Only</option>
                     <option value="Staff">Staff Only</option>
@@ -147,22 +145,16 @@
             </div>
             <div>
                 <label class="form-label">Branch Filter</label>
-                <select class="form-input">
+                <select id="branchFilter" class="form-input" onchange="window.renderTable()">
                     <option value="All">All Branches</option>
-                    <option value="Mahe">Mahe</option>
-                    <option value="Chokli">Chokli</option>
-                    <option value="Panoor">Panoor</option>
-                </select>
-            </div>
-            <div style="display: flex; align-items: flex-end;">
-                <button class="btn-outline" style="width: 100%; justify-content: center;">Apply Filter</button>
+                    </select>
             </div>
         </div>
     </div>
 
     <div class="table-container">
         <div class="table-header">
-            <h4>June 2026 Register</h4>
+            <h4 id="registerTitle">Loading Register...</h4>
             <span class="no-print" style="font-size: 12px; color: var(--text-muted); font-weight: 500;">
                 <span class="material-symbols-rounded" style="font-size: 14px; vertical-align: middle;">lock</span> Past days locked
             </span>
@@ -171,69 +163,9 @@
         <div class="table-scroll-wrapper">
             <table class="month-table" id="attendanceTable">
                 <thead>
-                    <tr>
-                        <th>Employee Overview</th>
-                        <th>9</th><th>10</th><th>11</th><th>12</th><th class="col-today">13 (Today)</th><th>14</th><th>15</th>
-                    </tr>
-                </thead>
+                    </thead>
                 <tbody>
-                    <tr>
-                        <td>
-                            <div class="emp-name">Dr. Anjali V.</div>
-                            <div class="emp-role">Therapist • Mahe</div>
-                            <div class="emp-stats">
-                                <span class="stat-badge">Total P: 10</span>
-                                <span class="stat-badge">Total L: 2</span>
-                                <span class="stat-badge today" id="today-status-1">Today: P</span>
-                            </div>
-                        </td>
-                        <td class="day-cell cell-p" data-date="9">P</td>
-                        <td class="day-cell cell-p" data-date="10">P</td>
-                        <td class="day-cell cell-l" data-date="11">L</td>
-                        <td class="day-cell cell-l" data-date="12">L</td>
-                        <td class="day-cell cell-p" data-date="13" data-emp="1">P</td>
-                        <td class="day-cell" data-date="14">-</td>
-                        <td class="day-cell" data-date="15">-</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>
-                            <div class="emp-name">Priya Sharma</div>
-                            <div class="emp-role">Front Desk Admin • Mahe</div>
-                            <div class="emp-stats">
-                                <span class="stat-badge">Total P: 12</span>
-                                <span class="stat-badge">Total L: 0</span>
-                                <span class="stat-badge today" id="today-status-2">Today: P</span>
-                            </div>
-                        </td>
-                        <td class="day-cell cell-p" data-date="9">P</td>
-                        <td class="day-cell cell-p" data-date="10">P</td>
-                        <td class="day-cell cell-p" data-date="11">P</td>
-                        <td class="day-cell cell-p" data-date="12">P</td>
-                        <td class="day-cell cell-p" data-date="13" data-emp="2">P</td>
-                        <td class="day-cell" data-date="14">-</td>
-                        <td class="day-cell" data-date="15">-</td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            <div class="emp-name">Arun Kumar</div>
-                            <div class="emp-role">Clinic Assistant • Nadapuram</div>
-                            <div class="emp-stats">
-                                <span class="stat-badge">Total P: 6</span>
-                                <span class="stat-badge">Total L: 5</span>
-                                <span class="stat-badge today" id="today-status-3">Today: A</span>
-                            </div>
-                        </td>
-                        <td class="day-cell cell-p" data-date="9">P</td>
-                        <td class="day-cell cell-p" data-date="10">P</td>
-                        <td class="day-cell cell-p" data-date="11">P</td>
-                        <td class="day-cell cell-p" data-date="12">P</td>
-                        <td class="day-cell cell-a" data-date="13" data-emp="3">A</td>
-                        <td class="day-cell" data-date="14">-</td>
-                        <td class="day-cell" data-date="15">-</td>
-                    </tr>
-                </tbody>
+                    </tbody>
             </table>
         </div>
     </div>
@@ -248,120 +180,346 @@
             You are attempting to modify a saved attendance record for <strong id="modalDateTarget"></strong>. Do you want to unlock this day for editing?
         </div>
         <div class="modal-actions">
-            <button class="btn-outline" onclick="closeModal()">Cancel</button>
-            <button class="btn-primary" style="background: #FBBC05; color: #222;" onclick="confirmUnlock()">Unlock & Edit</button>
+            <button class="btn-outline" onclick="window.closeModal()">Cancel</button>
+            <button class="btn-primary" style="background: #FBBC05; color: #222;" onclick="window.confirmUnlock()">Unlock & Edit</button>
         </div>
     </div>
 </div>
 
-<script>
-    // System Context: Setting Today as the 13th
-    const TODAY_DATE = 13;
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    // CMF001STRA Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
+        authDomain: "cmf001stra.firebaseapp.com",
+        projectId: "cmf001stra",
+        storageBucket: "cmf001stra.firebasestorage.app",
+        messagingSenderId: "763958641347",
+        appId: "1:763958641347:web:316876bc2340b26bd21876",
+        measurementId: "G-770FBR88LJ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // --- State Variables ---
+    let employees = [];
+    let attendanceData = {};
     let targetLockedCell = null;
 
-    // --- Cell Toggle Logic ---
-    function toggleAttendanceStatus(cell) {
-        let state = cell.innerText.trim();
-        cell.className = 'day-cell'; // reset classes
+    // Current Exact Date Engine
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1; // 1-12
+    const currentDay = now.getDate();
+
+    // Init Logic
+    async function init() {
+        const y = currentYear;
+        const m = String(currentMonth).padStart(2, '0');
+        document.getElementById('monthFilter').value = `${y}-${m}`;
+
+        await loadBranches();
+        await loadEmployees();
+        await window.loadAttendanceData();
+    }
+
+    async function loadBranches() {
+        const branchSelect = document.getElementById('branchFilter');
+        try {
+            const snap = await getDocs(query(collection(db, "branches"), orderBy("name")));
+            branchSelect.innerHTML = '<option value="All">All Branches</option>';
+            snap.forEach(doc => {
+                const name = doc.data().name;
+                branchSelect.innerHTML += `<option value="${name}">${name}</option>`;
+            });
+        } catch(e) { console.error(e); }
+    }
+
+    async function loadEmployees() {
+        try {
+            employees = [];
+            const tSnap = await getDocs(collection(db, "therapists"));
+            tSnap.forEach(doc => employees.push({ id: doc.id, type: 'Therapist', ...doc.data() }));
+
+            const sSnap = await getDocs(collection(db, "staff"));
+            sSnap.forEach(doc => employees.push({ id: doc.id, type: 'Staff', ...doc.data() }));
+        } catch(e) { console.error(e); }
+    }
+
+    // --- Data Rendering ---
+    window.loadAttendanceData = async function() {
+        const monthInput = document.getElementById('monthFilter').value;
+        if(!monthInput) return;
         
-        if (cell.classList.contains('unlocked-cell')) {
-            cell.classList.add('unlocked-cell');
-        } else if (cell.classList.contains('editable-today')) {
-            cell.classList.add('editable-today');
+        document.querySelector('#attendanceTable tbody').innerHTML = `<tr><td style="padding:20px; text-align:center;">Syncing from Firebase...</td></tr>`;
+
+        try {
+            const q = query(collection(db, "attendance"), where("month", "==", monthInput));
+            const snap = await getDocs(q);
+            
+            attendanceData = {};
+            snap.forEach(doc => {
+                const data = doc.data();
+                attendanceData[data.empId] = data.days || {};
+                attendanceData[data.empId]._docId = doc.id; // Store to update later
+            });
+
+            window.renderTable();
+        } catch(e) { console.error(e); }
+    }
+
+    window.renderTable = function() {
+        const monthInput = document.getElementById('monthFilter').value;
+        const [year, month] = monthInput.split('-');
+        const daysInMonth = new Date(year, month, 0).getDate();
+
+        // Update Title
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        document.getElementById('registerTitle').innerText = `${monthNames[parseInt(month)-1]} ${year} Register`;
+
+        // Thead
+        let theadHtml = '<tr><th>Employee Overview</th>';
+        for(let d = 1; d <= daysInMonth; d++) {
+            let isToday = (year == currentYear && month == currentMonth && d == currentDay);
+            theadHtml += `<th class="${isToday ? 'col-today' : ''}">${d}${isToday ? '<br><span style="font-size:8px;">(Today)</span>' : ''}</th>`;
+        }
+        theadHtml += '</tr>';
+        document.querySelector('#attendanceTable thead').innerHTML = theadHtml;
+
+        // Tbody
+        const typeFilter = document.getElementById('typeFilter').value;
+        const branchFilter = document.getElementById('branchFilter').value;
+
+        if(employees.length === 0) {
+            document.querySelector('#attendanceTable tbody').innerHTML = `<tr><td colspan="${daysInMonth + 1}" style="text-align:center; padding:20px;">No employees found. Add Staff or Therapists first!</td></tr>`;
+            return;
         }
 
-        if (state === 'P') {
-            cell.innerText = 'A'; cell.classList.add('cell-a');
-        } else if (state === 'A') {
-            cell.innerText = 'L'; cell.classList.add('cell-l');
-        } else if (state === 'L') {
-            cell.innerText = 'H'; cell.classList.add('cell-h');
-        } else {
-            cell.innerText = 'P'; cell.classList.add('cell-p');
+        let tbodyHtml = '';
+        let visibleCount = 0;
+
+        employees.forEach(emp => {
+            if(typeFilter !== 'All' && emp.type !== typeFilter) return;
+            if(branchFilter !== 'All' && emp.branch !== branchFilter) return;
+
+            visibleCount++;
+            const empAtt = attendanceData[emp.id] || {};
+            
+            let totalP = 0, totalL = 0;
+            Object.keys(empAtt).forEach(key => {
+                if(key !== '_docId') {
+                    if(empAtt[key] === 'P') totalP++;
+                    if(empAtt[key] === 'L') totalL++;
+                }
+            });
+
+            let todayStatus = empAtt[currentDay] || '-';
+
+            let rowHtml = `<tr>
+                <td>
+                    <div class="emp-name">${emp.name || 'Unknown'}</div>
+                    <div class="emp-role">${emp.type} • ${emp.branch || 'N/A'}</div>
+                    <div class="emp-stats">
+                        <span class="stat-badge" id="tot-p-${emp.id}">Total P: ${totalP}</span>
+                        <span class="stat-badge" id="tot-l-${emp.id}">Total L: ${totalL}</span>
+                        ${(year == currentYear && month == currentMonth) ? `<span class="stat-badge today" id="today-status-${emp.id}">Today: ${todayStatus}</span>` : ''}
+                    </div>
+                </td>`;
+
+            for(let d = 1; d <= daysInMonth; d++) {
+                let status = empAtt[d] || '-';
+                let cellClass = 'day-cell';
+                if(status==='P') cellClass += ' cell-p';
+                if(status==='A') cellClass += ' cell-a';
+                if(status==='L') cellClass += ' cell-l';
+                if(status==='H') cellClass += ' cell-h';
+
+                // Safety lock logic
+                let lockClass = '';
+                if (year < currentYear || (year == currentYear && month < currentMonth) || (year == currentYear && month == currentMonth && d < currentDay)) {
+                    lockClass = 'locked-cell';
+                } else if (year == currentYear && month == currentMonth && d == currentDay) {
+                    lockClass = 'editable-today';
+                } else {
+                    lockClass = 'future-cell';
+                }
+
+                rowHtml += `<td class="${cellClass} ${lockClass}" data-emp="${emp.id}" data-date="${d}" data-month="${monthInput}">${status}</td>`;
+            }
+            rowHtml += `</tr>`;
+            tbodyHtml += rowHtml;
+        });
+
+        if(visibleCount === 0) {
+            tbodyHtml = `<tr><td colspan="${daysInMonth + 1}" style="text-align:center; padding:20px;">No employees match your filters.</td></tr>`;
         }
 
-        // Live update the "Today's Status" badge
-        if (cell.getAttribute('data-date') == TODAY_DATE) {
-            const empId = cell.getAttribute('data-emp');
-            document.getElementById(`today-status-${empId}`).innerText = `Today: ${cell.innerText}`;
+        document.querySelector('#attendanceTable tbody').innerHTML = tbodyHtml;
+        attachCellListeners();
+    }
+
+    // --- Interactive Cell Engine ---
+    function attachCellListeners() {
+        document.querySelectorAll('.day-cell').forEach(cell => {
+            if(cell.classList.contains('locked-cell')) {
+                cell.addEventListener('click', function() {
+                    if(this.classList.contains('unlocked-cell')) {
+                        window.toggleStatus(this);
+                    } else {
+                        targetLockedCell = this;
+                        document.getElementById('modalDateTarget').innerText = `${this.getAttribute('data-date')} / ${this.getAttribute('data-month')}`;
+                        document.getElementById('unlockModal').style.display = 'flex';
+                    }
+                });
+            } else if(cell.classList.contains('editable-today')) {
+                cell.addEventListener('click', function() { window.toggleStatus(this); });
+            }
+        });
+    }
+
+    window.toggleStatus = function(cell) {
+        const states = ['-', 'P', 'A', 'L', 'H'];
+        const current = cell.innerText.trim();
+        let nextIndex = states.indexOf(current) + 1;
+        if(nextIndex >= states.length) nextIndex = 0;
+        const next = states[nextIndex];
+
+        cell.innerText = next;
+        cell.className = cell.className.replace(/cell-[palh]/g, '').trim();
+        if(next !== '-') cell.classList.add('cell-' + next.toLowerCase());
+
+        const empId = cell.getAttribute('data-emp');
+        const date = cell.getAttribute('data-date');
+        
+        if(!attendanceData[empId]) attendanceData[empId] = {};
+        attendanceData[empId][date] = next;
+
+        window.updateEmployeeStats(empId);
+    }
+
+    window.updateEmployeeStats = function(empId) {
+        let totalP = 0, totalL = 0;
+        let att = attendanceData[empId] || {};
+        
+        Object.keys(att).forEach(k => {
+            if(k !== '_docId') {
+                if(att[k] === 'P') totalP++;
+                if(att[k] === 'L') totalL++;
+            }
+        });
+        
+        const pBadge = document.getElementById(`tot-p-${empId}`);
+        const lBadge = document.getElementById(`tot-l-${empId}`);
+        if(pBadge) pBadge.innerText = `Total P: ${totalP}`;
+        if(lBadge) lBadge.innerText = `Total L: ${totalL}`;
+
+        const monthInput = document.getElementById('monthFilter').value;
+        const [year, month] = monthInput.split('-');
+        if(year == currentYear && month == currentMonth) {
+            let todayStatus = att[currentDay] || '-';
+            const todayBadge = document.getElementById(`today-status-${empId}`);
+            if(todayBadge) todayBadge.innerText = `Today: ${todayStatus}`;
         }
     }
 
-    // Initialize Table Cells
-    document.querySelectorAll('.day-cell').forEach(cell => {
-        const cellDate = parseInt(cell.getAttribute('data-date'));
-
-        if (cellDate === TODAY_DATE) {
-            cell.classList.add('editable-today');
-            cell.addEventListener('click', function() { toggleAttendanceStatus(this); });
-        } 
-        else if (cellDate < TODAY_DATE) {
-            cell.classList.add('locked-cell');
-            cell.addEventListener('click', function() {
-                if (this.classList.contains('unlocked-cell')) {
-                    toggleAttendanceStatus(this);
-                } else {
-                    targetLockedCell = this;
-                    document.getElementById('modalDateTarget').innerText = `June ${cellDate}, 2026`;
-                    document.getElementById('unlockModal').style.display = 'flex';
-                }
-            });
-        } 
-        else if (cellDate > TODAY_DATE) {
-            cell.classList.add('future-cell');
-        }
-    });
-
-    // Modal Control
-    function closeModal() {
+    // --- Modal Controls ---
+    window.closeModal = function() {
         document.getElementById('unlockModal').style.display = 'none';
         targetLockedCell = null;
     }
 
-    function confirmUnlock() {
+    window.confirmUnlock = function() {
         if (targetLockedCell) {
             targetLockedCell.classList.remove('locked-cell');
             targetLockedCell.classList.add('unlocked-cell');
-            toggleAttendanceStatus(targetLockedCell);
+            window.toggleStatus(targetLockedCell);
         }
-        closeModal();
+        window.closeModal();
     }
 
-    // --- CSV Export Logic ---
-    function exportCSV() {
+    // --- Database Save Engine ---
+    window.saveAttendance = async function() {
+        const btn = document.getElementById('saveBtn');
+        btn.innerHTML = '<span class="material-symbols-rounded" style="font-size: 18px;">cloud_sync</span> Saving...';
+        btn.disabled = true;
+
+        const monthInput = document.getElementById('monthFilter').value;
+
+        try {
+            for(let empId in attendanceData) {
+                let data = attendanceData[empId];
+                let docId = data._docId;
+                let days = { ...data };
+                delete days._docId; // remove internal key
+
+                if(Object.keys(days).length === 0) continue; // Skip if totally empty
+
+                if(docId) {
+                    await updateDoc(doc(db, "attendance", docId), { days: days, updatedAt: new Date() });
+                } else {
+                    let newDoc = await addDoc(collection(db, "attendance"), {
+                        empId: empId,
+                        month: monthInput,
+                        days: days,
+                        updatedAt: new Date()
+                    });
+                    attendanceData[empId]._docId = newDoc.id; // cache new ID
+                }
+            }
+            alert('Attendance securely synced to Firebase!');
+        } catch(e) {
+            console.error(e);
+            alert('Failed to sync data to database.');
+        }
+
+        btn.innerHTML = '<span class="material-symbols-rounded" style="font-size: 18px;">cloud_sync</span> Save Updates';
+        btn.disabled = false;
+    }
+
+    // --- File Export Actions ---
+    window.exportCSV = function() {
         const table = document.getElementById("attendanceTable");
         let csvData = [];
         
-        // Loop through rows
         for (let i = 0; i < table.rows.length; i++) {
             let rowData = [];
             let cols = table.rows[i].querySelectorAll("td, th");
             
             for (let j = 0; j < cols.length; j++) {
-                // Clean up data (especially the multi-line employee name/role column)
-                let text = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " | ").trim();
-                text = text.replace(/Today: [A-Z]/g, ""); // Remove the today status badge text for cleaner export
+                let text = "";
+                if(j === 0 && i > 0) {
+                    // Extract clean name and role without the status badges
+                    let nameNode = cols[j].querySelector('.emp-name');
+                    let roleNode = cols[j].querySelector('.emp-role');
+                    if(nameNode) text = `${nameNode.innerText} (${roleNode.innerText})`;
+                } else {
+                    text = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").replace('(Today)', '').trim();
+                }
                 rowData.push('"' + text + '"');
             }
             csvData.push(rowData.join(","));
         }
         
-        // Download logic
         let csvContent = "data:text/csv;charset=utf-8," + csvData.join("\n");
         let encodedUri = encodeURI(csvContent);
         let link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "Attendance_Register_June2026.csv");
+        link.setAttribute("download", `Attendance_${document.getElementById('monthFilter').value}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
 
-    // --- PDF Export Logic ---
-    function exportPDF() {
-        // Triggers the native print dialog optimized via @media print CSS for a flawless Landscape PDF
+    window.exportPDF = function() {
         window.print();
     }
+
+    // Ignite the module
+    init();
+
 </script>
 
 </body>
