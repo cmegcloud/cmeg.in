@@ -2,525 +2,537 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CMBooks - Attendance Tracking</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CMBooks - Daily Attendance</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0"/>
+</head>
+<body>
+
+<div class="module-container" id="attendance-module">
+    
     <style>
-        /* --- Core Theme Variables --- */
         :root {
             --primary: #e16349;
             --primary-light: #fef5e8;
             --bg: #F8F5F1;
             --surface: #ffffff;
-            --text-main: #222222;
+            --text-main: #0a0a0a;
             --text-muted: #777777;
             --border: #E8E5E1;
+            --grey-med: #D9D9D9;
             --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
-            
-            /* Attendance Colors */
-            --present: #34A853;
-            --present-bg: #E6F4EA;
-            --absent: #EA4335;
-            --absent-bg: #FCE8E6;
-            --leave: #FBBC05;
-            --leave-bg: #FEF7E0;
-            --holiday: #9AA0A6;
-            --holiday-bg: #F1F3F4;
-            --locked: #F9F9F9;
+            --success: #10B981; 
+            --danger: #ef4444;
+            --warning: #FB923C;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text-main); padding: 24px; display: flex; justify-content: center; }
-        .module-container { width: 100%; max-width: 1200px; position: relative; }
+        #attendance-module { font-family: 'Inter', sans-serif; width: 100%; max-width: 1120px; }
+        #attendance-module .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;}
+        
+        #attendance-module .form-card { background: var(--surface); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 24px; position: relative; }
+        #attendance-module .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+        
+        #attendance-module .input-group { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
+        @media (min-width: 768px) { #attendance-module .input-group { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 1024px) { #attendance-module .input-group.three-cols { grid-template-columns: 1fr 1fr 1fr; } }
 
-        /* --- UI Components --- */
-        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-        
-        .form-card { background: var(--surface); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 24px; }
-        .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
-        .input-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-        .form-input { width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; color: var(--text-main); background: #FAFAFA; outline: none; transition: border 0.2s; appearance: auto; }
-        .form-input:focus { border-color: var(--primary); background: var(--surface); }
+        #attendance-module .form-input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 14px; color: var(--text-main); background: #FAFAFA; outline: none; transition: border 0.2s; appearance: auto; }
+        #attendance-module .form-input:focus { border-color: var(--primary); background: var(--surface); }
 
-        .btn-outline { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
-        .btn-outline:hover { background: #FAFAFA; border-color: #DDD; }
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-        .btn-primary:active { opacity: 0.8; }
-        .btn-primary:disabled { background: var(--grey-med); cursor: not-allowed; }
+        #attendance-module .btn-primary { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; display: inline-flex; align-items: center; gap: 6px;}
+        #attendance-module .btn-primary:active { opacity: 0.8; }
+        #attendance-module .btn-primary:disabled { background: var(--grey-med); cursor: not-allowed; }
+        #attendance-module .btn-outline { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
 
-        /* --- Table Styling & Sticky Left Column --- */
-        .table-container { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
-        .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #FAFAFA; }
-        .table-header h4 { font-size: 15px; font-weight: 700; margin: 0; color: var(--primary); }
+        /* --- Table Styling --- */
+        #attendance-module .table-container { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
+        #attendance-module .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 16px; }
+        #attendance-module .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        #attendance-module .saas-table { width: 100%; min-width: 800px; border-collapse: collapse; text-align: left; }
+        #attendance-module .saas-table th { padding: 12px 20px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); }
+        #attendance-module .saas-table td { padding: 16px 20px; font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--border); vertical-align: middle; }
         
-        .table-scroll-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        
-        .month-table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; text-align: center; }
-        .month-table th { padding: 12px 8px; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); min-width: 44px; }
-        .month-table td { padding: 8px 4px; font-size: 12px; font-weight: 700; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); transition: 0.2s; }
-        
-        /* Sticky First Column */
-        .month-table th:first-child, .month-table td:first-child { 
-            position: sticky; left: 0; z-index: 2; background: #FAFAFA; text-align: left; min-width: 260px; padding: 12px 16px; box-shadow: 2px 0 5px rgba(0,0,0,0.04); border-right: 2px solid var(--border);
+        /* Status Badges */
+        .badge { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; text-transform: uppercase; display: inline-block; }
+        .badge-present { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .badge-absent { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .badge-leave { background: rgba(251, 146, 60, 0.1); color: var(--warning); }
+
+        /* Summary Dashboard */
+        .summary-dashboard { display: flex; gap: 12px; flex-wrap: wrap; background: #FAFAFA; padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
+        .summary-card { flex: 1; min-width: 120px; padding: 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .summary-card span { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+        .summary-card strong { font-size: 20px; font-weight: 800; color: var(--text-main); }
+        .summary-card.present strong { color: var(--success); }
+        .summary-card.absent strong { color: var(--danger); }
+
+        @media (max-width: 767px) {
+            #attendance-module .saas-table thead { display: none; }
+            #attendance-module .saas-table, #attendance-module .saas-table tbody, #attendance-module .saas-table tr, #attendance-module .saas-table td { display: block; width: 100%; }
+            #attendance-module .saas-table tr { padding: 16px; border-bottom: 1px solid var(--border); }
+            #attendance-module .saas-table td { padding: 8px 0; border: none; display: flex; justify-content: space-between; align-items: center; }
+            #attendance-module .saas-table td::before { content: attr(data-label); font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         }
-        .month-table td:first-child { background: #FFFFFF; }
-        .month-table tr:hover td:first-child { background: #FDFDFD; }
 
-        /* --- Employee Inline Top Summaries --- */
-        .emp-name { font-size: 13px; font-weight: 700; color: var(--text-main); }
-        .emp-role { font-size: 10px; color: var(--text-muted); font-weight: 500; display: block; margin-top: 2px; margin-bottom: 8px; }
-        .emp-stats { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-        .stat-badge { padding: 4px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; border: 1px solid var(--border); background: #FAFAFA; display: inline-flex; align-items: center; gap: 4px;}
-        .stat-badge.today { background: var(--primary-light); color: var(--primary); border-color: var(--primary-light); }
-
-        /* --- Cell Status & Lock UI --- */
-        .cell-p { background: var(--present-bg) !important; color: var(--present) !important; }
-        .cell-a { background: var(--absent-bg) !important; color: var(--absent) !important; }
-        .cell-l { background: var(--leave-bg) !important; color: var(--leave) !important; }
-        .cell-h { background: var(--holiday-bg) !important; color: var(--holiday) !important; }
-        
-        /* Highlight Today's Column */
-        .col-today { background: var(--primary-light) !important; color: var(--primary) !important; border-bottom: 2px solid var(--primary) !important; }
-        .editable-today { cursor: pointer; box-shadow: inset 0 0 0 2px var(--primary); }
-        
-        /* Locked Past Days */
-        .locked-cell { cursor: pointer; position: relative; opacity: 0.8; }
-        .locked-cell::after { content: 'lock'; font-family: 'Material Symbols Rounded'; font-size: 10px; position: absolute; top: 2px; right: 2px; color: rgba(0,0,0,0.2); }
-        .unlocked-cell { cursor: pointer; box-shadow: inset 0 0 0 2px var(--leave); opacity: 1; }
-        .future-cell { background: #F4F4F4 !important; color: #CCC !important; pointer-events: none; }
-
-        /* --- Modal Popup Styling --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-        .modal-card { background: var(--surface); width: 100%; max-width: 360px; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .modal-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;}
-        .modal-body { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
-        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
-
-        /* --- Print & PDF Export Rules --- */
         @media print {
-            @page { size: landscape; margin: 10mm; }
-            body { background: white; padding: 0; margin: 0; }
-            .no-print { display: none !important; }
-            .form-card { display: none !important; }
-            .table-container { border: none; box-shadow: none; margin: 0; padding: 0; }
-            .table-scroll-wrapper { overflow: visible !important; width: 100%; }
-            .month-table th:first-child, .month-table td:first-child { position: static; box-shadow: none; }
-            .locked-cell::after { display: none; }
-            .month-table { min-width: auto; width: 100%; font-size: 10pt; }
-            .emp-stats { display: none; }
-            .emp-role { margin-bottom: 0; }
+            body { background: white; padding: 0; }
+            #sidebar-container, #header-container, #bottomnav-container, .form-card, .section-title, .no-print { display: none !important; }
+            .main-wrapper { flex: 1; display: block; overflow: visible; }
+            #main-content { padding: 0; overflow: visible; }
+            #attendance-module .table-container { box-shadow: none; border: none; margin: 0; }
+            #attendance-module .saas-table th { background: white; color: black; border-bottom: 1px solid #000; }
+            #attendance-module .saas-table td { border-bottom: 1px solid #E8E5E1; }
         }
-
     </style>
 
     <div class="section-title">
-        <h2>Attendance Tracker</h2>
-        <div class="no-print" style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <button class="btn-outline" onclick="window.exportCSV()">
-                <span class="material-symbols-rounded" style="font-size: 18px; color: #34A853;">description</span> Export CSV
-            </button>
-            <button class="btn-outline" onclick="window.exportPDF()">
-                <span class="material-symbols-rounded" style="font-size: 18px; color: var(--danger);">picture_as_pdf</span> Export PDF
-            </button>
-            <button class="btn-primary" id="saveBtn" onclick="window.saveAttendance()">
-                <span class="material-symbols-rounded" style="font-size: 18px;">cloud_sync</span> Save Updates
-            </button>
-        </div>
+        <h2 style="margin: 0;">Daily Attendance Entry</h2>
     </div>
 
     <div class="form-card no-print">
-        <div class="input-group">
-            <div>
-                <label class="form-label">Select Month</label>
-                <input type="month" id="monthFilter" class="form-input" onchange="window.loadAttendanceData()">
+        <form id="attendance-form" onsubmit="event.preventDefault();">
+            <input type="hidden" id="attDocId" value="">
+
+            <div class="input-group three-cols">
+                <div>
+                    <label class="form-label">Date *</label>
+                    <input type="date" id="attDate" class="form-input" required>
+                </div>
+                <div>
+                    <label class="form-label">Select Staff / Therapist *</label>
+                    <select id="attEmployee" class="form-input" onchange="window.handleEmployeeSelect()" required>
+                        <option value="">Loading Directory...</option>
+                        </select>
+                </div>
+                <div>
+                    <label class="form-label">Branch *</label>
+                    <select id="attBranch" class="form-input" required>
+                        <option value="">Select Branch</option>
+                        </select>
+                </div>
             </div>
-            <div>
-                <label class="form-label">Employee Type</label>
-                <select id="typeFilter" class="form-input" onchange="window.renderTable()">
-                    <option value="All">All (Staff & Therapists)</option>
-                    <option value="Therapist">Therapist Only</option>
-                    <option value="Staff">Staff Only</option>
-                </select>
-            </div>
-            <div>
-                <label class="form-label">Branch Filter</label>
-                <select id="branchFilter" class="form-input" onchange="window.renderTable()">
-                    <option value="All">All Branches</option>
+
+            <div class="input-group three-cols">
+                <div>
+                    <label class="form-label">Attendance Status *</label>
+                    <select id="attStatus" class="form-input" required>
+                        <option value="Present">Present</option>
+                        <option value="Absent">Absent</option>
+                        <option value="Leave">On Leave</option>
+                        <option value="Half-Day">Half-Day</option>
                     </select>
+                </div>
+                <div style="grid-column: span 2;">
+                    <label class="form-label">Notes / Reason</label>
+                    <input type="text" id="attNotes" class="form-input" placeholder="Any specific remarks or reason for absence...">
+                </div>
             </div>
-        </div>
+
+            <div style="text-align: right; margin-top: 16px;">
+                <button type="reset" class="btn-outline" style="margin-right: 12px; padding: 12px 24px;" onclick="window.resetAttForm()">Clear Form</button>
+                <button type="button" class="btn-primary" id="saveAttBtn" onclick="window.saveAttendance()">
+                    <span class="material-symbols-rounded" style="font-size: 18px;">how_to_reg</span> Save Attendance
+                </button>
+            </div>
+        </form>
     </div>
 
     <div class="table-container">
         <div class="table-header">
-            <h4 id="registerTitle">Loading Register...</h4>
-            <span class="no-print" style="font-size: 12px; color: var(--text-muted); font-weight: 500;">
-                <span class="material-symbols-rounded" style="font-size: 14px; vertical-align: middle;">lock</span> Past days locked
-            </span>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <h4 style="margin: 0;">Attendance Log</h4>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-outline no-print" onclick="window.exportAttCSV()" style="padding: 6px 12px; font-size: 12px;">
+                        <span class="material-symbols-rounded" style="font-size: 14px; color: var(--success);">description</span> CSV
+                    </button>
+                    <button class="btn-outline no-print" onclick="window.print()" style="padding: 6px 12px; font-size: 12px;">
+                        <span class="material-symbols-rounded" style="font-size: 14px; color: var(--primary);">picture_as_pdf</span> PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="summary-dashboard" id="summaryDashboard">
+                <div class="summary-card">
+                    <span>Total Logs</span>
+                    <strong id="countTotal">0</strong>
+                </div>
+                <div class="summary-card present">
+                    <span>Present / Half-Day</span>
+                    <strong id="countPresent">0</strong>
+                </div>
+                <div class="summary-card absent">
+                    <span>Absent / Leave</span>
+                    <strong id="countAbsent">0</strong>
+                </div>
+            </div>
+
+            <div class="no-print" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: #fff; width: 100%;">
+                <input type="date" id="filterAttDate" class="form-input" onchange="window.filterAttTable()" style="padding: 8px; font-size: 12px; width: auto;" title="Filter by Date">
+                <button class="btn-outline" onclick="window.setAttFilterToday()" style="padding: 8px 12px; font-size: 12px;">Today</button>
+                
+                <select id="filterAttBranch" class="form-input" onchange="window.filterAttTable()" style="padding: 8px; font-size: 12px; width: auto;">
+                    <option value="">All Branches</option>
+                </select>
+
+                <select id="filterAttStatus" class="form-input" onchange="window.filterAttTable()" style="padding: 8px; font-size: 12px; width: auto;">
+                    <option value="">All Statuses</option>
+                    <option value="present">Present</option>
+                    <option value="absent">Absent</option>
+                    <option value="leave">On Leave</option>
+                    <option value="half-day">Half-Day</option>
+                </select>
+
+                <div style="display: flex; align-items: center; border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; flex: 1; min-width: 150px;">
+                    <span class="material-symbols-rounded" style="font-size: 16px; color: var(--text-muted);">search</span>
+                    <input type="text" id="attSearchInput" onkeyup="window.filterAttTable()" placeholder="Search Employee..." style="border: none; background: transparent; outline: none; font-size: 12px; width: 100%; margin-left: 6px;">
+                </div>
+                
+                <button class="btn-outline" onclick="window.clearAttFilters()" style="padding: 8px; font-size: 12px;" title="Clear Filters">
+                    <span class="material-symbols-rounded" style="font-size: 16px;">close</span>
+                </button>
+            </div>
         </div>
-        
-        <div class="table-scroll-wrapper">
-            <table class="month-table" id="attendanceTable">
+
+        <div class="table-responsive">
+            <table class="saas-table" id="attendanceTable">
                 <thead>
-                    </thead>
-                <tbody>
+                    <tr>
+                        <th>Date</th>
+                        <th>Employee Details</th>
+                        <th>Branch</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                        <th class="no-print" style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="attTableBody">
                     </tbody>
             </table>
         </div>
     </div>
-</div>
 
-<div class="modal-overlay" id="unlockModal">
-    <div class="modal-card">
-        <div class="modal-title">
-            <span class="material-symbols-rounded" style="color: #FBBC05;">lock_open</span> Unlock Record?
-        </div>
-        <div class="modal-body">
-            You are attempting to modify a saved attendance record for <strong id="modalDateTarget"></strong>. Do you want to unlock this day for editing?
-        </div>
-        <div class="modal-actions">
-            <button class="btn-outline" onclick="window.closeModal()">Cancel</button>
-            <button class="btn-primary" style="background: #FBBC05; color: #222;" onclick="window.confirmUnlock()">Unlock & Edit</button>
-        </div>
-    </div>
-</div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // CMF001STRA Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
+            authDomain: "cmf001stra.firebaseapp.com",
+            projectId: "cmf001stra",
+            storageBucket: "cmf001stra.firebasestorage.app",
+            messagingSenderId: "763958641347",
+            appId: "1:763958641347:web:316876bc2340b26bd21876",
+            measurementId: "G-770FBR88LJ"
+        };
 
-    // CMF001STRA Config
-    const firebaseConfig = {
-        apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
-        authDomain: "cmf001stra.firebaseapp.com",
-        projectId: "cmf001stra",
-        storageBucket: "cmf001stra.firebasestorage.app",
-        messagingSenderId: "763958641347",
-        appId: "1:763958641347:web:316876bc2340b26bd21876",
-        measurementId: "G-770FBR88LJ"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // --- State Variables ---
-    let employees = [];
-    let attendanceData = {};
-    let targetLockedCell = null;
-
-    // Current Exact Date Engine
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1; // 1-12
-    const currentDay = now.getDate();
-
-    // Init Logic
-    async function init() {
-        const y = currentYear;
-        const m = String(currentMonth).padStart(2, '0');
-        document.getElementById('monthFilter').value = `${y}-${m}`;
-
-        await loadBranches();
-        await loadEmployees();
-        await window.loadAttendanceData();
-    }
-
-    async function loadBranches() {
-        const branchSelect = document.getElementById('branchFilter');
-        try {
-            const snap = await getDocs(query(collection(db, "branches"), orderBy("name")));
-            branchSelect.innerHTML = '<option value="All">All Branches</option>';
-            snap.forEach(doc => {
-                const name = doc.data().name;
-                branchSelect.innerHTML += `<option value="${name}">${name}</option>`;
-            });
-        } catch(e) { console.error(e); }
-    }
-
-    async function loadEmployees() {
-        try {
-            employees = [];
-            const tSnap = await getDocs(collection(db, "therapists"));
-            tSnap.forEach(doc => employees.push({ id: doc.id, type: 'Therapist', ...doc.data() }));
-
-            const sSnap = await getDocs(collection(db, "staff"));
-            sSnap.forEach(doc => employees.push({ id: doc.id, type: 'Staff', ...doc.data() }));
-        } catch(e) { console.error(e); }
-    }
-
-    // --- Data Rendering ---
-    window.loadAttendanceData = async function() {
-        const monthInput = document.getElementById('monthFilter').value;
-        if(!monthInput) return;
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
         
-        document.querySelector('#attendanceTable tbody').innerHTML = `<tr><td style="padding:20px; text-align:center;">Syncing from Firebase...</td></tr>`;
+        window.attDataCache = {};
+        let allEmployees = [];
 
-        try {
-            const q = query(collection(db, "attendance"), where("month", "==", monthInput));
-            const snap = await getDocs(q);
-            
-            attendanceData = {};
-            snap.forEach(doc => {
-                const data = doc.data();
-                attendanceData[data.empId] = data.days || {};
-                attendanceData[data.empId]._docId = doc.id; // Store to update later
-            });
+        // Set Default Date to Today
+        document.getElementById("attDate").value = new Date().toISOString().split('T');
+        document.getElementById("filterAttDate").value = new Date().toISOString().split('T');
 
-            window.renderTable();
-        } catch(e) { console.error(e); }
-    }
-
-    window.renderTable = function() {
-        const monthInput = document.getElementById('monthFilter').value;
-        const [year, month] = monthInput.split('-');
-        const daysInMonth = new Date(year, month, 0).getDate();
-
-        // Update Title
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        document.getElementById('registerTitle').innerText = `${monthNames[parseInt(month)-1]} ${year} Register`;
-
-        // Thead
-        let theadHtml = '<tr><th>Employee Overview</th>';
-        for(let d = 1; d <= daysInMonth; d++) {
-            let isToday = (year == currentYear && month == currentMonth && d == currentDay);
-            theadHtml += `<th class="${isToday ? 'col-today' : ''}">${d}${isToday ? '<br><span style="font-size:8px;">(Today)</span>' : ''}</th>`;
-        }
-        theadHtml += '</tr>';
-        document.querySelector('#attendanceTable thead').innerHTML = theadHtml;
-
-        // Tbody
-        const typeFilter = document.getElementById('typeFilter').value;
-        const branchFilter = document.getElementById('branchFilter').value;
-
-        if(employees.length === 0) {
-            document.querySelector('#attendanceTable tbody').innerHTML = `<tr><td colspan="${daysInMonth + 1}" style="text-align:center; padding:20px;">No employees found. Add Staff or Therapists first!</td></tr>`;
-            return;
-        }
-
-        let tbodyHtml = '';
-        let visibleCount = 0;
-
-        employees.forEach(emp => {
-            if(typeFilter !== 'All' && emp.type !== typeFilter) return;
-            if(branchFilter !== 'All' && emp.branch !== branchFilter) return;
-
-            visibleCount++;
-            const empAtt = attendanceData[emp.id] || {};
-            
-            let totalP = 0, totalL = 0;
-            Object.keys(empAtt).forEach(key => {
-                if(key !== '_docId') {
-                    if(empAtt[key] === 'P') totalP++;
-                    if(empAtt[key] === 'L') totalL++;
-                }
-            });
-
-            let todayStatus = empAtt[currentDay] || '-';
-
-            let rowHtml = `<tr>
-                <td>
-                    <div class="emp-name">${emp.name || 'Unknown'}</div>
-                    <div class="emp-role">${emp.type} • ${emp.branch || 'N/A'}</div>
-                    <div class="emp-stats">
-                        <span class="stat-badge" id="tot-p-${emp.id}">Total P: ${totalP}</span>
-                        <span class="stat-badge" id="tot-l-${emp.id}">Total L: ${totalL}</span>
-                        ${(year == currentYear && month == currentMonth) ? `<span class="stat-badge today" id="today-status-${emp.id}">Today: ${todayStatus}</span>` : ''}
-                    </div>
-                </td>`;
-
-            for(let d = 1; d <= daysInMonth; d++) {
-                let status = empAtt[d] || '-';
-                let cellClass = 'day-cell';
-                if(status==='P') cellClass += ' cell-p';
-                if(status==='A') cellClass += ' cell-a';
-                if(status==='L') cellClass += ' cell-l';
-                if(status==='H') cellClass += ' cell-h';
-
-                // Safety lock logic
-                let lockClass = '';
-                if (year < currentYear || (year == currentYear && month < currentMonth) || (year == currentYear && month == currentMonth && d < currentDay)) {
-                    lockClass = 'locked-cell';
-                } else if (year == currentYear && month == currentMonth && d == currentDay) {
-                    lockClass = 'editable-today';
-                } else {
-                    lockClass = 'future-cell';
-                }
-
-                rowHtml += `<td class="${cellClass} ${lockClass}" data-emp="${emp.id}" data-date="${d}" data-month="${monthInput}">${status}</td>`;
-            }
-            rowHtml += `</tr>`;
-            tbodyHtml += rowHtml;
-        });
-
-        if(visibleCount === 0) {
-            tbodyHtml = `<tr><td colspan="${daysInMonth + 1}" style="text-align:center; padding:20px;">No employees match your filters.</td></tr>`;
-        }
-
-        document.querySelector('#attendanceTable tbody').innerHTML = tbodyHtml;
-        attachCellListeners();
-    }
-
-    // --- Interactive Cell Engine ---
-    function attachCellListeners() {
-        document.querySelectorAll('.day-cell').forEach(cell => {
-            if(cell.classList.contains('locked-cell')) {
-                cell.addEventListener('click', function() {
-                    if(this.classList.contains('unlocked-cell')) {
-                        window.toggleStatus(this);
-                    } else {
-                        targetLockedCell = this;
-                        document.getElementById('modalDateTarget').innerText = `${this.getAttribute('data-date')} / ${this.getAttribute('data-month')}`;
-                        document.getElementById('unlockModal').style.display = 'flex';
-                    }
+        // --- 1. LOAD DROPDOWNS (BRANCHES, STAFF, THERAPISTS) ---
+        window.loadDropdowns = async function() {
+            try {
+                // 1A. Load Branches
+                const bSnap = await getDocs(query(collection(db, "branches"), orderBy("name")));
+                let bHtml = '<option value="">Select Branch</option>';
+                let fHtml = '<option value="">All Branches</option>';
+                bSnap.forEach(doc => {
+                    const bName = doc.data().name;
+                    bHtml += `<option value="${bName}">${bName}</option>`;
+                    fHtml += `<option value="${bName}">${bName}</option>`;
                 });
-            } else if(cell.classList.contains('editable-today')) {
-                cell.addEventListener('click', function() { window.toggleStatus(this); });
+                document.getElementById('attBranch').innerHTML = bHtml;
+                document.getElementById('filterAttBranch').innerHTML = fHtml;
+
+                // 1B. Load Employees
+                allEmployees = [];
+                const tSnap = await getDocs(collection(db, "therapists"));
+                tSnap.forEach(doc => allEmployees.push({ id: doc.id, name: doc.data().name, type: 'Therapist', branch: doc.data().branch }));
+                
+                const sSnap = await getDocs(collection(db, "staff"));
+                sSnap.forEach(doc => allEmployees.push({ id: doc.id, name: doc.data().name, type: 'Staff', branch: doc.data().branch }));
+                
+                // Sort alphabetically
+                allEmployees.sort((a, b) => a.name.localeCompare(b.name));
+
+                let empHtml = '<option value="">Select Employee</option>';
+                allEmployees.forEach(emp => {
+                    empHtml += `<option value="${emp.id}" data-name="${emp.name}" data-type="${emp.type}" data-branch="${emp.branch}">${emp.name} (${emp.type})</option>`;
+                });
+                document.getElementById('attEmployee').innerHTML = empHtml;
+
+            } catch(e) { console.error("Error loading dropdowns:", e); }
+        };
+
+        window.loadDropdowns();
+
+        // Auto-fill branch when employee is selected
+        window.handleEmployeeSelect = function() {
+            const select = document.getElementById('attEmployee');
+            const selectedOption = select.options[select.selectedIndex];
+            if(selectedOption && selectedOption.value) {
+                const empBranch = selectedOption.getAttribute('data-branch');
+                if(empBranch) document.getElementById('attBranch').value = empBranch;
             }
-        });
-    }
+        };
 
-    window.toggleStatus = function(cell) {
-        const states = ['-', 'P', 'A', 'L', 'H'];
-        const current = cell.innerText.trim();
-        let nextIndex = states.indexOf(current) + 1;
-        if(nextIndex >= states.length) nextIndex = 0;
-        const next = states[nextIndex];
+        // --- 2. LOAD ATTENDANCE LOG ---
+        window.loadAttendanceLog = async function() {
+            const tableBody = document.getElementById('attTableBody');
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">Loading records...</td></tr>';
 
-        cell.innerText = next;
-        cell.className = cell.className.replace(/cell-[palh]/g, '').trim();
-        if(next !== '-') cell.classList.add('cell-' + next.toLowerCase());
-
-        const empId = cell.getAttribute('data-emp');
-        const date = cell.getAttribute('data-date');
-        
-        if(!attendanceData[empId]) attendanceData[empId] = {};
-        attendanceData[empId][date] = next;
-
-        window.updateEmployeeStats(empId);
-    }
-
-    window.updateEmployeeStats = function(empId) {
-        let totalP = 0, totalL = 0;
-        let att = attendanceData[empId] || {};
-        
-        Object.keys(att).forEach(k => {
-            if(k !== '_docId') {
-                if(att[k] === 'P') totalP++;
-                if(att[k] === 'L') totalL++;
-            }
-        });
-        
-        const pBadge = document.getElementById(`tot-p-${empId}`);
-        const lBadge = document.getElementById(`tot-l-${empId}`);
-        if(pBadge) pBadge.innerText = `Total P: ${totalP}`;
-        if(lBadge) lBadge.innerText = `Total L: ${totalL}`;
-
-        const monthInput = document.getElementById('monthFilter').value;
-        const [year, month] = monthInput.split('-');
-        if(year == currentYear && month == currentMonth) {
-            let todayStatus = att[currentDay] || '-';
-            const todayBadge = document.getElementById(`today-status-${empId}`);
-            if(todayBadge) todayBadge.innerText = `Today: ${todayStatus}`;
-        }
-    }
-
-    // --- Modal Controls ---
-    window.closeModal = function() {
-        document.getElementById('unlockModal').style.display = 'none';
-        targetLockedCell = null;
-    }
-
-    window.confirmUnlock = function() {
-        if (targetLockedCell) {
-            targetLockedCell.classList.remove('locked-cell');
-            targetLockedCell.classList.add('unlocked-cell');
-            window.toggleStatus(targetLockedCell);
-        }
-        window.closeModal();
-    }
-
-    // --- Database Save Engine ---
-    window.saveAttendance = async function() {
-        const btn = document.getElementById('saveBtn');
-        btn.innerHTML = '<span class="material-symbols-rounded" style="font-size: 18px;">cloud_sync</span> Saving...';
-        btn.disabled = true;
-
-        const monthInput = document.getElementById('monthFilter').value;
-
-        try {
-            for(let empId in attendanceData) {
-                let data = attendanceData[empId];
-                let docId = data._docId;
-                let days = { ...data };
-                delete days._docId; // remove internal key
-
-                if(Object.keys(days).length === 0) continue; // Skip if totally empty
-
-                if(docId) {
-                    await updateDoc(doc(db, "attendance", docId), { days: days, updatedAt: new Date() });
-                } else {
-                    let newDoc = await addDoc(collection(db, "attendance"), {
-                        empId: empId,
-                        month: monthInput,
-                        days: days,
-                        updatedAt: new Date()
-                    });
-                    attendanceData[empId]._docId = newDoc.id; // cache new ID
+            try {
+                // Fetch daily attendance ordered by date
+                const q = query(collection(db, "daily_attendance"), orderBy("date", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                tableBody.innerHTML = ''; 
+                window.attDataCache = {};
+                
+                if (querySnapshot.empty) {
+                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px; color: var(--text-muted);">No attendance records found.</td></tr>';
+                    window.calculateTotals();
+                    return;
                 }
+
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const docId = docSnap.id;
+                    window.attDataCache[docId] = data;
+
+                    let badgeClass = 'badge-present';
+                    if (data.status === 'Absent') badgeClass = 'badge-absent';
+                    else if (data.status === 'Leave' || data.status === 'Half-Day') badgeClass = 'badge-leave';
+
+                    const tr = document.createElement('tr');
+                    tr.setAttribute("data-date", data.date);
+                    tr.setAttribute("data-branch", (data.branch || '').toLowerCase());
+                    tr.setAttribute("data-status", data.status.toLowerCase());
+                    tr.setAttribute("data-search", `${data.empName} ${data.empType}`.toLowerCase());
+
+                    tr.innerHTML = `
+                        <td data-label="Date"><strong>${data.date}</strong></td>
+                        <td data-label="Employee">
+                            <strong style="font-size: 15px;">${data.empName}</strong><br>
+                            <span style="font-size: 12px; color: var(--text-muted);">${data.empType}</span>
+                        </td>
+                        <td data-label="Branch">${data.branch || '--'}</td>
+                        <td data-label="Status"><span class="badge ${badgeClass}">${data.status}</span></td>
+                        <td data-label="Notes"><span style="font-size: 13px; color: var(--text-muted);">${data.notes || '--'}</span></td>
+                        <td class="no-print" data-label="Actions" style="text-align: right;">
+                            <span class="material-symbols-rounded" style="color: var(--text-muted); cursor: pointer; font-size: 20px; margin-right: 8px;" title="Edit" onclick="window.editAtt('${docId}')">edit</span>
+                            <span class="material-symbols-rounded" style="color: var(--danger); cursor: pointer; font-size: 20px;" title="Delete" onclick="window.deleteAtt('${docId}')">delete</span>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+                
+                // Run initial filter to apply the default 'Today' filter
+                window.filterAttTable();
+
+            } catch (error) {
+                console.error("Firebase Read Error:", error);
+                tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px; color: var(--danger);">Error loading data. Check Firestore rules.</td></tr>';
             }
-            alert('Attendance securely synced to Firebase!');
-        } catch(e) {
-            console.error(e);
-            alert('Failed to sync data to database.');
-        }
+        };
 
-        btn.innerHTML = '<span class="material-symbols-rounded" style="font-size: 18px;">cloud_sync</span> Save Updates';
-        btn.disabled = false;
-    }
+        // Note: we wait a tiny bit to ensure dropdowns are ready before loading the log
+        setTimeout(() => window.loadAttendanceLog(), 500);
 
-    // --- File Export Actions ---
-    window.exportCSV = function() {
-        const table = document.getElementById("attendanceTable");
-        let csvData = [];
-        
-        for (let i = 0; i < table.rows.length; i++) {
-            let rowData = [];
-            let cols = table.rows[i].querySelectorAll("td, th");
+        // --- 3. DYNAMIC FILTERING & COUNT CALCULATION ---
+        window.filterAttTable = function() {
+            const dateQuery = document.getElementById("filterAttDate").value;
+            const branchQuery = document.getElementById("filterAttBranch").value.toLowerCase();
+            const statusQuery = document.getElementById("filterAttStatus").value.toLowerCase();
+            const textQuery = document.getElementById("attSearchInput").value.toLowerCase();
             
-            for (let j = 0; j < cols.length; j++) {
-                let text = "";
-                if(j === 0 && i > 0) {
-                    // Extract clean name and role without the status badges
-                    let nameNode = cols[j].querySelector('.emp-name');
-                    let roleNode = cols[j].querySelector('.emp-role');
-                    if(nameNode) text = `${nameNode.innerText} (${roleNode.innerText})`;
-                } else {
-                    text = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").replace('(Today)', '').trim();
-                }
-                rowData.push('"' + text + '"');
+            const trs = document.getElementById("attTableBody").getElementsByTagName("tr");
+
+            for (let i = 0; i < trs.length; i++) {
+                if (trs[i].cells.length === 1) continue; 
+                
+                const rowDate = trs[i].getAttribute("data-date");
+                const rowBranch = trs[i].getAttribute("data-branch");
+                const rowStatus = trs[i].getAttribute("data-status");
+                const rowSearch = trs[i].getAttribute("data-search");
+
+                let show = true;
+                if (dateQuery && rowDate !== dateQuery) show = false;
+                if (branchQuery && rowBranch !== branchQuery) show = false;
+                if (statusQuery && rowStatus !== statusQuery) show = false;
+                if (textQuery && rowSearch.indexOf(textQuery) === -1) show = false;
+
+                trs[i].style.display = show ? "" : "none";
             }
-            csvData.push(rowData.join(","));
+            
+            // Recalculate totals based on currently visible rows
+            window.calculateTotals();
         }
-        
-        let csvContent = "data:text/csv;charset=utf-8," + csvData.join("\n");
-        let encodedUri = encodeURI(csvContent);
-        let link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Attendance_${document.getElementById('monthFilter').value}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
 
-    window.exportPDF = function() {
-        window.print();
-    }
+        window.calculateTotals = function() {
+            const trs = document.getElementById("attTableBody").getElementsByTagName("tr");
+            let total = 0, present = 0, absent = 0;
 
-    // Ignite the module
-    init();
+            for (let i = 0; i < trs.length; i++) {
+                if (trs[i].style.display !== "none" && trs[i].cells.length > 1) {
+                    total++;
+                    const status = trs[i].getAttribute("data-status");
+                    if (status === 'present' || status === 'half-day') present++;
+                    if (status === 'absent' || status === 'leave') absent++;
+                }
+            }
 
-</script>
+            document.getElementById('countTotal').innerText = total;
+            document.getElementById('countPresent').innerText = present;
+            document.getElementById('countAbsent').innerText = absent;
+        }
+
+        window.setAttFilterToday = function() {
+            document.getElementById("filterAttDate").value = new Date().toISOString().split('T');
+            window.filterAttTable();
+        }
+
+        window.clearAttFilters = function() {
+            document.getElementById("filterAttDate").value = "";
+            document.getElementById("filterAttBranch").value = "";
+            document.getElementById("filterAttStatus").value = "";
+            document.getElementById("attSearchInput").value = "";
+            window.filterAttTable();
+        }
+
+        // --- 4. CRUD OPERATIONS ---
+        window.saveAttendance = async function() {
+            const saveBtn = document.getElementById('saveAttBtn');
+            const docId = document.getElementById('attDocId').value;
+            
+            const date = document.getElementById('attDate').value;
+            const selectEmp = document.getElementById('attEmployee');
+            const empId = selectEmp.value;
+            const branch = document.getElementById('attBranch').value;
+            const status = document.getElementById('attStatus').value;
+            const notes = document.getElementById('attNotes').value;
+
+            if(!date || !empId || !branch || !status) {
+                return alert("Date, Employee, Branch, and Status are required!");
+            }
+
+            const empName = selectEmp.options[selectEmp.selectedIndex].getAttribute('data-name');
+            const empType = selectEmp.options[selectEmp.selectedIndex].getAttribute('data-type');
+
+            saveBtn.innerHTML = 'Saving...';
+            saveBtn.disabled = true;
+
+            const payload = {
+                date: date,
+                empId: empId,
+                empName: empName,
+                empType: empType,
+                branch: branch,
+                status: status,
+                notes: notes,
+                updatedAt: new Date()
+            };
+
+            try {
+                if(docId) {
+                    await updateDoc(doc(db, "daily_attendance", docId), payload);
+                    alert("Attendance record updated!");
+                } else {
+                    payload.createdAt = new Date();
+                    await addDoc(collection(db, "daily_attendance"), payload);
+                    alert("Attendance logged successfully!");
+                }
+
+                window.resetAttForm();
+                window.loadAttendanceLog(); 
+
+            } catch (error) {
+                console.error("Firebase Save Error:", error);
+                alert("Failed to save. Check database rules.");
+            }
+
+            saveBtn.innerHTML = '<span class="material-symbols-rounded" style="font-size: 18px;">how_to_reg</span> Save Attendance';
+            saveBtn.disabled = false;
+        }
+
+        window.editAtt = function(docId) {
+            const data = window.attDataCache[docId];
+            if(!data) return;
+
+            document.getElementById('attDocId').value = docId;
+            document.getElementById('attDate').value = data.date;
+            document.getElementById('attEmployee').value = data.empId;
+            document.getElementById('attBranch').value = data.branch;
+            document.getElementById('attStatus').value = data.status;
+            document.getElementById('attNotes').value = data.notes || '';
+
+            document.getElementById('saveAttBtn').innerHTML = '<span class="material-symbols-rounded" style="font-size: 18px;">update</span> Update Record';
+            
+            const mainContent = document.getElementById('main-content');
+            if(mainContent) mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+            else window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.deleteAtt = async function(docId) {
+            if(confirm("Are you sure you want to delete this attendance record?")) {
+                try {
+                    await deleteDoc(doc(db, "daily_attendance", docId));
+                    window.loadAttendanceLog();
+                } catch(e) {
+                    alert("Error deleting record.");
+                }
+            }
+        }
+
+        window.resetAttForm = function() {
+            document.getElementById('attendance-form').reset();
+            document.getElementById('attDocId').value = '';
+            document.getElementById('attDate').value = new Date().toISOString().split('T');
+            document.getElementById('saveAttBtn').innerHTML = '<span class="material-symbols-rounded" style="font-size: 18px;">how_to_reg</span> Save Attendance';
+        }
+
+        // --- 5. CSV EXPORT ---
+        window.exportAttCSV = function() {
+            const table = document.getElementById("attendanceTable");
+            let csvData = [];
+            
+            for (let i = 0; i < table.rows.length; i++) {
+                if (table.rows[i].style.display === "none") continue; // only export visible
+                
+                let rowData = [];
+                let cols = table.rows[i].querySelectorAll("td, th");
+                
+                // Skip the 'Actions' column (last column)
+                let colCount = i === 0 ? cols.length - 1 : cols.length - 1; 
+
+                for (let j = 0; j < colCount; j++) {
+                    let text = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " | ").trim();
+                    rowData.push('"' + text + '"');
+                }
+                csvData.push(rowData.join(","));
+            }
+            
+            let csvContent = "data:text/csv;charset=utf-8," + csvData.join("\n");
+            let encodedUri = encodeURI(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Attendance_Log.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+    </script>
+</div>
 
 </body>
 </html>
