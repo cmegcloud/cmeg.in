@@ -42,12 +42,10 @@
         .btn-primary:active { opacity: 0.8; }
         .btn-primary:disabled { background: #D9D9D9; cursor: not-allowed; }
 
-        /* Minimal Branded Action Buttons */
         .action-row { display: none; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
         .btn-action { flex: 1; min-width: 100px; display: inline-flex; justify-content: center; align-items: center; gap: 8px; background: #FAFAFA; border: 1px solid var(--border); padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--text-main); cursor: pointer; transition: 0.2s; }
         .btn-action:hover { background: var(--surface); border-color: var(--primary); color: var(--primary); }
 
-        /* A4 Live Preview Container */
         .a4-wrapper { background: #E8E5E1; padding: 20px; border-radius: 20px; overflow-x: auto; display: flex; justify-content: center; }
         .a4-paper { background: white; width: 210mm; min-height: 297mm; padding: 40px; box-sizing: border-box; box-shadow: 0 8px 24px rgba(0,0,0,0.1); color: #0a0a0a; flex-shrink: 0; }
         
@@ -70,7 +68,6 @@
         .a4-bank-details { clear: both; margin-top: 60px; padding: 20px; background: #FAFAFA; border-radius: 8px; font-size: 13px; border: 1px solid #E8E5E1; }
         .a4-bank-details h4 { margin: 0 0 10px 0; color: var(--primary); text-transform: uppercase; font-size: 12px; }
         
-        /* 25% Reduced Size & 50% Opacity Footer */
         .a4-footer-text { margin-top: 40px; text-align: center; font-size: 9px; color: #999; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.5px; }
 
         @media (max-width: 768px) {
@@ -78,7 +75,6 @@
             .a4-paper { transform: scale(0.85); transform-origin: top left; }
         }
 
-        /* Strict Print Rules */
         @media print {
             body { background: white; padding: 0; }
             #sidebar-container, #header-container, #bottomnav-container, .form-card, .section-title, .no-print { display: none !important; }
@@ -115,12 +111,7 @@
             <div>
                 <label class="form-label">Branch *</label>
                 <select id="estBranch" class="form-input" onchange="window.syncPreview()">
-                    <option value="Mahe">Mahe</option>
-                    <option value="Chokli">Chokli</option>
-                    <option value="Panoor">Panoor</option>
-                    <option value="Koothuparamba">Koothuparamba</option>
-                    <option value="Nadapuram">Nadapuram</option>
-                    <option value="Home Care">Home Care</option>
+                    <option value="">Loading Branches...</option>
                 </select>
             </div>
             <div style="grid-column: span 2;">
@@ -185,7 +176,7 @@
                 <div style="text-align: right;">
                     <h3>Estimate Details</h3>
                     <div style="margin-bottom: 4px;"><strong>Date:</strong> <span id="prevDate">YYYY-MM-DD</span></div>
-                    <div style="color: #555;"><strong>Branch:</strong> <span id="prevBranch">Mahe</span></div>
+                    <div style="color: #555;"><strong>Branch:</strong> <span id="prevBranch">---</span></div>
                 </div>
             </div>
 
@@ -220,9 +211,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // CMF001STRA Config
         const firebaseConfig = {
             apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
             authDomain: "cmf001stra.firebaseapp.com",
@@ -236,15 +226,40 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Set Default Date
         document.getElementById("estDate").value = new Date().toISOString().split('T');
+
+        // --- 0. SAFE DYNAMIC BRANCH LOADER ---
+        window.loadBranchesForEst = async function() {
+            const select = document.getElementById('estBranch');
+            try {
+                const snap = await getDocs(collection(db, "branches"));
+                let branchList = [];
+                snap.forEach(doc => {
+                    const bName = doc.data().name;
+                    if(bName) branchList.push(bName);
+                });
+                branchList.sort();
+
+                let bHtml = '<option value="">Select Branch</option>';
+                branchList.forEach(bName => {
+                    bHtml += `<option value="${bName}">${bName}</option>`;
+                });
+                
+                select.innerHTML = bHtml;
+                window.syncPreview();
+            } catch(e) {
+                console.error("Error loading branches", e);
+                select.innerHTML = '<option value="">Select Branch</option>';
+            }
+        };
+        window.loadBranchesForEst();
 
         // --- 1. LIVE SYNC ENGINE ---
         window.syncPreview = function() {
             document.getElementById('prevName').innerText = document.getElementById('estName').value || '---';
             document.getElementById('prevMobile').innerText = document.getElementById('estMobile').value || '----------';
             document.getElementById('prevDate').innerText = document.getElementById('estDate').value || 'YYYY-MM-DD';
-            document.getElementById('prevBranch').innerText = document.getElementById('estBranch').value || 'Mahe';
+            document.getElementById('prevBranch').innerText = document.getElementById('estBranch').value || '---';
             document.getElementById('prevDesc').innerText = document.getElementById('estDesc').value || 'Consultation & Therapy Service';
             
             const fee = parseFloat(document.getElementById('estFee').value) || 0;
@@ -258,7 +273,6 @@
             document.getElementById('prevBalance').innerText = '₹' + balance.toFixed(2);
         }
 
-        // Initialize preview on load
         window.syncPreview();
 
         // --- 2. SAVE TO FIREBASE WORKFLOW ---
@@ -277,7 +291,6 @@
             btn.disabled = true;
 
             try {
-                // Save to Firestore 'estimates' collection
                 await addDoc(collection(db, "estimates"), {
                     name: name,
                     mobile: mobile,
@@ -291,8 +304,6 @@
                 });
 
                 alert("Estimate Saved Successfully!");
-                
-                // Hide main button, reveal export buttons
                 btn.style.display = "none";
                 document.getElementById('actionButtonsRow').style.display = "flex";
 
@@ -306,14 +317,13 @@
 
         // --- 3. EXPORT ACTIONS ---
         window.printEstimate = function() {
-            window.print(); // Triggers the @media print CSS automatically
+            window.print(); 
         }
 
         window.downloadJPEG = function() {
             const element = document.getElementById('printable-estimate');
             const name = document.getElementById('estName').value || 'Patient';
             
-            // html2canvas takes a snapshot of the DOM element
             html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = `STRA_CARE_Estimate_${name}.jpg`;
