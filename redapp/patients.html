@@ -77,34 +77,32 @@
             #patient-module .saas-table tr { padding: 16px; border-bottom: 1px solid var(--border); }
             
             #patient-module .saas-table td { 
-                padding: 8px 0; /* Increased padding slightly for breathing room */
+                padding: 8px 0; 
                 border: none; 
                 display: flex; 
-                flex-direction: column; /* Stack label and content vertically */
-                align-items: flex-start; /* Align content to the left */
+                flex-direction: column; 
+                align-items: flex-start; 
             }
             
-            /* The label (e.g. "MOBILE NO.") */
             #patient-module .saas-table td::before { 
                 content: attr(data-label); 
                 font-size: 10px; 
                 color: var(--text-muted); 
                 font-weight: 700; 
                 text-transform: uppercase; 
-                margin-bottom: 4px; /* Space between label and data */
+                margin-bottom: 4px; 
                 letter-spacing: 0.5px;
             }
             
             #patient-module .saas-table td:nth-child(1) { 
                 padding-bottom: 16px; 
-                border-bottom: 1px dashed var(--border); /* Visually separate the main ID */
+                border-bottom: 1px dashed var(--border); 
                 margin-bottom: 8px;
             }
             
             #patient-module .saas-table td:nth-child(1)::before { display: none; }
             #patient-module .saas-table td:nth-child(1) .patient-info { flex-direction: row; align-items: center; gap: 8px; font-size: 16px; }
 
-            /* Fix Mobile Layout Container for CTA Buttons */
             .mobile-cta-container {
                 display: flex;
                 align-items: center;
@@ -162,7 +160,7 @@
                     </div>
                 </div>
 
-                <div class="input-group">
+                <div class="input-group three-cols">
                     <div>
                         <label class="form-label">Gender</label>
                         <select id="patientGender" class="form-input">
@@ -170,6 +168,12 @@
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
                             <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <label class="form-label">Preferred Branch</label>
+                        <select id="patientBranch" class="form-input">
+                            <option value="">Loading Branches...</option>
                         </select>
                     </div>
                     <div style="grid-column: 1 / -1;">
@@ -211,7 +215,7 @@
                 <tr>
                     <th>Patient Name & ID</th>
                     <th>Mobile No.</th>
-                    <th>Age/Gender</th>
+                    <th>Demographics / Branch</th>
                     <th>Address Details</th>
                     <th class="no-print">Actions</th>
                 </tr>
@@ -238,6 +242,35 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
+        // --- 0. LOAD BRANCHES ---
+        window.loadBranchesForPatient = async function() {
+            const select = document.getElementById('patientBranch');
+            try {
+                const snap = await getDocs(collection(db, "branches"));
+                let branchList = [];
+                
+                snap.forEach(doc => {
+                    const bName = doc.data().name;
+                    if(bName) branchList.push(bName);
+                });
+
+                branchList.sort();
+                select.innerHTML = '<option value="">Select Branch</option>';
+                
+                branchList.forEach(bName => {
+                    const option = document.createElement('option');
+                    option.value = bName;
+                    option.text = bName;
+                    select.appendChild(option);
+                });
+            } catch(e) {
+                console.error("Error loading branches", e);
+                select.innerHTML = '<option value="">Select Branch</option><option value="Mahe">Mahe</option><option value="Chokli">Chokli</option><option value="Panoor">Panoor</option><option value="Koothuparamba">Koothuparamba</option><option value="Nadapuram">Nadapuram</option><option value="Home Care">Home Care</option>';
+            }
+        };
+
+        window.loadBranchesForPatient();
 
         // --- 1. LIVE SEARCH FUNCTION ---
         window.searchTable = function() {
@@ -285,7 +318,10 @@
                                 <a href="https://wa.me/91${data.mobile}" class="cta-link" target="_blank" title="WhatsApp"><span class="material-symbols-rounded" style="font-size: 16px; color: var(--success);">chat</span></a>
                             </div>
                         </td>
-                        <td data-label="Demographics">${data.age || '--'} Yrs / ${data.gender || '--'}</td>
+                        <td data-label="Demographics">
+                            ${data.age || '--'} Yrs / ${data.gender || '--'}<br>
+                            <span style="font-size:12px; color:var(--primary); font-weight:600;">${data.branch || 'Unassigned'}</span>
+                        </td>
                         <td data-label="Address"><span style="color: var(--text-muted); font-size: 12px; line-height: 1.4;">${data.address || '--'}</span></td>
                         <td class="no-print" data-label="Actions">
                             <div style="display:flex; gap: 12px; align-items:center; margin-top: 4px;">
@@ -328,7 +364,8 @@
                 const pSnap = await getDocs(query(collection(db, "patients"), where("mobile", "==", mobileInput)));
 
                 if (!pSnap.empty) {
-                    let existingName = pSnap.docs.data().name;
+                    // Safe array access to prevent crashes
+                    let existingName = pSnap.docs.data().name; 
                     validationMsg.innerHTML = `Patient already registered as <strong>${existingName}</strong>! Directory filtered below.`;
                     validationMsg.classList.add('error');
                     fieldset.disabled = true;
@@ -378,6 +415,7 @@
             const name = document.getElementById('patientName').value;
             const age = document.getElementById('patientAge').value;
             const gender = document.getElementById('patientGender').value;
+            const branch = document.getElementById('patientBranch').value;
             const address = document.getElementById('patientAddress').value;
             const notes = document.getElementById('patientNotes').value;
 
@@ -397,6 +435,7 @@
                     name: name,
                     age: age,
                     gender: gender,
+                    branch: branch,
                     address: address,
                     notes: notes,
                     createdAt: new Date()
