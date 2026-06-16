@@ -29,7 +29,6 @@
 
         #appointment-module { font-family: 'Inter', sans-serif; width: 100%; max-width: 1120px;}
         
-        /* UI Components */
         #appointment-module .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
         #appointment-module .form-card { background: var(--surface); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 24px; }
         #appointment-module .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
@@ -46,7 +45,6 @@
         #appointment-module .btn-outline { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
         #appointment-module .btn-verify { background: var(--text-main); color: #fff; border: none; padding: 0 20px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 13px;}
 
-        /* Table Styles - Native Horizontal Scroll Fix for Mobile */
         #appointment-module .table-container { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
         #appointment-module .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         
@@ -67,7 +65,14 @@
         #reschedule-container.active, #bulk-reschedule-container.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Print CSS for Global Table Export */
+        @media (max-width: 767px) {
+            #appointment-module .saas-table thead { display: none; }
+            #appointment-module .saas-table, #appointment-module .saas-table tbody, #appointment-module .saas-table tr, #appointment-module .saas-table td { display: block; width: 100%; }
+            #appointment-module .saas-table tr { padding: 16px; border-bottom: 1px solid var(--border); position: relative;}
+            #appointment-module .saas-table td { padding: 8px 0; border: none; display: flex; flex-direction: column; align-items: flex-start; }
+            #appointment-module .saas-table td::before { content: attr(data-label); font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+        }
+
         @media print {
             body { background: white; padding: 0; }
             #sidebar-container, #header-container, #bottomnav-container, .form-card, .section-title, .no-print { display: none !important; }
@@ -109,14 +114,8 @@
                 <div>
                     <label class="form-label">Branch *</label>
                     <select id="aptBranch" class="form-input" required>
-                        <option value="">Select Branch</option>
-                        <option value="Mahe">Mahe</option>
-                        <option value="Chokli">Chokli</option>
-                        <option value="Panoor">Panoor</option>
-                        <option value="Koothuparamba">Koothuparamba</option>
-                        <option value="Nadapuram">Nadapuram</option>
-                        <option value="Home Care">Home Care</option>
-                    </select>
+                        <option value="">Loading Branches...</option>
+                        </select>
                 </div>
                 <div>
                     <label class="form-label">Scheduled Date *</label>
@@ -212,13 +211,7 @@
                 </select>
 
                 <select id="filterBranch" class="form-input" onchange="window.filterTable()" style="padding: 8px; font-size: 12px; width: auto;">
-                    <option value="">All Branches</option>
-                    <option value="mahe">Mahe</option>
-                    <option value="chokli">Chokli</option>
-                    <option value="panoor">Panoor</option>
-                    <option value="koothuparamba">Koothuparamba</option>
-                    <option value="nadapuram">Nadapuram</option>
-                    <option value="home care">Home Care</option>
+                    <option value="">Loading Branches...</option>
                 </select>
 
                 <div style="display: flex; align-items: center; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; flex: 1; min-width: 200px;">
@@ -263,7 +256,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, query, where, getDocs, orderBy, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // CMF001STRA Config
         const firebaseConfig = {
             apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
             authDomain: "cmf001stra.firebaseapp.com",
@@ -277,8 +269,36 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Safe Memory Cache for Edits & Copies
         window.appointmentsDataCache = {};
+
+        // --- 0. SAFE DYNAMIC BRANCH LOADER ---
+        window.loadBranchesForApt = async function() {
+            const branchSelect = document.getElementById('aptBranch');
+            const filterSelect = document.getElementById('filterBranch');
+            try {
+                const snap = await getDocs(collection(db, "branches"));
+                let branchList = [];
+                snap.forEach(doc => {
+                    const bName = doc.data().name;
+                    if(bName) branchList.push(bName);
+                });
+                branchList.sort();
+
+                let bHtml = '<option value="">Select Branch</option>';
+                let fHtml = '<option value="">All Branches</option>';
+                branchList.forEach(bName => {
+                    bHtml += `<option value="${bName}">${bName}</option>`;
+                    fHtml += `<option value="${bName}">${bName}</option>`;
+                });
+                
+                branchSelect.innerHTML = bHtml;
+                filterSelect.innerHTML = fHtml;
+            } catch(e) {
+                console.error("Error loading branches", e);
+                branchSelect.innerHTML = '<option value="">Select Branch</option>';
+            }
+        };
+        window.loadBranchesForApt();
 
         // --- 1. FORM UI LOGIC ---
         window.toggleReschedule = function(select) {
@@ -311,7 +331,6 @@
             return target < now;
         }
 
-        // --- 2. AUTO-FILL FROM PATIENTS DATABASE ---
         window.verifyPatientMobile = async function() {
             const mobile = document.getElementById('aptMobile').value;
             const btn = document.getElementById('verifyAptBtn');
@@ -340,7 +359,7 @@
                 const q = query(collection(db, "appointments"), orderBy("date", "desc"));
                 const querySnapshot = await getDocs(q);
                 tableBody.innerHTML = ''; 
-                window.appointmentsDataCache = {}; // Clear Cache
+                window.appointmentsDataCache = {}; 
                 
                 if (querySnapshot.empty) {
                     tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: var(--text-muted);">No appointments booked yet.</td></tr>';
@@ -350,7 +369,7 @@
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     const docId = docSnap.id; 
-                    window.appointmentsDataCache[docId] = data; // Save to memory for Edit & Copy buttons
+                    window.appointmentsDataCache[docId] = data;
                     
                     let statusBadge = '';
                     if(data.status === 'Completed') statusBadge = '<span class="badge badge-completed">Completed</span>';
@@ -362,11 +381,11 @@
 
                     const tr = document.createElement('tr');
                     
-                    tr.setAttribute("data-branch", data.branch.toLowerCase());
-                    tr.setAttribute("data-status", data.status.toLowerCase());
-                    tr.setAttribute("data-date", data.date);
+                    tr.setAttribute("data-branch", (data.branch || '').toLowerCase());
+                    tr.setAttribute("data-status", (data.status || '').toLowerCase());
+                    tr.setAttribute("data-date", data.date || '');
                     tr.setAttribute("data-balance", data.balance || 0);
-                    tr.setAttribute("data-search", `${data.name} ${data.mobile} ${data.therapist}`.toLowerCase());
+                    tr.setAttribute("data-search", `${data.name || ''} ${data.mobile || ''} ${data.therapist || ''}`.toLowerCase());
 
                     tr.innerHTML = `
                         <td class="no-print"><input type="checkbox" class="apt-checkbox" value="${docId}" data-current-date="${data.date}" data-notes="${encodeURIComponent(data.notes || '')}" style="transform: scale(1.2);"></td>
@@ -499,7 +518,6 @@
             const checkboxes = document.querySelectorAll('.apt-checkbox:checked');
             
             try {
-                // Loop through selected items and CREATE completely new entries (Copy)
                 for (let cb of checkboxes) {
                     const existingData = window.appointmentsDataCache[cb.value];
                     if(!existingData) continue;
@@ -511,7 +529,7 @@
                         date: newDate, 
                         time: existingData.time,
                         therapist: existingData.therapist,
-                        status: "Pending", // New schedule starts as Pending
+                        status: "Pending", 
                         fee: existingData.fee || 0,
                         advance: existingData.advance || 0,
                         balance: existingData.balance || 0,
@@ -520,7 +538,6 @@
                         updatedAt: new Date()
                     };
 
-                    // Add as a new document. Old document remains exactly as is!
                     await addDoc(collection(db, "appointments"), newAppointment);
                 }
                 
@@ -535,7 +552,6 @@
             }
         }
 
-        // --- 7. INDIVIDUAL INVOICE PRINTING ---
         window.printInvoice = function(name, mobile, date, branch, fee, advance, balance) {
             const invoiceWindow = window.open('', '_blank');
             invoiceWindow.document.write(`
@@ -625,12 +641,10 @@
             invoiceWindow.document.close();
         }
 
-        // --- 8. EXPORT WHOLE TABLE PDF ---
         window.exportAptPDF = function() {
             window.print();
         }
 
-        // --- 9. SAVE OR UPDATE APPOINTMENT ---
         window.saveAppointment = async function() {
             const saveBtn = document.getElementById('saveAptBtn');
             const docId = document.getElementById('aptDocId').value; 
