@@ -12,7 +12,6 @@
 <div class="module-container" id="therapist-module">
     
     <style>
-        /* --- Core Theme Variables --- */
         :root {
             --primary: #e16349;
             --primary-light: #fef5e8;
@@ -26,14 +25,11 @@
         }
 
         #therapist-module { font-family: 'Inter', sans-serif; width: 100%; max-width: 1120px; }
-
-        /* --- UI Components --- */
         #therapist-module .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
         
         #therapist-module .form-card { background: var(--surface); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 24px; }
         #therapist-module .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
         
-        /* Grid Layouts */
         #therapist-module .input-group { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
         @media (min-width: 768px) { #therapist-module .input-group { grid-template-columns: 1fr 1fr 1fr; } }
 
@@ -41,7 +37,6 @@
         #therapist-module .form-input:focus { border-color: var(--primary); background: var(--surface); }
         #therapist-module .readonly-input { background: #F4F4F4; color: var(--text-muted); font-weight: 600; pointer-events: none; }
 
-        /* Buttons */
         #therapist-module .btn-primary { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
         #therapist-module .btn-primary:active { opacity: 0.8; }
         #therapist-module .btn-outline { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
@@ -50,7 +45,6 @@
         #therapist-module .icon-action:hover { color: var(--primary); }
         #therapist-module .icon-action.delete:hover { color: var(--danger); }
 
-        /* --- Table Styling --- */
         #therapist-module .table-container { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
         #therapist-module .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;}
         #therapist-module .table-header h4 { font-size: 16px; font-weight: 600; margin: 0; }
@@ -62,7 +56,6 @@
         
         #therapist-module .t-id { font-size: 11px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 4px 8px; border-radius: 6px; }
 
-        /* Mobile Table Fix */
         @media (max-width: 767px) {
             #therapist-module .saas-table thead { display: none; }
             #therapist-module .saas-table, #therapist-module .saas-table tbody, #therapist-module .saas-table tr, #therapist-module .saas-table td { display: block; width: 100%; }
@@ -148,7 +141,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // CMF001STRA Config
         const firebaseConfig = {
@@ -166,17 +159,27 @@
         
         window.therapistDataCache = {};
 
-        // --- 1. LOAD BRANCHES DYNAMICALLY ---
+        // --- 1. SAFE BRANCH LOADER ---
         window.loadBranchesForDropdown = async function() {
             const select = document.getElementById('therapistBranch');
             try {
-                const q = query(collection(db, "branches"), orderBy("name"));
-                const snap = await getDocs(q);
-                select.innerHTML = '<option value="">Select Branch</option>';
+                // Fetching without "orderBy" to prevent silent crash if Firebase Indexes aren't ready
+                const snap = await getDocs(collection(db, "branches"));
+                let branchList = [];
+                
                 snap.forEach(doc => {
+                    const bName = doc.data().name;
+                    if(bName) branchList.push(bName);
+                });
+
+                // Safe memory sort
+                branchList.sort();
+
+                select.innerHTML = '<option value="">Select Branch</option>';
+                branchList.forEach(bName => {
                     const option = document.createElement('option');
-                    option.value = doc.data().name;
-                    option.text = doc.data().name;
+                    option.value = bName;
+                    option.text = bName;
                     select.appendChild(option);
                 });
             } catch(e) {
@@ -193,8 +196,7 @@
             tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Loading therapists...</td></tr>';
 
             try {
-                const q = query(collection(db, "therapists"), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
+                const querySnapshot = await getDocs(collection(db, "therapists"));
                 
                 tableBody.innerHTML = ''; 
                 window.therapistDataCache = {};
@@ -209,17 +211,24 @@
                     const docId = docSnap.id;
                     window.therapistDataCache[docId] = data;
 
+                    // Fallbacks to prevent crashes
+                    const safeName = data.name || 'Unknown';
+                    const safeId = data.therapistId || 'TH-000';
+                    const safeSpec = data.specialisation || 'N/A';
+                    const safeBranch = data.branch || 'N/A';
+                    const safeContact = data.contact || data.mobile || 'N/A';
+
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td data-label="Name">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="t-id">${data.therapistId}</span>
-                                <strong>${data.name}</strong>
+                                <span class="t-id">${safeId}</span>
+                                <strong>${safeName}</strong>
                             </div>
                         </td>
-                        <td data-label="Specialisation">${data.specialisation}</td>
-                        <td data-label="Branch">${data.branch}</td>
-                        <td data-label="Contact">+91 ${data.contact}</td>
+                        <td data-label="Specialisation">${safeSpec}</td>
+                        <td data-label="Branch">${safeBranch}</td>
+                        <td data-label="Contact">+91 ${safeContact}</td>
                         <td data-label="Actions" style="text-align: right;">
                             <span class="material-symbols-rounded icon-action" title="Edit" onclick="window.editTherapist('${docId}')">edit</span>
                             <span class="material-symbols-rounded icon-action delete" title="Remove" style="margin-left: 8px;" onclick="window.deleteTherapist('${docId}')">delete</span>
@@ -253,16 +262,17 @@
             if(!data) return;
 
             document.getElementById('therapistDocId').value = docId;
-            document.getElementById('therapistIdDisplay').value = data.therapistId;
-            document.getElementById('therapistName').value = data.name;
-            document.getElementById('therapistSpec').value = data.specialisation;
-            document.getElementById('therapistBranch').value = data.branch;
-            document.getElementById('therapistContact').value = data.contact;
+            document.getElementById('therapistIdDisplay').value = data.therapistId || '';
+            document.getElementById('therapistName').value = data.name || '';
+            document.getElementById('therapistSpec').value = data.specialisation || '';
+            document.getElementById('therapistBranch').value = data.branch || '';
+            document.getElementById('therapistContact').value = data.contact || data.mobile || '';
 
             document.getElementById('saveTherapistBtn').innerHTML = '<span class="material-symbols-rounded">save</span> Update';
             
             const mainContent = document.getElementById('main-content');
             if(mainContent) mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+            else window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         window.deleteTherapist = async function(docId) {
@@ -305,6 +315,7 @@
                 specialisation: spec,
                 branch: branch,
                 contact: contact,
+                mobile: contact,
                 updatedAt: new Date()
             };
 
