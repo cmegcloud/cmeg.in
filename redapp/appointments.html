@@ -47,15 +47,14 @@
 
         #appointment-module .table-container { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
         
-        /* Forces Form-wise Horizontal Table on Mobile */
+        /* Native Horizontal Scroll Table for Mobile (No Cards) */
         #appointment-module .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        
         #appointment-module .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 16px; }
         #appointment-module .saas-table { width: 100%; min-width: 950px; border-collapse: collapse; text-align: left; }
-        #appointment-module .saas-table th { padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); }
+        #appointment-module .saas-table th { padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); white-space: nowrap;}
         #appointment-module .saas-table td { padding: 16px; font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--border); vertical-align: middle;}
         
-        .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; white-space: nowrap; }
         .badge-pending { background: rgba(251, 146, 60, 0.1); color: var(--danger); }
         .badge-completed { background: rgba(16, 185, 129, 0.1); color: var(--success); }
         .badge-rescheduled { background: rgba(100, 116, 139, 0.1); color: var(--secondary); }
@@ -173,7 +172,6 @@
     <div class="table-container">
         
         <div class="table-header">
-            
             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <h4>Schedule Directory</h4>
                 <div style="display: flex; gap: 8px;">
@@ -277,10 +275,15 @@
 
         // --- 0. SAFE DYNAMIC LOADERS ---
         window.loadBranchesForApt = async function() {
+            const branchSelect = document.getElementById('aptBranch');
+            const filterSelect = document.getElementById('filterBranch');
             try {
                 const snap = await getDocs(collection(db, "branches"));
                 let branchList = [];
-                snap.forEach(doc => { if(doc.data().name) branchList.push(doc.data().name); });
+                snap.forEach(doc => {
+                    const bName = doc.data().name;
+                    if(bName) branchList.push(bName);
+                });
                 branchList.sort();
 
                 let bHtml = '<option value="">Select Branch</option>';
@@ -290,9 +293,11 @@
                     fHtml += `<option value="${bName}">${bName}</option>`;
                 });
                 
-                document.getElementById('aptBranch').innerHTML = bHtml;
-                document.getElementById('filterBranch').innerHTML = fHtml;
-            } catch(e) {}
+                branchSelect.innerHTML = bHtml;
+                filterSelect.innerHTML = fHtml;
+            } catch(e) {
+                branchSelect.innerHTML = '<option value="">Select Branch</option>';
+            }
         };
 
         window.loadTherapistsForApt = async function() {
@@ -300,7 +305,10 @@
             try {
                 const snap = await getDocs(collection(db, "therapists"));
                 let thList = [];
-                snap.forEach(doc => { if(doc.data().name) thList.push(doc.data().name); });
+                snap.forEach(doc => { 
+                    const tName = doc.data().name;
+                    if(tName) thList.push(tName); 
+                });
                 thList.sort();
 
                 let html = '<option value="">Select Therapist</option>';
@@ -389,6 +397,8 @@
                     else statusBadge = '<span class="badge badge-pending">Pending</span>';
 
                     let noteSnippet = data.notes ? `<div style="margin-top: 6px; font-size: 11px; color: var(--secondary); background: #FAFAFA; padding: 4px; border-radius: 4px; line-height: 1.4;">${data.notes}</div>` : '';
+                    
+                    // Format Date to DD/MM/YYYY
                     const indDate = window.formatIndianDate(data.date);
                     const waText = encodeURIComponent(`Hello ${data.name}, your appointment at STRA CARE (${data.branch}) is booked for ${indDate}. Total Fee: ₹${data.fee||0}, Advance: ₹${data.advance||0}, Balance: ₹${data.balance||0}.`);
 
@@ -505,7 +515,7 @@
             else window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // --- 6. MOVE TO NEXT SCHEDULE (COPY EXACT LOGIC) ---
+        // --- 6. MOVE TO NEXT SCHEDULE (COPY & CLEAN NOTES) ---
         window.toggleAllCheckboxes = function(masterCheckbox) {
             const checkboxes = document.querySelectorAll('.apt-checkbox');
             checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
@@ -606,7 +616,7 @@
             const balance = document.getElementById('aptBalance').value || 0;
             let notes = document.getElementById('aptNotes').value;
 
-            if (!name || !mobile || !date || !branch) return alert("Please fill all required (*) fields!");
+            if (!name || !mobile || !date || !branch || !therapist) return alert("Please fill all required (*) fields!");
 
             if(!docId && isPastDateTime(date, time)) {
                 return alert("You cannot book a new appointment in the past!");
