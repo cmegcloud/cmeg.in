@@ -46,12 +46,14 @@
         #appointment-module .btn-verify { background: var(--text-main); color: #fff; border: none; padding: 0 20px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 13px;}
 
         #appointment-module .table-container { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
+        
+        /* Forces Form-wise Horizontal Table on Mobile */
         #appointment-module .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         
         #appointment-module .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 16px; }
-        #appointment-module .saas-table { width: 100%; min-width: 900px; border-collapse: collapse; text-align: left; }
+        #appointment-module .saas-table { width: 100%; min-width: 950px; border-collapse: collapse; text-align: left; }
         #appointment-module .saas-table th { padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; background: #FAFAFA; border-bottom: 1px solid var(--border); }
-        #appointment-module .saas-table td { padding: 16px; font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--border); vertical-align: top;}
+        #appointment-module .saas-table td { padding: 16px; font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--border); vertical-align: middle;}
         
         .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
         .badge-pending { background: rgba(251, 146, 60, 0.1); color: var(--danger); }
@@ -64,14 +66,6 @@
         #reschedule-container, #bulk-reschedule-container { display: none; }
         #reschedule-container.active, #bulk-reschedule-container.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-        @media (max-width: 767px) {
-            #appointment-module .saas-table thead { display: none; }
-            #appointment-module .saas-table, #appointment-module .saas-table tbody, #appointment-module .saas-table tr, #appointment-module .saas-table td { display: block; width: 100%; }
-            #appointment-module .saas-table tr { padding: 16px; border-bottom: 1px solid var(--border); position: relative;}
-            #appointment-module .saas-table td { padding: 8px 0; border: none; display: flex; flex-direction: column; align-items: flex-start; }
-            #appointment-module .saas-table td::before { content: attr(data-label); font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
-        }
 
         @media print {
             body { background: white; padding: 0; }
@@ -115,7 +109,7 @@
                     <label class="form-label">Branch *</label>
                     <select id="aptBranch" class="form-input" required>
                         <option value="">Loading Branches...</option>
-                        </select>
+                    </select>
                 </div>
                 <div>
                     <label class="form-label">Scheduled Date *</label>
@@ -132,7 +126,9 @@
             <div class="input-group three-cols">
                 <div>
                     <label class="form-label">Therapist Assigned *</label>
-                    <input type="text" id="aptTherapist" class="form-input" placeholder="e.g. Dr. Anjali V." required>
+                    <select id="aptTherapist" class="form-input" required>
+                        <option value="">Loading Therapists...</option>
+                    </select>
                 </div>
                 <div>
                     <label class="form-label">Appointment Status *</label>
@@ -247,7 +243,7 @@
                     </tr>
                 </thead>
                 <tbody id="aptTableBody">
-                    </tbody>
+                </tbody>
             </table>
         </div>
     </div>
@@ -271,17 +267,20 @@
 
         window.appointmentsDataCache = {};
 
-        // --- 0. SAFE DYNAMIC BRANCH LOADER ---
+        // --- INDIAN DATE FORMAT HELPER ---
+        window.formatIndianDate = function(dateStr) {
+            if(!dateStr) return '';
+            const p = dateStr.split('-');
+            if(p.length !== 3) return dateStr;
+            [cite_start]return `${p[2][cite_start]}/${p[1]}/${p}`;
+        }
+
+        // --- 0. SAFE DYNAMIC LOADERS ---
         window.loadBranchesForApt = async function() {
-            const branchSelect = document.getElementById('aptBranch');
-            const filterSelect = document.getElementById('filterBranch');
             try {
                 const snap = await getDocs(collection(db, "branches"));
                 let branchList = [];
-                snap.forEach(doc => {
-                    const bName = doc.data().name;
-                    if(bName) branchList.push(bName);
-                });
+                snap.forEach(doc => { if(doc.data().name) branchList.push(doc.data().name); });
                 branchList.sort();
 
                 let bHtml = '<option value="">Select Branch</option>';
@@ -291,21 +290,35 @@
                     fHtml += `<option value="${bName}">${bName}</option>`;
                 });
                 
-                branchSelect.innerHTML = bHtml;
-                filterSelect.innerHTML = fHtml;
+                document.getElementById('aptBranch').innerHTML = bHtml;
+                document.getElementById('filterBranch').innerHTML = fHtml;
+            } catch(e) {}
+        };
+
+        window.loadTherapistsForApt = async function() {
+            const therapistSelect = document.getElementById('aptTherapist');
+            try {
+                const snap = await getDocs(collection(db, "therapists"));
+                let thList = [];
+                snap.forEach(doc => { if(doc.data().name) thList.push(doc.data().name); });
+                thList.sort();
+
+                let html = '<option value="">Select Therapist</option>';
+                thList.forEach(tName => html += `<option value="${tName}">${tName}</option>`);
+                therapistSelect.innerHTML = html;
             } catch(e) {
-                console.error("Error loading branches", e);
-                branchSelect.innerHTML = '<option value="">Select Branch</option>';
+                therapistSelect.innerHTML = '<option value="">Select Therapist</option>';
             }
         };
+
         window.loadBranchesForApt();
+        window.loadTherapistsForApt();
 
         // --- 1. FORM UI LOGIC ---
         window.toggleReschedule = function(select) {
             const container = document.getElementById('reschedule-container');
-            if (select.value === 'Rescheduled') {
-                container.classList.add('active');
-            } else {
+            if (select.value === 'Rescheduled') container.classList.add('active');
+            else {
                 container.classList.remove('active');
                 document.getElementById('aptRescheduleDate').value = '';
             }
@@ -336,7 +349,6 @@
             const btn = document.getElementById('verifyAptBtn');
 
             if (mobile.length !== 10) return alert("Enter 10-digit mobile number first.");
-            
             btn.innerText = "...";
             try {
                 const pSnap = await getDocs(query(collection(db, "patients"), where("mobile", "==", mobile)));
@@ -346,7 +358,7 @@
                 } else {
                     alert("No patient found. Please type the name manually.");
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) {}
             btn.innerText = "Check";
         }
 
@@ -377,7 +389,8 @@
                     else statusBadge = '<span class="badge badge-pending">Pending</span>';
 
                     let noteSnippet = data.notes ? `<div style="margin-top: 6px; font-size: 11px; color: var(--secondary); background: #FAFAFA; padding: 4px; border-radius: 4px; line-height: 1.4;">${data.notes}</div>` : '';
-                    const waText = encodeURIComponent(`Hello ${data.name}, your appointment at STRA CARE (${data.branch}) is booked for ${data.date}. Total Fee: ₹${data.fee||0}, Advance: ₹${data.advance||0}, Balance: ₹${data.balance||0}.`);
+                    const indDate = window.formatIndianDate(data.date);
+                    const waText = encodeURIComponent(`Hello ${data.name}, your appointment at STRA CARE (${data.branch}) is booked for ${indDate}. Total Fee: ₹${data.fee||0}, Advance: ₹${data.advance||0}, Balance: ₹${data.balance||0}.`);
 
                     const tr = document.createElement('tr');
                     
@@ -385,11 +398,11 @@
                     tr.setAttribute("data-status", (data.status || '').toLowerCase());
                     tr.setAttribute("data-date", data.date || '');
                     tr.setAttribute("data-balance", data.balance || 0);
-                    tr.setAttribute("data-search", `${data.name || ''} ${data.mobile || ''} ${data.therapist || ''}`.toLowerCase());
+                    tr.setAttribute("data-search", `${data.name || ''} ${data.mobile || ''} ${data.therapist || ''} ${indDate}`.toLowerCase());
 
                     tr.innerHTML = `
-                        <td class="no-print"><input type="checkbox" class="apt-checkbox" value="${docId}" data-current-date="${data.date}" data-notes="${encodeURIComponent(data.notes || '')}" style="transform: scale(1.2);"></td>
-                        <td data-label="Date/Time"><strong>${data.date}</strong><br><span style="font-size:12px; color:var(--text-muted);">${data.time}</span></td>
+                        <td class="no-print"><input type="checkbox" class="apt-checkbox" value="${docId}" data-current-date="${data.date}" style="transform: scale(1.2);"></td>
+                        <td data-label="Date/Time"><strong>${indDate}</strong><br><span style="font-size:12px; color:var(--text-muted);">${data.time}</span></td>
                         <td data-label="Patient">
                             <span style="font-weight: 700; font-size: 15px;">${data.name}</span><br>
                             <span style="font-size: 13px; color: var(--text-muted);">${data.mobile}</span>
@@ -407,7 +420,7 @@
                         <td data-label="Status">${statusBadge} ${noteSnippet}</td>
                         <td class="no-print" data-label="Actions">
                             <div style="display:flex; gap: 10px; align-items:center;">
-                                <span class="material-symbols-rounded" style="color: var(--primary); cursor: pointer; font-size: 22px;" title="Print Invoice" onclick="window.printInvoice('${data.name}', '${data.mobile}', '${data.date}', '${data.branch}', '${data.fee}', '${data.advance}', '${data.balance}')">receipt_long</span>
+                                <span class="material-symbols-rounded" style="color: var(--primary); cursor: pointer; font-size: 22px;" title="Print Invoice" onclick="window.printInvoice('${data.name}', '${data.mobile}', '${indDate}', '${data.branch}', '${data.fee}', '${data.advance}', '${data.balance}')">receipt_long</span>
                                 <span class="material-symbols-rounded" style="color: var(--text-muted); cursor: pointer; font-size: 20px;" title="Edit" onclick="window.editAppointment('${docId}')">edit</span>
                             </div>
                         </td>
@@ -415,7 +428,6 @@
                     tableBody.appendChild(tr);
                 });
             } catch (error) {
-                console.error("Firebase Read Error:", error);
                 tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: var(--danger);">Error loading data. Check Firestore rules.</td></tr>';
             }
         };
@@ -434,7 +446,6 @@
 
             for (let i = 0; i < trs.length; i++) {
                 if (trs[i].cells.length === 1) continue; 
-                
                 const rowBranch = trs[i].getAttribute("data-branch");
                 const rowStatus = trs[i].getAttribute("data-status");
                 const rowDate = trs[i].getAttribute("data-date");
@@ -442,7 +453,6 @@
                 const rowSearch = trs[i].getAttribute("data-search");
 
                 let show = true;
-
                 if (branchQuery && rowBranch !== branchQuery) show = false;
                 if (statusQuery && rowStatus !== statusQuery) show = false;
                 if (dateQuery && rowDate !== dateQuery) show = false;
@@ -469,7 +479,7 @@
             window.filterTable();
         }
 
-        // --- 5. EDIT APPOINTMENT & SMOOTH SCROLL ---
+        // --- 5. EDIT APPOINTMENT ---
         window.editAppointment = function(docId) {
             const data = window.appointmentsDataCache[docId];
             if(!data) return;
@@ -491,14 +501,11 @@
             document.getElementById('saveAptBtn').innerText = "Update Appointment";
             
             const mainContent = document.getElementById('main-content');
-            if (mainContent) {
-                mainContent.scrollTo({ top: 0, behavior: 'smooth' });
-            } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+            if (mainContent) mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+            else window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // --- 6. MOVE TO NEXT SCHEDULE (COPY LOGIC) ---
+        // --- 6. MOVE TO NEXT SCHEDULE (COPY EXACT LOGIC) ---
         window.toggleAllCheckboxes = function(masterCheckbox) {
             const checkboxes = document.querySelectorAll('.apt-checkbox');
             checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
@@ -522,6 +529,11 @@
                     const existingData = window.appointmentsDataCache[cb.value];
                     if(!existingData) continue;
 
+                    // Strictly only keep the LAST movement note
+                    const oldDateInd = window.formatIndianDate(existingData.date);
+                    let cleanNotes = (existingData.notes || '').replace(/\[Moved from: .*?\]/g, '').trim();
+                    const finalNotes = (cleanNotes ? cleanNotes + '\n' : '') + `[Moved from: ${oldDateInd}]`;
+
                     const newAppointment = {
                         mobile: existingData.mobile,
                         name: existingData.name,
@@ -533,7 +545,7 @@
                         fee: existingData.fee || 0,
                         advance: existingData.advance || 0,
                         balance: existingData.balance || 0,
-                        notes: (existingData.notes ? existingData.notes + '\n' : '') + `[Forwarded from: ${existingData.date}]`,
+                        notes: finalNotes,
                         createdAt: new Date(),
                         updatedAt: new Date()
                     };
@@ -541,18 +553,116 @@
                     await addDoc(collection(db, "appointments"), newAppointment);
                 }
                 
-                alert(`Successfully copied ${checkboxes.length} appointments to ${newDate}!`);
+                alert(`Successfully copied ${checkboxes.length} appointments to ${window.formatIndianDate(newDate)}!`);
                 document.getElementById('bulk-reschedule-container').classList.remove('active');
                 document.getElementById('bulkDateInput').value = ""; 
                 window.loadAppointments(); 
 
             } catch(e) {
-                console.error("Bulk Copy Error:", e);
                 alert("Failed to perform bulk copy.");
             }
         }
 
-        window.printInvoice = function(name, mobile, date, branch, fee, advance, balance) {
+        // --- 7. AUTO-TRANSACTIONS ENGINE ---
+        window.syncTransactions = async function(aptId, payload) {
+            const tSnap = await getDocs(query(collection(db, "transactions"), where("linkedAptId", "==", aptId)));
+            let salesDoc = null;
+            let receiptDoc = null;
+            tSnap.forEach(d => {
+                if(d.data().type === "Sales") salesDoc = d.id;
+                if(d.data().type === "Receipt") receiptDoc = d.id;
+            });
+
+            // 1. Post Fee to Receivables (Sales)
+            if(parseFloat(payload.fee) > 0) {
+                const sData = { date: payload.date, type: "Sales", mobile: payload.mobile, name: payload.name, mode: "Cash", ref: "Auto-Bill", cashIn: 0, cashOut: parseFloat(payload.fee), notes: "Consultation Billed", linkedAptId: aptId, updatedAt: new Date() };
+                if(salesDoc) await updateDoc(doc(db, "transactions", salesDoc), sData);
+                else await addDoc(collection(db, "transactions"), { ...sData, txnId: "TRN"+Math.floor(Math.random()*900000+100000), createdAt: new Date() });
+            }
+
+            // 2. Post Advance to Receipts (Cash In)
+            if(parseFloat(payload.advance) > 0) {
+                const rData = { date: payload.date, type: "Receipt", mobile: payload.mobile, name: payload.name, mode: "Cash", ref: "Auto-Advance", cashIn: parseFloat(payload.advance), cashOut: 0, notes: "Advance Received", linkedAptId: aptId, updatedAt: new Date() };
+                if(receiptDoc) await updateDoc(doc(db, "transactions", receiptDoc), rData);
+                else await addDoc(collection(db, "transactions"), { ...rData, txnId: "TRN"+Math.floor(Math.random()*900000+100000), createdAt: new Date() });
+            }
+        }
+
+        // --- 8. SAVE APPOINTMENT + AUTO-PATIENTS ---
+        window.saveAppointment = async function() {
+            const saveBtn = document.getElementById('saveAptBtn');
+            const docId = document.getElementById('aptDocId').value; 
+            
+            const mobile = document.getElementById('aptMobile').value;
+            const name = document.getElementById('aptName').value;
+            const branch = document.getElementById('aptBranch').value;
+            const date = document.getElementById('aptDate').value;
+            const time = document.getElementById('aptTime').value;
+            const therapist = document.getElementById('aptTherapist').value;
+            const status = document.getElementById('aptStatus').value;
+            const rescheduleDate = document.getElementById('aptRescheduleDate').value;
+            const fee = document.getElementById('aptFee').value || 0;
+            const advance = document.getElementById('aptAdvance').value || 0;
+            const balance = document.getElementById('aptBalance').value || 0;
+            let notes = document.getElementById('aptNotes').value;
+
+            if (!name || !mobile || !date || !branch) return alert("Please fill all required (*) fields!");
+
+            if(!docId && isPastDateTime(date, time)) {
+                return alert("You cannot book a new appointment in the past!");
+            }
+            if(status === 'Rescheduled' && isPastDateTime(rescheduleDate, time)) {
+                return alert("You cannot reschedule to a past date!");
+            }
+
+            let finalDate = date;
+            if (status === 'Rescheduled') {
+                if(!rescheduleDate) return alert("Please pick a new reschedule date.");
+                finalDate = rescheduleDate; 
+                let cleanNotes = notes.replace(/\[Moved from: .*?\]/g, '').trim();
+                notes = (cleanNotes ? cleanNotes + '\n' : '') + `[Moved from: ${window.formatIndianDate(date)}]`; 
+            }
+
+            saveBtn.innerText = "Saving...";
+            saveBtn.disabled = true;
+
+            const payload = {
+                mobile: mobile, name: name, branch: branch, date: finalDate, time: time, therapist: therapist,
+                status: status, fee: fee, advance: advance, balance: balance, notes: notes, updatedAt: new Date()
+            };
+
+            try {
+                // Auto-Register Patient if they are completely new
+                const pSnap = await getDocs(query(collection(db, "patients"), where("mobile", "==", mobile)));
+                if (pSnap.empty) {
+                    const genId = "P" + Math.floor(Math.random() * 90000 + 10000);
+                    await addDoc(collection(db, "patients"), { patientId: genId, mobile: mobile, name: name, branch: branch, createdAt: new Date() });
+                }
+
+                // Save/Update Appointment & Trigger Auto-Transactions
+                if(docId) {
+                    await updateDoc(doc(db, "appointments", docId), payload);
+                    await window.syncTransactions(docId, payload);
+                    alert(`Appointment updated successfully!`);
+                } else {
+                    payload.createdAt = new Date();
+                    const newApt = await addDoc(collection(db, "appointments"), payload);
+                    await window.syncTransactions(newApt.id, payload);
+                    alert(`New appointment saved successfully!`);
+                }
+                
+                window.resetAptForm();
+                window.loadAppointments();
+
+            } catch (error) {
+                alert("Failed to save appointment. Check your database permissions.");
+            }
+
+            saveBtn.innerText = "Save Appointment";
+            saveBtn.disabled = false;
+        }
+
+        window.printInvoice = function(name, mobile, indDate, branch, fee, advance, balance) {
             const invoiceWindow = window.open('', '_blank');
             invoiceWindow.document.write(`
                 <html>
@@ -600,7 +710,7 @@
                         </div>
                         <div style="text-align: right;">
                             <h3>Invoice Details</h3>
-                            <div style="margin-bottom: 4px;"><strong>Date:</strong> ${date}</div>
+                            <div style="margin-bottom: 4px;"><strong>Date:</strong> ${indDate}</div>
                             <div style="color: #555;"><strong>Branch:</strong> ${branch}</div>
                         </div>
                     </div>
@@ -641,82 +751,7 @@
             invoiceWindow.document.close();
         }
 
-        window.exportAptPDF = function() {
-            window.print();
-        }
-
-        window.saveAppointment = async function() {
-            const saveBtn = document.getElementById('saveAptBtn');
-            const docId = document.getElementById('aptDocId').value; 
-            
-            const mobile = document.getElementById('aptMobile').value;
-            const name = document.getElementById('aptName').value;
-            const branch = document.getElementById('aptBranch').value;
-            const date = document.getElementById('aptDate').value;
-            const time = document.getElementById('aptTime').value;
-            const therapist = document.getElementById('aptTherapist').value;
-            const status = document.getElementById('aptStatus').value;
-            const rescheduleDate = document.getElementById('aptRescheduleDate').value;
-            const fee = document.getElementById('aptFee').value || 0;
-            const advance = document.getElementById('aptAdvance').value || 0;
-            const balance = document.getElementById('aptBalance').value || 0;
-            let notes = document.getElementById('aptNotes').value;
-
-            if (!name || !mobile || !date || !branch) return alert("Please fill all required (*) fields!");
-
-            if(!docId && isPastDateTime(date, time)) {
-                return alert("You cannot book a new appointment in the past!");
-            }
-            if(status === 'Rescheduled' && isPastDateTime(rescheduleDate, time)) {
-                return alert("You cannot reschedule to a past date!");
-            }
-
-            let finalDate = date;
-            if (status === 'Rescheduled') {
-                if(!rescheduleDate) return alert("Please pick a new reschedule date.");
-                finalDate = rescheduleDate; 
-                notes = (notes + `\n[Rescheduled from: ${date}]`).trim(); 
-            }
-
-            saveBtn.innerText = "Saving...";
-            saveBtn.disabled = true;
-
-            const payload = {
-                mobile: mobile,
-                name: name,
-                branch: branch,
-                date: finalDate, 
-                time: time,
-                therapist: therapist,
-                status: status,
-                fee: fee,
-                advance: advance,
-                balance: balance,
-                notes: notes,
-                updatedAt: new Date()
-            };
-
-            try {
-                if(docId) {
-                    await updateDoc(doc(db, "appointments", docId), payload);
-                    alert(`Appointment updated successfully for ${name}!`);
-                } else {
-                    payload.createdAt = new Date();
-                    await addDoc(collection(db, "appointments"), payload);
-                    alert(`New appointment saved successfully for ${name}!`);
-                }
-                
-                window.resetAptForm();
-                window.loadAppointments();
-
-            } catch (error) {
-                console.error("Firebase Save Error:", error);
-                alert("Failed to save appointment. Check your database permissions.");
-            }
-
-            saveBtn.innerText = "Save Appointment";
-            saveBtn.disabled = false;
-        }
+        window.exportAptPDF = function() { window.print(); }
     </script>
 
 </div>
