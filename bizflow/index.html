@@ -20,6 +20,7 @@
 </head>
 <body class="flex h-screen overflow-hidden text-gray-800">
 
+    <!-- Sidebar -->
     <aside class="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm hidden md:flex">
         <div class="p-5 border-b border-gray-100 flex items-center gap-3">
             <div class="bg-zohoBlue text-white p-2 rounded-lg"><i class="fas fa-cookie-bite text-xl"></i></div>
@@ -36,6 +37,7 @@
         </nav>
     </aside>
 
+    <!-- Main Content -->
     <main class="flex-1 flex flex-col overflow-y-auto">
         <header class="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-10">
             <h2 id="page-title" class="text-xl font-semibold">Dashboard</h2>
@@ -44,6 +46,7 @@
 
         <div class="p-6 max-w-6xl mx-auto w-full">
             
+            <!-- Dashboard View -->
             <div id="view-dashboard" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="glass-card p-5 border-t-4 border-zohoBlue">
@@ -61,6 +64,7 @@
                 </div>
             </div>
 
+            <!-- New Order View -->
             <div id="view-orders" class="hide space-y-6">
                 <div class="glass-card p-6" id="invoice-area">
                     <div class="flex justify-between items-start mb-6 border-b pb-4">
@@ -73,6 +77,7 @@
                         </select>
                     </div>
 
+                    <!-- Dynamic Items Grid -->
                     <div id="order-item-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"></div>
 
                     <table class="w-full text-left border-collapse">
@@ -105,6 +110,7 @@
                 </div>
             </div>
 
+            <!-- Items View -->
             <div id="view-items" class="hide glass-card">
                 <div class="p-5 border-b flex justify-between items-center">
                     <h3 class="font-bold text-lg">Item Master</h3>
@@ -113,6 +119,7 @@
                 <table class="w-full text-sm text-left"><tbody id="items-table"></tbody></table>
             </div>
 
+            <!-- Customers View -->
             <div id="view-customers" class="hide glass-card">
                 <div class="p-5 border-b flex justify-between items-center">
                     <h3 class="font-bold text-lg">Customer Directory</h3>
@@ -124,6 +131,7 @@
         </div>
     </main>
 
+    <!-- Modal: Add Item -->
     <div id="modal-item" class="modal fixed inset-0 flex items-center justify-center hide z-50">
         <div class="bg-white p-6 rounded-lg w-96 shadow-xl">
             <h3 class="text-lg font-bold mb-4">Add New Item</h3>
@@ -140,6 +148,7 @@
         </div>
     </div>
 
+    <!-- Modal: Add Customer -->
     <div id="modal-customer" class="modal fixed inset-0 flex items-center justify-center hide z-50">
         <div class="bg-white p-6 rounded-lg w-96 shadow-xl">
             <h3 class="text-lg font-bold mb-4">Add Customer</h3>
@@ -154,7 +163,7 @@
     </div>
 
     <script>
-        // --- PASTE YOUR DEPLOYED WEB APP URL HERE ---
+        // Directly injecting your Web App URL
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzdXO7buGnXE0DCg1zQkjAqaF-r2jpIdJUgs_hBy-REyukYSlZ6wbwQwZBv56Q4ZlZEqw/exec"; 
         
         let globalItems = [];
