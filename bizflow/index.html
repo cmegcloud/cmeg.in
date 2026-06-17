@@ -1,199 +1,329 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CM Orders - YUMMY FOODS</title>
+    <!-- Tailwind & Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PDF and Image Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <script>
-        tailwind.config = { theme: { extend: { colors: { zohoBlue: '#106bf0', zohoDark: '#1e293b', zohoRed: '#ef4444', zohoYellow: '#f59e0b' } } } }
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cmRed: '#dc2626',
+                        cmRedDark: '#b91c1c',
+                        cmYellow: '#facc15',
+                        cmYellowDark: '#eab308',
+                        darkBg: '#111827',
+                        darkCard: '#1f2937'
+                    }
+                }
+            }
+        }
     </script>
     <style>
-        body { background-color: #f4f5f7; }
+        body { transition: background-color 0.3s, color 0.3s; }
         .glass-card { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        .nav-item.active { background-color: #ebf4ff; color: #106bf0; border-right: 4px solid #106bf0; }
+        .dark .glass-card { background: #1f2937; border-color: #374151; color: #f3f4f6; }
+        .nav-item.active { background-color: #fef08a; color: #dc2626; border-right: 4px solid #dc2626; font-weight: bold; }
+        .dark .nav-item.active { background-color: #451a1a; color: #facc15; border-right-color: #facc15; }
         .hide { display: none !important; }
-        .modal { background: rgba(0,0,0,0.5); }
+        .modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); }
+        .calc-btn { background: #f3f4f6; border-radius: 8px; padding: 15px; font-weight: bold; text-align: center; cursor: pointer; transition: 0.2s; }
+        .calc-btn:hover { background: #e5e7eb; }
+        .dark .calc-btn { background: #374151; color: white; }
+        .dark .calc-btn:hover { background: #4b5563; }
+        .calc-op { background: #facc15; color: #713f12; }
+        .dark .calc-op { background: #eab308; color: #fff; }
+        .calc-eq { background: #dc2626; color: white; grid-column: span 2; }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden text-gray-800">
+<body class="flex h-screen overflow-hidden bg-gray-100 text-gray-800 dark:bg-darkBg dark:text-gray-200">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden flex items-center justify-between bg-white dark:bg-darkCard p-4 border-b dark:border-gray-700 z-20 absolute w-full">
+        <div class="flex items-center gap-2">
+            <img src="assets/logo.png" alt="CM Logo" class="h-8 w-8 object-contain" onerror="this.src='https://via.placeholder.com/32?text=CM'">
+            <h1 class="font-bold text-cmRed">CM Orders</h1>
+        </div>
+        <button onclick="toggleMobileMenu()" class="text-2xl"><i class="fas fa-bars"></i></button>
+    </div>
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm hidden md:flex">
-        <div class="p-5 border-b border-gray-100 flex items-center gap-3">
-            <div class="bg-zohoBlue text-white p-2 rounded-lg"><i class="fas fa-cookie-bite text-xl"></i></div>
-            <div>
-                <h1 class="text-lg font-bold text-zohoDark">CM Orders</h1>
-                <p class="text-xs text-gray-500 font-semibold">YUMMY FOODS</p>
+    <aside id="sidebar" class="w-64 bg-white dark:bg-darkCard border-r dark:border-gray-700 flex-col shadow-sm hidden md:flex absolute md:relative z-30 h-full transition-transform transform -translate-x-full md:translate-x-0">
+        <div class="p-5 border-b dark:border-gray-700 flex items-center gap-3 justify-between">
+            <div class="flex items-center gap-2">
+                <img src="assets/logo.png" alt="Logo" class="h-10 w-10 object-contain" onerror="this.src='https://via.placeholder.com/40?text=CM'">
+                <div>
+                    <h1 class="text-xl font-extrabold text-cmRed dark:text-cmYellow">CM Orders</h1>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold">YUMMY FOODS</p>
+                </div>
             </div>
+            <button onclick="toggleMobileMenu()" class="md:hidden text-gray-500"><i class="fas fa-times"></i></button>
         </div>
-        <nav class="flex-1 p-4 space-y-2">
-            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active w-full flex items-center gap-3 p-3 text-left rounded-md font-medium text-gray-600 transition"><i class="fas fa-chart-line w-5"></i> Dashboard</button>
-            <button onclick="switchTab('orders')" id="nav-orders" class="nav-item w-full flex items-center gap-3 p-3 text-left rounded-md font-medium text-gray-600 transition"><i class="fas fa-file-invoice w-5"></i> New Order</button>
-            <button onclick="switchTab('items')" id="nav-items" class="nav-item w-full flex items-center gap-3 p-3 text-left rounded-md font-medium text-gray-600 transition"><i class="fas fa-box w-5"></i> Items</button>
-            <button onclick="switchTab('customers')" id="nav-customers" class="nav-item w-full flex items-center gap-3 p-3 text-left rounded-md font-medium text-gray-600 transition"><i class="fas fa-users w-5"></i> Customers</button>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-chart-line w-5"></i> Dashboard</button>
+            <button onclick="switchTab('orders')" id="nav-orders" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-file-invoice w-5"></i> New Order</button>
+            <button onclick="switchTab('items')" id="nav-items" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-box w-5"></i> Items</button>
+            <button onclick="switchTab('customers')" id="nav-customers" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-users w-5"></i> Customers</button>
+            <button onclick="switchTab('reports')" id="nav-reports" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-chart-pie w-5"></i> Reports</button>
+            <button onclick="switchTab('calculator')" id="nav-calculator" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-calculator w-5"></i> Calculator</button>
         </nav>
+        <div class="p-4 border-t dark:border-gray-700 flex justify-between gap-2">
+            <button onclick="toggleTheme()" class="flex-1 p-2 bg-gray-100 dark:bg-gray-700 rounded text-center hover:bg-gray-200 dark:hover:bg-gray-600 transition"><i class="fas fa-moon dark:hidden"></i><i class="fas fa-sun hidden dark:inline text-cmYellow"></i> Mode</button>
+            <button onclick="toggleModal('modal-info')" class="flex-1 p-2 bg-gray-100 dark:bg-gray-700 rounded text-center hover:bg-gray-200 dark:hover:bg-gray-600 transition"><i class="fas fa-info-circle text-blue-500"></i> Info</button>
+        </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col overflow-y-auto">
-        <header class="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-10">
-            <h2 id="page-title" class="text-xl font-semibold">Dashboard</h2>
-            <button onclick="fetchData()" class="text-sm text-zohoBlue flex items-center gap-2"><i class="fas fa-sync-alt" id="sync-icon"></i> Sync Data</button>
+    <main class="flex-1 flex flex-col overflow-y-auto mt-16 md:mt-0 w-full relative">
+        <header class="bg-white dark:bg-darkCard border-b dark:border-gray-700 p-4 hidden md:flex justify-between items-center sticky top-0 z-10">
+            <h2 id="page-title" class="text-xl font-bold text-gray-800 dark:text-white">Dashboard</h2>
+            <button onclick="fetchData()" class="text-sm bg-cmRed text-white px-4 py-2 rounded shadow hover:bg-cmRedDark transition flex items-center gap-2"><i class="fas fa-sync-alt" id="sync-icon"></i> Sync Data</button>
         </header>
 
-        <div class="p-6 max-w-6xl mx-auto w-full">
+        <div class="p-4 md:p-6 max-w-7xl mx-auto w-full">
             
             <!-- Dashboard View -->
             <div id="view-dashboard" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="glass-card p-5 border-t-4 border-zohoBlue">
-                        <p class="text-sm text-gray-500">Total Revenue</p>
-                        <h3 class="text-2xl font-bold" id="dash-revenue">₹ 0.00</h3>
+                    <div class="glass-card p-5 border-t-4 border-cmRed dark:border-cmRedDark">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
+                        <h3 class="text-3xl font-black text-cmRed dark:text-red-400" id="dash-revenue">₹ 0.00</h3>
                     </div>
-                    <div class="glass-card p-5 border-t-4 border-zohoYellow">
-                        <p class="text-sm text-gray-500">Total Orders</p>
-                        <h3 class="text-2xl font-bold" id="dash-orders">0</h3>
+                    <div class="glass-card p-5 border-t-4 border-cmYellow dark:border-cmYellowDark">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Total Orders</p>
+                        <h3 class="text-3xl font-black dark:text-white" id="dash-orders">0</h3>
                     </div>
-                    <div class="glass-card p-5 border-t-4 border-emerald-500">
-                        <p class="text-sm text-gray-500">Customers</p>
-                        <h3 class="text-2xl font-bold" id="dash-customers">0</h3>
+                    <div class="glass-card p-5 border-t-4 border-blue-500">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Customers</p>
+                        <h3 class="text-3xl font-black dark:text-white" id="dash-customers">0</h3>
                     </div>
                 </div>
             </div>
 
             <!-- New Order View -->
             <div id="view-orders" class="hide space-y-6">
-                <div class="glass-card p-6" id="invoice-area">
-                    <div class="flex justify-between items-start mb-6 border-b pb-4">
-                        <div>
-                            <h2 class="text-2xl font-bold text-zohoDark">YUMMY FOODS</h2>
-                            <p class="text-sm text-gray-500">Order Invoice / Estimate</p>
+                <div class="glass-card p-4 md:p-6" id="invoice-area">
+                    <div class="flex flex-col md:flex-row justify-between items-start mb-6 border-b dark:border-gray-700 pb-4 gap-4">
+                        <div class="flex items-center gap-3">
+                            <img src="assets/logo.png" alt="Logo" class="h-12 object-contain" onerror="this.src='https://via.placeholder.com/48?text=CM'">
+                            <div>
+                                <h2 class="text-2xl font-bold text-cmRed">YUMMY FOODS</h2>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Official Order Invoice</p>
+                            </div>
                         </div>
-                        <select id="order-customer" class="border p-2 rounded w-48 text-sm outline-none focus:border-zohoBlue">
+                        <select id="order-customer" class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded w-full md:w-64 text-sm outline-none focus:border-cmRed font-bold">
                             <option value="">-- Select Customer --</option>
                         </select>
                     </div>
 
-                    <!-- Dynamic Items Grid -->
-                    <div id="order-item-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"></div>
+                    <!-- Items Grid for Selection -->
+                    <div class="mb-4">
+                        <input type="text" id="order-search" onkeyup="filterOrderGrid()" placeholder="Search items to add..." class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 rounded mb-3 outline-none">
+                        <div id="order-item-grid" class="grid grid-cols-2 md:grid-cols-5 gap-3 max-h-60 overflow-y-auto p-1"></div>
+                    </div>
 
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-50 border-y text-sm text-gray-600">
-                                <th class="p-3">Item Description</th>
-                                <th class="p-3 w-24">Qty</th>
-                                <th class="p-3 text-right">Price</th>
-                                <th class="p-3 text-right">Total</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="order-list" class="text-sm"></tbody>
-                        <tfoot>
-                            <tr class="border-t font-bold text-lg">
-                                <td colspan="3" class="p-3 text-right">Grand Total:</td>
-                                <td class="p-3 text-right" id="order-total">₹ 0.00</td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[500px]">
+                            <thead>
+                                <tr class="bg-gray-50 dark:bg-gray-800 border-y dark:border-gray-700 text-sm">
+                                    <th class="p-3">Item Description</th>
+                                    <th class="p-3 w-20 text-center">Qty</th>
+                                    <th class="p-3 text-right">Price</th>
+                                    <th class="p-3 text-right">Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="order-list" class="text-sm"></tbody>
+                            <tfoot>
+                                <tr class="border-t dark:border-gray-700 font-bold text-lg bg-yellow-50 dark:bg-yellow-900/20 text-cmRed dark:text-cmYellow">
+                                    <td colspan="3" class="p-3 text-right">Grand Total:</td>
+                                    <td class="p-3 text-right" id="order-total">₹ 0.00</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
 
-                <div class="flex gap-4 justify-end">
-                    <button onclick="saveAndSendOrder()" class="px-5 py-2 bg-green-500 text-white rounded hover:bg-green-600 shadow flex items-center gap-2">
-                        <i class="fab fa-whatsapp"></i> Save & Send WhatsApp
-                    </button>
-                    <button onclick="exportPDF()" class="px-5 py-2 border border-gray-300 rounded hover:bg-gray-50 flex items-center gap-2">
-                        <i class="fas fa-file-pdf text-red-500"></i> PDF
-                    </button>
+                <div class="flex flex-wrap gap-3 justify-end">
+                    <button onclick="downloadImage()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 shadow flex items-center gap-2"><i class="fas fa-image"></i> JPG</button>
+                    <button onclick="exportPDF()" class="px-4 py-2 border border-cmRed text-cmRed dark:text-red-400 rounded hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2"><i class="fas fa-file-pdf"></i> PDF</button>
+                    <button onclick="saveAndSendOrder()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 shadow flex items-center gap-2 font-bold"><i class="fab fa-whatsapp text-lg"></i> Save & Send</button>
                 </div>
             </div>
 
             <!-- Items View -->
             <div id="view-items" class="hide glass-card">
-                <div class="p-5 border-b flex justify-between items-center">
-                    <h3 class="font-bold text-lg">Item Master</h3>
-                    <button onclick="toggleModal('modal-item')" class="bg-zohoBlue text-white px-4 py-2 rounded text-sm"><i class="fas fa-plus"></i> Add Item</button>
+                <div class="p-4 border-b dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-3">
+                    <h3 class="font-bold text-lg">Item Database</h3>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <input type="text" id="search-items" onkeyup="renderItems()" placeholder="Search items..." class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded text-sm w-full md:w-48">
+                        <button onclick="toggleModal('modal-item')" class="bg-cmRed text-white px-4 py-2 rounded text-sm whitespace-nowrap"><i class="fas fa-plus"></i> Add</button>
+                    </div>
                 </div>
-                <table class="w-full text-sm text-left"><tbody id="items-table"></tbody></table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left"><tbody id="items-table"></tbody></table>
+                </div>
             </div>
 
             <!-- Customers View -->
             <div id="view-customers" class="hide glass-card">
-                <div class="p-5 border-b flex justify-between items-center">
+                <div class="p-4 border-b dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-3">
                     <h3 class="font-bold text-lg">Customer Directory</h3>
-                    <button onclick="toggleModal('modal-customer')" class="bg-zohoBlue text-white px-4 py-2 rounded text-sm"><i class="fas fa-plus"></i> Add Customer</button>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <input type="text" id="search-customers" onkeyup="renderCustomers()" placeholder="Search names..." class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded text-sm w-full md:w-48">
+                        <button onclick="toggleModal('modal-customer')" class="bg-cmYellow text-black font-bold px-4 py-2 rounded text-sm whitespace-nowrap"><i class="fas fa-plus"></i> Add</button>
+                    </div>
                 </div>
-                <table class="w-full text-sm text-left"><tbody id="customers-table"></tbody></table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left"><tbody id="customers-table"></tbody></table>
+                </div>
+            </div>
+
+            <!-- Reports View -->
+            <div id="view-reports" class="hide glass-card p-6">
+                <h3 class="font-bold text-lg mb-4 border-b dark:border-gray-700 pb-2">Order Reports & Export</h3>
+                <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">Download a complete CSV backup of all generated orders. Can be opened in Excel or Google Sheets.</p>
+                <button onclick="downloadCSV()" class="bg-gray-800 dark:bg-gray-600 text-white px-6 py-3 rounded shadow flex items-center gap-2 hover:bg-black transition"><i class="fas fa-file-csv text-green-400"></i> Export All Orders to CSV</button>
+            </div>
+
+            <!-- Calculator View -->
+            <div id="view-calculator" class="hide">
+                <div class="glass-card p-6 max-w-sm mx-auto bg-white dark:bg-darkCard shadow-2xl border-t-8 border-cmRed">
+                    <h3 class="text-center font-black text-cmRed mb-4 tracking-widest text-xl">CM CALCULATOR</h3>
+                    <input type="text" id="calc-display" disabled class="w-full bg-gray-100 dark:bg-gray-900 text-right text-3xl p-4 rounded mb-4 font-mono font-bold text-gray-800 dark:text-white" value="0">
+                    <div class="grid grid-cols-4 gap-2 text-xl">
+                        <div class="calc-btn text-cmRed" onclick="calcClear()">C</div>
+                        <div class="calc-btn" onclick="calcInput('/')">/</div>
+                        <div class="calc-btn" onclick="calcInput('*')">x</div>
+                        <div class="calc-btn calc-op" onclick="calcInput('-')">-</div>
+                        
+                        <div class="calc-btn" onclick="calcInput('7')">7</div>
+                        <div class="calc-btn" onclick="calcInput('8')">8</div>
+                        <div class="calc-btn" onclick="calcInput('9')">9</div>
+                        <div class="calc-btn calc-op" style="grid-row: span 2;" onclick="calcInput('+')">+</div>
+                        
+                        <div class="calc-btn" onclick="calcInput('4')">4</div>
+                        <div class="calc-btn" onclick="calcInput('5')">5</div>
+                        <div class="calc-btn" onclick="calcInput('6')">6</div>
+                        
+                        <div class="calc-btn" onclick="calcInput('1')">1</div>
+                        <div class="calc-btn" onclick="calcInput('2')">2</div>
+                        <div class="calc-btn" onclick="calcInput('3')">3</div>
+                        <div class="calc-btn calc-eq" style="grid-row: span 2;" onclick="calcCalculate()">=</div>
+                        
+                        <div class="calc-btn" style="grid-column: span 2;" onclick="calcInput('0')">0</div>
+                        <div class="calc-btn" onclick="calcInput('.')">.</div>
+                    </div>
+                </div>
             </div>
 
         </div>
     </main>
 
-    <!-- Modal: Add Item -->
-    <div id="modal-item" class="modal fixed inset-0 flex items-center justify-center hide z-50">
-        <div class="bg-white p-6 rounded-lg w-96 shadow-xl">
-            <h3 class="text-lg font-bold mb-4">Add New Item</h3>
-            <input type="text" id="add-item-name" placeholder="Item Name" class="w-full border p-2 mb-3 rounded">
+    <!-- Modals -->
+    <!-- Add Item -->
+    <div id="modal-item" class="modal fixed inset-0 flex items-center justify-center hide z-50 p-4">
+        <div class="bg-white dark:bg-darkCard p-6 rounded-lg w-full max-w-md shadow-2xl border-t-4 border-cmRed">
+            <h3 class="text-lg font-bold mb-4 dark:text-white">Add New Item</h3>
+            <input type="text" id="add-item-name" placeholder="Item Name" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-3 rounded outline-none">
             <div class="flex gap-2 mb-3">
-                <input type="number" id="add-item-buy" placeholder="Buy Price" class="w-1/2 border p-2 rounded">
-                <input type="number" id="add-item-sell" placeholder="Sell Price" class="w-1/2 border p-2 rounded">
+                <input type="number" id="add-item-buy" placeholder="Buy Price" class="w-1/2 border dark:border-gray-600 dark:bg-gray-800 p-2 rounded outline-none">
+                <input type="number" id="add-item-sell" placeholder="Sell Price" class="w-1/2 border dark:border-gray-600 dark:bg-gray-800 p-2 rounded outline-none">
             </div>
-            <input type="file" id="add-item-photo" accept="image/*" class="w-full border p-2 mb-4 rounded text-sm">
+            <label class="block text-xs text-gray-500 mb-1">Upload Photo (JPG/PNG)</label>
+            <input type="file" id="add-item-photo" accept="image/*" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-4 rounded text-sm">
             <div class="flex justify-end gap-2">
                 <button onclick="toggleModal('modal-item')" class="px-4 py-2 text-gray-500">Cancel</button>
-                <button onclick="submitItem()" class="px-4 py-2 bg-zohoBlue text-white rounded">Save Item</button>
+                <button onclick="submitItem()" class="px-4 py-2 bg-cmRed text-white rounded font-bold">Save Item</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal: Add Customer -->
-    <div id="modal-customer" class="modal fixed inset-0 flex items-center justify-center hide z-50">
-        <div class="bg-white p-6 rounded-lg w-96 shadow-xl">
-            <h3 class="text-lg font-bold mb-4">Add Customer</h3>
-            <input type="text" id="add-cust-name" placeholder="Business Name" class="w-full border p-2 mb-3 rounded">
-            <input type="text" id="add-cust-person" placeholder="Contact Person" class="w-full border p-2 mb-3 rounded">
-            <input type="text" id="add-cust-phone" placeholder="WhatsApp Number (e.g. 919876543210)" class="w-full border p-2 mb-4 rounded">
+    <!-- Add Customer -->
+    <div id="modal-customer" class="modal fixed inset-0 flex items-center justify-center hide z-50 p-4">
+        <div class="bg-white dark:bg-darkCard p-6 rounded-lg w-full max-w-md shadow-2xl border-t-4 border-cmYellow">
+            <h3 class="text-lg font-bold mb-4 dark:text-white">Add Customer</h3>
+            <input type="text" id="add-cust-name" placeholder="Business Name" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-3 rounded outline-none">
+            <input type="text" id="add-cust-person" placeholder="Contact Person" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-3 rounded outline-none">
+            <input type="text" id="add-cust-phone" placeholder="WhatsApp (Format: 919876543210)" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-4 rounded outline-none">
             <div class="flex justify-end gap-2">
                 <button onclick="toggleModal('modal-customer')" class="px-4 py-2 text-gray-500">Cancel</button>
-                <button onclick="submitCustomer()" class="px-4 py-2 bg-zohoBlue text-white rounded">Save</button>
+                <button onclick="submitCustomer()" class="px-4 py-2 bg-cmYellow text-black font-bold rounded">Save Customer</button>
             </div>
+        </div>
+    </div>
+
+    <!-- App Info -->
+    <div id="modal-info" class="modal fixed inset-0 flex items-center justify-center hide z-50 p-4">
+        <div class="bg-white dark:bg-darkCard p-6 rounded-lg w-full max-w-sm shadow-2xl text-center">
+            <img src="assets/logo.png" alt="CM Logo" class="h-16 mx-auto mb-4" onerror="this.src='https://via.placeholder.com/64?text=CM'">
+            <h2 class="text-2xl font-black text-cmRed">CM Orders</h2>
+            <p class="text-cmYellowDark font-bold mb-4">Demo Version 2.0</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">A complete lightweight order management system for YUMMY FOODS. Built with Google Sheets backend.</p>
+            <button onclick="toggleModal('modal-info')" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 rounded font-bold">Close</button>
         </div>
     </div>
 
     <script>
-        // Directly injecting your Web App URL
+        // --- CONFIGURATION ---
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzdXO7buGnXE0DCg1zQkjAqaF-r2jpIdJUgs_hBy-REyukYSlZ6wbwQwZBv56Q4ZlZEqw/exec"; 
         
         let globalItems = [];
         let globalCustomers = [];
         let globalOrders = [];
         let cart = [];
+        let calcVal = "";
 
-        // App Initialization
-        window.onload = fetchData;
+        // Initialization
+        window.onload = () => {
+            if(localStorage.getItem('theme') === 'dark') toggleTheme();
+            fetchData();
+        };
 
+        // --- UI LOGIC ---
         function switchTab(tabId) {
             document.querySelectorAll('main > div > div').forEach(el => el.classList.add('hide'));
             document.getElementById('view-' + tabId).classList.remove('hide');
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById('nav-' + tabId).classList.add('active');
-            const titles = { 'dashboard': 'Dashboard', 'orders': 'Create Order', 'items': 'Items', 'customers': 'Customers' };
+            
+            const titles = { 'dashboard': 'Dashboard', 'orders': 'Create Order', 'items': 'Item Database', 'customers': 'Customer Directory', 'reports': 'Reports & Exports', 'calculator': 'Calculator' };
             document.getElementById('page-title').innerText = titles[tabId];
+            if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('-translate-x-full');
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebar').classList.toggle('hidden');
         }
 
         function toggleModal(id) {
             document.getElementById(id).classList.toggle('hide');
         }
 
-        // --- FETCH DATA FROM SHEET ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        // --- FETCH & RENDER DATA ---
         async function fetchData() {
-            document.getElementById('sync-icon').classList.add('fa-spin');
+            const btn = document.getElementById('sync-icon');
+            if(btn) btn.classList.add('fa-spin');
             try {
                 const response = await fetch(WEB_APP_URL + "?action=getData");
                 const data = await response.json();
-                
                 globalItems = data.items || [];
                 globalCustomers = data.customers || [];
                 globalOrders = data.orders || [];
@@ -204,12 +334,11 @@
                 renderOrderGrid();
                 populateCustomerDropdown();
             } catch (err) {
-                console.error(err);
+                console.error("Sync Error:", err);
             }
-            document.getElementById('sync-icon').classList.remove('fa-spin');
+            if(btn) btn.classList.remove('fa-spin');
         }
 
-        // --- RENDERERS ---
         function renderDashboard() {
             document.getElementById('dash-orders').innerText = globalOrders.length;
             document.getElementById('dash-customers').innerText = globalCustomers.length;
@@ -218,47 +347,60 @@
         }
 
         function renderItems() {
+            const term = document.getElementById('search-items') ? document.getElementById('search-items').value.toLowerCase() : "";
             const tbody = document.getElementById('items-table');
-            tbody.innerHTML = `<tr class="bg-gray-50 text-gray-600 border-b"><th class="p-3">Photo</th><th class="p-3">Item Name</th><th class="p-3">Buy Price</th><th class="p-3">Sell Price</th></tr>`;
-            globalItems.forEach(item => {
-                let imgHtml = item.PhotoURL ? `<img src="${item.PhotoURL}" class="w-10 h-10 object-cover rounded">` : `<div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center"><i class="fas fa-cookie text-gray-500"></i></div>`;
-                tbody.innerHTML += `<tr class="border-b hover:bg-gray-50"><td class="p-3">${imgHtml}</td><td class="p-3 font-medium">${item.ItemName}</td><td class="p-3">₹${item.BuyPrice}</td><td class="p-3 font-semibold text-zohoBlue">₹${item.SellPrice}</td></tr>`;
+            tbody.innerHTML = `<tr class="bg-gray-100 dark:bg-gray-800 border-b dark:border-gray-700 text-gray-600 dark:text-gray-300"><th class="p-3">Photo</th><th class="p-3">Item Name</th><th class="p-3">Buy ₹</th><th class="p-3">Sell ₹</th></tr>`;
+            
+            globalItems.filter(i => i.ItemName.toLowerCase().includes(term)).forEach(item => {
+                let imgHtml = item.PhotoURL ? `<img src="${item.PhotoURL}" class="w-12 h-12 object-cover rounded shadow border">` : `<div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center"><i class="fas fa-image text-gray-400"></i></div>`;
+                tbody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"><td class="p-2">${imgHtml}</td><td class="p-3 font-bold">${item.ItemName}</td><td class="p-3">₹${item.BuyPrice}</td><td class="p-3 font-black text-cmRed dark:text-cmYellow">₹${item.SellPrice}</td></tr>`;
             });
         }
 
         function renderCustomers() {
+            const term = document.getElementById('search-customers') ? document.getElementById('search-customers').value.toLowerCase() : "";
             const tbody = document.getElementById('customers-table');
-            tbody.innerHTML = `<tr class="bg-gray-50 text-gray-600 border-b"><th class="p-3">Business Name</th><th class="p-3">Contact</th><th class="p-3">Phone</th></tr>`;
-            globalCustomers.forEach(c => {
-                tbody.innerHTML += `<tr class="border-b hover:bg-gray-50"><td class="p-3 font-medium">${c.BusinessName}</td><td class="p-3">${c.ContactPerson}</td><td class="p-3">${c.Phone}</td></tr>`;
+            tbody.innerHTML = `<tr class="bg-gray-100 dark:bg-gray-800 border-b dark:border-gray-700 text-gray-600 dark:text-gray-300"><th class="p-3">Business</th><th class="p-3">Contact</th><th class="p-3">WhatsApp</th></tr>`;
+            
+            globalCustomers.filter(c => c.BusinessName.toLowerCase().includes(term)).forEach(c => {
+                tbody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"><td class="p-3 font-bold text-cmRed dark:text-white">${c.BusinessName}</td><td class="p-3">${c.ContactPerson}</td><td class="p-3 font-mono">${c.Phone}</td></tr>`;
             });
         }
 
         function renderOrderGrid() {
+            const term = document.getElementById('order-search') ? document.getElementById('order-search').value.toLowerCase() : "";
             const grid = document.getElementById('order-item-grid');
             grid.innerHTML = '';
-            globalItems.forEach(item => {
+            globalItems.filter(i => i.ItemName.toLowerCase().includes(term)).forEach(item => {
+                // Determine if item has image to show
+                let img = item.PhotoURL ? `<img src="${item.PhotoURL}" class="h-10 w-full object-cover rounded mb-1 border">` : `<div class="h-10 w-full bg-gray-100 dark:bg-gray-700 rounded mb-1 flex items-center justify-center"><i class="fas fa-cookie text-gray-400"></i></div>`;
                 grid.innerHTML += `
-                    <div class="border rounded-lg p-3 text-center cursor-pointer hover:border-zohoBlue transition" onclick="addToOrder('${item.ItemName}', ${item.SellPrice})">
-                        <h4 class="font-semibold text-sm truncate">${item.ItemName}</h4>
-                        <p class="text-xs text-zohoBlue font-bold">₹ ${item.SellPrice}</p>
+                    <div class="border dark:border-gray-600 rounded-lg p-2 text-center cursor-pointer hover:border-cmRed dark:hover:border-cmYellow transition bg-white dark:bg-gray-800 shadow-sm" onclick="addToOrder('${item.ItemName}', ${item.SellPrice})">
+                        ${img}
+                        <h4 class="font-bold text-xs truncate dark:text-gray-200" title="${item.ItemName}">${item.ItemName}</h4>
+                        <p class="text-xs text-cmRed dark:text-cmYellow font-black">₹${item.SellPrice}</p>
                     </div>`;
             });
         }
+        function filterOrderGrid() { renderOrderGrid(); }
 
         function populateCustomerDropdown() {
             const select = document.getElementById('order-customer');
             select.innerHTML = '<option value="">-- Select Customer --</option>';
-            globalCustomers.forEach(c => {
-                select.innerHTML += `<option value="${c.Phone}" data-name="${c.BusinessName}">${c.BusinessName} (${c.Phone})</option>`;
+            // Sort alphabetically
+            let sorted = [...globalCustomers].sort((a,b) => a.BusinessName.localeCompare(b.BusinessName));
+            sorted.forEach(c => {
+                select.innerHTML += `<option value="${c.Phone}" data-name="${c.BusinessName}">${c.BusinessName} - ${c.Phone}</option>`;
             });
         }
 
-        // --- SUBMIT NEW DATA TO SHEET ---
+        // --- FORM SUBMISSIONS ---
         async function submitItem() {
+            const btn = document.querySelector('#modal-item button.bg-cmRed');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
             const fileInput = document.getElementById('add-item-photo');
-            let base64String = "";
-            let mimeType = "";
+            let base64String = "", mimeType = "";
 
             if(fileInput.files.length > 0) {
                 const file = fileInput.files[0];
@@ -279,33 +421,35 @@
                 mimeType: mimeType
             };
 
-            await sendPost(payload);
+            await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify(payload) });
+            btn.innerHTML = 'Save Item';
             toggleModal('modal-item');
+            document.getElementById('add-item-name').value = '';
+            document.getElementById('add-item-buy').value = '';
+            document.getElementById('add-item-sell').value = '';
+            fileInput.value = '';
             fetchData();
         }
 
         async function submitCustomer() {
+            const btn = document.querySelector('#modal-customer button.bg-cmYellow');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             const payload = {
                 action: "addCustomer",
                 BusinessName: document.getElementById('add-cust-name').value,
                 ContactPerson: document.getElementById('add-cust-person').value,
                 Phone: document.getElementById('add-cust-phone').value
             };
-            await sendPost(payload);
+            await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify(payload) });
+            btn.innerHTML = 'Save Customer';
             toggleModal('modal-customer');
+            document.getElementById('add-cust-name').value = '';
+            document.getElementById('add-cust-person').value = '';
+            document.getElementById('add-cust-phone').value = '';
             fetchData();
         }
 
-        async function sendPost(payload) {
-            document.getElementById('sync-icon').classList.add('fa-spin');
-            await fetch(WEB_APP_URL, {
-                method: "POST",
-                body: JSON.stringify(payload)
-            });
-            document.getElementById('sync-icon').classList.remove('fa-spin');
-        }
-
-        // --- CART & ORDER LOGIC ---
+        // --- ORDER & CART LOGIC ---
         function addToOrder(name, price) {
             const existing = cart.find(i => i.name === name);
             if(existing) existing.qty++;
@@ -321,10 +465,13 @@
                 let lineTotal = item.qty * item.price;
                 total += lineTotal;
                 tbody.innerHTML += `
-                    <tr class="border-b"><td class="p-3">${item.name}</td>
-                    <td class="p-3"><input type="number" min="1" value="${item.qty}" onchange="cart[${i}].qty=this.value; renderCart()" class="w-16 border p-1"></td>
-                    <td class="p-3 text-right">₹${item.price}</td><td class="p-3 text-right font-medium">₹${lineTotal.toFixed(2)}</td>
-                    <td class="p-3 text-red-500 cursor-pointer" onclick="cart.splice(${i},1); renderCart()"><i class="fas fa-times"></i></td></tr>`;
+                    <tr class="border-b dark:border-gray-700">
+                        <td class="p-3 font-bold">${item.name}</td>
+                        <td class="p-3 text-center"><input type="number" min="1" value="${item.qty}" onchange="cart[${i}].qty=this.value; renderCart()" class="w-16 border dark:border-gray-600 dark:bg-gray-800 p-1 text-center rounded outline-none font-bold"></td>
+                        <td class="p-3 text-right">₹${item.price}</td>
+                        <td class="p-3 text-right font-black text-cmRed dark:text-cmYellow">₹${lineTotal.toFixed(2)}</td>
+                        <td class="p-3 text-red-500 cursor-pointer text-center" onclick="cart.splice(${i},1); renderCart()"><i class="fas fa-trash-alt"></i></td>
+                    </tr>`;
             });
             document.getElementById('order-total').innerText = `₹ ${total.toFixed(2)}`;
             return total;
@@ -332,27 +479,80 @@
 
         async function saveAndSendOrder() {
             const sel = document.getElementById('order-customer');
-            if(!sel.value) return alert("Select a customer");
-            if(!cart.length) return alert("Add items to order");
+            if(!sel.value) return alert("Please select a customer.");
+            if(!cart.length) return alert("Add items to the order.");
 
             let total = renderCart();
             let custName = sel.options[sel.selectedIndex].getAttribute('data-name');
             let phone = sel.value;
             let details = cart.map(i => `${i.name} x${i.qty}`).join(", ");
 
-            // Save to Sheet
-            await sendPost({ action: "saveOrder", CustomerName: custName, CustomerPhone: phone, OrderTotal: total, OrderDetails: details });
-            fetchData(); // Update dash
-
-            // Send WhatsApp
-            let msg = encodeURIComponent(`*YUMMY FOODS - New Order*\n\n${cart.map(i => `${i.name} (x${i.qty}) - ₹${i.qty*i.price}`).join("\n")}\n\n*Total: ₹${total.toFixed(2)}*`);
-            window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+            // Save
+            await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "saveOrder", CustomerName: custName, CustomerPhone: phone, OrderTotal: total, OrderDetails: details }) });
             
+            // Format WhatsApp Message
+            let msg = `*CM Orders - YUMMY FOODS*\n_Order Estimate_\n\n*Customer:* ${custName}\n\n*Items:*\n`;
+            cart.forEach(i => { msg += `▪ ${i.name} (x${i.qty}) - ₹${i.qty*i.price}\n`; });
+            msg += `\n*Grand Total: ₹${total.toFixed(2)}*`;
+            
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
             cart = [];
+            sel.value = "";
             renderCart();
+            fetchData();
         }
 
-        function exportPDF() { html2pdf().from(document.getElementById('invoice-area')).save('Order.pdf'); }
+        // --- EXPORTS ---
+        function exportPDF() { 
+            const element = document.getElementById('invoice-area');
+            const opt = { margin: 0.3, filename: 'CM_Order.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+            html2pdf().set(opt).from(element).save(); 
+        }
+
+        function downloadImage() {
+            html2canvas(document.getElementById('invoice-area')).then(canvas => {
+                let link = document.createElement('a');
+                link.download = 'CM_Order.jpg';
+                link.href = canvas.toDataURL('image/jpeg');
+                link.click();
+            });
+        }
+
+        function downloadCSV() {
+            if(!globalOrders.length) return alert("No orders to export.");
+            let csv = "Date,Customer Name,Phone,Order Total,Details\n";
+            globalOrders.forEach(o => {
+                // Escape commas in details
+                let date = new Date(o["#TimeStamp"]).toLocaleDateString();
+                let details = `"${(o.OrderDetails||"").replace(/"/g, '""')}"`;
+                csv += `${date},${o.CustomerName},${o.CustomerPhone},${o.OrderTotal},${details}\n`;
+            });
+            let blob = new Blob([csv], { type: 'text/csv' });
+            let url = window.URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'CM_Orders_Report.csv');
+            a.click();
+        }
+
+        // --- CALCULATOR LOGIC ---
+        function calcInput(char) {
+            if(calcVal === "0" && char !== '.') calcVal = "";
+            calcVal += char;
+            document.getElementById('calc-display').value = calcVal;
+        }
+        function calcClear() {
+            calcVal = "0";
+            document.getElementById('calc-display').value = calcVal;
+        }
+        function calcCalculate() {
+            try { 
+                // eslint-disable-next-line
+                calcVal = eval(calcVal).toString(); 
+            } 
+            catch(e) { calcVal = "Error"; }
+            document.getElementById('calc-display').value = calcVal;
+        }
     </script>
 </body>
 </html>
