@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CM bizzE - Corporate ERP</title>
 
-    <!-- PWA Manifest Link -->
+    <!-- PWA Manifest & App Icons -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1E3A8A">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="apple-touch-icon" href="assets/logo.png">
 
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,82 +20,88 @@
 
     <style>
         :root {
-            /* NEW CM bizzE BLUE THEME */
-            --primary: #3B82F6;       /* Royal Blue */
-            --primary-hover: #2563EB; /* Darker Blue */
-            --secondary: #1E3A8A;     /* Deep Navy Blue */
-            --accent: #EF4444;        /* Red (For destructive actions) */
-            --bg: #F0F4F8;            /* Light Blue-Grey App Background */
-            --surface: #FFFFFF;       /* Card Background */
-            --text-main: #0F172A;     /* Dark Navy Text */
-            --text-muted: #64748B;    /* Muted Text */
-            --border: #E2E8F0;        /* Subtle Border */
+            --primary: #3B82F6;       
+            --primary-hover: #2563EB; 
+            --secondary: #1E3A8A;     
+            --accent: #EF4444;        
+            --bg: #F0F4F8;            
+            --surface: #FFFFFF;       
+            --text-main: #0F172A;     
+            --text-muted: #64748B;    
+            --border: #E2E8F0;        
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); padding-bottom: 90px; color: var(--text-main); }
         .hide { display: none !important; }
 
-        /* GRADIENT HEADER MATCHING LOGO */
+        /* HEADER */
         .header { height: 65px; background: linear-gradient(135deg, #172554, #3B82F6); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2); }
-        .left-head { display: flex; align-items: center; gap: 12px; }
-        .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .left-head { display: flex; align-items: center; gap: 10px; }
         .right-head { display: flex; gap: 15px; font-size: 18px; }
 
+        /* SIDE NAVIGATION MENU */
+        .menu-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(2px); }
+        .menu-overlay.active { opacity: 1; pointer-events: auto; }
+        .side-menu { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: var(--surface); z-index: 1001; transition: left 0.3s ease; box-shadow: 4px 0 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .side-menu.active { left: 0; }
+        .side-menu-header { background: linear-gradient(135deg, #172554, #3B82F6); padding: 30px 20px; color: white; }
+        .side-menu-links { flex: 1; overflow-y: auto; padding: 20px 0; }
+        .side-nav-item { padding: 16px 24px; display: flex; align-items: center; gap: 16px; color: var(--text-main); font-weight: 600; font-size: 15px; border-left: 4px solid transparent; transition: background 0.2s; cursor: pointer; }
+        .side-nav-item:active { background: #F8FAFC; }
+        .side-nav-item.active { background: #EFF6FF; color: var(--primary); border-left-color: var(--primary); }
+        .side-nav-item i { font-size: 18px; width: 24px; text-align: center; color: var(--text-muted); }
+        .side-nav-item.active i { color: var(--primary); }
+
+        /* CARDS & CONTAINERS */
         .corp-card { background: var(--surface); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05); border: 1px solid var(--border); margin-bottom: 16px; }
-        
         .hero { margin: 16px; background: var(--surface); border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05); border: 1px solid var(--border); }
         .hero h4 { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .hero h1 { font-size: 36px; margin: 4px 0 16px 0; font-weight: 800; color: var(--secondary); letter-spacing: -1px; }
-        
         .stats { display: flex; gap: 12px; border-top: 1px solid var(--border); padding-top: 16px; }
         .stat { flex: 1; }
         .stat span { font-size: 12px; color: var(--text-muted); font-weight: 600; }
         .stat h3 { margin-top: 2px; font-size: 22px; font-weight: 700; color: var(--primary); }
-
         .section { padding: 0 16px; margin-top: 24px; }
         .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--secondary); }
 
+        /* GRIDS & LISTS */
         .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .quick-card { background: var(--surface); padding: 16px 8px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); transition: background-color 0.2s; cursor: pointer; }
-        .quick-card:active { background-color: #F8FAFC; }
+        .quick-card { background: var(--surface); padding: 16px 8px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); cursor: pointer; }
         .icon-circle { width: 44px; height: 44px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: auto; margin-bottom: 8px; color: white; }
         .icon-circle i { font-size: 18px; }
         .quick-card span { font-size: 12px; font-weight: 600; color: var(--text-main); }
-
         .list-card { background: var(--surface); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); }
         .list-title { font-weight: 700; margin-bottom: 4px; font-size: 15px; color: var(--text-main); }
         .list-sub { font-size: 13px; color: var(--text-muted); font-weight: 500; }
         .list-price { font-size: 18px; font-weight: 800; color: var(--primary); text-align: right; }
-        
-        .action-btn { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; text-decoration: none; border: none; transition: background 0.2s; cursor: pointer;}
-        .action-btn:active { opacity: 0.8; }
+
+        /* BUTTONS & INPUTS */
+        .action-btn { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; text-decoration: none; border: none; cursor: pointer;}
         .btn-call { background: #DCFCE7; color: #16A34A; }
         .btn-map { background: #DBEAFE; color: #2563EB; }
         .btn-edit { background: #F1F5F9; color: var(--secondary); width: 32px; height: 32px; font-size: 12px; }
         .btn-delete { background: #FEE2E2; color: var(--accent); width: 32px; height: 32px; font-size: 12px; }
-        
-        .corp-input { width: 100%; background: #F8FAFC; border: 1px solid var(--border); padding: 14px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; outline: none; font-weight: 500; color: var(--text-main); transition: border-color 0.2s; }
+        .corp-input { width: 100%; background: #F8FAFC; border: 1px solid var(--border); padding: 14px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; outline: none; font-weight: 500; color: var(--text-main); }
         .corp-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
         select.corp-input { -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231E3A8A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px top 50%; background-size: 10px auto; }
-
-        .btn-primary { width: 100%; padding: 16px; border: none; border-radius: 8px; background: var(--primary); color: #FFFFFF; font-size: 15px; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); transition: background 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; }
+        .btn-primary { width: 100%; padding: 16px; border: none; border-radius: 8px; background: var(--primary); color: #FFFFFF; font-size: 15px; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; }
         .btn-primary:active { background: var(--primary-hover); }
-        
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); }
+
+        /* MODALS */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); }
         .modal-content { background: var(--surface); width: 100%; max-height: 90vh; overflow-y: auto; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
         .modal-header h3 { font-size: 18px; color: var(--secondary); font-weight: 700; }
         .modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
 
+        /* BOTTOM NAV */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--border); z-index: 100; padding: 0 10px; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; font-weight: 600; color: var(--text-muted); background: none; border: none; transition: color 0.2s; cursor: pointer;}
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; font-weight: 600; color: var(--text-muted); background: none; border: none; cursor: pointer;}
         .nav-item i { font-size: 20px; margin-bottom: 4px; }
         .nav-item.active { color: var(--primary); }
-
-        .fab { width: 56px; height: 56px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 24px; margin-top: -30px; box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4); border: none; transform: rotate(45deg); transition: transform 0.2s; cursor: pointer; }
+        .fab { width: 56px; height: 56px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 24px; margin-top: -30px; box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4); border: none; transform: rotate(45deg); cursor: pointer; }
         .fab i { transform: rotate(-45deg); }
-        .fab:active { transform: scale(0.95) rotate(45deg); }
 
         .cart-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
         .cart-table th { text-align: left; padding: 12px; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--border); background: #F8FAFC; }
@@ -107,15 +115,49 @@
     <!-- Header -->
     <div class="header">
         <div class="left-head">
+            <button onclick="toggleMenu()" style="background:none; border:none; color:white; font-size: 20px; cursor: pointer; padding-right: 5px;">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <div style="width: 32px; height: 32px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 4px;">
-                <!-- Updated to look for logo-blue.png -->
-                <img src="logo-blue.png" alt="CM" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none';">
+                <img src="assets/logo.png" alt="CM" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none';">
             </div>
-            <div class="logo">CM bizzE</div>
+            <img src="assets/name.png" alt="CM bizzE" style="height: 20px; object-fit: contain; margin-left: 6px;" onerror="this.style.display='none';">
         </div>
         <div class="right-head">
             <button onclick="toggleModal('modal-info')" style="background:none; border:none; color:inherit; cursor: pointer;"><i class="fa-solid fa-circle-info"></i></button>
             <button onclick="fetchData()" style="background:none; border:none; color:inherit; cursor: pointer; margin-left: 10px;"><i class="fa-solid fa-arrows-rotate" id="sync-icon"></i></button>
+        </div>
+    </div>
+
+    <!-- Side Menu (Hamburger Menu) -->
+    <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+    <div class="side-menu" id="side-menu">
+        <div class="side-menu-header">
+            <img src="assets/logo.png" style="width: 48px; height: 48px; background: white; border-radius: 12px; padding: 6px; margin-bottom: 16px;" onerror="this.style.display='none';">
+            <img src="assets/name.png" style="height: 24px; object-fit: contain; display: block; margin-bottom: 4px;" onerror="this.style.display='none';">
+            <p style="font-size: 12px; opacity: 0.8; font-weight: 500;">Corporate ERP System</p>
+        </div>
+        <div class="side-menu-links">
+            <div class="side-nav-item active" id="side-dashboard" onclick="switchTab('dashboard'); toggleMenu();">
+                <i class="fa-solid fa-house"></i> Dashboard
+            </div>
+            <div class="side-nav-item" id="side-customers" onclick="switchTab('customers'); toggleMenu();">
+                <i class="fa-solid fa-users"></i> Client Directory
+            </div>
+            <div class="side-nav-item" id="side-items" onclick="switchTab('items'); toggleMenu();">
+                <i class="fa-solid fa-box"></i> Item Master
+            </div>
+            <div class="side-nav-item" id="side-orders" onclick="switchTab('orders'); toggleMenu();">
+                <i class="fa-solid fa-file-invoice-dollar"></i> Generate Order
+            </div>
+            <div class="side-nav-item" id="side-reports" onclick="switchTab('reports'); toggleMenu();">
+                <i class="fa-solid fa-chart-pie"></i> Reports & Export
+            </div>
+        </div>
+        <div style="padding: 20px; border-top: 1px solid var(--border);">
+            <button onclick="toggleModal('modal-info'); toggleMenu();" class="btn-primary" style="background: var(--bg); color: var(--text-main); border: 1px solid var(--border); box-shadow: none;">
+                <i class="fa-solid fa-circle-info"></i> App Information
+            </button>
         </div>
     </div>
 
@@ -163,7 +205,7 @@
             </div>
         </div>
 
-        <!-- SALES ORDER (Updated Printed Invoice Layout) -->
+        <!-- SALES ORDER (Updated Printed Invoice Layout with Watermark) -->
         <div id="view-orders" class="hide section">
             <div class="corp-card" id="invoice-area">
                 
@@ -177,9 +219,9 @@
                             Mobile: 9746608090 | Email: yummy@gmail.com
                         </p>
                     </div>
-                    <div style="text-align: right;">
+                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end;">
                         <h3 style="color: var(--primary); font-size: 18px; font-weight: 800;">TAX INVOICE</h3>
-                        <p style="color: var(--text-muted); font-size: 11px; margin-top: 4px;">CM bizzE</p>
+                        <img src="assets/name.png" style="height: 14px; object-fit: contain; margin-top: 6px; opacity: 0.8;" onerror="this.style.display='none';">
                     </div>
                 </div>
                 
@@ -208,6 +250,15 @@
                             </tr>
                         </tfoot>
                     </table>
+                </div>
+
+                <!-- WATERMARK FOOTER FOR PDF EXPORT -->
+                <div style="margin-top: 40px; text-align: center; opacity: 0.35;">
+                    <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Generated by</span>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px;">
+                        <img src="assets/logo.png" style="height: 18px; object-fit: contain;" onerror="this.style.display='none';">
+                        <img src="assets/name.png" style="height: 18px; object-fit: contain;" onerror="this.style.display='none';">
+                    </div>
                 </div>
             </div>
 
@@ -252,8 +303,8 @@
     <!-- App Info Modal -->
     <div id="modal-info" class="modal-overlay hide">
         <div class="modal-content" style="text-align: center;">
-            <img src="logo-blue.png" alt="CM" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 16px;" onerror="this.style.display='none';">
-            <h2 style="color: var(--secondary); margin-bottom: 4px;">CM bizzE</h2>
+            <img src="assets/logo.png" alt="CM Logo" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 12px;" onerror="this.style.display='none';">
+            <img src="assets/name.png" alt="CM bizzE" style="height: 28px; object-fit: contain; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;" onerror="this.style.display='none';">
             <p style="color: var(--primary); font-weight: 700; margin-bottom: 16px;">Demo Version</p>
             <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">App Contact: <a href="http://www.cmfilings.com" style="color: var(--primary); text-decoration: underline;">www.cmfilings.com</a></p>
             <button onclick="toggleModal('modal-info')" class="btn-primary" style="background: var(--bg); color: var(--text-main); box-shadow: none; border: 1px solid var(--border);">Close</button>
@@ -332,6 +383,12 @@
             });
         }
 
+        // --- SIDE MENU LOGIC ---
+        function toggleMenu() {
+            document.getElementById('side-menu').classList.toggle('active');
+            document.getElementById('menu-overlay').classList.toggle('active');
+        }
+
         // ==========================================
         // 🔥 SUPABASE CONFIGURATION 🔥
         // ==========================================
@@ -353,10 +410,18 @@
             document.querySelectorAll('main > div').forEach(el => el.classList.add('hide'));
             document.getElementById('view-' + tabId).classList.remove('hide');
             
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            // Bottom Nav
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             if(document.getElementById('nav-' + tabId)) {
                 document.getElementById('nav-' + tabId).classList.add('active');
             }
+
+            // Side Nav
+            document.querySelectorAll('.side-nav-item').forEach(el => el.classList.remove('active'));
+            if(document.getElementById('side-' + tabId)) {
+                document.getElementById('side-' + tabId).classList.add('active');
+            }
+
             window.scrollTo(0,0);
         }
 
@@ -583,7 +648,6 @@
             else fetchData();
         }
 
-        // CUSTOMER MODAL
         function openAddCustomerModal() {
             editingCustId = null;
             document.getElementById('modal-customer-title').innerText = "Register Customer";
@@ -648,7 +712,6 @@
             else fetchData();
         }
 
-        // --- CART LOGIC ---
         function addToOrder(name, price) {
             const existing = cart.find(i => i.name === name);
             if(existing) existing.qty++; else cart.push({ name, price, qty: 1 });
