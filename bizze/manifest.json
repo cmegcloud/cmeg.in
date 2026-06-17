@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CM bizO - Corporate ERP</title>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1E293B">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #F59E0B;       
+            --primary-hover: #D97706; 
+            --secondary: #1E293B;     
+            --accent: #DC2626;        
+            --bg: #F3F4F6;            
+            --surface: #FFFFFF;       
+            --text-main: #0F172A;     
+            --text-muted: #64748B;    
+            --border: #E2E8F0;        
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); padding-bottom: 90px; color: var(--text-main); }
+        .hide { display: none !important; }
+
+        .header { height: 65px; background: var(--secondary); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .left-head { display: flex; align-items: center; gap: 12px; }
+        .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .right-head { display: flex; gap: 15px; font-size: 18px; }
+
+        .corp-card { background: var(--surface); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05); border: 1px solid var(--border); margin-bottom: 16px; }
+        
+        .hero { margin: 16px; background: var(--surface); border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05); border: 1px solid var(--border); }
+        .hero h4 { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .hero h1 { font-size: 36px; margin: 4px 0 16px 0; font-weight: 800; color: var(--secondary); letter-spacing: -1px; }
+        
+        .stats { display: flex; gap: 12px; border-top: 1px solid var(--border); padding-top: 16px; }
+        .stat { flex: 1; }
+        .stat span { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+        .stat h3 { margin-top: 2px; font-size: 22px; font-weight: 700; color: var(--primary); }
+
+        .section { padding: 0 16px; margin-top: 24px; }
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--secondary); }
+
+        .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .quick-card { background: var(--surface); padding: 16px 8px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); transition: background-color 0.2s; cursor: pointer; }
+        .quick-card:active { background-color: #F8FAFC; }
+        .icon-circle { width: 44px; height: 44px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: auto; margin-bottom: 8px; color: white; }
+        .icon-circle i { font-size: 18px; }
+        .quick-card span { font-size: 12px; font-weight: 600; color: var(--text-main); }
+
+        .list-card { background: var(--surface); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); }
+        .list-title { font-weight: 700; margin-bottom: 4px; font-size: 15px; color: var(--text-main); }
+        .list-sub { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+        .list-price { font-size: 18px; font-weight: 800; color: var(--primary); text-align: right; }
+        
+        .action-btn { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; text-decoration: none; border: none; transition: background 0.2s; cursor: pointer;}
+        .action-btn:active { opacity: 0.8; }
+        .btn-call { background: #DCFCE7; color: #16A34A; }
+        .btn-map { background: #DBEAFE; color: #2563EB; }
+        .btn-edit { background: #F1F5F9; color: var(--secondary); width: 32px; height: 32px; font-size: 12px; }
+        .btn-delete { background: #FEE2E2; color: var(--accent); width: 32px; height: 32px; font-size: 12px; }
+        
+        .corp-input { width: 100%; background: #F8FAFC; border: 1px solid var(--border); padding: 14px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; outline: none; font-weight: 500; color: var(--text-main); transition: border-color 0.2s; }
+        .corp-input:focus { border-color: var(--secondary); background: white; }
+        select.corp-input { -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231E293B%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px top 50%; background-size: 10px auto; }
+
+        .btn-primary { width: 100%; padding: 16px; border: none; border-radius: 8px; background: var(--primary); color: var(--secondary); font-size: 15px; font-weight: 700; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2); transition: background 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; }
+        .btn-primary:active { background: var(--primary-hover); }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); }
+        .modal-content { background: var(--surface); width: 100%; max-height: 90vh; overflow-y: auto; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+        .modal-header h3 { font-size: 18px; color: var(--secondary); font-weight: 700; }
+        .modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--border); z-index: 100; padding: 0 10px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; font-weight: 600; color: var(--text-muted); background: none; border: none; transition: color 0.2s; cursor: pointer;}
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item.active { color: var(--primary); }
+
+        .fab { width: 56px; height: 56px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--secondary); font-size: 24px; margin-top: -30px; box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3); border: none; transform: rotate(45deg); transition: transform 0.2s; cursor: pointer; }
+        .fab i { transform: rotate(-45deg); }
+        .fab:active { transform: scale(0.95) rotate(45deg); }
+
+        .cart-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .cart-table th { text-align: left; padding: 12px; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--border); background: #F8FAFC; }
+        .cart-table td { padding: 16px 12px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--text-main); }
+        .qty-input { width: 55px; padding: 8px; border-radius: 6px; border: 1px solid var(--border); text-align: center; font-weight: 700; color: var(--text-main); background: #F8FAFC; }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="left-head">
+            <div style="width: 32px; height: 32px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                <img src="assets/logo.png" alt="CM" style="width: 20px; height: 20px; object-fit: contain;" onerror="this.style.display='none';">
+            </div>
+            <div class="logo">CM bizO</div>
+        </div>
+        <div class="right-head">
+            <button onclick="toggleModal('modal-info')" style="background:none; border:none; color:inherit; cursor: pointer;"><i class="fa-solid fa-circle-info"></i></button>
+            <button onclick="fetchData()" style="background:none; border:none; color:inherit; cursor: pointer; margin-left: 10px;"><i class="fa-solid fa-arrows-rotate" id="sync-icon"></i></button>
+        </div>
+    </div>
+
+    <main id="app-content">
+
+        <div id="view-dashboard">
+            <div class="hero">
+                <h4>Total Revenue</h4>
+                <h1 id="dash-revenue">₹0</h1>
+                <div class="stats">
+                    <div class="stat">
+                        <span>Orders Generated</span>
+                        <h3 id="dash-orders">0</h3>
+                    </div>
+                    <div class="stat">
+                        <span>Active Clients</span>
+                        <h3 id="dash-customers">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Quick Actions</div>
+                <div class="quick-grid">
+                    <div class="quick-card" onclick="switchTab('customers')">
+                        <div class="icon-circle"><i class="fa-solid fa-users"></i></div><span>Clients</span>
+                    </div>
+                    <div class="quick-card" onclick="switchTab('items')">
+                        <div class="icon-circle"><i class="fa-solid fa-box"></i></div><span>Items</span>
+                    </div>
+                    <div class="quick-card" onclick="switchTab('orders')">
+                        <div class="icon-circle"><i class="fa-solid fa-cart-shopping"></i></div><span>Order</span>
+                    </div>
+                    <div class="quick-card" onclick="switchTab('reports')">
+                        <div class="icon-circle"><i class="fa-solid fa-file-csv"></i></div><span>Report</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Recent Transactions</div>
+                <div id="recent-orders-list"></div>
+            </div>
+        </div>
+
+        <div id="view-orders" class="hide section">
+            <div class="corp-card" id="invoice-area">
+                
+                <div style="display: flex; justify-content: space-between; border-bottom: 2px solid var(--border); padding-bottom: 16px; margin-bottom: 20px;">
+                    <div>
+                        <h2 style="color: var(--secondary); font-size: 22px; font-weight: 800; margin-bottom: 4px;">YUMMY</h2>
+                        <p style="color: var(--text-muted); font-size: 11px; line-height: 1.5;">
+                            Address: Kannur, Kerala 670672<br>
+                            GST No: 32ABCDE1234A1B2<br>
+                            Mobile: 9746608090 | Email: yummy@gmail.com
+                        </p>
+                    </div>
+                    <div style="text-align: right;">
+                        <h3 style="color: var(--primary); font-size: 18px; font-weight: 800;">TAX INVOICE</h3>
+                        <p style="color: var(--text-muted); font-size: 11px; margin-top: 4px;">CM bizO</p>
+                    </div>
+                </div>
+                
+                <input type="date" id="order-date" class="corp-input">
+                <select id="order-customer" class="corp-input">
+                    <option value="">Select Customer...</option>
+                </select>
+
+                <div style="margin: 24px 0;" data-html2canvas-ignore>
+                    <input type="text" id="order-search" onkeyup="filterOrderGrid()" placeholder="Search items to add..." class="corp-input">
+                    <div id="order-item-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-height: 220px; overflow-y: auto;"></div>
+                </div>
+
+                <div style="overflow-x: auto; border: 1px solid var(--border); border-radius: 8px;">
+                    <table class="cart-table" style="margin-bottom: 0;">
+                        <thead><tr><th>Item</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Total</th><th data-html2canvas-ignore></th></tr></thead>
+                        <tbody id="order-list"></tbody>
+                        <tfoot>
+                            <tr style="background: #F8FAFC;">
+                                <td colspan="4">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
+                                        <span style="color:var(--text-muted); font-weight: 600; font-size: 13px; text-transform: uppercase;">Grand Total</span>
+                                        <span style="color:var(--primary); font-size: 20px; font-weight:800;" id="order-total">₹0</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-bottom: 30px;">
+                <button onclick="exportToPDF('invoice-area', 'CM_bizO_Invoice')" class="btn-primary" style="background: white; color: var(--accent); flex: 0.3; border: 1px solid var(--border); box-shadow: none;"><i class="fa-solid fa-file-pdf" style="font-size: 18px;"></i></button>
+                <button onclick="saveAndSendOrder()" class="btn-primary" style="flex: 1;"><i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> Save & Send</button>
+            </div>
+        </div>
+
+        <div id="view-items" class="hide section">
+            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                <input type="text" id="search-items" onkeyup="renderItems()" placeholder="Search Item Master..." class="corp-input" style="margin:0;">
+                <button onclick="openAddItemModal()" class="btn-primary" style="width: 52px; height: 52px; flex-shrink: 0; padding: 0;"><i class="fa-solid fa-plus"></i></button>
+            </div>
+            <div id="items-container"></div>
+        </div>
+
+        <div id="view-customers" class="hide section">
+            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                <input type="text" id="search-customers" onkeyup="renderCustomers()" placeholder="Search Directory..." class="corp-input" style="margin:0;">
+                <button onclick="openAddCustomerModal()" class="btn-primary" style="width: 52px; height: 52px; flex-shrink: 0; padding: 0;"><i class="fa-solid fa-user-plus"></i></button>
+            </div>
+            <div id="customers-container"></div>
+        </div>
+
+        <div id="view-reports" class="hide section">
+            <div class="corp-card" style="text-align: center; padding: 40px 20px;">
+                <div class="icon-circle" style="width: 72px; height: 72px; font-size: 28px; margin-bottom: 20px; background: #DBEAFE; color: #2563EB;"><i class="fa-solid fa-file-csv"></i></div>
+                <h2 style="margin-bottom: 8px; font-size: 20px; color: var(--secondary);">Data Export</h2>
+                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px; line-height: 1.5;">Download a complete CSV backup of all recorded orders. Fully compatible with spreadsheet software.</p>
+                <button onclick="downloadCSV()" class="btn-primary"><i class="fa-solid fa-download"></i> Generate CSV Report</button>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="modal-info" class="modal-overlay hide">
+        <div class="modal-content" style="text-align: center;">
+            <img src="assets/logo.png" alt="CM" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 16px;" onerror="this.style.display='none';">
+            <h2 style="color: var(--secondary); margin-bottom: 4px;">CM bizO</h2>
+            <p style="color: var(--primary); font-weight: 700; margin-bottom: 16px;">Demo Version</p>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">App Contact: <a href="http://www.cmfilings.com" style="color: var(--secondary); text-decoration: underline;">www.cmfilings.com</a></p>
+            <button onclick="toggleModal('modal-info')" class="btn-primary" style="background: var(--bg); color: var(--text-main); box-shadow: none; border: 1px solid var(--border);">Close</button>
+        </div>
+    </div>
+    
+    <div id="modal-item" class="modal-overlay hide">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-item-title">Add New Item</h3>
+                <button onclick="closeItemModal()" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <input type="text" id="add-item-name" placeholder="Item Name" class="corp-input">
+            <div style="display: flex; gap: 12px;">
+                <input type="number" id="add-item-buy" placeholder="Buy Price (₹)" class="corp-input">
+                <input type="number" id="add-item-sell" placeholder="Sell Price (₹)" class="corp-input">
+            </div>
+            <label style="color: var(--text-muted); font-size: 12px; font-weight: 600; margin-bottom: 8px; display: block; text-transform: uppercase;">Product Photo</label>
+            <input type="file" id="add-item-photo" accept="image/*" class="corp-input" style="padding: 10px; background: white;">
+            <button onclick="submitItem()" id="btn-save-item" class="btn-primary" style="margin-top: 10px;"><i class="fa-solid fa-check"></i> Save Item</button>
+        </div>
+    </div>
+
+    <div id="modal-customer" class="modal-overlay hide">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-customer-title">Register Customer</h3>
+                <button onclick="closeCustomerModal()" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <input type="text" id="add-cust-name" placeholder="Business Name" class="corp-input">
+            <input type="text" id="add-cust-person" placeholder="Contact Person" class="corp-input">
+            <input type="tel" id="add-cust-phone" placeholder="WhatsApp Number" class="corp-input">
+            
+            <div style="display: flex; gap: 12px;">
+                <input type="text" id="add-cust-loc" placeholder="Location Link" class="corp-input" style="margin:0;">
+                <button onclick="getGPSLocation()" class="btn-primary" style="width: 52px; height: 52px; flex-shrink: 0; padding: 0;"><i class="fa-solid fa-location-crosshairs"></i></button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 11px; margin: 6px 0 20px 0; font-weight: 500;">Tap icon to auto-grab GPS location.</p>
+
+            <button onclick="submitCustomer()" id="btn-save-cust" class="btn-primary"><i class="fa-solid fa-check"></i> Save Customer</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
+            <i class="fa-solid fa-house"></i><span>Home</span>
+        </button>
+        <button class="nav-item" id="nav-customers" onclick="switchTab('customers')">
+            <i class="fa-solid fa-users"></i><span>Clients</span>
+        </button>
+        
+        <button class="fab" onclick="switchTab('orders')">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+        
+        <button class="nav-item" id="nav-items" onclick="switchTab('items')">
+            <i class="fa-solid fa-box"></i><span>Items</span>
+        </button>
+        <button class="nav-item" id="nav-reports" onclick="switchTab('reports')">
+            <i class="fa-solid fa-chart-line"></i><span>Reports</span>
+        </button>
+    </div>
+
+    <script>
+        // --- PWA SERVICE WORKER REGISTRATION ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    console.log('SW registered: ', reg.scope);
+                }).catch(err => {
+                    console.log('SW registration failed: ', err);
+                });
+            });
+        }
+
+        // ==========================================
+        // 🔥 SUPABASE CONFIGURATION 🔥
+        // ==========================================
+        const SUPABASE_URL = "https://gzmodvyaxuvscemzsvrr.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_5PdCG4YheAQ-jX42GJ7uag_C5mOrFE7"; 
+        
+        let db;
+        let globalItems = [], globalCustomers = [], globalOrders = [], cart = [];
+        let editingItemId = null;
+        let editingCustId = null;
+
+        window.onload = () => {
+            db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            document.getElementById('order-date').valueAsDate = new Date();
+            fetchData();
+        };
+
+        function switchTab(tabId) {
+            document.querySelectorAll('main > div').forEach(el => el.classList.add('hide'));
+            document.getElementById('view-' + tabId).classList.remove('hide');
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if(document.getElementById('nav-' + tabId)) {
+                document.getElementById('nav-' + tabId).classList.add('active');
+            }
+            window.scrollTo(0,0);
+        }
+
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hide'); }
+
+        function getGPSLocation() {
+            const locInput = document.getElementById('add-cust-loc');
+            locInput.value = "Fetching GPS...";
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => { locInput.value = `${pos.coords.latitude}, ${pos.coords.longitude}`; },
+                    (err) => { alert("GPS Error. Enable permissions."); locInput.value = ""; }
+                );
+            } else { alert("Geolocation not supported."); locInput.value = ""; }
+        }
+
+        async function fetchData() {
+            if(!db) return;
+            const icon = document.getElementById('sync-icon');
+            icon.classList.add('fa-spin');
+            
+            try {
+                const [itemsRes, custRes, ordersRes] = await Promise.all([
+                    db.from('items').select('*').order('created_at', { ascending: false }),
+                    db.from('customers').select('*').order('business_name', { ascending: true }),
+                    db.from('orders').select('*').order('created_at', { ascending: false })
+                ]);
+
+                if(itemsRes.error) throw itemsRes.error;
+                if(custRes.error) throw custRes.error;
+
+                globalItems = itemsRes.data || [];
+                globalCustomers = custRes.data || [];
+                globalOrders = ordersRes.data || [];
+
+                renderDashboard();
+                renderItems();
+                renderCustomers();
+                renderOrderGrid();
+                populateCustomerDropdown();
+            } catch (err) { 
+                alert("Error Fetching Data: " + err.message); 
+            }
+            icon.classList.remove('fa-spin');
+        }
+
+        function renderDashboard() {
+            document.getElementById('dash-orders').innerText = globalOrders.length;
+            document.getElementById('dash-customers').innerText = globalCustomers.length;
+            let rev = globalOrders.reduce((sum, order) => sum + Number(order.order_total || 0), 0);
+            document.getElementById('dash-revenue').innerText = `₹${rev.toLocaleString('en-IN')}`;
+
+            const recentList = document.getElementById('recent-orders-list');
+            recentList.innerHTML = '';
+            globalOrders.slice(0, 5).forEach(o => {
+                recentList.innerHTML += `
+                    <div class="list-card">
+                        <div>
+                            <div class="list-title">${o.customer_name}</div>
+                            <div class="list-sub">${new Date(o.order_date).toLocaleDateString()}</div>
+                        </div>
+                        <div class="list-price">₹${o.order_total}</div>
+                    </div>`;
+            });
+        }
+
+        function renderItems() {
+            const term = document.getElementById('search-items').value.toLowerCase();
+            const container = document.getElementById('items-container');
+            container.innerHTML = '';
+            
+            globalItems.filter(i => i.item_name.toLowerCase().includes(term)).forEach(item => {
+                let imgHtml = item.photo_url ? `<img src="${item.photo_url}" style="width:40px; height:40px; border-radius:8px; object-fit:cover; margin-right:12px;">` : '';
+                container.innerHTML += `
+                    <div class="list-card">
+                        <div style="flex: 1; display:flex; align-items:center;">
+                            ${imgHtml}
+                            <div>
+                                <div class="list-title">${item.item_name}</div>
+                                <div class="list-sub" style="display:inline-block; background: var(--bg); padding: 4px 8px; border-radius: 6px; margin-top:4px;">Buy: ₹${item.buy_price}</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="list-price">₹${item.sell_price}</div>
+                            <div style="display:flex; flex-direction: column; gap:6px; border-left: 1px solid var(--border); padding-left: 12px;">
+                                <button onclick="openEditItemModal(${item.id})" class="action-btn btn-edit"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteItem(${item.id})" class="action-btn btn-delete"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function renderCustomers() {
+            const term = document.getElementById('search-customers').value.toLowerCase();
+            const container = document.getElementById('customers-container');
+            container.innerHTML = '';
+            
+            globalCustomers.filter(c => c.business_name.toLowerCase().includes(term) || (c.phone && c.phone.includes(term))).forEach(c => {
+                let callBtn = c.phone ? `<a href="tel:${c.phone.replace(/[^0-9+]/g, '')}" class="action-btn btn-call"><i class="fa-solid fa-phone"></i></a>` : '';
+                let mapLink = c.location ? (c.location.startsWith('http') ? c.location : `https://maps.google.com/?q=${encodeURIComponent(c.location)}`) : '';
+                let mapBtn = mapLink ? `<a href="${mapLink}" target="_blank" class="action-btn btn-map"><i class="fa-solid fa-location-dot"></i></a>` : '';
+
+                container.innerHTML += `
+                    <div class="list-card" style="align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <div class="list-title">${c.business_name}</div>
+                            <div class="list-sub" style="margin-bottom:4px;"><i class="fa-solid fa-user" style="margin-right:6px;"></i>${c.contact_person || 'N/A'}</div>
+                            <div class="list-sub" style="font-family:monospace;">${c.phone || ''}</div>
+                            <div style="display:flex; gap:8px; margin-top: 10px;">${mapBtn}${callBtn}</div>
+                        </div>
+                        <div style="display:flex; flex-direction: column; gap:6px; border-left: 1px solid var(--border); padding-left: 12px;">
+                            <button onclick="openEditCustomerModal(${c.id})" class="action-btn btn-edit"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteCustomer(${c.id})" class="action-btn btn-delete"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function renderOrderGrid() {
+            const term = document.getElementById('order-search').value.toLowerCase();
+            const grid = document.getElementById('order-item-grid');
+            grid.innerHTML = '';
+            globalItems.filter(i => i.item_name.toLowerCase().includes(term)).forEach(item => {
+                grid.innerHTML += `
+                    <div style="background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 12px 8px; text-align: center; color: var(--text-main); cursor: pointer;" onclick="addToOrder('${item.item_name}', ${item.sell_price})">
+                        <div style="font-weight: 600; font-size: 13px; margin-bottom: 6px; line-height: 1.3;">${item.item_name}</div>
+                        <div style="color: var(--primary); font-weight: 800; font-size: 15px;">₹${item.sell_price}</div>
+                    </div>`;
+            });
+        }
+        function filterOrderGrid() { renderOrderGrid(); }
+
+        function populateCustomerDropdown() {
+            const select = document.getElementById('order-customer');
+            select.innerHTML = '<option value="">Select Customer...</option>';
+            globalCustomers.forEach(c => { select.innerHTML += `<option value="${c.phone}" data-name="${c.business_name}">${c.business_name}</option>`; });
+        }
+
+        // --- MODAL CONTROLS & ADD/EDIT/DELETE ---
+        function openAddItemModal() {
+            editingItemId = null;
+            document.getElementById('modal-item-title').innerText = "Add New Item";
+            document.getElementById('btn-save-item').innerHTML = '<i class="fa-solid fa-plus"></i> Save Item';
+            document.getElementById('add-item-name').value = '';
+            document.getElementById('add-item-buy').value = '';
+            document.getElementById('add-item-sell').value = '';
+            document.getElementById('add-item-photo').value = '';
+            document.getElementById('modal-item').classList.remove('hide');
+        }
+
+        function openEditItemModal(id) {
+            editingItemId = id;
+            let item = globalItems.find(i => i.id === id);
+            if(!item) return;
+            
+            document.getElementById('modal-item-title').innerText = "Edit Item";
+            document.getElementById('btn-save-item').innerHTML = '<i class="fa-solid fa-check"></i> Update Item';
+            document.getElementById('add-item-name').value = item.item_name;
+            document.getElementById('add-item-buy').value = item.buy_price;
+            document.getElementById('add-item-sell').value = item.sell_price;
+            document.getElementById('add-item-photo').value = '';
+            document.getElementById('modal-item').classList.remove('hide');
+        }
+
+        function closeItemModal() { document.getElementById('modal-item').classList.add('hide'); }
+
+        async function submitItem() {
+            const btn = document.getElementById('btn-save-item');
+            btn.innerHTML = 'Saving...';
+            
+            let photo_url = "";
+            const fileInput = document.getElementById('add-item-photo');
+            
+            // Fixed Upload Logic with Sanitation
+            if(fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const sanitizedName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '');
+                const fileName = Date.now() + '-' + sanitizedName;
+                
+                const { data, error: uploadError } = await db.storage.from('item-photos').upload(fileName, file, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+                if(uploadError) {
+                    alert("Image Upload Failed: " + uploadError.message + "\n\n(Verify 'item-photos' public bucket exists in Supabase Storage).");
+                    btn.innerHTML = editingItemId ? '<i class="fa-solid fa-check"></i> Update Item' : '<i class="fa-solid fa-plus"></i> Save Item';
+                    return;
+                } else {
+                    photo_url = db.storage.from('item-photos').getPublicUrl(fileName).data.publicUrl;
+                }
+            }
+
+            let payload = {
+                item_name: document.getElementById('add-item-name').value, 
+                buy_price: document.getElementById('add-item-buy').value || 0, 
+                sell_price: document.getElementById('add-item-sell').value || 0
+            };
+            if(photo_url) payload.photo_url = photo_url;
+
+            let error = null;
+            if (editingItemId) {
+                const res = await db.from('items').update(payload).eq('id', editingItemId);
+                error = res.error;
+            } else {
+                const res = await db.from('items').insert([payload]);
+                error = res.error;
+            }
+
+            if(error) {
+                alert("Database Error: " + error.message);
+                btn.innerHTML = editingItemId ? '<i class="fa-solid fa-check"></i> Update' : '<i class="fa-solid fa-plus"></i> Save';
+                return;
+            }
+
+            closeItemModal();
+            fetchData();
+        }
+
+        async function deleteItem(id) {
+            if(!confirm("Delete this item permanently?")) return;
+            const { error } = await db.from('items').delete().eq('id', id);
+            if(error) alert("Error deleting: " + error.message);
+            else fetchData();
+        }
+
+        // CUSTOMER MODAL
+        function openAddCustomerModal() {
+            editingCustId = null;
+            document.getElementById('modal-customer-title').innerText = "Register Customer";
+            document.getElementById('btn-save-cust').innerHTML = '<i class="fa-solid fa-plus"></i> Save Customer';
+            document.getElementById('add-cust-name').value = '';
+            document.getElementById('add-cust-person').value = '';
+            document.getElementById('add-cust-phone').value = '';
+            document.getElementById('add-cust-loc').value = '';
+            document.getElementById('modal-customer').classList.remove('hide');
+        }
+
+        function openEditCustomerModal(id) {
+            editingCustId = id;
+            let cust = globalCustomers.find(c => c.id === id);
+            if(!cust) return;
+            
+            document.getElementById('modal-customer-title').innerText = "Edit Customer";
+            document.getElementById('btn-save-cust').innerHTML = '<i class="fa-solid fa-check"></i> Update Customer';
+            document.getElementById('add-cust-name').value = cust.business_name;
+            document.getElementById('add-cust-person').value = cust.contact_person;
+            document.getElementById('add-cust-phone').value = cust.phone;
+            document.getElementById('add-cust-loc').value = cust.location || '';
+            document.getElementById('modal-customer').classList.remove('hide');
+        }
+
+        function closeCustomerModal() { document.getElementById('modal-customer').classList.add('hide'); }
+
+        async function submitCustomer() {
+            const btn = document.getElementById('btn-save-cust');
+            btn.innerHTML = 'Saving...';
+            
+            let payload = {
+                business_name: document.getElementById('add-cust-name').value, 
+                contact_person: document.getElementById('add-cust-person').value, 
+                phone: document.getElementById('add-cust-phone').value,
+                location: document.getElementById('add-cust-loc').value
+            };
+
+            let error = null;
+            if(editingCustId) {
+                const res = await db.from('customers').update(payload).eq('id', editingCustId);
+                error = res.error;
+            } else {
+                const res = await db.from('customers').insert([payload]);
+                error = res.error;
+            }
+
+            if(error) {
+                alert("Database Error: " + error.message);
+                btn.innerHTML = editingCustId ? '<i class="fa-solid fa-check"></i> Update' : '<i class="fa-solid fa-plus"></i> Save';
+                return;
+            }
+
+            closeCustomerModal();
+            fetchData();
+        }
+
+        async function deleteCustomer(id) {
+            if(!confirm("Delete this customer permanently?")) return;
+            const { error } = await db.from('customers').delete().eq('id', id);
+            if(error) alert("Error deleting: " + error.message);
+            else fetchData();
+        }
+
+        // --- CART LOGIC ---
+        function addToOrder(name, price) {
+            const existing = cart.find(i => i.name === name);
+            if(existing) existing.qty++; else cart.push({ name, price, qty: 1 });
+            renderCart();
+        }
+
+        function renderCart() {
+            const tbody = document.getElementById('order-list');
+            tbody.innerHTML = '';
+            let total = 0;
+            cart.forEach((item, i) => {
+                let lineTotal = item.qty * item.price;
+                total += lineTotal;
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-size: 13px;">${item.name}</td>
+                        <td style="text-align:center;">
+                            <input type="number" min="1" value="${item.qty}" onchange="cart[${i}].qty=this.value; renderCart()" class="qty-input" data-html2canvas-ignore="true">
+                            <span class="hide" data-html2canvas-show="true">${item.qty}</span>
+                        </td>
+                        <td style="text-align:right; color:var(--primary); font-weight:800; font-size: 15px;">₹${lineTotal}</td>
+                        <td style="text-align:center; color:var(--accent); font-size: 18px; cursor: pointer;" onclick="cart.splice(${i},1); renderCart()" data-html2canvas-ignore><i class="fa-solid fa-circle-minus"></i></td>
+                    </tr>`;
+            });
+            document.getElementById('order-total').innerText = `₹${total.toLocaleString('en-IN')}`;
+            return total;
+        }
+
+        async function saveAndSendOrder() {
+            const sel = document.getElementById('order-customer');
+            if(!sel.value) return alert("Select a customer.");
+            if(!cart.length) return alert("Cart is empty.");
+
+            let total = renderCart();
+            let custName = sel.options[sel.selectedIndex].getAttribute('data-name');
+            let phone = sel.value;
+            let orderDate = document.getElementById('order-date').value;
+            let details = cart.map(i => `${i.name} x${i.qty}`).join(", ");
+
+            const { error } = await db.from('orders').insert([{ 
+                customer_name: custName, customer_phone: phone, order_total: total, order_details: details, order_date: orderDate 
+            }]);
+
+            if (error) {
+                alert("Database Error saving order: " + error.message);
+                return;
+            }
+
+            let msg = `*CM bizO - YUMMY*\n_Sales Order_\n\n*Date:* ${new Date(orderDate).toLocaleDateString()}\n*Customer:* ${custName}\n\n*Items:*\n`;
+            cart.forEach(i => { msg += `▪ ${i.name} (x${i.qty}) - ₹${i.qty*i.price}\n`; });
+            msg += `\n*Grand Total: ₹${total.toLocaleString('en-IN')}*`;
+            
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+            cart = []; sel.value = ""; renderCart(); fetchData(); switchTab('dashboard');
+        }
+
+        function exportToPDF(elementId, filename) {
+            const opt = { margin: 0.2, filename: filename + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+            html2pdf().set(opt).from(document.getElementById(elementId)).save(); 
+        }
+
+        function downloadCSV() {
+            if(!globalOrders.length) return alert("No orders.");
+            let csv = "Date,Customer Name,Phone,Order Total,Details\n";
+            globalOrders.forEach(o => { csv += `${new Date(o.order_date).toLocaleDateString()},${o.customer_name},${o.customer_phone},${o.order_total},"${(o.order_details||"").replace(/"/g, '""')}"\n`; });
+            let a = document.createElement('a');
+            a.href = window.URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+            a.download = 'CM_bizO_Report.csv'; a.click();
+        }
+    </script>
+</body>
+</html>
