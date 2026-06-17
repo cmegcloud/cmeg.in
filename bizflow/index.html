@@ -93,6 +93,9 @@
             
             <!-- Dashboard View -->
             <div id="view-dashboard" class="space-y-6">
+                <div class="flex justify-end mb-2">
+                    <button onclick="exportToPDF('view-dashboard', 'CM_Dashboard')" class="px-4 py-2 border border-cmRed text-cmRed dark:text-red-400 rounded hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2 text-sm"><i class="fas fa-file-pdf"></i> Export Dashboard PDF</button>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="glass-card p-5 border-t-4 border-cmRed dark:border-cmRedDark">
                         <p class="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
@@ -120,13 +123,17 @@
                                 <p class="text-sm text-gray-500 dark:text-gray-400">Official Order Invoice</p>
                             </div>
                         </div>
-                        <select id="order-customer" class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded w-full md:w-64 text-sm outline-none focus:border-cmRed font-bold">
-                            <option value="">-- Select Customer --</option>
-                        </select>
+                        <div class="flex flex-col gap-2 w-full md:w-auto">
+                            <!-- ADDED DATE FIELD HERE -->
+                            <input type="date" id="order-date" class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded w-full md:w-64 text-sm outline-none focus:border-cmRed font-bold text-gray-700 dark:text-gray-200">
+                            <select id="order-customer" class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded w-full md:w-64 text-sm outline-none focus:border-cmRed font-bold">
+                                <option value="">-- Select Customer --</option>
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Items Grid for Selection -->
-                    <div class="mb-4">
+                    <div class="mb-4" data-html2canvas-ignore>
                         <input type="text" id="order-search" onkeyup="filterOrderGrid()" placeholder="Search items to add..." class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 rounded mb-3 outline-none">
                         <div id="order-item-grid" class="grid grid-cols-2 md:grid-cols-5 gap-3 max-h-60 overflow-y-auto p-1"></div>
                     </div>
@@ -139,7 +146,7 @@
                                     <th class="p-3 w-20 text-center">Qty</th>
                                     <th class="p-3 text-right">Price</th>
                                     <th class="p-3 text-right">Total</th>
-                                    <th></th>
+                                    <th data-html2canvas-ignore></th>
                                 </tr>
                             </thead>
                             <tbody id="order-list" class="text-sm"></tbody>
@@ -147,7 +154,7 @@
                                 <tr class="border-t dark:border-gray-700 font-bold text-lg bg-yellow-50 dark:bg-yellow-900/20 text-cmRed dark:text-cmYellow">
                                     <td colspan="3" class="p-3 text-right">Grand Total:</td>
                                     <td class="p-3 text-right" id="order-total">₹ 0.00</td>
-                                    <td></td>
+                                    <td data-html2canvas-ignore></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -156,16 +163,17 @@
 
                 <div class="flex flex-wrap gap-3 justify-end">
                     <button onclick="downloadImage()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 shadow flex items-center gap-2"><i class="fas fa-image"></i> JPG</button>
-                    <button onclick="exportPDF()" class="px-4 py-2 border border-cmRed text-cmRed dark:text-red-400 rounded hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2"><i class="fas fa-file-pdf"></i> PDF</button>
+                    <button onclick="exportToPDF('invoice-area', 'CM_Order')" class="px-4 py-2 border border-cmRed text-cmRed dark:text-red-400 rounded hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2"><i class="fas fa-file-pdf"></i> PDF</button>
                     <button onclick="saveAndSendOrder()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 shadow flex items-center gap-2 font-bold"><i class="fab fa-whatsapp text-lg"></i> Save & Send</button>
                 </div>
             </div>
 
             <!-- Items View -->
-            <div id="view-items" class="hide glass-card">
+            <div id="view-items" class="hide glass-card" id="items-container">
                 <div class="p-4 border-b dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-3">
                     <h3 class="font-bold text-lg">Item Database</h3>
                     <div class="flex gap-2 w-full md:w-auto">
+                        <button onclick="exportToPDF('view-items', 'CM_Items')" class="border border-cmRed text-cmRed dark:text-red-400 px-3 py-2 rounded text-sm hover:bg-red-50 dark:hover:bg-red-900/30"><i class="fas fa-file-pdf"></i> PDF</button>
                         <input type="text" id="search-items" onkeyup="renderItems()" placeholder="Search items..." class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded text-sm w-full md:w-48">
                         <button onclick="toggleModal('modal-item')" class="bg-cmRed text-white px-4 py-2 rounded text-sm whitespace-nowrap"><i class="fas fa-plus"></i> Add</button>
                     </div>
@@ -176,10 +184,11 @@
             </div>
 
             <!-- Customers View -->
-            <div id="view-customers" class="hide glass-card">
+            <div id="view-customers" class="hide glass-card" id="customers-container">
                 <div class="p-4 border-b dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-3">
                     <h3 class="font-bold text-lg">Customer Directory</h3>
                     <div class="flex gap-2 w-full md:w-auto">
+                        <button onclick="exportToPDF('view-customers', 'CM_Customers')" class="border border-cmRed text-cmRed dark:text-red-400 px-3 py-2 rounded text-sm hover:bg-red-50 dark:hover:bg-red-900/30"><i class="fas fa-file-pdf"></i> PDF</button>
                         <input type="text" id="search-customers" onkeyup="renderCustomers()" placeholder="Search names..." class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded text-sm w-full md:w-48">
                         <button onclick="toggleModal('modal-customer')" class="bg-cmYellow text-black font-bold px-4 py-2 rounded text-sm whitespace-nowrap"><i class="fas fa-plus"></i> Add</button>
                     </div>
@@ -190,10 +199,18 @@
             </div>
 
             <!-- Reports View -->
-            <div id="view-reports" class="hide glass-card p-6">
-                <h3 class="font-bold text-lg mb-4 border-b dark:border-gray-700 pb-2">Order Reports & Export</h3>
+            <div id="view-reports" class="hide glass-card p-6" id="reports-container">
+                <div class="flex justify-between items-center mb-4 border-b dark:border-gray-700 pb-2">
+                    <h3 class="font-bold text-lg">Order Reports & Export</h3>
+                    <button onclick="exportToPDF('view-reports', 'CM_Reports')" class="border border-cmRed text-cmRed dark:text-red-400 px-3 py-2 rounded text-sm hover:bg-red-50 dark:hover:bg-red-900/30"><i class="fas fa-file-pdf"></i> Export View to PDF</button>
+                </div>
                 <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">Download a complete CSV backup of all generated orders. Can be opened in Excel or Google Sheets.</p>
-                <button onclick="downloadCSV()" class="bg-gray-800 dark:bg-gray-600 text-white px-6 py-3 rounded shadow flex items-center gap-2 hover:bg-black transition"><i class="fas fa-file-csv text-green-400"></i> Export All Orders to CSV</button>
+                <button onclick="downloadCSV()" class="bg-gray-800 dark:bg-gray-600 text-white px-6 py-3 rounded shadow flex items-center gap-2 hover:bg-black transition mb-6"><i class="fas fa-file-csv text-green-400"></i> Export All Orders to CSV</button>
+                
+                <h4 class="font-bold mb-3 text-cmRed">Recent Orders Preview</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left border"><tbody id="reports-table"></tbody></table>
+                </div>
             </div>
 
             <!-- Calculator View -->
@@ -287,6 +304,10 @@
         // Initialization
         window.onload = () => {
             if(localStorage.getItem('theme') === 'dark') toggleTheme();
+            
+            // Set Today's Date by Default in Orders
+            document.getElementById('order-date').valueAsDate = new Date();
+            
             fetchData();
         };
 
@@ -332,6 +353,7 @@
                 renderItems();
                 renderCustomers();
                 renderOrderGrid();
+                renderReports();
                 populateCustomerDropdown();
             } catch (err) {
                 console.error("Sync Error:", err);
@@ -367,12 +389,21 @@
             });
         }
 
+        function renderReports() {
+            const tbody = document.getElementById('reports-table');
+            tbody.innerHTML = `<tr class="bg-gray-100 dark:bg-gray-800 border-b dark:border-gray-700 text-gray-600 dark:text-gray-300"><th class="p-3">Date</th><th class="p-3">Customer</th><th class="p-3">Total ₹</th></tr>`;
+            // Show last 10 orders
+            [...globalOrders].reverse().slice(0, 10).forEach(o => {
+                let d = new Date(o["#TimeStamp"]).toLocaleDateString();
+                tbody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"><td class="p-3">${d}</td><td class="p-3 font-bold text-cmRed dark:text-white">${o.CustomerName}</td><td class="p-3 font-black text-cmYellowDark dark:text-cmYellow">₹${o.OrderTotal}</td></tr>`;
+            });
+        }
+
         function renderOrderGrid() {
             const term = document.getElementById('order-search') ? document.getElementById('order-search').value.toLowerCase() : "";
             const grid = document.getElementById('order-item-grid');
             grid.innerHTML = '';
             globalItems.filter(i => i.ItemName.toLowerCase().includes(term)).forEach(item => {
-                // Determine if item has image to show
                 let img = item.PhotoURL ? `<img src="${item.PhotoURL}" class="h-10 w-full object-cover rounded mb-1 border">` : `<div class="h-10 w-full bg-gray-100 dark:bg-gray-700 rounded mb-1 flex items-center justify-center"><i class="fas fa-cookie text-gray-400"></i></div>`;
                 grid.innerHTML += `
                     <div class="border dark:border-gray-600 rounded-lg p-2 text-center cursor-pointer hover:border-cmRed dark:hover:border-cmYellow transition bg-white dark:bg-gray-800 shadow-sm" onclick="addToOrder('${item.ItemName}', ${item.SellPrice})">
@@ -387,7 +418,6 @@
         function populateCustomerDropdown() {
             const select = document.getElementById('order-customer');
             select.innerHTML = '<option value="">-- Select Customer --</option>';
-            // Sort alphabetically
             let sorted = [...globalCustomers].sort((a,b) => a.BusinessName.localeCompare(b.BusinessName));
             sorted.forEach(c => {
                 select.innerHTML += `<option value="${c.Phone}" data-name="${c.BusinessName}">${c.BusinessName} - ${c.Phone}</option>`;
@@ -467,10 +497,10 @@
                 tbody.innerHTML += `
                     <tr class="border-b dark:border-gray-700">
                         <td class="p-3 font-bold">${item.name}</td>
-                        <td class="p-3 text-center"><input type="number" min="1" value="${item.qty}" onchange="cart[${i}].qty=this.value; renderCart()" class="w-16 border dark:border-gray-600 dark:bg-gray-800 p-1 text-center rounded outline-none font-bold"></td>
+                        <td class="p-3 text-center"><input type="number" min="1" value="${item.qty}" onchange="cart[${i}].qty=this.value; renderCart()" class="w-16 border dark:border-gray-600 dark:bg-gray-800 p-1 text-center rounded outline-none font-bold" data-html2canvas-ignore="true"><span class="hidden" data-html2canvas-show="true">${item.qty}</span></td>
                         <td class="p-3 text-right">₹${item.price}</td>
                         <td class="p-3 text-right font-black text-cmRed dark:text-cmYellow">₹${lineTotal.toFixed(2)}</td>
-                        <td class="p-3 text-red-500 cursor-pointer text-center" onclick="cart.splice(${i},1); renderCart()"><i class="fas fa-trash-alt"></i></td>
+                        <td class="p-3 text-red-500 cursor-pointer text-center" onclick="cart.splice(${i},1); renderCart()" data-html2canvas-ignore><i class="fas fa-trash-alt"></i></td>
                     </tr>`;
             });
             document.getElementById('order-total').innerText = `₹ ${total.toFixed(2)}`;
@@ -485,13 +515,16 @@
             let total = renderCart();
             let custName = sel.options[sel.selectedIndex].getAttribute('data-name');
             let phone = sel.value;
+            let orderDate = document.getElementById('order-date').value;
+            let formattedDate = orderDate ? new Date(orderDate).toLocaleDateString() : new Date().toLocaleDateString();
+            
             let details = cart.map(i => `${i.name} x${i.qty}`).join(", ");
 
             // Save
             await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "saveOrder", CustomerName: custName, CustomerPhone: phone, OrderTotal: total, OrderDetails: details }) });
             
-            // Format WhatsApp Message
-            let msg = `*CM Orders - YUMMY FOODS*\n_Order Estimate_\n\n*Customer:* ${custName}\n\n*Items:*\n`;
+            // Format WhatsApp Message with Date Included
+            let msg = `*CM Orders - YUMMY FOODS*\n_Order Estimate_\n\n*Date:* ${formattedDate}\n*Customer:* ${custName}\n\n*Items:*\n`;
             cart.forEach(i => { msg += `▪ ${i.name} (x${i.qty}) - ₹${i.qty*i.price}\n`; });
             msg += `\n*Grand Total: ₹${total.toFixed(2)}*`;
             
@@ -503,9 +536,15 @@
         }
 
         // --- EXPORTS ---
-        function exportPDF() { 
-            const element = document.getElementById('invoice-area');
-            const opt = { margin: 0.3, filename: 'CM_Order.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+        function exportToPDF(elementId, filename) {
+            const element = document.getElementById(elementId);
+            const opt = { 
+                margin: 0.3, 
+                filename: filename + '.pdf', 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 2 }, 
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } 
+            };
             html2pdf().set(opt).from(element).save(); 
         }
 
@@ -522,7 +561,6 @@
             if(!globalOrders.length) return alert("No orders to export.");
             let csv = "Date,Customer Name,Phone,Order Total,Details\n";
             globalOrders.forEach(o => {
-                // Escape commas in details
                 let date = new Date(o["#TimeStamp"]).toLocaleDateString();
                 let details = `"${(o.OrderDetails||"").replace(/"/g, '""')}"`;
                 csv += `${date},${o.CustomerName},${o.CustomerPhone},${o.OrderTotal},${details}\n`;
