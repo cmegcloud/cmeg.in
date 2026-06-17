@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CM Orders - YUMMY FOODS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { zohoBlue: '#106bf0', zohoDark: '#1e293b', zohoRed: '#ef4444', zohoYellow: '#f59e0b' } } } }
+    </script>
+    <style>
+        body { background-color: #f4f5f7; }
+        .glass-card { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .nav-item.active { background-color: #ebf4ff; color: #106bf0; border-right: 4px solid #106bf0; }
+        .hide { display: none !important; }
+        .modal { background: rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden text-gray-800">
+
+    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm hidden md:flex">
+        <div class="p-5 border-b border-gray-100 flex items-center gap-3">
+            <div class="bg-zohoBlue text-white p-2 rounded-lg"><i class="fas fa-cookie-bite text-xl"></i></div>
+            <div>
+                <h1 class="text-lg font-bold text-zohoDark">CM Orders</h1>
+                <p class="text-xs text-gray-500 font-semibold">YUMMY FOODS</p>
+            </div>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active w-full flex items-center gap-3 p-3 text-left rounded-md font-medium text-gray-600 transition"><i class="fas fa-chart-line w-5"></i> Dashboard</button>
+            <button onclick="switchTab('orders')" id="nav-orders" class="nav-item w-full flex items-center gap-3 p-3 text-left rounded-md font-medium text-gray-600 transition"><i class="fas fa-file-invoice w-5"></i> New Order</button>
+            <button onclick="switchTab('items')" id="nav-items" class="nav-item w-full flex items-center gap-3 p-3 text-left rounded-md font-medium text-gray-600 transition"><i class="fas fa-box w-5"></i> Items</button>
+            <button onclick="switchTab('customers')" id="nav-customers" class="nav-item w-full flex items-center gap-3 p-3 text-left rounded-md font-medium text-gray-600 transition"><i class="fas fa-users w-5"></i> Customers</button>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-y-auto">
+        <header class="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-10">
+            <h2 id="page-title" class="text-xl font-semibold">Dashboard</h2>
+            <button onclick="fetchData()" class="text-sm text-zohoBlue flex items-center gap-2"><i class="fas fa-sync-alt" id="sync-icon"></i> Sync Data</button>
+        </header>
+
+        <div class="p-6 max-w-6xl mx-auto w-full">
+            
+            <div id="view-dashboard" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-5 border-t-4 border-zohoBlue">
+                        <p class="text-sm text-gray-500">Total Revenue</p>
+                        <h3 class="text-2xl font-bold" id="dash-revenue">₹ 0.00</h3>
+                    </div>
+                    <div class="glass-card p-5 border-t-4 border-zohoYellow">
+                        <p class="text-sm text-gray-500">Total Orders</p>
+                        <h3 class="text-2xl font-bold" id="dash-orders">0</h3>
+                    </div>
+                    <div class="glass-card p-5 border-t-4 border-emerald-500">
+                        <p class="text-sm text-gray-500">Customers</p>
+                        <h3 class="text-2xl font-bold" id="dash-customers">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-orders" class="hide space-y-6">
+                <div class="glass-card p-6" id="invoice-area">
+                    <div class="flex justify-between items-start mb-6 border-b pb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-zohoDark">YUMMY FOODS</h2>
+                            <p class="text-sm text-gray-500">Order Invoice / Estimate</p>
+                        </div>
+                        <select id="order-customer" class="border p-2 rounded w-48 text-sm outline-none focus:border-zohoBlue">
+                            <option value="">-- Select Customer --</option>
+                        </select>
+                    </div>
+
+                    <div id="order-item-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"></div>
+
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-y text-sm text-gray-600">
+                                <th class="p-3">Item Description</th>
+                                <th class="p-3 w-24">Qty</th>
+                                <th class="p-3 text-right">Price</th>
+                                <th class="p-3 text-right">Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="order-list" class="text-sm"></tbody>
+                        <tfoot>
+                            <tr class="border-t font-bold text-lg">
+                                <td colspan="3" class="p-3 text-right">Grand Total:</td>
+                                <td class="p-3 text-right" id="order-total">₹ 0.00</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="flex gap-4 justify-end">
+                    <button onclick="saveAndSendOrder()" class="px-5 py-2 bg-green-500 text-white rounded hover:bg-green-600 shadow flex items-center gap-2">
+                        <i class="fab fa-whatsapp"></i> Save & Send WhatsApp
+                    </button>
+                    <button onclick="exportPDF()" class="px-5 py-2 border border-gray-300 rounded hover:bg-gray-50 flex items-center gap-2">
+                        <i class="fas fa-file-pdf text-red-500"></i> PDF
+                    </button>
+                </div>
+            </div>
+
+            <div id="view-items" class="hide glass-card">
+                <div class="p-5 border-b flex justify-between items-center">
+                    <h3 class="font-bold text-lg">Item Master</h3>
+                    <button onclick="toggleModal('modal-item')" class="bg-zohoBlue text-white px-4 py-2 rounded text-sm"><i class="fas fa-plus"></i> Add Item</button>
+                </div>
+                <table class="w-full text-sm text-left"><tbody id="items-table"></tbody></table>
+            </div>
+
+            <div id="view-customers" class="hide glass-card">
+                <div class="p-5 border-b flex justify-between items-center">
+                    <h3 class="font-bold text-lg">Customer Directory</h3>
+                    <button onclick="toggleModal('modal-customer')" class="bg-zohoBlue text-white px-4 py-2 rounded text-sm"><i class="fas fa-plus"></i> Add Customer</button>
+                </div>
+                <table class="w-full text-sm text-left"><tbody id="customers-table"></tbody></table>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="modal-item" class="modal fixed inset-0 flex items-center justify-center hide z-50">
+        <div class="bg-white p-6 rounded-lg w-96 shadow-xl">
+            <h3 class="text-lg font-bold mb-4">Add New Item</h3>
+            <input type="text" id="add-item-name" placeholder="Item Name" class="w-full border p-2 mb-3 rounded">
+            <div class="flex gap-2 mb-3">
+                <input type="number" id="add-item-buy" placeholder="Buy Price" class="w-1/2 border p-2 rounded">
+                <input type="number" id="add-item-sell" placeholder="Sell Price" class="w-1/2 border p-2 rounded">
+            </div>
+            <input type="file" id="add-item-photo" accept="image/*" class="w-full border p-2 mb-4 rounded text-sm">
+            <div class="flex justify-end gap-2">
+                <button onclick="toggleModal('modal-item')" class="px-4 py-2 text-gray-500">Cancel</button>
+                <button onclick="submitItem()" class="px-4 py-2 bg-zohoBlue text-white rounded">Save Item</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-customer" class="modal fixed inset-0 flex items-center justify-center hide z-50">
+        <div class="bg-white p-6 rounded-lg w-96 shadow-xl">
+            <h3 class="text-lg font-bold mb-4">Add Customer</h3>
+            <input type="text" id="add-cust-name" placeholder="Business Name" class="w-full border p-2 mb-3 rounded">
+            <input type="text" id="add-cust-person" placeholder="Contact Person" class="w-full border p-2 mb-3 rounded">
+            <input type="text" id="add-cust-phone" placeholder="WhatsApp Number (e.g. 919876543210)" class="w-full border p-2 mb-4 rounded">
+            <div class="flex justify-end gap-2">
+                <button onclick="toggleModal('modal-customer')" class="px-4 py-2 text-gray-500">Cancel</button>
+                <button onclick="submitCustomer()" class="px-4 py-2 bg-zohoBlue text-white rounded">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- PASTE YOUR DEPLOYED WEB APP URL HERE ---
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzdXO7buGnXE0DCg1zQkjAqaF-r2jpIdJUgs_hBy-REyukYSlZ6wbwQwZBv56Q4ZlZEqw/exec"; 
+        
+        let globalItems = [];
+        let globalCustomers = [];
+        let globalOrders = [];
+        let cart = [];
+
+        // App Initialization
+        window.onload = fetchData;
+
+        function switchTab(tabId) {
+            document.querySelectorAll('main > div > div').forEach(el => el.classList.add('hide'));
+            document.getElementById('view-' + tabId).classList.remove('hide');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('nav-' + tabId).classList.add('active');
+            const titles = { 'dashboard': 'Dashboard', 'orders': 'Create Order', 'items': 'Items', 'customers': 'Customers' };
+            document.getElementById('page-title').innerText = titles[tabId];
+        }
+
+        function toggleModal(id) {
+            document.getElementById(id).classList.toggle('hide');
+        }
+
+        // --- FETCH DATA FROM SHEET ---
+        async function fetchData() {
+            document.getElementById('sync-icon').classList.add('fa-spin');
+            try {
+                const response = await fetch(WEB_APP_URL + "?action=getData");
+                const data = await response.json();
+                
+                globalItems = data.items || [];
+                globalCustomers = data.customers || [];
+                globalOrders = data.orders || [];
+
+                renderDashboard();
+                renderItems();
+                renderCustomers();
+                renderOrderGrid();
+                populateCustomerDropdown();
+            } catch (err) {
+                console.error(err);
+            }
+            document.getElementById('sync-icon').classList.remove('fa-spin');
+        }
+
+        // --- RENDERERS ---
+        function renderDashboard() {
+            document.getElementById('dash-orders').innerText = globalOrders.length;
+            document.getElementById('dash-customers').innerText = globalCustomers.length;
+            let rev = globalOrders.reduce((sum, order) => sum + Number(order.OrderTotal || 0), 0);
+            document.getElementById('dash-revenue').innerText = `₹ ${rev.toFixed(2)}`;
+        }
+
+        function renderItems() {
+            const tbody = document.getElementById('items-table');
+            tbody.innerHTML = `<tr class="bg-gray-50 text-gray-600 border-b"><th class="p-3">Photo</th><th class="p-3">Item Name</th><th class="p-3">Buy Price</th><th class="p-3">Sell Price</th></tr>`;
+            globalItems.forEach(item => {
+                let imgHtml = item.PhotoURL ? `<img src="${item.PhotoURL}" class="w-10 h-10 object-cover rounded">` : `<div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center"><i class="fas fa-cookie text-gray-500"></i></div>`;
+                tbody.innerHTML += `<tr class="border-b hover:bg-gray-50"><td class="p-3">${imgHtml}</td><td class="p-3 font-medium">${item.ItemName}</td><td class="p-3">₹${item.BuyPrice}</td><td class="p-3 font-semibold text-zohoBlue">₹${item.SellPrice}</td></tr>`;
+            });
+        }
+
+        function renderCustomers() {
+            const tbody = document.getElementById('customers-table');
+            tbody.innerHTML = `<tr class="bg-gray-50 text-gray-600 border-b"><th class="p-3">Business Name</th><th class="p-3">Contact</th><th class="p-3">Phone</th></tr>`;
+            globalCustomers.forEach(c => {
+                tbody.innerHTML += `<tr class="border-b hover:bg-gray-50"><td class="p-3 font-medium">${c.BusinessName}</td><td class="p-3">${c.ContactPerson}</td><td class="p-3">${c.Phone}</td></tr>`;
+            });
+        }
+
+        function renderOrderGrid() {
+            const grid = document.getElementById('order-item-grid');
+            grid.innerHTML = '';
+            globalItems.forEach(item => {
+                grid.innerHTML += `
+                    <div class="border rounded-lg p-3 text-center cursor-pointer hover:border-zohoBlue transition" onclick="addToOrder('${item.ItemName}', ${item.SellPrice})">
+                        <h4 class="font-semibold text-sm truncate">${item.ItemName}</h4>
+                        <p class="text-xs text-zohoBlue font-bold">₹ ${item.SellPrice}</p>
+                    </div>`;
+            });
+        }
+
+        function populateCustomerDropdown() {
+            const select = document.getElementById('order-customer');
+            select.innerHTML = '<option value="">-- Select Customer --</option>';
+            globalCustomers.forEach(c => {
+                select.innerHTML += `<option value="${c.Phone}" data-name="${c.BusinessName}">${c.BusinessName} (${c.Phone})</option>`;
+            });
+        }
+
+        // --- SUBMIT NEW DATA TO SHEET ---
+        async function submitItem() {
+            const fileInput = document.getElementById('add-item-photo');
+            let base64String = "";
+            let mimeType = "";
+
+            if(fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                mimeType = file.type;
+                base64String = await new Promise(r => {
+                    const reader = new FileReader();
+                    reader.onload = () => r(reader.result.split(',')[1]);
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            const payload = {
+                action: "addItem",
+                ItemName: document.getElementById('add-item-name').value,
+                BuyPrice: document.getElementById('add-item-buy').value,
+                SellPrice: document.getElementById('add-item-sell').value,
+                imageBase64: base64String,
+                mimeType: mimeType
+            };
+
+            await sendPost(payload);
+            toggleModal('modal-item');
+            fetchData();
+        }
+
+        async function submitCustomer() {
+            const payload = {
+                action: "addCustomer",
+                BusinessName: document.getElementById('add-cust-name').value,
+                ContactPerson: document.getElementById('add-cust-person').value,
+                Phone: document.getElementById('add-cust-phone').value
+            };
+            await sendPost(payload);
+            toggleModal('modal-customer');
+            fetchData();
+        }
+
+        async function sendPost(payload) {
+            document.getElementById('sync-icon').classList.add('fa-spin');
+            await fetch(WEB_APP_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            });
+            document.getElementById('sync-icon').classList.remove('fa-spin');
+        }
+
+        // --- CART & ORDER LOGIC ---
+        function addToOrder(name, price) {
+            const existing = cart.find(i => i.name === name);
+            if(existing) existing.qty++;
+            else cart.push({ name, price, qty: 1 });
+            renderCart();
+        }
+
+        function renderCart() {
+            const tbody = document.getElementById('order-list');
+            tbody.innerHTML = '';
+            let total = 0;
+            cart.forEach((item, i) => {
+                let lineTotal = item.qty * item.price;
+                total += lineTotal;
+                tbody.innerHTML += `
+                    <tr class="border-b"><td class="p-3">${item.name}</td>
+                    <td class="p-3"><input type="number" min="1" value="${item.qty}" onchange="cart[${i}].qty=this.value; renderCart()" class="w-16 border p-1"></td>
+                    <td class="p-3 text-right">₹${item.price}</td><td class="p-3 text-right font-medium">₹${lineTotal.toFixed(2)}</td>
+                    <td class="p-3 text-red-500 cursor-pointer" onclick="cart.splice(${i},1); renderCart()"><i class="fas fa-times"></i></td></tr>`;
+            });
+            document.getElementById('order-total').innerText = `₹ ${total.toFixed(2)}`;
+            return total;
+        }
+
+        async function saveAndSendOrder() {
+            const sel = document.getElementById('order-customer');
+            if(!sel.value) return alert("Select a customer");
+            if(!cart.length) return alert("Add items to order");
+
+            let total = renderCart();
+            let custName = sel.options[sel.selectedIndex].getAttribute('data-name');
+            let phone = sel.value;
+            let details = cart.map(i => `${i.name} x${i.qty}`).join(", ");
+
+            // Save to Sheet
+            await sendPost({ action: "saveOrder", CustomerName: custName, CustomerPhone: phone, OrderTotal: total, OrderDetails: details });
+            fetchData(); // Update dash
+
+            // Send WhatsApp
+            let msg = encodeURIComponent(`*YUMMY FOODS - New Order*\n\n${cart.map(i => `${i.name} (x${i.qty}) - ₹${i.qty*i.price}`).join("\n")}\n\n*Total: ₹${total.toFixed(2)}*`);
+            window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+            
+            cart = [];
+            renderCart();
+        }
+
+        function exportPDF() { html2pdf().from(document.getElementById('invoice-area')).save('Order.pdf'); }
+    </script>
+</body>
+</html>
