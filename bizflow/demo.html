@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CM Orders - Corporate ERP</title>
 
+    <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
     
+    <!-- Supabase & Export Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -52,7 +54,7 @@
 
         /* GRID & LISTS */
         .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .quick-card { background: var(--surface); padding: 16px 8px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); transition: background-color 0.2s; }
+        .quick-card { background: var(--surface); padding: 16px 8px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); transition: background-color 0.2s; cursor: pointer; }
         .quick-card:active { background-color: #F8FAFC; }
         .icon-circle { width: 44px; height: 44px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: auto; margin-bottom: 8px; color: white; }
         .icon-circle i { font-size: 18px; }
@@ -105,6 +107,7 @@
 
 <body>
 
+    <!-- Header -->
     <div class="header">
         <div class="left-head">
             <div style="width: 32px; height: 32px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -117,8 +120,10 @@
         </div>
     </div>
 
+    <!-- MAIN VIEWS -->
     <main id="app-content">
 
+        <!-- DASHBOARD -->
         <div id="view-dashboard">
             <div class="hero">
                 <h4>Total Revenue</h4>
@@ -159,6 +164,7 @@
             </div>
         </div>
 
+        <!-- SALES ORDER -->
         <div id="view-orders" class="hide section">
             <div class="corp-card" id="invoice-area">
                 <div style="border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
@@ -203,6 +209,7 @@
             </div>
         </div>
 
+        <!-- ITEMS -->
         <div id="view-items" class="hide section">
             <div style="display: flex; gap: 12px; margin-bottom: 16px;">
                 <input type="text" id="search-items" onkeyup="renderItems()" placeholder="Search Item Master..." class="corp-input" style="margin:0;">
@@ -211,6 +218,7 @@
             <div id="items-container"></div>
         </div>
 
+        <!-- CUSTOMERS -->
         <div id="view-customers" class="hide section">
             <div style="display: flex; gap: 12px; margin-bottom: 16px;">
                 <input type="text" id="search-customers" onkeyup="renderCustomers()" placeholder="Search Directory..." class="corp-input" style="margin:0;">
@@ -219,6 +227,7 @@
             <div id="customers-container"></div>
         </div>
 
+        <!-- REPORTS -->
         <div id="view-reports" class="hide section">
             <div class="corp-card" style="text-align: center; padding: 40px 20px;">
                 <div class="icon-circle" style="width: 72px; height: 72px; font-size: 28px; margin-bottom: 20px; background: #DBEAFE; color: #2563EB;"><i class="fa-solid fa-file-csv"></i></div>
@@ -230,6 +239,9 @@
 
     </main>
 
+    <!-- MODALS -->
+    
+    <!-- Item Modal (Add/Edit) -->
     <div id="modal-item" class="modal-overlay hide">
         <div class="modal-content">
             <div class="modal-header">
@@ -247,6 +259,7 @@
         </div>
     </div>
 
+    <!-- Customer Modal (Add/Edit) -->
     <div id="modal-customer" class="modal-overlay hide">
         <div class="modal-content">
             <div class="modal-header">
@@ -267,6 +280,7 @@
         </div>
     </div>
 
+    <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
             <i class="fa-solid fa-house"></i><span>Home</span>
@@ -425,8 +439,8 @@
                             <div style="display:flex; gap:8px; margin-top: 10px;">${mapBtn}${callBtn}</div>
                         </div>
                         <div style="display:flex; flex-direction: column; gap:6px; border-left: 1px solid var(--border); padding-left: 12px;">
-                            <button onclick="openEditCustomerModal(${item.id || c.id})" class="action-btn btn-edit"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteCustomer(${item.id || c.id})" class="action-btn btn-delete"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="openEditCustomerModal(${c.id})" class="action-btn btn-edit"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteCustomer(${c.id})" class="action-btn btn-delete"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>`;
             });
@@ -517,7 +531,7 @@
             }
 
             if(error) {
-                alert("Database Error: " + error.message + "\n\n(Did you run the Row Level Security SQL?)");
+                alert("Database Error: " + error.message);
                 btn.innerHTML = editingItemId ? '<i class="fa-solid fa-check"></i> Update' : '<i class="fa-solid fa-plus"></i> Save';
                 return;
             }
@@ -585,7 +599,7 @@
             }
 
             if(error) {
-                alert("Database Error: " + error.message + "\n\n(Did you run the Row Level Security SQL?)");
+                alert("Database Error: " + error.message);
                 btn.innerHTML = editingCustId ? '<i class="fa-solid fa-check"></i> Update' : '<i class="fa-solid fa-plus"></i> Save';
                 return;
             }
