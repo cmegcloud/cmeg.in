@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CM bizO - Corporate ERP</title>
+    <title>CM bizzE - Corporate ERP</title>
 
+    <!-- PWA Manifest Link -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1E293B">
+    <meta name="theme-color" content="#1E3A8A">
 
+    <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
     
@@ -16,22 +18,24 @@
 
     <style>
         :root {
-            --primary: #F59E0B;       
-            --primary-hover: #D97706; 
-            --secondary: #1E293B;     
-            --accent: #DC2626;        
-            --bg: #F3F4F6;            
-            --surface: #FFFFFF;       
-            --text-main: #0F172A;     
-            --text-muted: #64748B;    
-            --border: #E2E8F0;        
+            /* NEW CM bizzE BLUE THEME */
+            --primary: #3B82F6;       /* Royal Blue */
+            --primary-hover: #2563EB; /* Darker Blue */
+            --secondary: #1E3A8A;     /* Deep Navy Blue */
+            --accent: #EF4444;        /* Red (For destructive actions) */
+            --bg: #F0F4F8;            /* Light Blue-Grey App Background */
+            --surface: #FFFFFF;       /* Card Background */
+            --text-main: #0F172A;     /* Dark Navy Text */
+            --text-muted: #64748B;    /* Muted Text */
+            --border: #E2E8F0;        /* Subtle Border */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); padding-bottom: 90px; color: var(--text-main); }
         .hide { display: none !important; }
 
-        .header { height: 65px; background: var(--secondary); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        /* GRADIENT HEADER MATCHING LOGO */
+        .header { height: 65px; background: linear-gradient(135deg, #172554, #3B82F6); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2); }
         .left-head { display: flex; align-items: center; gap: 12px; }
         .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
         .right-head { display: flex; gap: 15px; font-size: 18px; }
@@ -53,7 +57,7 @@
         .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .quick-card { background: var(--surface); padding: 16px 8px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); transition: background-color 0.2s; cursor: pointer; }
         .quick-card:active { background-color: #F8FAFC; }
-        .icon-circle { width: 44px; height: 44px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: auto; margin-bottom: 8px; color: white; }
+        .icon-circle { width: 44px; height: 44px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: auto; margin-bottom: 8px; color: white; }
         .icon-circle i { font-size: 18px; }
         .quick-card span { font-size: 12px; font-weight: 600; color: var(--text-main); }
 
@@ -70,10 +74,10 @@
         .btn-delete { background: #FEE2E2; color: var(--accent); width: 32px; height: 32px; font-size: 12px; }
         
         .corp-input { width: 100%; background: #F8FAFC; border: 1px solid var(--border); padding: 14px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; outline: none; font-weight: 500; color: var(--text-main); transition: border-color 0.2s; }
-        .corp-input:focus { border-color: var(--secondary); background: white; }
-        select.corp-input { -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231E293B%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px top 50%; background-size: 10px auto; }
+        .corp-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        select.corp-input { -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231E3A8A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px top 50%; background-size: 10px auto; }
 
-        .btn-primary { width: 100%; padding: 16px; border: none; border-radius: 8px; background: var(--primary); color: var(--secondary); font-size: 15px; font-weight: 700; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2); transition: background 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; }
+        .btn-primary { width: 100%; padding: 16px; border: none; border-radius: 8px; background: var(--primary); color: #FFFFFF; font-size: 15px; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); transition: background 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; }
         .btn-primary:active { background: var(--primary-hover); }
         
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); }
@@ -87,7 +91,7 @@
         .nav-item i { font-size: 20px; margin-bottom: 4px; }
         .nav-item.active { color: var(--primary); }
 
-        .fab { width: 56px; height: 56px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--secondary); font-size: 24px; margin-top: -30px; box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3); border: none; transform: rotate(45deg); transition: transform 0.2s; cursor: pointer; }
+        .fab { width: 56px; height: 56px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 24px; margin-top: -30px; box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4); border: none; transform: rotate(45deg); transition: transform 0.2s; cursor: pointer; }
         .fab i { transform: rotate(-45deg); }
         .fab:active { transform: scale(0.95) rotate(45deg); }
 
@@ -100,12 +104,14 @@
 
 <body>
 
+    <!-- Header -->
     <div class="header">
         <div class="left-head">
-            <div style="width: 32px; height: 32px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                <img src="assets/logo-blue.png" alt="CM" style="width: 20px; height: 20px; object-fit: contain;" onerror="this.style.display='none';">
+            <div style="width: 32px; height: 32px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 4px;">
+                <!-- Updated to look for logo-blue.png -->
+                <img src="logo-blue.png" alt="CM" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none';">
             </div>
-            <div class="logo">CM bizO</div>
+            <div class="logo">CM bizzE</div>
         </div>
         <div class="right-head">
             <button onclick="toggleModal('modal-info')" style="background:none; border:none; color:inherit; cursor: pointer;"><i class="fa-solid fa-circle-info"></i></button>
@@ -113,8 +119,10 @@
         </div>
     </div>
 
+    <!-- MAIN VIEWS -->
     <main id="app-content">
 
+        <!-- DASHBOARD -->
         <div id="view-dashboard">
             <div class="hero">
                 <h4>Total Revenue</h4>
@@ -155,9 +163,11 @@
             </div>
         </div>
 
+        <!-- SALES ORDER (Updated Printed Invoice Layout) -->
         <div id="view-orders" class="hide section">
             <div class="corp-card" id="invoice-area">
                 
+                <!-- PRINT HEADER -->
                 <div style="display: flex; justify-content: space-between; border-bottom: 2px solid var(--border); padding-bottom: 16px; margin-bottom: 20px;">
                     <div>
                         <h2 style="color: var(--secondary); font-size: 22px; font-weight: 800; margin-bottom: 4px;">YUMMY</h2>
@@ -169,7 +179,7 @@
                     </div>
                     <div style="text-align: right;">
                         <h3 style="color: var(--primary); font-size: 18px; font-weight: 800;">TAX INVOICE</h3>
-                        <p style="color: var(--text-muted); font-size: 11px; margin-top: 4px;">CM bizO</p>
+                        <p style="color: var(--text-muted); font-size: 11px; margin-top: 4px;">CM bizzE</p>
                     </div>
                 </div>
                 
@@ -202,11 +212,12 @@
             </div>
 
             <div style="display: flex; gap: 12px; margin-bottom: 30px;">
-                <button onclick="exportToPDF('invoice-area', 'CM_bizO_Invoice')" class="btn-primary" style="background: white; color: var(--accent); flex: 0.3; border: 1px solid var(--border); box-shadow: none;"><i class="fa-solid fa-file-pdf" style="font-size: 18px;"></i></button>
+                <button onclick="exportToPDF('invoice-area', 'CM_bizzE_Invoice')" class="btn-primary" style="background: white; color: var(--accent); flex: 0.3; border: 1px solid var(--border); box-shadow: none;"><i class="fa-solid fa-file-pdf" style="font-size: 18px;"></i></button>
                 <button onclick="saveAndSendOrder()" class="btn-primary" style="flex: 1;"><i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> Save & Send</button>
             </div>
         </div>
 
+        <!-- ITEMS -->
         <div id="view-items" class="hide section">
             <div style="display: flex; gap: 12px; margin-bottom: 16px;">
                 <input type="text" id="search-items" onkeyup="renderItems()" placeholder="Search Item Master..." class="corp-input" style="margin:0;">
@@ -215,6 +226,7 @@
             <div id="items-container"></div>
         </div>
 
+        <!-- CUSTOMERS -->
         <div id="view-customers" class="hide section">
             <div style="display: flex; gap: 12px; margin-bottom: 16px;">
                 <input type="text" id="search-customers" onkeyup="renderCustomers()" placeholder="Search Directory..." class="corp-input" style="margin:0;">
@@ -223,6 +235,7 @@
             <div id="customers-container"></div>
         </div>
 
+        <!-- REPORTS -->
         <div id="view-reports" class="hide section">
             <div class="corp-card" style="text-align: center; padding: 40px 20px;">
                 <div class="icon-circle" style="width: 72px; height: 72px; font-size: 28px; margin-bottom: 20px; background: #DBEAFE; color: #2563EB;"><i class="fa-solid fa-file-csv"></i></div>
@@ -234,16 +247,20 @@
 
     </main>
 
+    <!-- MODALS -->
+
+    <!-- App Info Modal -->
     <div id="modal-info" class="modal-overlay hide">
         <div class="modal-content" style="text-align: center;">
-            <img src="assets/logo-blue.png" alt="CM" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 16px;" onerror="this.style.display='none';">
-            <h2 style="color: var(--secondary); margin-bottom: 4px;">CM bizO</h2>
+            <img src="logo-blue.png" alt="CM" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 16px;" onerror="this.style.display='none';">
+            <h2 style="color: var(--secondary); margin-bottom: 4px;">CM bizzE</h2>
             <p style="color: var(--primary); font-weight: 700; margin-bottom: 16px;">Demo Version</p>
-            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">App Contact: <a href="http://www.cmfilings.com" style="color: var(--secondary); text-decoration: underline;">www.cmfilings.com</a></p>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">App Contact: <a href="http://www.cmfilings.com" style="color: var(--primary); text-decoration: underline;">www.cmfilings.com</a></p>
             <button onclick="toggleModal('modal-info')" class="btn-primary" style="background: var(--bg); color: var(--text-main); box-shadow: none; border: 1px solid var(--border);">Close</button>
         </div>
     </div>
     
+    <!-- Item Modal (Add/Edit) -->
     <div id="modal-item" class="modal-overlay hide">
         <div class="modal-content">
             <div class="modal-header">
@@ -261,6 +278,7 @@
         </div>
     </div>
 
+    <!-- Customer Modal (Add/Edit) -->
     <div id="modal-customer" class="modal-overlay hide">
         <div class="modal-content">
             <div class="modal-header">
@@ -281,6 +299,7 @@
         </div>
     </div>
 
+    <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
             <i class="fa-solid fa-house"></i><span>Home</span>
@@ -512,7 +531,6 @@
             let photo_url = "";
             const fileInput = document.getElementById('add-item-photo');
             
-            // Fixed Upload Logic with Sanitation
             if(fileInput.files.length > 0) {
                 const file = fileInput.files[0];
                 const sanitizedName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '');
@@ -679,7 +697,7 @@
                 return;
             }
 
-            let msg = `*CM bizO - YUMMY*\n_Sales Order_\n\n*Date:* ${new Date(orderDate).toLocaleDateString()}\n*Customer:* ${custName}\n\n*Items:*\n`;
+            let msg = `*CM bizzE - YUMMY*\n_Sales Order_\n\n*Date:* ${new Date(orderDate).toLocaleDateString()}\n*Customer:* ${custName}\n\n*Items:*\n`;
             cart.forEach(i => { msg += `▪ ${i.name} (x${i.qty}) - ₹${i.qty*i.price}\n`; });
             msg += `\n*Grand Total: ₹${total.toLocaleString('en-IN')}*`;
             
@@ -698,7 +716,7 @@
             globalOrders.forEach(o => { csv += `${new Date(o.order_date).toLocaleDateString()},${o.customer_name},${o.customer_phone},${o.order_total},"${(o.order_details||"").replace(/"/g, '""')}"\n`; });
             let a = document.createElement('a');
             a.href = window.URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-            a.download = 'CM_bizO_Report.csv'; a.click();
+            a.download = 'CM_bizzE_Report.csv'; a.click();
         }
     </script>
 </body>
