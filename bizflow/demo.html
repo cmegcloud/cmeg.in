@@ -1,342 +1,365 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CM Orders - YUMMY FOODS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CM Orders - Corporate ERP</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        cmRed: '#dc2626', cmRedDark: '#b91c1c', cmYellow: '#facc15', cmYellowDark: '#eab308', darkBg: '#111827', darkCard: '#1f2937'
-                    }
-                }
-            }
-        }
-    </script>
+
     <style>
-        body { transition: background-color 0.3s, color 0.3s; }
-        .glass-card { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        .dark .glass-card { background: #1f2937; border-color: #374151; color: #f3f4f6; }
-        .nav-item.active { background-color: #fef08a; color: #dc2626; border-right: 4px solid #dc2626; font-weight: bold; }
-        .dark .nav-item.active { background-color: #451a1a; color: #facc15; border-right-color: #facc15; }
+        :root {
+            /* ZOHO STYLE COLOR THEME */
+            --primary: #F59E0B;       /* Main Yellow */
+            --primary-hover: #D97706; /* Darker Yellow */
+            --secondary: #1E293B;     /* Supporting Blue Grey */
+            --accent: #DC2626;        /* Supporting Red */
+            --bg: #F3F4F6;            /* App Background (Light Grey) */
+            --surface: #FFFFFF;       /* Card Background (White) */
+            --text-main: #0F172A;     /* Dark Blue-Grey Text */
+            --text-muted: #64748B;    /* Muted Text */
+            --border: #E2E8F0;        /* Subtle Border */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); padding-bottom: 90px; color: var(--text-main); }
         .hide { display: none !important; }
-        .modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); }
-        .calc-btn { background: #f3f4f6; border-radius: 8px; padding: 15px; font-weight: bold; text-align: center; cursor: pointer; transition: 0.2s; }
-        .calc-btn:hover { background: #e5e7eb; }
-        .dark .calc-btn { background: #374151; color: white; }
-        .dark .calc-btn:hover { background: #4b5563; }
-        .calc-op { background: #facc15; color: #713f12; }
-        .dark .calc-op { background: #eab308; color: #fff; }
-        .calc-eq { background: #dc2626; color: white; grid-column: span 2; }
+
+        /* ZOHO CORPORATE HEADER */
+        .header { height: 65px; background: var(--secondary); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .left-head { display: flex; align-items: center; gap: 12px; }
+        .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .right-head { display: flex; gap: 15px; font-size: 18px; }
+
+        /* ZOHO STYLE CARDS (No top lines, 12px rounding, subtle borders) */
+        .corp-card { background: var(--surface); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05); border: 1px solid var(--border); margin-bottom: 16px; }
+        
+        /* Dashboard Hero */
+        .hero { margin: 16px; background: var(--surface); border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05); border: 1px solid var(--border); }
+        .hero h4 { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .hero h1 { font-size: 36px; margin: 4px 0 16px 0; font-weight: 800; color: var(--secondary); letter-spacing: -1px; }
+        
+        .stats { display: flex; gap: 12px; border-top: 1px solid var(--border); padding-top: 16px; }
+        .stat { flex: 1; }
+        .stat span { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+        .stat h3 { margin-top: 2px; font-size: 22px; font-weight: 700; color: var(--primary); }
+
+        /* Sections */
+        .section { padding: 0 16px; margin-top: 24px; }
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--secondary); }
+
+        /* Quick Grid */
+        .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .quick-card { background: var(--surface); padding: 16px 8px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); transition: background-color 0.2s; }
+        .quick-card:active { background-color: #F8FAFC; }
+        .icon-circle { width: 44px; height: 44px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: auto; margin-bottom: 8px; color: white; }
+        .icon-circle i { font-size: 18px; }
+        .quick-card span { font-size: 12px; font-weight: 600; color: var(--text-main); }
+
+        /* Order/Item Lists */
+        .list-card { background: var(--surface); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); }
+        .list-title { font-weight: 700; margin-bottom: 4px; font-size: 15px; color: var(--text-main); }
+        .list-sub { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+        .list-price { font-size: 18px; font-weight: 800; color: var(--primary); text-align: right; }
+        
+        /* Action Buttons (Map/Call) */
+        .action-btn { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; text-decoration: none; border: none; transition: background 0.2s; }
+        .action-btn:active { opacity: 0.8; }
+        .btn-call { background: #DCFCE7; color: #16A34A; }
+        .btn-map { background: #DBEAFE; color: #2563EB; }
+        
+        /* Inputs */
+        .corp-input { width: 100%; background: #F8FAFC; border: 1px solid var(--border); padding: 14px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; outline: none; font-weight: 500; color: var(--text-main); transition: border-color 0.2s; }
+        .corp-input:focus { border-color: var(--secondary); background: white; }
+        
+        select.corp-input { -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231E293B%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px top 50%; background-size: 10px auto; }
+
+        /* Main Buttons (Yellow BG, Dark Text) */
+        .btn-primary { width: 100%; padding: 16px; border: none; border-radius: 8px; background: var(--primary); color: var(--secondary); font-size: 15px; font-weight: 700; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2); transition: background 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-primary:active { background: var(--primary-hover); }
+        
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); }
+        .modal-content { background: var(--surface); width: 100%; max-height: 90vh; overflow-y: auto; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+        .modal-header h3 { font-size: 18px; color: var(--secondary); font-weight: 700; }
+        .modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 20px; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--border); z-index: 100; padding: 0 10px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; font-weight: 600; color: var(--text-muted); background: none; border: none; transition: color 0.2s; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item.active { color: var(--primary); }
+
+        /* Floating Action Button */
+        .fab { width: 56px; height: 56px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--secondary); font-size: 24px; margin-top: -30px; box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3); border: none; transform: rotate(45deg); transition: transform 0.2s; }
+        .fab i { transform: rotate(-45deg); }
+        .fab:active { transform: scale(0.95) rotate(45deg); }
+
+        /* Cart Table */
+        .cart-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .cart-table th { text-align: left; padding: 12px; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--border); background: #F8FAFC; }
+        .cart-table td { padding: 16px 12px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--text-main); }
+        .qty-input { width: 55px; padding: 8px; border-radius: 6px; border: 1px solid var(--border); text-align: center; font-weight: 700; color: var(--text-main); background: #F8FAFC; }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden bg-gray-100 text-gray-800 dark:bg-darkBg dark:text-gray-200">
 
-    <div class="md:hidden flex items-center justify-between bg-white dark:bg-darkCard p-4 border-b dark:border-gray-700 z-20 absolute w-full">
-        <div class="flex items-center gap-2">
-            <img src="assets/logo.png" alt="CM Logo" class="h-8 w-8 object-contain" onerror="this.src='https://via.placeholder.com/32?text=CM'">
-            <h1 class="font-bold text-cmRed">CM Orders</h1>
+<body>
+
+    <div class="header">
+        <div class="left-head">
+            <div style="width: 32px; height: 32px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-cookie-bite" style="color: var(--secondary); font-size: 16px;"></i>
+            </div>
+            <div class="logo">CM Orders</div>
         </div>
-        <button onclick="toggleMobileMenu()" class="text-2xl"><i class="fas fa-bars"></i></button>
+        <div class="right-head">
+            <button onclick="fetchData()" style="background:none; border:none; color:inherit; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-arrows-rotate" id="sync-icon"></i></button>
+        </div>
     </div>
 
-    <aside id="sidebar" class="w-64 bg-white dark:bg-darkCard border-r dark:border-gray-700 flex-col shadow-sm hidden md:flex absolute md:relative z-30 h-full transition-transform transform -translate-x-full md:translate-x-0">
-        <div class="p-5 border-b dark:border-gray-700 flex items-center gap-3 justify-between">
-            <div class="flex items-center gap-2">
-                <img src="assets/logo.png" alt="Logo" class="h-10 w-10 object-contain" onerror="this.src='https://via.placeholder.com/40?text=CM'">
-                <div>
-                    <h1 class="text-xl font-extrabold text-cmRed dark:text-cmYellow">CM Orders</h1>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold">YUMMY FOODS</p>
+    <main id="app-content">
+
+        <div id="view-dashboard">
+            <div class="hero">
+                <h4>Total Revenue</h4>
+                <h1 id="dash-revenue">₹0</h1>
+                <div class="stats">
+                    <div class="stat">
+                        <span>Orders Generated</span>
+                        <h3 id="dash-orders">0</h3>
+                    </div>
+                    <div class="stat">
+                        <span>Active Clients</span>
+                        <h3 id="dash-customers">0</h3>
+                    </div>
                 </div>
             </div>
-            <button onclick="toggleMobileMenu()" class="md:hidden text-gray-500"><i class="fas fa-times"></i></button>
+
+            <div class="section">
+                <div class="section-title">Quick Actions</div>
+                <div class="quick-grid">
+                    <div class="quick-card" onclick="switchTab('customers')">
+                        <div class="icon-circle"><i class="fa-solid fa-users"></i></div><span>Clients</span>
+                    </div>
+                    <div class="quick-card" onclick="switchTab('items')">
+                        <div class="icon-circle"><i class="fa-solid fa-box"></i></div><span>Items</span>
+                    </div>
+                    <div class="quick-card" onclick="switchTab('orders')">
+                        <div class="icon-circle"><i class="fa-solid fa-cart-shopping"></i></div><span>Order</span>
+                    </div>
+                    <div class="quick-card" onclick="switchTab('reports')">
+                        <div class="icon-circle"><i class="fa-solid fa-file-csv"></i></div><span>Report</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Recent Transactions</div>
+                <div id="recent-orders-list">
+                    </div>
+            </div>
         </div>
-        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-chart-line w-5"></i> Dashboard</button>
-            <button onclick="switchTab('orders')" id="nav-orders" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-file-invoice w-5"></i> New Order</button>
-            <button onclick="switchTab('items')" id="nav-items" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-box w-5"></i> Items</button>
-            <button onclick="switchTab('customers')" id="nav-customers" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-users w-5"></i> Customers</button>
-            <button onclick="switchTab('reports')" id="nav-reports" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-chart-pie w-5"></i> Reports</button>
-            <button onclick="switchTab('calculator')" id="nav-calculator" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-calculator w-5"></i> Calculator</button>
-        </nav>
-        <div class="p-4 border-t dark:border-gray-700 flex justify-between gap-2">
-            <button onclick="toggleTheme()" class="flex-1 p-2 bg-gray-100 dark:bg-gray-700 rounded text-center hover:bg-gray-200 dark:hover:bg-gray-600 transition"><i class="fas fa-moon dark:hidden"></i><i class="fas fa-sun hidden dark:inline text-cmYellow"></i> Mode</button>
-            <button onclick="toggleModal('modal-info')" class="flex-1 p-2 bg-gray-100 dark:bg-gray-700 rounded text-center hover:bg-gray-200 dark:hover:bg-gray-600 transition"><i class="fas fa-info-circle text-blue-500"></i> Info</button>
-        </div>
-    </aside>
 
-    <main class="flex-1 flex flex-col overflow-y-auto mt-16 md:mt-0 w-full relative">
-        <header class="bg-white dark:bg-darkCard border-b dark:border-gray-700 p-4 hidden md:flex justify-between items-center sticky top-0 z-10">
-            <h2 id="page-title" class="text-xl font-bold text-gray-800 dark:text-white">Dashboard</h2>
-            <button onclick="fetchData()" class="text-sm bg-cmRed text-white px-4 py-2 rounded shadow hover:bg-cmRedDark transition flex items-center gap-2"><i class="fas fa-sync-alt" id="sync-icon"></i> Sync Data</button>
-        </header>
-
-        <div class="p-4 md:p-6 max-w-7xl mx-auto w-full">
-            
-            <div id="view-dashboard" class="space-y-6">
-                <div class="flex justify-end mb-2">
-                    <button onclick="exportToPDF('view-dashboard', 'CM_Dashboard')" class="px-4 py-2 border border-cmRed text-cmRed dark:text-red-400 rounded hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2 text-sm"><i class="fas fa-file-pdf"></i> Export Dashboard PDF</button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="glass-card p-5 border-t-4 border-cmRed dark:border-cmRedDark">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
-                        <h3 class="text-3xl font-black text-cmRed dark:text-red-400" id="dash-revenue">₹ 0.00</h3>
+        <div id="view-orders" class="hide section">
+            <div class="corp-card" id="invoice-area">
+                <div style="border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 style="color: var(--secondary); font-size: 20px; font-weight: 800;">YUMMY FOODS</h2>
+                        <p style="color: var(--text-muted); font-size: 12px; font-weight: 500;">Sales Order Invoice</p>
                     </div>
-                    <div class="glass-card p-5 border-t-4 border-cmYellow dark:border-cmYellowDark">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Total Orders</p>
-                        <h3 class="text-3xl font-black dark:text-white" id="dash-orders">0</h3>
-                    </div>
-                    <div class="glass-card p-5 border-t-4 border-blue-500">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Customers</p>
-                        <h3 class="text-3xl font-black dark:text-white" id="dash-customers">0</h3>
-                    </div>
+                    <i class="fa-solid fa-file-invoice-dollar" style="font-size: 24px; color: var(--border);"></i>
                 </div>
-            </div>
-
-            <div id="view-orders" class="hide space-y-6">
-                <div class="glass-card p-4 md:p-6" id="invoice-area">
-                    <div class="flex flex-col md:flex-row justify-between items-start mb-6 border-b dark:border-gray-700 pb-4 gap-4">
-                        <div class="flex items-center gap-3">
-                            <img src="assets/logo.png" alt="Logo" class="h-12 object-contain" onerror="this.src='https://via.placeholder.com/48?text=CM'">
-                            <div>
-                                <h2 class="text-2xl font-bold text-cmRed">YUMMY FOODS</h2>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Official Order Invoice</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-2 w-full md:w-auto">
-                            <input type="date" id="order-date" class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded w-full md:w-64 text-sm outline-none focus:border-cmRed font-bold text-gray-700 dark:text-gray-200">
-                            <select id="order-customer" class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded w-full md:w-64 text-sm outline-none focus:border-cmRed font-bold">
-                                <option value="">-- Select Customer --</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="mb-4" data-html2canvas-ignore>
-                        <input type="text" id="order-search" onkeyup="filterOrderGrid()" placeholder="Search items to add..." class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 rounded mb-3 outline-none">
-                        <div id="order-item-grid" class="grid grid-cols-2 md:grid-cols-5 gap-3 max-h-60 overflow-y-auto p-1"></div>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[500px]">
-                            <thead>
-                                <tr class="bg-gray-50 dark:bg-gray-800 border-y dark:border-gray-700 text-sm">
-                                    <th class="p-3">Item Description</th>
-                                    <th class="p-3 w-20 text-center">Qty</th>
-                                    <th class="p-3 text-right">Price</th>
-                                    <th class="p-3 text-right">Total</th>
-                                    <th data-html2canvas-ignore></th>
-                                </tr>
-                            </thead>
-                            <tbody id="order-list" class="text-sm"></tbody>
-                            <tfoot>
-                                <tr class="border-t dark:border-gray-700 font-bold text-lg bg-yellow-50 dark:bg-yellow-900/20 text-cmRed dark:text-cmYellow">
-                                    <td colspan="3" class="p-3 text-right">Grand Total:</td>
-                                    <td class="p-3 text-right" id="order-total">₹ 0.00</td>
-                                    <td data-html2canvas-ignore></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="flex flex-wrap gap-3 justify-end">
-                    <button onclick="downloadImage()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 shadow flex items-center gap-2"><i class="fas fa-image"></i> JPG</button>
-                    <button onclick="exportToPDF('invoice-area', 'CM_Order')" class="px-4 py-2 border border-cmRed text-cmRed dark:text-red-400 rounded hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2"><i class="fas fa-file-pdf"></i> PDF</button>
-                    <button onclick="saveAndSendOrder()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 shadow flex items-center gap-2 font-bold"><i class="fab fa-whatsapp text-lg"></i> Save & Send</button>
-                </div>
-            </div>
-
-            <div id="view-items" class="hide glass-card" id="items-container">
-                <div class="p-4 border-b dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-3">
-                    <h3 class="font-bold text-lg">Item Database</h3>
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <button onclick="exportToPDF('view-items', 'CM_Items')" class="border border-cmRed text-cmRed dark:text-red-400 px-3 py-2 rounded text-sm hover:bg-red-50 dark:hover:bg-red-900/30"><i class="fas fa-file-pdf"></i> PDF</button>
-                        <input type="text" id="search-items" onkeyup="renderItems()" placeholder="Search items..." class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded text-sm w-full md:w-48">
-                        <button onclick="toggleModal('modal-item')" class="bg-cmRed text-white px-4 py-2 rounded text-sm whitespace-nowrap"><i class="fas fa-plus"></i> Add</button>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left"><tbody id="items-table"></tbody></table>
-                </div>
-            </div>
-
-            <div id="view-customers" class="hide glass-card" id="customers-container">
-                <div class="p-4 border-b dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-3">
-                    <h3 class="font-bold text-lg">Customer Directory</h3>
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <button onclick="exportToPDF('view-customers', 'CM_Customers')" class="border border-cmRed text-cmRed dark:text-red-400 px-3 py-2 rounded text-sm hover:bg-red-50 dark:hover:bg-red-900/30"><i class="fas fa-file-pdf"></i> PDF</button>
-                        <input type="text" id="search-customers" onkeyup="renderCustomers()" placeholder="Search names..." class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded text-sm w-full md:w-48">
-                        <button onclick="toggleModal('modal-customer')" class="bg-cmYellow text-black font-bold px-4 py-2 rounded text-sm whitespace-nowrap"><i class="fas fa-plus"></i> Add</button>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left"><tbody id="customers-table"></tbody></table>
-                </div>
-            </div>
-
-            <div id="view-reports" class="hide glass-card p-6" id="reports-container">
-                <div class="flex justify-between items-center mb-4 border-b dark:border-gray-700 pb-2">
-                    <h3 class="font-bold text-lg">Order Reports & Export</h3>
-                    <button onclick="exportToPDF('view-reports', 'CM_Reports')" class="border border-cmRed text-cmRed dark:text-red-400 px-3 py-2 rounded text-sm hover:bg-red-50 dark:hover:bg-red-900/30"><i class="fas fa-file-pdf"></i> Export View to PDF</button>
-                </div>
-                <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">Download a complete CSV backup of all generated orders. Can be opened in Excel.</p>
-                <button onclick="downloadCSV()" class="bg-gray-800 dark:bg-gray-600 text-white px-6 py-3 rounded shadow flex items-center gap-2 hover:bg-black transition mb-6"><i class="fas fa-file-csv text-green-400"></i> Export All Orders to CSV</button>
                 
-                <h4 class="font-bold mb-3 text-cmRed">Recent Orders Preview</h4>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left border"><tbody id="reports-table"></tbody></table>
+                <input type="date" id="order-date" class="corp-input">
+                <select id="order-customer" class="corp-input">
+                    <option value="">Select Customer...</option>
+                </select>
+
+                <div style="margin: 24px 0;">
+                    <input type="text" id="order-search" onkeyup="filterOrderGrid()" placeholder="Search items to add..." class="corp-input">
+                    <div id="order-item-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-height: 220px; overflow-y: auto;">
+                        </div>
+                </div>
+
+                <div style="overflow-x: auto; border: 1px solid var(--border); border-radius: 8px;">
+                    <table class="cart-table" style="margin-bottom: 0;">
+                        <thead><tr><th>Item</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Total</th><th></th></tr></thead>
+                        <tbody id="order-list"></tbody>
+                        <tfoot>
+                            <tr style="background: #F8FAFC;">
+                                <td colspan="4">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
+                                        <span style="color:var(--text-muted); font-weight: 600; font-size: 13px; text-transform: uppercase;">Grand Total</span>
+                                        <span style="color:var(--primary); font-size: 20px; font-weight:800;" id="order-total">₹0</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
 
-            <div id="view-calculator" class="hide">
-                <div class="glass-card p-6 max-w-sm mx-auto bg-white dark:bg-darkCard shadow-2xl border-t-8 border-cmRed">
-                    <h3 class="text-center font-black text-cmRed mb-4 tracking-widest text-xl">CM CALCULATOR</h3>
-                    <input type="text" id="calc-display" disabled class="w-full bg-gray-100 dark:bg-gray-900 text-right text-3xl p-4 rounded mb-4 font-mono font-bold text-gray-800 dark:text-white" value="0">
-                    <div class="grid grid-cols-4 gap-2 text-xl">
-                        <div class="calc-btn text-cmRed" onclick="calcClear()">C</div>
-                        <div class="calc-btn" onclick="calcInput('/')">/</div>
-                        <div class="calc-btn" onclick="calcInput('*')">x</div>
-                        <div class="calc-btn calc-op" onclick="calcInput('-')">-</div>
-                        
-                        <div class="calc-btn" onclick="calcInput('7')">7</div>
-                        <div class="calc-btn" onclick="calcInput('8')">8</div>
-                        <div class="calc-btn" onclick="calcInput('9')">9</div>
-                        <div class="calc-btn calc-op" style="grid-row: span 2;" onclick="calcInput('+')">+</div>
-                        
-                        <div class="calc-btn" onclick="calcInput('4')">4</div>
-                        <div class="calc-btn" onclick="calcInput('5')">5</div>
-                        <div class="calc-btn" onclick="calcInput('6')">6</div>
-                        
-                        <div class="calc-btn" onclick="calcInput('1')">1</div>
-                        <div class="calc-btn" onclick="calcInput('2')">2</div>
-                        <div class="calc-btn" onclick="calcInput('3')">3</div>
-                        <div class="calc-btn calc-eq" style="grid-row: span 2;" onclick="calcCalculate()">=</div>
-                        
-                        <div class="calc-btn" style="grid-column: span 2;" onclick="calcInput('0')">0</div>
-                        <div class="calc-btn" onclick="calcInput('.')">.</div>
-                    </div>
-                </div>
+            <div style="display: flex; gap: 12px; margin-bottom: 30px;">
+                <button onclick="exportToPDF('invoice-area', 'CM_Order')" class="btn-primary" style="background: white; color: var(--accent); flex: 0.3; border: 1px solid var(--border); box-shadow: none;"><i class="fa-solid fa-file-pdf" style="font-size: 18px;"></i></button>
+                <button onclick="saveAndSendOrder()" class="btn-primary" style="flex: 1;"><i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> Save & Send</button>
             </div>
-
         </div>
+
+        <div id="view-items" class="hide section">
+            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                <input type="text" id="search-items" onkeyup="renderItems()" placeholder="Search Item Master..." class="corp-input" style="margin:0;">
+                <button onclick="toggleModal('modal-item')" class="btn-primary" style="width: 52px; height: 52px; flex-shrink: 0; padding: 0;"><i class="fa-solid fa-plus"></i></button>
+            </div>
+            <div id="items-container"></div>
+        </div>
+
+        <div id="view-customers" class="hide section">
+            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                <input type="text" id="search-customers" onkeyup="renderCustomers()" placeholder="Search Directory..." class="corp-input" style="margin:0;">
+                <button onclick="toggleModal('modal-customer')" class="btn-primary" style="width: 52px; height: 52px; flex-shrink: 0; padding: 0;"><i class="fa-solid fa-user-plus"></i></button>
+            </div>
+            <div id="customers-container"></div>
+        </div>
+
+        <div id="view-reports" class="hide section">
+            <div class="corp-card" style="text-align: center; padding: 40px 20px;">
+                <div class="icon-circle" style="width: 72px; height: 72px; font-size: 28px; margin-bottom: 20px; background: #DBEAFE; color: #2563EB;"><i class="fa-solid fa-file-csv"></i></div>
+                <h2 style="margin-bottom: 8px; font-size: 20px; color: var(--secondary);">Data Export</h2>
+                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px; line-height: 1.5;">Download a complete CSV backup of all recorded orders. Fully compatible with spreadsheet software.</p>
+                <button onclick="downloadCSV()" class="btn-primary"><i class="fa-solid fa-download"></i> Generate CSV Report</button>
+            </div>
+        </div>
+
     </main>
 
-    <div id="modal-item" class="modal fixed inset-0 flex items-center justify-center hide z-50 p-4">
-        <div class="bg-white dark:bg-darkCard p-6 rounded-lg w-full max-w-md shadow-2xl border-t-4 border-cmRed">
-            <h3 class="text-lg font-bold mb-4 dark:text-white">Add New Item</h3>
-            <input type="text" id="add-item-name" placeholder="Item Name" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-3 rounded outline-none">
-            <div class="flex gap-2 mb-3">
-                <input type="number" id="add-item-buy" placeholder="Buy Price" class="w-1/2 border dark:border-gray-600 dark:bg-gray-800 p-2 rounded outline-none">
-                <input type="number" id="add-item-sell" placeholder="Sell Price" class="w-1/2 border dark:border-gray-600 dark:bg-gray-800 p-2 rounded outline-none">
+    <div id="modal-item" class="modal-overlay hide">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Item</h3>
+                <button onclick="toggleModal('modal-item')" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <label class="block text-xs text-gray-500 mb-1">Upload Photo (JPG/PNG)</label>
-            <input type="file" id="add-item-photo" accept="image/*" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-4 rounded text-sm">
-            <div class="flex justify-end gap-2">
-                <button onclick="toggleModal('modal-item')" class="px-4 py-2 text-gray-500">Cancel</button>
-                <button onclick="submitItem()" class="px-4 py-2 bg-cmRed text-white rounded font-bold">Save Item</button>
+            <input type="text" id="add-item-name" placeholder="Item Name" class="corp-input">
+            <div style="display: flex; gap: 12px;">
+                <input type="number" id="add-item-buy" placeholder="Buy Price (₹)" class="corp-input">
+                <input type="number" id="add-item-sell" placeholder="Sell Price (₹)" class="corp-input">
             </div>
+            <label style="color: var(--text-muted); font-size: 12px; font-weight: 600; margin-bottom: 8px; display: block; text-transform: uppercase;">Product Photo</label>
+            <input type="file" id="add-item-photo" accept="image/*" class="corp-input" style="padding: 10px; background: white;">
+            <button onclick="submitItem()" id="btn-save-item" class="btn-primary" style="margin-top: 10px;"><i class="fa-solid fa-check"></i> Save Item</button>
         </div>
     </div>
 
-    <div id="modal-customer" class="modal fixed inset-0 flex items-center justify-center hide z-50 p-4">
-        <div class="bg-white dark:bg-darkCard p-6 rounded-lg w-full max-w-md shadow-2xl border-t-4 border-cmYellow">
-            <h3 class="text-lg font-bold mb-4 dark:text-white">Add Customer</h3>
-            <input type="text" id="add-cust-name" placeholder="Business Name" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-3 rounded outline-none">
-            <input type="text" id="add-cust-person" placeholder="Contact Person" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-3 rounded outline-none">
-            <input type="text" id="add-cust-phone" placeholder="WhatsApp (Format: 919876543210)" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-4 rounded outline-none">
-            <div class="flex justify-end gap-2">
-                <button onclick="toggleModal('modal-customer')" class="px-4 py-2 text-gray-500">Cancel</button>
-                <button onclick="submitCustomer()" class="px-4 py-2 bg-cmYellow text-black font-bold rounded">Save Customer</button>
+    <div id="modal-customer" class="modal-overlay hide">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Register Customer</h3>
+                <button onclick="toggleModal('modal-customer')" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
             </div>
+            <input type="text" id="add-cust-name" placeholder="Business Name" class="corp-input">
+            <input type="text" id="add-cust-person" placeholder="Contact Person" class="corp-input">
+            <input type="tel" id="add-cust-phone" placeholder="WhatsApp Number" class="corp-input">
+            
+            <div style="display: flex; gap: 12px;">
+                <input type="text" id="add-cust-loc" placeholder="Location Link" class="corp-input" style="margin:0;">
+                <button onclick="getGPSLocation()" class="btn-primary" style="width: 52px; height: 52px; flex-shrink: 0; padding: 0;"><i class="fa-solid fa-location-crosshairs"></i></button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 11px; margin: 6px 0 20px 0; font-weight: 500;">Tap icon to auto-grab GPS location.</p>
+
+            <button onclick="submitCustomer()" id="btn-save-cust" class="btn-primary"><i class="fa-solid fa-check"></i> Save Customer</button>
         </div>
     </div>
 
-    <div id="modal-info" class="modal fixed inset-0 flex items-center justify-center hide z-50 p-4">
-        <div class="bg-white dark:bg-darkCard p-6 rounded-lg w-full max-w-sm shadow-2xl text-center">
-            <img src="assets/logo.png" alt="CM Logo" class="h-16 mx-auto mb-4" onerror="this.src='https://via.placeholder.com/64?text=CM'">
-            <h2 class="text-2xl font-black text-cmRed">CM Orders</h2>
-            <p class="text-cmYellowDark font-bold mb-4">Demo Version 2.0 (Supabase Engine)</p>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">A complete lightweight order management system for YUMMY FOODS. Built with PostgreSQL backend.</p>
-            <button onclick="toggleModal('modal-info')" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 rounded font-bold">Close</button>
-        </div>
+    <div class="bottom-nav">
+        <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
+            <i class="fa-solid fa-house"></i><span>Home</span>
+        </button>
+        <button class="nav-item" id="nav-customers" onclick="switchTab('customers')">
+            <i class="fa-solid fa-users"></i><span>Clients</span>
+        </button>
+        
+        <button class="fab" onclick="switchTab('orders')">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+        
+        <button class="nav-item" id="nav-items" onclick="switchTab('items')">
+            <i class="fa-solid fa-box"></i><span>Items</span>
+        </button>
+        <button class="nav-item" id="nav-reports" onclick="switchTab('reports')">
+            <i class="fa-solid fa-chart-line"></i><span>Reports</span>
+        </button>
     </div>
 
     <script>
-        // --- SUPABASE CONFIGURATION ---
+        // ==========================================
+        // 🔥 SUPABASE CONFIGURATION 🔥
+        // ==========================================
         const SUPABASE_URL = "https://gzmodvyaxuvscemzsvrr.supabase.co"; 
         
-        // 🔥 PASTE YOUR ANON PUBLIC API KEY HERE 🔥
-        const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY_HERE"; 
-        
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // PASTE YOUR ACTUAL KEY BETWEEN THE QUOTES BELOW
+        const SUPABASE_KEY = "PASTE_YOUR_KEY_HERE"; 
+        // ==========================================
 
-        let globalItems = [];
-        let globalCustomers = [];
-        let globalOrders = [];
-        let cart = [];
-        let calcVal = "";
+        let supabase;
+        let globalItems = [], globalCustomers = [], globalOrders = [], cart = [];
 
-        // Initialization
         window.onload = () => {
-            if(localStorage.getItem('theme') === 'dark') toggleTheme();
+            if(!SUPABASE_KEY || SUPABASE_KEY.includes("PASTE_YOUR_KEY")) {
+                alert("CRITICAL ERROR: Supabase Key missing in HTML file!");
+                return;
+            }
+            supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             document.getElementById('order-date').valueAsDate = new Date();
             fetchData();
         };
 
-        // --- UI LOGIC ---
+        // --- NAVIGATION LOGIC ---
         function switchTab(tabId) {
-            document.querySelectorAll('main > div > div').forEach(el => el.classList.add('hide'));
-            document.getElementById('view-' + tabId).classList.remove('hide');
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById('nav-' + tabId).classList.add('active');
+            document.getElementById('view-dashboard').classList.add('hide');
+            document.getElementById('view-orders').classList.add('hide');
+            document.getElementById('view-items').classList.add('hide');
+            document.getElementById('view-customers').classList.add('hide');
+            document.getElementById('view-reports').classList.add('hide');
             
-            const titles = { 'dashboard': 'Dashboard', 'orders': 'Create Order', 'items': 'Item Database', 'customers': 'Customer Directory', 'reports': 'Reports & Exports', 'calculator': 'Calculator' };
-            document.getElementById('page-title').innerText = titles[tabId];
-            if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('view-' + tabId).classList.remove('hide');
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if(document.getElementById('nav-' + tabId)) {
+                document.getElementById('nav-' + tabId).classList.add('active');
+            }
+            window.scrollTo(0,0);
         }
 
-        function toggleMobileMenu() {
-            document.getElementById('sidebar').classList.toggle('-translate-x-full');
-            document.getElementById('sidebar').classList.toggle('hidden');
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hide'); }
+
+        // --- GPS LOGIC ---
+        function getGPSLocation() {
+            const locInput = document.getElementById('add-cust-loc');
+            locInput.value = "Fetching GPS...";
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => { locInput.value = `${pos.coords.latitude}, ${pos.coords.longitude}`; },
+                    (err) => { alert("GPS Error. Enable permissions."); locInput.value = ""; }
+                );
+            } else { alert("Geolocation not supported."); locInput.value = ""; }
         }
 
-        function toggleModal(id) {
-            document.getElementById(id).classList.toggle('hide');
-        }
-
-        function toggleTheme() {
-            const html = document.documentElement;
-            html.classList.toggle('dark');
-            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
-        }
-
-        // --- FETCH & RENDER DATA (SUPABASE) ---
+        // --- DATA FETCH ---
         async function fetchData() {
-            const btn = document.getElementById('sync-icon');
-            if(btn) btn.classList.add('fa-spin');
+            if(!supabase) return;
+            const icon = document.getElementById('sync-icon');
+            icon.classList.add('fa-spin');
             
             try {
-                // Fetch in parallel
                 const [itemsRes, custRes, ordersRes] = await Promise.all([
                     supabase.from('items').select('*').order('created_at', { ascending: false }),
                     supabase.from('customers').select('*').order('business_name', { ascending: true }),
                     supabase.from('orders').select('*').order('created_at', { ascending: false })
                 ]);
-
-                if(itemsRes.error) console.error("Error fetching items:", itemsRes.error);
-                if(custRes.error) console.error("Error fetching customers:", custRes.error);
-                if(ordersRes.error) console.error("Error fetching orders:", ordersRes.error);
 
                 globalItems = itemsRes.data || [];
                 globalCustomers = custRes.data || [];
@@ -346,62 +369,79 @@
                 renderItems();
                 renderCustomers();
                 renderOrderGrid();
-                renderReports();
                 populateCustomerDropdown();
-            } catch (err) {
-                console.error("Sync Error:", err);
-            }
-            if(btn) btn.classList.remove('fa-spin');
+            } catch (err) { console.error(err); }
+            icon.classList.remove('fa-spin');
         }
 
         function renderDashboard() {
             document.getElementById('dash-orders').innerText = globalOrders.length;
             document.getElementById('dash-customers').innerText = globalCustomers.length;
             let rev = globalOrders.reduce((sum, order) => sum + Number(order.order_total || 0), 0);
-            document.getElementById('dash-revenue').innerText = `₹ ${rev.toFixed(2)}`;
+            document.getElementById('dash-revenue').innerText = `₹${rev.toLocaleString('en-IN')}`;
+
+            const recentList = document.getElementById('recent-orders-list');
+            recentList.innerHTML = '';
+            globalOrders.slice(0, 5).forEach(o => {
+                recentList.innerHTML += `
+                    <div class="list-card">
+                        <div>
+                            <div class="list-title">${o.customer_name}</div>
+                            <div class="list-sub">${new Date(o.order_date).toLocaleDateString()}</div>
+                        </div>
+                        <div class="list-price">₹${o.order_total}</div>
+                    </div>`;
+            });
         }
 
         function renderItems() {
-            const term = document.getElementById('search-items') ? document.getElementById('search-items').value.toLowerCase() : "";
-            const tbody = document.getElementById('items-table');
-            tbody.innerHTML = `<tr class="bg-gray-100 dark:bg-gray-800 border-b dark:border-gray-700 text-gray-600 dark:text-gray-300"><th class="p-3">Photo</th><th class="p-3">Item Name</th><th class="p-3">Buy ₹</th><th class="p-3">Sell ₹</th></tr>`;
+            const term = document.getElementById('search-items').value.toLowerCase();
+            const container = document.getElementById('items-container');
+            container.innerHTML = '';
             
             globalItems.filter(i => i.item_name.toLowerCase().includes(term)).forEach(item => {
-                let imgHtml = item.photo_url ? `<img src="${item.photo_url}" class="w-12 h-12 object-cover rounded shadow border">` : `<div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center"><i class="fas fa-image text-gray-400"></i></div>`;
-                tbody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"><td class="p-2">${imgHtml}</td><td class="p-3 font-bold">${item.item_name}</td><td class="p-3">₹${item.buy_price}</td><td class="p-3 font-black text-cmRed dark:text-cmYellow">₹${item.sell_price}</td></tr>`;
+                container.innerHTML += `
+                    <div class="list-card">
+                        <div>
+                            <div class="list-title">${item.item_name}</div>
+                            <div class="list-sub" style="display:inline-block; background: var(--bg); padding: 4px 8px; border-radius: 6px; margin-top:4px;">Buy: ₹${item.buy_price}</div>
+                        </div>
+                        <div class="list-price">₹${item.sell_price}</div>
+                    </div>`;
             });
         }
 
         function renderCustomers() {
-            const term = document.getElementById('search-customers') ? document.getElementById('search-customers').value.toLowerCase() : "";
-            const tbody = document.getElementById('customers-table');
-            tbody.innerHTML = `<tr class="bg-gray-100 dark:bg-gray-800 border-b dark:border-gray-700 text-gray-600 dark:text-gray-300"><th class="p-3">Business</th><th class="p-3">Contact</th><th class="p-3">WhatsApp</th></tr>`;
+            const term = document.getElementById('search-customers').value.toLowerCase();
+            const container = document.getElementById('customers-container');
+            container.innerHTML = '';
             
-            globalCustomers.filter(c => c.business_name.toLowerCase().includes(term)).forEach(c => {
-                tbody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"><td class="p-3 font-bold text-cmRed dark:text-white">${c.business_name}</td><td class="p-3">${c.contact_person}</td><td class="p-3 font-mono">${c.phone}</td></tr>`;
-            });
-        }
+            globalCustomers.filter(c => c.business_name.toLowerCase().includes(term) || (c.phone && c.phone.includes(term))).forEach(c => {
+                let callBtn = c.phone ? `<a href="tel:${c.phone.replace(/[^0-9+]/g, '')}" class="action-btn btn-call"><i class="fa-solid fa-phone"></i></a>` : '';
+                let mapLink = c.location ? (c.location.startsWith('http') ? c.location : `https://maps.google.com/?q=${encodeURIComponent(c.location)}`) : '';
+                let mapBtn = mapLink ? `<a href="${mapLink}" target="_blank" class="action-btn btn-map"><i class="fa-solid fa-location-dot"></i></a>` : '';
 
-        function renderReports() {
-            const tbody = document.getElementById('reports-table');
-            tbody.innerHTML = `<tr class="bg-gray-100 dark:bg-gray-800 border-b dark:border-gray-700 text-gray-600 dark:text-gray-300"><th class="p-3">Date</th><th class="p-3">Customer</th><th class="p-3">Total ₹</th></tr>`;
-            globalOrders.slice(0, 10).forEach(o => {
-                let d = new Date(o.order_date).toLocaleDateString();
-                tbody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"><td class="p-3">${d}</td><td class="p-3 font-bold text-cmRed dark:text-white">${o.customer_name}</td><td class="p-3 font-black text-cmYellowDark dark:text-cmYellow">₹${o.order_total}</td></tr>`;
+                container.innerHTML += `
+                    <div class="list-card" style="align-items: flex-start;">
+                        <div>
+                            <div class="list-title">${c.business_name}</div>
+                            <div class="list-sub" style="margin-bottom:4px;"><i class="fa-solid fa-user" style="margin-right:6px;"></i>${c.contact_person || 'N/A'}</div>
+                            <div class="list-sub" style="font-family:monospace;">${c.phone || ''}</div>
+                        </div>
+                        <div style="display:flex; gap:8px;">${mapBtn}${callBtn}</div>
+                    </div>`;
             });
         }
 
         function renderOrderGrid() {
-            const term = document.getElementById('order-search') ? document.getElementById('order-search').value.toLowerCase() : "";
+            const term = document.getElementById('order-search').value.toLowerCase();
             const grid = document.getElementById('order-item-grid');
             grid.innerHTML = '';
             globalItems.filter(i => i.item_name.toLowerCase().includes(term)).forEach(item => {
-                let img = item.photo_url ? `<img src="${item.photo_url}" class="h-10 w-full object-cover rounded mb-1 border">` : `<div class="h-10 w-full bg-gray-100 dark:bg-gray-700 rounded mb-1 flex items-center justify-center"><i class="fas fa-cookie text-gray-400"></i></div>`;
                 grid.innerHTML += `
-                    <div class="border dark:border-gray-600 rounded-lg p-2 text-center cursor-pointer hover:border-cmRed dark:hover:border-cmYellow transition bg-white dark:bg-gray-800 shadow-sm" onclick="addToOrder('${item.item_name}', ${item.sell_price})">
-                        ${img}
-                        <h4 class="font-bold text-xs truncate dark:text-gray-200" title="${item.item_name}">${item.item_name}</h4>
-                        <p class="text-xs text-cmRed dark:text-cmYellow font-black">₹${item.sell_price}</p>
+                    <div style="background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 12px 8px; text-align: center; color: var(--text-main); cursor: pointer;" onclick="addToOrder('${item.item_name}', ${item.sell_price})">
+                        <div style="font-weight: 600; font-size: 13px; margin-bottom: 6px; line-height: 1.3;">${item.item_name}</div>
+                        <div style="color: var(--primary); font-weight: 800; font-size: 15px;">₹${item.sell_price}</div>
                     </div>`;
             });
         }
@@ -409,82 +449,56 @@
 
         function populateCustomerDropdown() {
             const select = document.getElementById('order-customer');
-            select.innerHTML = '<option value="">-- Select Customer --</option>';
-            globalCustomers.forEach(c => {
-                select.innerHTML += `<option value="${c.phone}" data-name="${c.business_name}">${c.business_name} - ${c.phone}</option>`;
-            });
+            select.innerHTML = '<option value="">Select Customer...</option>';
+            globalCustomers.forEach(c => { select.innerHTML += `<option value="${c.phone}" data-name="${c.business_name}">${c.business_name}</option>`; });
         }
 
-        // --- FORM SUBMISSIONS (SUPABASE) ---
+        // --- SUBMISSIONS ---
         async function submitItem() {
-            const btn = document.querySelector('#modal-item button.bg-cmRed');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            const btn = document.getElementById('btn-save-item');
+            btn.innerHTML = 'Saving...';
             
             let photo_url = "";
             const fileInput = document.getElementById('add-item-photo');
-            const itemName = document.getElementById('add-item-name').value;
-            const buyPrice = document.getElementById('add-item-buy').value;
-            const sellPrice = document.getElementById('add-item-sell').value;
-
             if(fileInput.files.length > 0) {
                 const file = fileInput.files[0];
                 const fileName = Date.now() + '-' + file.name;
-                
-                // Upload to Supabase Storage Bucket
-                const { data: uploadData, error: uploadError } = await supabase.storage.from('item-photos').upload(fileName, file);
-                
-                if(uploadError) {
-                    alert("Error uploading photo: " + uploadError.message);
-                } else {
-                    // Get public URL
-                    const { data } = supabase.storage.from('item-photos').getPublicUrl(fileName);
-                    photo_url = data.publicUrl;
-                }
+                const { error: uploadError } = await supabase.storage.from('item-photos').upload(fileName, file);
+                if(!uploadError) photo_url = supabase.storage.from('item-photos').getPublicUrl(fileName).data.publicUrl;
             }
 
-            // Insert into Database Table
-            const { error } = await supabase.from('items').insert([
-                { item_name: itemName, buy_price: buyPrice, sell_price: sellPrice, photo_url: photo_url }
-            ]);
+            await supabase.from('items').insert([{ 
+                item_name: document.getElementById('add-item-name').value, 
+                buy_price: document.getElementById('add-item-buy').value || 0, 
+                sell_price: document.getElementById('add-item-sell').value || 0, 
+                photo_url: photo_url 
+            }]);
 
-            if(error) alert("Error saving item: " + error.message);
-
-            btn.innerHTML = 'Save Item';
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Save Item';
             toggleModal('modal-item');
-            document.getElementById('add-item-name').value = '';
-            document.getElementById('add-item-buy').value = '';
-            document.getElementById('add-item-sell').value = '';
-            fileInput.value = '';
             fetchData();
         }
 
         async function submitCustomer() {
-            const btn = document.querySelector('#modal-customer button.bg-cmYellow');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            const btn = document.getElementById('btn-save-cust');
+            btn.innerHTML = 'Saving...';
             
-            const bName = document.getElementById('add-cust-name').value;
-            const cPerson = document.getElementById('add-cust-person').value;
-            const phone = document.getElementById('add-cust-phone').value;
+            await supabase.from('customers').insert([{ 
+                business_name: document.getElementById('add-cust-name').value, 
+                contact_person: document.getElementById('add-cust-person').value, 
+                phone: document.getElementById('add-cust-phone').value,
+                location: document.getElementById('add-cust-loc').value
+            }]);
 
-            const { error } = await supabase.from('customers').insert([
-                { business_name: bName, contact_person: cPerson, phone: phone }
-            ]);
-
-            if(error) alert("Error saving customer: " + error.message);
-
-            btn.innerHTML = 'Save Customer';
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Save Customer';
             toggleModal('modal-customer');
-            document.getElementById('add-cust-name').value = '';
-            document.getElementById('add-cust-person').value = '';
-            document.getElementById('add-cust-phone').value = '';
             fetchData();
         }
 
-        // --- ORDER & CART LOGIC ---
+        // --- CART LOGIC ---
         function addToOrder(name, price) {
             const existing = cart.find(i => i.name === name);
-            if(existing) existing.qty++;
-            else cart.push({ name, price, qty: 1 });
+            if(existing) existing.qty++; else cart.push({ name, price, qty: 1 });
             renderCart();
         }
 
@@ -496,104 +510,54 @@
                 let lineTotal = item.qty * item.price;
                 total += lineTotal;
                 tbody.innerHTML += `
-                    <tr class="border-b dark:border-gray-700">
-                        <td class="p-3 font-bold">${item.name}</td>
-                        <td class="p-3 text-center"><input type="number" min="1" value="${item.qty}" onchange="cart[${i}].qty=this.value; renderCart()" class="w-16 border dark:border-gray-600 dark:bg-gray-800 p-1 text-center rounded outline-none font-bold" data-html2canvas-ignore="true"><span class="hidden" data-html2canvas-show="true">${item.qty}</span></td>
-                        <td class="p-3 text-right">₹${item.price}</td>
-                        <td class="p-3 text-right font-black text-cmRed dark:text-cmYellow">₹${lineTotal.toFixed(2)}</td>
-                        <td class="p-3 text-red-500 cursor-pointer text-center" onclick="cart.splice(${i},1); renderCart()" data-html2canvas-ignore><i class="fas fa-trash-alt"></i></td>
+                    <tr>
+                        <td style="font-size: 13px;">${item.name}</td>
+                        <td style="text-align:center;">
+                            <input type="number" min="1" value="${item.qty}" onchange="cart[${i}].qty=this.value; renderCart()" class="qty-input">
+                        </td>
+                        <td style="text-align:right; color:var(--primary); font-weight:800; font-size: 15px;">₹${lineTotal}</td>
+                        <td style="text-align:center; color:var(--accent); font-size: 18px; cursor: pointer;" onclick="cart.splice(${i},1); renderCart()"><i class="fa-solid fa-circle-minus"></i></td>
                     </tr>`;
             });
-            document.getElementById('order-total').innerText = `₹ ${total.toFixed(2)}`;
+            document.getElementById('order-total').innerText = `₹${total.toLocaleString('en-IN')}`;
             return total;
         }
 
         async function saveAndSendOrder() {
             const sel = document.getElementById('order-customer');
-            if(!sel.value) return alert("Please select a customer.");
-            if(!cart.length) return alert("Add items to the order.");
+            if(!sel.value) return alert("Select a customer.");
+            if(!cart.length) return alert("Cart is empty.");
 
             let total = renderCart();
             let custName = sel.options[sel.selectedIndex].getAttribute('data-name');
             let phone = sel.value;
             let orderDate = document.getElementById('order-date').value;
-            let formattedDate = orderDate ? new Date(orderDate).toLocaleDateString() : new Date().toLocaleDateString();
-            
             let details = cart.map(i => `${i.name} x${i.qty}`).join(", ");
 
-            // Save to Supabase
-            const { error } = await supabase.from('orders').insert([
-                { customer_name: custName, customer_phone: phone, order_total: total, order_details: details, order_date: orderDate }
-            ]);
+            await supabase.from('orders').insert([{ 
+                customer_name: custName, customer_phone: phone, order_total: total, order_details: details, order_date: orderDate 
+            }]);
 
-            if(error) {
-                alert("Error saving order: " + error.message);
-                return;
-            }
-            
-            // Format WhatsApp Message
-            let msg = `*CM Orders - YUMMY FOODS*\n_Order Estimate_\n\n*Date:* ${formattedDate}\n*Customer:* ${custName}\n\n*Items:*\n`;
+            let msg = `*CM Orders*\n_Sales Order_\n\n*Date:* ${new Date(orderDate).toLocaleDateString()}\n*Customer:* ${custName}\n\n*Items:*\n`;
             cart.forEach(i => { msg += `▪ ${i.name} (x${i.qty}) - ₹${i.qty*i.price}\n`; });
-            msg += `\n*Grand Total: ₹${total.toFixed(2)}*`;
+            msg += `\n*Grand Total: ₹${total.toLocaleString('en-IN')}*`;
             
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-            cart = [];
-            sel.value = "";
-            renderCart();
-            fetchData();
+            cart = []; sel.value = ""; renderCart(); fetchData(); switchTab('dashboard');
         }
 
-        // --- EXPORTS ---
         function exportToPDF(elementId, filename) {
-            const element = document.getElementById(elementId);
-            const opt = { 
-                margin: 0.3, 
-                filename: filename + '.pdf', 
-                image: { type: 'jpeg', quality: 0.98 }, 
-                html2canvas: { scale: 2, useCORS: true }, // Added useCORS to fix image loading in PDFs 
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } 
-            };
-            html2pdf().set(opt).from(element).save(); 
-        }
-
-        function downloadImage() {
-            html2canvas(document.getElementById('invoice-area'), { useCORS: true }).then(canvas => {
-                let link = document.createElement('a');
-                link.download = 'CM_Order.jpg';
-                link.href = canvas.toDataURL('image/jpeg');
-                link.click();
-            });
+            const opt = { margin: 0.2, filename: filename + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+            html2pdf().set(opt).from(document.getElementById(elementId)).save(); 
         }
 
         function downloadCSV() {
-            if(!globalOrders.length) return alert("No orders to export.");
+            if(!globalOrders.length) return alert("No orders.");
             let csv = "Date,Customer Name,Phone,Order Total,Details\n";
-            globalOrders.forEach(o => {
-                let date = new Date(o.order_date).toLocaleDateString();
-                let details = `"${(o.order_details||"").replace(/"/g, '""')}"`;
-                csv += `${date},${o.customer_name},${o.customer_phone},${o.order_total},${details}\n`;
-            });
-            let blob = new Blob([csv], { type: 'text/csv' });
-            let url = window.URL.createObjectURL(blob);
+            globalOrders.forEach(o => { csv += `${new Date(o.order_date).toLocaleDateString()},${o.customer_name},${o.customer_phone},${o.order_total},"${(o.order_details||"").replace(/"/g, '""')}"\n`; });
             let a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('download', 'CM_Orders_Report.csv');
-            a.click();
-        }
-
-        // --- CALCULATOR LOGIC ---
-        function calcInput(char) {
-            if(calcVal === "0" && char !== '.') calcVal = "";
-            calcVal += char;
-            document.getElementById('calc-display').value = calcVal;
-        }
-        function calcClear() {
-            calcVal = "0";
-            document.getElementById('calc-display').value = calcVal;
-        }
-        function calcCalculate() {
-            try { calcVal = eval(calcVal).toString(); } catch(e) { calcVal = "Error"; }
-            document.getElementById('calc-display').value = calcVal;
+            a.href = window.URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+            a.download = 'CM_ERP_Report.csv'; a.click();
         }
     </script>
 </body>
