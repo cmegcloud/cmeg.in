@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CM Orders - YUMMY FOODS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cmRed: '#dc2626', cmRedDark: '#b91c1c', cmYellow: '#facc15', cmYellowDark: '#eab308', darkBg: '#111827', darkCard: '#1f2937'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { transition: background-color 0.3s, color 0.3s; }
+        .glass-card { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .dark .glass-card { background: #1f2937; border-color: #374151; color: #f3f4f6; }
+        .nav-item.active { background-color: #fef08a; color: #dc2626; border-right: 4px solid #dc2626; font-weight: bold; }
+        .dark .nav-item.active { background-color: #451a1a; color: #facc15; border-right-color: #facc15; }
+        .hide { display: none !important; }
+        .modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); }
+        .calc-btn { background: #f3f4f6; border-radius: 8px; padding: 15px; font-weight: bold; text-align: center; cursor: pointer; transition: 0.2s; }
+        .calc-btn:hover { background: #e5e7eb; }
+        .dark .calc-btn { background: #374151; color: white; }
+        .dark .calc-btn:hover { background: #4b5563; }
+        .calc-op { background: #facc15; color: #713f12; }
+        .dark .calc-op { background: #eab308; color: #fff; }
+        .calc-eq { background: #dc2626; color: white; grid-column: span 2; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden bg-gray-100 text-gray-800 dark:bg-darkBg dark:text-gray-200">
+
+    <div class="md:hidden flex items-center justify-between bg-white dark:bg-darkCard p-4 border-b dark:border-gray-700 z-20 absolute w-full">
+        <div class="flex items-center gap-2">
+            <img src="assets/logo.png" alt="CM Logo" class="h-8 w-8 object-contain" onerror="this.src='https://via.placeholder.com/32?text=CM'">
+            <h1 class="font-bold text-cmRed">CM Orders</h1>
+        </div>
+        <button onclick="toggleMobileMenu()" class="text-2xl"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <aside id="sidebar" class="w-64 bg-white dark:bg-darkCard border-r dark:border-gray-700 flex-col shadow-sm hidden md:flex absolute md:relative z-30 h-full transition-transform transform -translate-x-full md:translate-x-0">
+        <div class="p-5 border-b dark:border-gray-700 flex items-center gap-3 justify-between">
+            <div class="flex items-center gap-2">
+                <img src="assets/logo.png" alt="Logo" class="h-10 w-10 object-contain" onerror="this.src='https://via.placeholder.com/40?text=CM'">
+                <div>
+                    <h1 class="text-xl font-extrabold text-cmRed dark:text-cmYellow">CM Orders</h1>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold">YUMMY FOODS</p>
+                </div>
+            </div>
+            <button onclick="toggleMobileMenu()" class="md:hidden text-gray-500"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-chart-line w-5"></i> Dashboard</button>
+            <button onclick="switchTab('orders')" id="nav-orders" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-file-invoice w-5"></i> New Order</button>
+            <button onclick="switchTab('items')" id="nav-items" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-box w-5"></i> Items</button>
+            <button onclick="switchTab('customers')" id="nav-customers" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-users w-5"></i> Customers</button>
+            <button onclick="switchTab('reports')" id="nav-reports" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-chart-pie w-5"></i> Reports</button>
+            <button onclick="switchTab('calculator')" id="nav-calculator" class="nav-item w-full flex items-center gap-3 p-3 rounded-md transition"><i class="fas fa-calculator w-5"></i> Calculator</button>
+        </nav>
+        <div class="p-4 border-t dark:border-gray-700 flex justify-between gap-2">
+            <button onclick="toggleTheme()" class="flex-1 p-2 bg-gray-100 dark:bg-gray-700 rounded text-center hover:bg-gray-200 dark:hover:bg-gray-600 transition"><i class="fas fa-moon dark:hidden"></i><i class="fas fa-sun hidden dark:inline text-cmYellow"></i> Mode</button>
+            <button onclick="toggleModal('modal-info')" class="flex-1 p-2 bg-gray-100 dark:bg-gray-700 rounded text-center hover:bg-gray-200 dark:hover:bg-gray-600 transition"><i class="fas fa-info-circle text-blue-500"></i> Info</button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-y-auto mt-16 md:mt-0 w-full relative">
+        <header class="bg-white dark:bg-darkCard border-b dark:border-gray-700 p-4 hidden md:flex justify-between items-center sticky top-0 z-10">
+            <h2 id="page-title" class="text-xl font-bold text-gray-800 dark:text-white">Dashboard</h2>
+            <button onclick="fetchData()" class="text-sm bg-cmRed text-white px-4 py-2 rounded shadow hover:bg-cmRedDark transition flex items-center gap-2"><i class="fas fa-sync-alt" id="sync-icon"></i> Sync Data</button>
+        </header>
+
+        <div class="p-4 md:p-6 max-w-7xl mx-auto w-full">
+            
+            <div id="view-dashboard" class="space-y-6">
+                <div class="flex justify-end mb-2">
+                    <button onclick="exportToPDF('view-dashboard', 'CM_Dashboard')" class="px-4 py-2 border border-cmRed text-cmRed dark:text-red-400 rounded hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2 text-sm"><i class="fas fa-file-pdf"></i> Export Dashboard PDF</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-5 border-t-4 border-cmRed dark:border-cmRedDark">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
+                        <h3 class="text-3xl font-black text-cmRed dark:text-red-400" id="dash-revenue">₹ 0.00</h3>
+                    </div>
+                    <div class="glass-card p-5 border-t-4 border-cmYellow dark:border-cmYellowDark">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Total Orders</p>
+                        <h3 class="text-3xl font-black dark:text-white" id="dash-orders">0</h3>
+                    </div>
+                    <div class="glass-card p-5 border-t-4 border-blue-500">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Customers</p>
+                        <h3 class="text-3xl font-black dark:text-white" id="dash-customers">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-orders" class="hide space-y-6">
+                <div class="glass-card p-4 md:p-6" id="invoice-area">
+                    <div class="flex flex-col md:flex-row justify-between items-start mb-6 border-b dark:border-gray-700 pb-4 gap-4">
+                        <div class="flex items-center gap-3">
+                            <img src="assets/logo.png" alt="Logo" class="h-12 object-contain" onerror="this.src='https://via.placeholder.com/48?text=CM'">
+                            <div>
+                                <h2 class="text-2xl font-bold text-cmRed">YUMMY FOODS</h2>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Official Order Invoice</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2 w-full md:w-auto">
+                            <input type="date" id="order-date" class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded w-full md:w-64 text-sm outline-none focus:border-cmRed font-bold text-gray-700 dark:text-gray-200">
+                            <select id="order-customer" class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded w-full md:w-64 text-sm outline-none focus:border-cmRed font-bold">
+                                <option value="">-- Select Customer --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-4" data-html2canvas-ignore>
+                        <input type="text" id="order-search" onkeyup="filterOrderGrid()" placeholder="Search items to add..." class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 rounded mb-3 outline-none">
+                        <div id="order-item-grid" class="grid grid-cols-2 md:grid-cols-5 gap-3 max-h-60 overflow-y-auto p-1"></div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[500px]">
+                            <thead>
+                                <tr class="bg-gray-50 dark:bg-gray-800 border-y dark:border-gray-700 text-sm">
+                                    <th class="p-3">Item Description</th>
+                                    <th class="p-3 w-20 text-center">Qty</th>
+                                    <th class="p-3 text-right">Price</th>
+                                    <th class="p-3 text-right">Total</th>
+                                    <th data-html2canvas-ignore></th>
+                                </tr>
+                            </thead>
+                            <tbody id="order-list" class="text-sm"></tbody>
+                            <tfoot>
+                                <tr class="border-t dark:border-gray-700 font-bold text-lg bg-yellow-50 dark:bg-yellow-900/20 text-cmRed dark:text-cmYellow">
+                                    <td colspan="3" class="p-3 text-right">Grand Total:</td>
+                                    <td class="p-3 text-right" id="order-total">₹ 0.00</td>
+                                    <td data-html2canvas-ignore></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-3 justify-end">
+                    <button onclick="downloadImage()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 shadow flex items-center gap-2"><i class="fas fa-image"></i> JPG</button>
+                    <button onclick="exportToPDF('invoice-area', 'CM_Order')" class="px-4 py-2 border border-cmRed text-cmRed dark:text-red-400 rounded hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2"><i class="fas fa-file-pdf"></i> PDF</button>
+                    <button onclick="saveAndSendOrder()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 shadow flex items-center gap-2 font-bold"><i class="fab fa-whatsapp text-lg"></i> Save & Send</button>
+                </div>
+            </div>
+
+            <div id="view-items" class="hide glass-card" id="items-container">
+                <div class="p-4 border-b dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-3">
+                    <h3 class="font-bold text-lg">Item Database</h3>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <button onclick="exportToPDF('view-items', 'CM_Items')" class="border border-cmRed text-cmRed dark:text-red-400 px-3 py-2 rounded text-sm hover:bg-red-50 dark:hover:bg-red-900/30"><i class="fas fa-file-pdf"></i> PDF</button>
+                        <input type="text" id="search-items" onkeyup="renderItems()" placeholder="Search items..." class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded text-sm w-full md:w-48">
+                        <button onclick="toggleModal('modal-item')" class="bg-cmRed text-white px-4 py-2 rounded text-sm whitespace-nowrap"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left"><tbody id="items-table"></tbody></table>
+                </div>
+            </div>
+
+            <div id="view-customers" class="hide glass-card" id="customers-container">
+                <div class="p-4 border-b dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-3">
+                    <h3 class="font-bold text-lg">Customer Directory</h3>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <button onclick="exportToPDF('view-customers', 'CM_Customers')" class="border border-cmRed text-cmRed dark:text-red-400 px-3 py-2 rounded text-sm hover:bg-red-50 dark:hover:bg-red-900/30"><i class="fas fa-file-pdf"></i> PDF</button>
+                        <input type="text" id="search-customers" onkeyup="renderCustomers()" placeholder="Search names..." class="border dark:border-gray-600 dark:bg-gray-800 p-2 rounded text-sm w-full md:w-48">
+                        <button onclick="toggleModal('modal-customer')" class="bg-cmYellow text-black font-bold px-4 py-2 rounded text-sm whitespace-nowrap"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left"><tbody id="customers-table"></tbody></table>
+                </div>
+            </div>
+
+            <div id="view-reports" class="hide glass-card p-6" id="reports-container">
+                <div class="flex justify-between items-center mb-4 border-b dark:border-gray-700 pb-2">
+                    <h3 class="font-bold text-lg">Order Reports & Export</h3>
+                    <button onclick="exportToPDF('view-reports', 'CM_Reports')" class="border border-cmRed text-cmRed dark:text-red-400 px-3 py-2 rounded text-sm hover:bg-red-50 dark:hover:bg-red-900/30"><i class="fas fa-file-pdf"></i> Export View to PDF</button>
+                </div>
+                <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">Download a complete CSV backup of all generated orders. Can be opened in Excel.</p>
+                <button onclick="downloadCSV()" class="bg-gray-800 dark:bg-gray-600 text-white px-6 py-3 rounded shadow flex items-center gap-2 hover:bg-black transition mb-6"><i class="fas fa-file-csv text-green-400"></i> Export All Orders to CSV</button>
+                
+                <h4 class="font-bold mb-3 text-cmRed">Recent Orders Preview</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left border"><tbody id="reports-table"></tbody></table>
+                </div>
+            </div>
+
+            <div id="view-calculator" class="hide">
+                <div class="glass-card p-6 max-w-sm mx-auto bg-white dark:bg-darkCard shadow-2xl border-t-8 border-cmRed">
+                    <h3 class="text-center font-black text-cmRed mb-4 tracking-widest text-xl">CM CALCULATOR</h3>
+                    <input type="text" id="calc-display" disabled class="w-full bg-gray-100 dark:bg-gray-900 text-right text-3xl p-4 rounded mb-4 font-mono font-bold text-gray-800 dark:text-white" value="0">
+                    <div class="grid grid-cols-4 gap-2 text-xl">
+                        <div class="calc-btn text-cmRed" onclick="calcClear()">C</div>
+                        <div class="calc-btn" onclick="calcInput('/')">/</div>
+                        <div class="calc-btn" onclick="calcInput('*')">x</div>
+                        <div class="calc-btn calc-op" onclick="calcInput('-')">-</div>
+                        
+                        <div class="calc-btn" onclick="calcInput('7')">7</div>
+                        <div class="calc-btn" onclick="calcInput('8')">8</div>
+                        <div class="calc-btn" onclick="calcInput('9')">9</div>
+                        <div class="calc-btn calc-op" style="grid-row: span 2;" onclick="calcInput('+')">+</div>
+                        
+                        <div class="calc-btn" onclick="calcInput('4')">4</div>
+                        <div class="calc-btn" onclick="calcInput('5')">5</div>
+                        <div class="calc-btn" onclick="calcInput('6')">6</div>
+                        
+                        <div class="calc-btn" onclick="calcInput('1')">1</div>
+                        <div class="calc-btn" onclick="calcInput('2')">2</div>
+                        <div class="calc-btn" onclick="calcInput('3')">3</div>
+                        <div class="calc-btn calc-eq" style="grid-row: span 2;" onclick="calcCalculate()">=</div>
+                        
+                        <div class="calc-btn" style="grid-column: span 2;" onclick="calcInput('0')">0</div>
+                        <div class="calc-btn" onclick="calcInput('.')">.</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="modal-item" class="modal fixed inset-0 flex items-center justify-center hide z-50 p-4">
+        <div class="bg-white dark:bg-darkCard p-6 rounded-lg w-full max-w-md shadow-2xl border-t-4 border-cmRed">
+            <h3 class="text-lg font-bold mb-4 dark:text-white">Add New Item</h3>
+            <input type="text" id="add-item-name" placeholder="Item Name" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-3 rounded outline-none">
+            <div class="flex gap-2 mb-3">
+                <input type="number" id="add-item-buy" placeholder="Buy Price" class="w-1/2 border dark:border-gray-600 dark:bg-gray-800 p-2 rounded outline-none">
+                <input type="number" id="add-item-sell" placeholder="Sell Price" class="w-1/2 border dark:border-gray-600 dark:bg-gray-800 p-2 rounded outline-none">
+            </div>
+            <label class="block text-xs text-gray-500 mb-1">Upload Photo (JPG/PNG)</label>
+            <input type="file" id="add-item-photo" accept="image/*" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-4 rounded text-sm">
+            <div class="flex justify-end gap-2">
+                <button onclick="toggleModal('modal-item')" class="px-4 py-2 text-gray-500">Cancel</button>
+                <button onclick="submitItem()" class="px-4 py-2 bg-cmRed text-white rounded font-bold">Save Item</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-customer" class="modal fixed inset-0 flex items-center justify-center hide z-50 p-4">
+        <div class="bg-white dark:bg-darkCard p-6 rounded-lg w-full max-w-md shadow-2xl border-t-4 border-cmYellow">
+            <h3 class="text-lg font-bold mb-4 dark:text-white">Add Customer</h3>
+            <input type="text" id="add-cust-name" placeholder="Business Name" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-3 rounded outline-none">
+            <input type="text" id="add-cust-person" placeholder="Contact Person" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-3 rounded outline-none">
+            <input type="text" id="add-cust-phone" placeholder="WhatsApp (Format: 919876543210)" class="w-full border dark:border-gray-600 dark:bg-gray-800 p-2 mb-4 rounded outline-none">
+            <div class="flex justify-end gap-2">
+                <button onclick="toggleModal('modal-customer')" class="px-4 py-2 text-gray-500">Cancel</button>
+                <button onclick="submitCustomer()" class="px-4 py-2 bg-cmYellow text-black font-bold rounded">Save Customer</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-info" class="modal fixed inset-0 flex items-center justify-center hide z-50 p-4">
+        <div class="bg-white dark:bg-darkCard p-6 rounded-lg w-full max-w-sm shadow-2xl text-center">
+            <img src="assets/logo.png" alt="CM Logo" class="h-16 mx-auto mb-4" onerror="this.src='https://via.placeholder.com/64?text=CM'">
+            <h2 class="text-2xl font-black text-cmRed">CM Orders</h2>
+            <p class="text-cmYellowDark font-bold mb-4">Demo Version 2.0 (Supabase Engine)</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">A complete lightweight order management system for YUMMY FOODS. Built with PostgreSQL backend.</p>
+            <button onclick="toggleModal('modal-info')" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 rounded font-bold">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // --- SUPABASE CONFIGURATION ---
+        const SUPABASE_URL = "https://gzmodvyaxuvscemzsvrr.supabase.co"; 
+        
+        // 🔥 PASTE YOUR ANON PUBLIC API KEY HERE 🔥
+        const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY_HERE"; 
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let globalItems = [];
+        let globalCustomers = [];
+        let globalOrders = [];
+        let cart = [];
+        let calcVal = "";
+
+        // Initialization
+        window.onload = () => {
+            if(localStorage.getItem('theme') === 'dark') toggleTheme();
+            document.getElementById('order-date').valueAsDate = new Date();
+            fetchData();
+        };
+
+        // --- UI LOGIC ---
+        function switchTab(tabId) {
+            document.querySelectorAll('main > div > div').forEach(el => el.classList.add('hide'));
+            document.getElementById('view-' + tabId).classList.remove('hide');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('nav-' + tabId).classList.add('active');
+            
+            const titles = { 'dashboard': 'Dashboard', 'orders': 'Create Order', 'items': 'Item Database', 'customers': 'Customer Directory', 'reports': 'Reports & Exports', 'calculator': 'Calculator' };
+            document.getElementById('page-title').innerText = titles[tabId];
+            if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('-translate-x-full');
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebar').classList.toggle('hidden');
+        }
+
+        function toggleModal(id) {
+            document.getElementById(id).classList.toggle('hide');
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        // --- FETCH & RENDER DATA (SUPABASE) ---
+        async function fetchData() {
+            const btn = document.getElementById('sync-icon');
+            if(btn) btn.classList.add('fa-spin');
+            
+            try {
+                // Fetch in parallel
+                const [itemsRes, custRes, ordersRes] = await Promise.all([
+                    supabase.from('items').select('*').order('created_at', { ascending: false }),
+                    supabase.from('customers').select('*').order('business_name', { ascending: true }),
+                    supabase.from('orders').select('*').order('created_at', { ascending: false })
+                ]);
+
+                if(itemsRes.error) console.error("Error fetching items:", itemsRes.error);
+                if(custRes.error) console.error("Error fetching customers:", custRes.error);
+                if(ordersRes.error) console.error("Error fetching orders:", ordersRes.error);
+
+                globalItems = itemsRes.data || [];
+                globalCustomers = custRes.data || [];
+                globalOrders = ordersRes.data || [];
+
+                renderDashboard();
+                renderItems();
+                renderCustomers();
+                renderOrderGrid();
+                renderReports();
+                populateCustomerDropdown();
+            } catch (err) {
+                console.error("Sync Error:", err);
+            }
+            if(btn) btn.classList.remove('fa-spin');
+        }
+
+        function renderDashboard() {
+            document.getElementById('dash-orders').innerText = globalOrders.length;
+            document.getElementById('dash-customers').innerText = globalCustomers.length;
+            let rev = globalOrders.reduce((sum, order) => sum + Number(order.order_total || 0), 0);
+            document.getElementById('dash-revenue').innerText = `₹ ${rev.toFixed(2)}`;
+        }
+
+        function renderItems() {
+            const term = document.getElementById('search-items') ? document.getElementById('search-items').value.toLowerCase() : "";
+            const tbody = document.getElementById('items-table');
+            tbody.innerHTML = `<tr class="bg-gray-100 dark:bg-gray-800 border-b dark:border-gray-700 text-gray-600 dark:text-gray-300"><th class="p-3">Photo</th><th class="p-3">Item Name</th><th class="p-3">Buy ₹</th><th class="p-3">Sell ₹</th></tr>`;
+            
+            globalItems.filter(i => i.item_name.toLowerCase().includes(term)).forEach(item => {
+                let imgHtml = item.photo_url ? `<img src="${item.photo_url}" class="w-12 h-12 object-cover rounded shadow border">` : `<div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center"><i class="fas fa-image text-gray-400"></i></div>`;
+                tbody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"><td class="p-2">${imgHtml}</td><td class="p-3 font-bold">${item.item_name}</td><td class="p-3">₹${item.buy_price}</td><td class="p-3 font-black text-cmRed dark:text-cmYellow">₹${item.sell_price}</td></tr>`;
+            });
+        }
+
+        function renderCustomers() {
+            const term = document.getElementById('search-customers') ? document.getElementById('search-customers').value.toLowerCase() : "";
+            const tbody = document.getElementById('customers-table');
+            tbody.innerHTML = `<tr class="bg-gray-100 dark:bg-gray-800 border-b dark:border-gray-700 text-gray-600 dark:text-gray-300"><th class="p-3">Business</th><th class="p-3">Contact</th><th class="p-3">WhatsApp</th></tr>`;
+            
+            globalCustomers.filter(c => c.business_name.toLowerCase().includes(term)).forEach(c => {
+                tbody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"><td class="p-3 font-bold text-cmRed dark:text-white">${c.business_name}</td><td class="p-3">${c.contact_person}</td><td class="p-3 font-mono">${c.phone}</td></tr>`;
+            });
+        }
+
+        function renderReports() {
+            const tbody = document.getElementById('reports-table');
+            tbody.innerHTML = `<tr class="bg-gray-100 dark:bg-gray-800 border-b dark:border-gray-700 text-gray-600 dark:text-gray-300"><th class="p-3">Date</th><th class="p-3">Customer</th><th class="p-3">Total ₹</th></tr>`;
+            globalOrders.slice(0, 10).forEach(o => {
+                let d = new Date(o.order_date).toLocaleDateString();
+                tbody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"><td class="p-3">${d}</td><td class="p-3 font-bold text-cmRed dark:text-white">${o.customer_name}</td><td class="p-3 font-black text-cmYellowDark dark:text-cmYellow">₹${o.order_total}</td></tr>`;
+            });
+        }
+
+        function renderOrderGrid() {
+            const term = document.getElementById('order-search') ? document.getElementById('order-search').value.toLowerCase() : "";
+            const grid = document.getElementById('order-item-grid');
+            grid.innerHTML = '';
+            globalItems.filter(i => i.item_name.toLowerCase().includes(term)).forEach(item => {
+                let img = item.photo_url ? `<img src="${item.photo_url}" class="h-10 w-full object-cover rounded mb-1 border">` : `<div class="h-10 w-full bg-gray-100 dark:bg-gray-700 rounded mb-1 flex items-center justify-center"><i class="fas fa-cookie text-gray-400"></i></div>`;
+                grid.innerHTML += `
+                    <div class="border dark:border-gray-600 rounded-lg p-2 text-center cursor-pointer hover:border-cmRed dark:hover:border-cmYellow transition bg-white dark:bg-gray-800 shadow-sm" onclick="addToOrder('${item.item_name}', ${item.sell_price})">
+                        ${img}
+                        <h4 class="font-bold text-xs truncate dark:text-gray-200" title="${item.item_name}">${item.item_name}</h4>
+                        <p class="text-xs text-cmRed dark:text-cmYellow font-black">₹${item.sell_price}</p>
+                    </div>`;
+            });
+        }
+        function filterOrderGrid() { renderOrderGrid(); }
+
+        function populateCustomerDropdown() {
+            const select = document.getElementById('order-customer');
+            select.innerHTML = '<option value="">-- Select Customer --</option>';
+            globalCustomers.forEach(c => {
+                select.innerHTML += `<option value="${c.phone}" data-name="${c.business_name}">${c.business_name} - ${c.phone}</option>`;
+            });
+        }
+
+        // --- FORM SUBMISSIONS (SUPABASE) ---
+        async function submitItem() {
+            const btn = document.querySelector('#modal-item button.bg-cmRed');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            let photo_url = "";
+            const fileInput = document.getElementById('add-item-photo');
+            const itemName = document.getElementById('add-item-name').value;
+            const buyPrice = document.getElementById('add-item-buy').value;
+            const sellPrice = document.getElementById('add-item-sell').value;
+
+            if(fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const fileName = Date.now() + '-' + file.name;
+                
+                // Upload to Supabase Storage Bucket
+                const { data: uploadData, error: uploadError } = await supabase.storage.from('item-photos').upload(fileName, file);
+                
+                if(uploadError) {
+                    alert("Error uploading photo: " + uploadError.message);
+                } else {
+                    // Get public URL
+                    const { data } = supabase.storage.from('item-photos').getPublicUrl(fileName);
+                    photo_url = data.publicUrl;
+                }
+            }
+
+            // Insert into Database Table
+            const { error } = await supabase.from('items').insert([
+                { item_name: itemName, buy_price: buyPrice, sell_price: sellPrice, photo_url: photo_url }
+            ]);
+
+            if(error) alert("Error saving item: " + error.message);
+
+            btn.innerHTML = 'Save Item';
+            toggleModal('modal-item');
+            document.getElementById('add-item-name').value = '';
+            document.getElementById('add-item-buy').value = '';
+            document.getElementById('add-item-sell').value = '';
+            fileInput.value = '';
+            fetchData();
+        }
+
+        async function submitCustomer() {
+            const btn = document.querySelector('#modal-customer button.bg-cmYellow');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            const bName = document.getElementById('add-cust-name').value;
+            const cPerson = document.getElementById('add-cust-person').value;
+            const phone = document.getElementById('add-cust-phone').value;
+
+            const { error } = await supabase.from('customers').insert([
+                { business_name: bName, contact_person: cPerson, phone: phone }
+            ]);
+
+            if(error) alert("Error saving customer: " + error.message);
+
+            btn.innerHTML = 'Save Customer';
+            toggleModal('modal-customer');
+            document.getElementById('add-cust-name').value = '';
+            document.getElementById('add-cust-person').value = '';
+            document.getElementById('add-cust-phone').value = '';
+            fetchData();
+        }
+
+        // --- ORDER & CART LOGIC ---
+        function addToOrder(name, price) {
+            const existing = cart.find(i => i.name === name);
+            if(existing) existing.qty++;
+            else cart.push({ name, price, qty: 1 });
+            renderCart();
+        }
+
+        function renderCart() {
+            const tbody = document.getElementById('order-list');
+            tbody.innerHTML = '';
+            let total = 0;
+            cart.forEach((item, i) => {
+                let lineTotal = item.qty * item.price;
+                total += lineTotal;
+                tbody.innerHTML += `
+                    <tr class="border-b dark:border-gray-700">
+                        <td class="p-3 font-bold">${item.name}</td>
+                        <td class="p-3 text-center"><input type="number" min="1" value="${item.qty}" onchange="cart[${i}].qty=this.value; renderCart()" class="w-16 border dark:border-gray-600 dark:bg-gray-800 p-1 text-center rounded outline-none font-bold" data-html2canvas-ignore="true"><span class="hidden" data-html2canvas-show="true">${item.qty}</span></td>
+                        <td class="p-3 text-right">₹${item.price}</td>
+                        <td class="p-3 text-right font-black text-cmRed dark:text-cmYellow">₹${lineTotal.toFixed(2)}</td>
+                        <td class="p-3 text-red-500 cursor-pointer text-center" onclick="cart.splice(${i},1); renderCart()" data-html2canvas-ignore><i class="fas fa-trash-alt"></i></td>
+                    </tr>`;
+            });
+            document.getElementById('order-total').innerText = `₹ ${total.toFixed(2)}`;
+            return total;
+        }
+
+        async function saveAndSendOrder() {
+            const sel = document.getElementById('order-customer');
+            if(!sel.value) return alert("Please select a customer.");
+            if(!cart.length) return alert("Add items to the order.");
+
+            let total = renderCart();
+            let custName = sel.options[sel.selectedIndex].getAttribute('data-name');
+            let phone = sel.value;
+            let orderDate = document.getElementById('order-date').value;
+            let formattedDate = orderDate ? new Date(orderDate).toLocaleDateString() : new Date().toLocaleDateString();
+            
+            let details = cart.map(i => `${i.name} x${i.qty}`).join(", ");
+
+            // Save to Supabase
+            const { error } = await supabase.from('orders').insert([
+                { customer_name: custName, customer_phone: phone, order_total: total, order_details: details, order_date: orderDate }
+            ]);
+
+            if(error) {
+                alert("Error saving order: " + error.message);
+                return;
+            }
+            
+            // Format WhatsApp Message
+            let msg = `*CM Orders - YUMMY FOODS*\n_Order Estimate_\n\n*Date:* ${formattedDate}\n*Customer:* ${custName}\n\n*Items:*\n`;
+            cart.forEach(i => { msg += `▪ ${i.name} (x${i.qty}) - ₹${i.qty*i.price}\n`; });
+            msg += `\n*Grand Total: ₹${total.toFixed(2)}*`;
+            
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+            cart = [];
+            sel.value = "";
+            renderCart();
+            fetchData();
+        }
+
+        // --- EXPORTS ---
+        function exportToPDF(elementId, filename) {
+            const element = document.getElementById(elementId);
+            const opt = { 
+                margin: 0.3, 
+                filename: filename + '.pdf', 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 2, useCORS: true }, // Added useCORS to fix image loading in PDFs 
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } 
+            };
+            html2pdf().set(opt).from(element).save(); 
+        }
+
+        function downloadImage() {
+            html2canvas(document.getElementById('invoice-area'), { useCORS: true }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = 'CM_Order.jpg';
+                link.href = canvas.toDataURL('image/jpeg');
+                link.click();
+            });
+        }
+
+        function downloadCSV() {
+            if(!globalOrders.length) return alert("No orders to export.");
+            let csv = "Date,Customer Name,Phone,Order Total,Details\n";
+            globalOrders.forEach(o => {
+                let date = new Date(o.order_date).toLocaleDateString();
+                let details = `"${(o.order_details||"").replace(/"/g, '""')}"`;
+                csv += `${date},${o.customer_name},${o.customer_phone},${o.order_total},${details}\n`;
+            });
+            let blob = new Blob([csv], { type: 'text/csv' });
+            let url = window.URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'CM_Orders_Report.csv');
+            a.click();
+        }
+
+        // --- CALCULATOR LOGIC ---
+        function calcInput(char) {
+            if(calcVal === "0" && char !== '.') calcVal = "";
+            calcVal += char;
+            document.getElementById('calc-display').value = calcVal;
+        }
+        function calcClear() {
+            calcVal = "0";
+            document.getElementById('calc-display').value = calcVal;
+        }
+        function calcCalculate() {
+            try { calcVal = eval(calcVal).toString(); } catch(e) { calcVal = "Error"; }
+            document.getElementById('calc-display').value = calcVal;
+        }
+    </script>
+</body>
+</html>
