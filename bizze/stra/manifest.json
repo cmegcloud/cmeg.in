@@ -1,0 +1,21 @@
+{
+  "name": "Bizze Clinic Management System",
+  "short_name": "Bizze",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#5b84e3",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "assets/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
