@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Data - Bizze</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="top-nav">
+            <button class="icon-btn back-btn" onclick="history.back()">←</button>
+            <h2 class="main-heading" style="margin: 0; font-size: 20px;">Export Data</h2>
+        </header>
+
+        <main>
+            <section class="export-section" style="background: var(--white); padding: 20px; border-radius: var(--card-radius); box-shadow: 0 2px 15px rgba(0,0,0,0.03);">
+                <div class="section-header" style="margin-bottom: 20px;">
+                    <h3>Download CSV Reports</h3>
+                    <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Select a module to export its full data history.</p>
+                </div>
+
+                <div class="export-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <button class="btn-primary-ghost export-btn" data-collection="patients" style="padding: 15px; border: 1px solid #edf1f7;">🩺 Patients</button>
+                    <button class="btn-primary-ghost export-btn" data-collection="appointments" style="padding: 15px; border: 1px solid #edf1f7;">📅 Appointments</button>
+                    <button class="btn-primary-ghost export-btn" data-collection="transactions" style="padding: 15px; border: 1px solid #edf1f7;">💳 Transactions</button>
+                    <button class="btn-primary-ghost export-btn" data-collection="attendance" style="padding: 15px; border: 1px solid #edf1f7;">⏱️ Attendance</button>
+                    <button class="btn-primary-ghost export-btn" data-collection="staff" style="padding: 15px; border: 1px solid #edf1f7;">👥 Staff</button>
+                    <button class="btn-primary-ghost export-btn" data-collection="therapists" style="padding: 15px; border: 1px solid #edf1f7;">👨‍⚕️ Therapists</button>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script type="module" src="export.js"></script>
+</body>
+</html>
