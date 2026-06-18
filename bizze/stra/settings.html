@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Bizze</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="top-nav">
+            <button class="icon-btn back-btn" onclick="window.location.href='index.html'">←</button>
+            <h2 class="main-heading" style="margin: 0; font-size: 20px;">Settings</h2>
+        </header>
+
+        <main style="display: flex; flex-direction: column; gap: 20px;">
+            <section class="settings-nav" style="background: var(--white); padding: 15px; border-radius: var(--card-radius); box-shadow: 0 2px 15px rgba(0,0,0,0.03); overflow-x: auto; white-space: nowrap;">
+                <div class="category-pills" style="margin-bottom: 0; padding-bottom: 0;">
+                    <button class="pill active" data-target="company-settings">Company</button>
+                    <button class="pill" data-target="branches-settings">Branches</button>
+                    <button class="pill" data-target="staff-settings">Staff & Roles</button>
+                    <button class="pill" data-target="finance-settings">Banks & Ledgers</button>
+                    <button class="pill" data-target="licence-settings">Licence</button>
+                </div>
+            </section>
+
+            <section id="company-settings" class="settings-panel" style="background: var(--white); padding: 20px; border-radius: var(--card-radius); box-shadow: 0 2px 15px rgba(0,0,0,0.03);">
+                <div class="section-header" style="margin-bottom: 20px;">
+                    <h3>Company Profile</h3>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="font-size: 12px; color: var(--text-light);">Clinic Name</label>
+                    <input type="text" id="setting-company-name" placeholder="Stra Care" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #edf1f7;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="font-size: 12px; color: var(--text-light);">Support Email</label>
+                    <input type="email" id="setting-company-email" placeholder="bizze.app@cmfilings.com" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #edf1f7;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="font-size: 12px; color: var(--text-light);">Address</label>
+                    <textarea id="setting-company-address" rows="3" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #edf1f7; resize: none;"></textarea>
+                </div>
+
+                <button class="btn-primary-large" id="save-company-btn" style="width: 100%; padding: 15px; margin-top: 10px;">Save Changes</button>
+            </section>
+
+            <section id="branches-settings" class="settings-panel" style="display: none; background: var(--white); padding: 20px; border-radius: var(--card-radius);">
+                <p style="color: var(--text-light); text-align: center;">Branch configuration interface will load here.</p>
+            </section>
+        </main>
+    </div>
+    
+    <script type="module" src="settings.js"></script>
+</body>
+</html>
