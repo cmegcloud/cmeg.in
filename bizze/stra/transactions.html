@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions - Bizze</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="top-nav">
+            <button class="icon-btn back-btn" onclick="history.back()">←</button>
+            <h2 class="main-heading" style="margin: 0; font-size: 20px;">New Transaction</h2>
+        </header>
+
+        <main>
+            <section class="transaction-form-section" style="background: var(--white); padding: 20px; border-radius: var(--card-radius); box-shadow: 0 2px 15px rgba(0,0,0,0.03);">
+                
+                <div class="section-header">
+                    <span id="transaction-id-badge" class="pill active">TRN: Auto-generating...</span>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="font-size: 12px; color: var(--text-light);">Voucher Type</label>
+                    <select id="voucher-type" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #edf1f7; background: var(--white);">
+                        <option value="Receipt">Receipt</option>
+                        <option value="Payment">Payment</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Purchase">Purchase</option>
+                        <option value="Journal">Journal</option>
+                        <option value="Contra">Contra</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label style="font-size: 12px; color: var(--text-light);">Ledger In</label>
+                        <select id="ledger-in" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #edf1f7; background: var(--white);">
+                            <option value="">Select Ledger...</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Bank">Bank Account</option>
+                            <option value="Patient Account">Patient Account</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label style="font-size: 12px; color: var(--text-light);">Ledger Out</label>
+                        <select id="ledger-out" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #edf1f7; background: var(--white);">
+                            <option value="">Select Ledger...</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Bank">Bank Account</option>
+                            <option value="Sales Account">Sales Account</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="font-size: 12px; color: var(--text-light);">Amount (₹)</label>
+                    <input type="number" id="transaction-amount" placeholder="0.00" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #edf1f7;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 25px;">
+                    <label style="font-size: 12px; color: var(--text-light);">Narration</label>
+                    <textarea id="transaction-narration" rows="3" placeholder="Enter transaction details..." style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #edf1f7; resize: none;"></textarea>
+                </div>
+
+                <button class="btn-primary-large" id="save-transaction-btn" style="width: 100%; padding: 15px;">Save Transaction</button>
+            </section>
+        </main>
+    </div>
+    
+    <script type="module" src="transactions.js"></script>
+</body>
+</html>
