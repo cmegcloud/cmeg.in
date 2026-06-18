@@ -4,6 +4,137 @@ import { db } from './firebase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     
+
+// --- 5. DONUT CHART (Today's Summary) ---
+const ctx = document.getElementById('appointmentDonutChart');
+if (ctx) {
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'Confirmed', 'Completed', 'Cancelled'],
+            datasets: [{
+                data: [4, 8, 12, 2], // Mock data: Replace with Firebase query counts
+                backgroundColor: [
+                    '#8c93a1', // Pending (Gray)
+                    '#5b84e3', // Confirmed (Blue)
+                    '#52c41a', // Completed (Green)
+                    '#ff4d4f'  // Cancelled (Red)
+                ],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        usePointStyle: true,
+                        boxWidth: 8,
+                        font: { size: 11, family: 'sans-serif' }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// --- 6. CALENDAR VIEW (Monthly) ---
+const calendarGrid = document.getElementById('calendar-grid');
+const calendarTitle = document.getElementById('calendar-month-title');
+
+if (calendarGrid) {
+    let currentDate = new Date();
+
+    function renderCalendar(date) {
+        calendarGrid.innerHTML = '';
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        
+        // Update Title
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        calendarTitle.innerText = `${monthNames[month]} ${year}`;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // Mock data for appointment counts per day (e.g., 15 Jun (12))
+        const mockCounts = {
+            15: 12,
+            16: 9,
+            17: 14,
+            24: 8
+        };
+
+        // Fill empty slots before the 1st of the month
+        for (let i = 0; i < firstDay; i++) {
+            const emptyDiv = document.createElement('div');
+            calendarGrid.appendChild(emptyDiv);
+        }
+
+        // Fill days
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.style.padding = "10px 0";
+            dayDiv.style.textAlign = "center";
+            dayDiv.style.borderRadius = "8px";
+            dayDiv.style.cursor = "pointer";
+            dayDiv.style.border = "1px solid #edf1f7";
+            dayDiv.style.display = "flex";
+            dayDiv.style.flexDirection = "column";
+            dayDiv.style.alignItems = "center";
+            dayDiv.style.justifyContent = "center";
+            dayDiv.style.minHeight = "45px";
+
+            // Highlight today
+            const today = new Date();
+            if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                dayDiv.style.background = "var(--primary-blue)";
+                dayDiv.style.color = "var(--white)";
+                dayDiv.style.borderColor = "var(--primary-blue)";
+            } else {
+                dayDiv.style.background = "var(--white)";
+            }
+
+            let dayHtml = `<span style="font-size: 13px; font-weight: 500;">${i}</span>`;
+            
+            // Add appointment count badge if data exists
+            if (mockCounts[i]) {
+                const badgeColor = dayDiv.style.background === "var(--primary-blue)" ? "rgba(255,255,255,0.3)" : "#edf1f7";
+                const textColor = dayDiv.style.background === "var(--primary-blue)" ? "var(--white)" : "var(--primary-blue)";
+                dayHtml += `<span style="font-size: 9px; font-weight: bold; background: ${badgeColor}; color: ${textColor}; padding: 2px 6px; border-radius: 10px; margin-top: 3px;">${mockCounts[i]}</span>`;
+            }
+
+            dayDiv.innerHTML = dayHtml;
+
+            // Click Day -> Open Appointment List
+            dayDiv.addEventListener('click', () => {
+                alert(`Opening appointment list for ${i} ${monthNames[month]} ${year}.`);
+                // In production: Redirect or filter the Live Board query by this specific date
+            });
+
+            calendarGrid.appendChild(dayDiv);
+        }
+    }
+
+    // Initialize Calendar
+    renderCalendar(currentDate);
+
+    // Navigation Listeners
+    document.getElementById('prev-month')?.addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar(currentDate);
+    });
+
+    document.getElementById('next-month')?.addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar(currentDate);
+    });
+}
+
     // --- 1. SESSION & ROLE VERIFICATION ---
     const isLoggedIn = sessionStorage.getItem("isLoggedIn");
     const userRole = sessionStorage.getItem("userRole");
