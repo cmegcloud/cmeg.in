@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Bizze</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="top-nav">
+            <button class="icon-btn back-btn" onclick="history.back()">←</button>
+            <button class="icon-btn share-btn">🔗</button>
+        </header>
+
+        <section class="doctor-profile-header">
+            <div class="doc-header-text">
+                <div class="rating-badge">⭐ 4.9</div>
+                <h1 class="main-heading">Dr. Name<br>Here</h1>
+                <p class="sub-text">Cardiology</p>
+            </div>
+            <img src="https://via.placeholder.com/150" alt="Doctor" class="doc-hero-pic">
+        </section>
+
+        <div class="booking-sheet">
+            <section class="selection-section">
+                <div class="section-header">
+                    <h3>Select Date</h3>
+                    <div class="month-selector">
+                        <button class="nav-arrow">⟨</button>
+                        <span>November 2025</span>
+                        <button class="nav-arrow">⟩</button>
+                    </div>
+                </div>
+                <div class="date-carousel">
+                    <button class="date-pill"><span>Sun</span><strong>22</strong></button>
+                    <button class="date-pill"><span>Mon</span><strong>23</strong></button>
+                    <button class="date-pill active"><span>Tue</span><strong>24</strong></button>
+                    <button class="date-pill"><span>Wed</span><strong>25</strong></button>
+                    <button class="date-pill"><span>Thu</span><strong>26</strong></button>
+                    <button class="date-pill"><span>Fri</span><strong>27</strong></button>
+                    <button class="date-pill"><span>Sat</span><strong>28</strong></button>
+                </div>
+            </section>
+
+            <section class="selection-section">
+                <div class="section-header">
+                    <h3>Select Time</h3>
+                    <div class="slot-count">
+                        <button class="nav-arrow">⟨</button>
+                        <span>8 Slots</span>
+                        <button class="nav-arrow">⟩</button>
+                    </div>
+                </div>
+                <div class="time-grid">
+                    <button class="time-pill">8:00 AM</button>
+                    <button class="time-pill active">9:30 AM</button>
+                    <button class="time-pill">10:00 AM</button>
+                    <button class="time-pill">10:30 AM</button>
+                    <button class="time-pill">11:00 AM</button>
+                    <button class="time-pill">11:30 AM</button>
+                    <button class="time-pill">12:00 PM</button>
+                    <button class="time-pill">12:30 PM</button>
+                    <button class="time-pill">2:00 PM</button>
+                </div>
+            </section>
+
+            <div class="bottom-action-bar">
+                <button class="icon-btn chat-btn">💬</button>
+                <button class="btn-primary-large" id="book-btn">Book an Appointment</button>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module" src="booking.js"></script>
+</body>
+</html>
