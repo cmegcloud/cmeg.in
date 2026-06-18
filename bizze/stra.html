@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>bizze - STRA CARE</title>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1E3A8A">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root { --primary: #3B82F6; --primary-hover: #2563EB; --secondary: #1E3A8A; --accent: #EF4444; --bg: #F0F4F8; --surface: #FFFFFF; --text-main: #0F172A; --text-muted: #64748B; --border: #E2E8F0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); padding-bottom: 90px; color: var(--text-main); }
+        .hide { display: none !important; }
+
+        #splash-screen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--secondary), var(--primary)); z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
+        .splash-logo { width: auto; max-width: 80%; max-height: 100px; object-fit: contain; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        #login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-card { background: var(--surface); width: 100%; max-width: 400px; border-radius: 20px; padding: 40px 24px; box-shadow: 0 15px 35px rgba(30, 58, 138, 0.1); text-align: center; border: 1px solid var(--border); }
+
+        .header { height: 65px; background: linear-gradient(135deg, #172554, #3B82F6); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2); }
+        
+        .menu-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); z-index: 1000; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(2px); }
+        .menu-overlay.active { opacity: 1; pointer-events: auto; }
+        .side-menu { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: var(--surface); z-index: 1001; transition: 0.3s; display: flex; flex-direction: column; }
+        .side-menu.active { left: 0; }
+        .side-nav-item { padding: 16px 24px; display: flex; align-items: center; gap: 16px; color: var(--text-main); font-weight: 600; font-size: 14px; border-left: 4px solid transparent; cursor: pointer; }
+        .side-nav-item.active { background: #EFF6FF; color: var(--primary); border-left-color: var(--primary); }
+        .side-nav-item i { width: 24px; text-align: center; color: var(--text-muted); }
+        .side-nav-item.active i { color: var(--primary); }
+
+        .corp-card { background: var(--surface); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05); border: 1px solid var(--border); margin-bottom: 16px; }
+        .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px;}
+        .quick-card { background: var(--surface); padding: 12px 8px; border-radius: 12px; text-align: center; border: 1px solid var(--border); cursor: pointer; }
+        .icon-circle { width: 44px; height: 44px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: auto; margin-bottom: 8px; color: white; }
+        .list-card { background: var(--surface); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); }
+
+        .corp-input { width: 100%; background: #F8FAFC; border: 1px solid var(--border); padding: 14px 16px; border-radius: 8px; margin-bottom: 12px; font-size: 14px; outline: none; font-weight: 500; color: var(--text-main); }
+        .btn-primary { width: 100%; padding: 14px; border: none; border-radius: 8px; background: var(--primary); color: #FFFFFF; font-size: 15px; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; }
+        .action-btn { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; border: none; cursor: pointer;}
+        .btn-call { background: #DCFCE7; color: #16A34A; }
+        .btn-edit { background: #F1F5F9; color: var(--secondary); }
+        .btn-delete { background: #FEE2E2; color: var(--accent); }
+        
+        #view-calculator { height: calc(100vh - 65px - 70px); display: flex; flex-direction: column; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; flex: 1; padding: 16px; background: var(--surface); border-radius: 12px; }
+        .calc-btn { background: #F8FAFC; border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; color: var(--text-main); cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .calc-btn:active { transform: scale(0.95); }
+        .calc-op { background: var(--primary); color: white; border-color: var(--primary); }
+        .calc-eq { background: var(--secondary); color: white; border-color: var(--secondary); grid-column: span 2; }
+        .calc-clear { background: var(--accent); color: white; border-color: var(--accent); }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); }
+        .modal-content { background: var(--surface); width: 100%; max-height: 90vh; overflow-y: auto; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--border); z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; font-weight: 600; color: var(--text-muted); background: none; border: none; cursor: pointer; flex: 1;}
+        .nav-item.active { color: var(--primary); }
+        .fab { width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 24px; margin-top: -20px; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); border: none; cursor: pointer; }
+
+        .table-responsive { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 16px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; background: #F8FAFC; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        td { padding: 12px; font-size: 14px; border-bottom: 1px solid var(--border); }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+
+        /* A4 Print Styles */
+        .a4-print { background: white; width: 800px; max-width: 100%; padding: 40px; box-sizing: border-box; color: black; font-family: 'Inter', sans-serif; }
+        .a4-header { display: flex; justify-content: space-between; border-bottom: 3px solid var(--secondary); padding-bottom: 20px; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+    <!-- SPLASH SCREEN -->
+    <div id="splash-screen"><img src="assets/name.png" class="splash-logo" onerror="this.style.display='none';"></div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="hide">
+        <div class="login-card">
+            <img src="assets/name.png" style="height: 30px; object-fit: contain; margin-bottom: 30px; filter: brightness(0) invert(0.15) sepia(1) hue-rotate(200deg) saturate(200%);" onerror="this.style.display='none';">
+            <h2 style="font-size: 18px; color: var(--secondary); margin-bottom: 20px;">Sign in to your account</h2>
+            
+            <select id="login-role" class="corp-input" style="font-weight: 700; color: var(--primary);">
+                <option value="Admin">Admin (Full Access)</option>
+                <option value="B1 Mahe">Branch: B1 Mahe</option>
+                <option value="B2 Chokli">Branch: B2 Chokli</option>
+                <option value="B3 Panoor">Branch: B3 Panoor</option>
+                <option value="B4 Koothuparamba">Branch: B4 Koothuparamba (Head)</option>
+                <option value="B5 Nadapuram">Branch: B5 Nadapuram</option>
+                <option value="B6 Home Care">Branch: B6 Home Care</option>
+            </select>
+
+            <input type="email" id="login-email" class="corp-input" placeholder="Email Address">
+            <input type="password" id="login-pass" class="corp-input" placeholder="Password">
+            <button onclick="handleLogin()" id="btn-login" class="btn-primary">Login <i class="fa-solid fa-arrow-right-to-bracket"></i></button>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="main-app" class="hide">
+        <div class="header">
+            <div class="left-head">
+                <button onclick="toggleMenu()" style="background:none; border:none; color:white; font-size: 22px; cursor: pointer; padding-right: 10px;"><i class="fa-solid fa-bars"></i></button>
+                <img src="assets/name.png" style="height: 30px; object-fit: contain;" onerror="this.style.display='none';">
+            </div>
+            <div class="right-head">
+                <button onclick="fetchData()" style="background:none; border:none; color:inherit; cursor: pointer;"><i class="fa-solid fa-arrows-rotate" id="sync-icon"></i></button>
+            </div>
+        </div>
+
+        <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+        <div class="side-menu" id="side-menu">
+            <div style="background: linear-gradient(135deg, #172554, #3B82F6); padding: 30px 20px; color: white;">
+                <img src="assets/name.png" style="height: 36px; object-fit: contain; margin-bottom: 10px;" onerror="this.style.display='none';">
+                <p style="font-size: 12px; opacity: 0.9; font-weight: 500;">Logged in as: <strong id="menu-role-disp">Admin</strong></p>
+            </div>
+            <div class="side-menu-links">
+                <div class="side-nav-item active" onclick="switchTab('dashboard'); toggleMenu();"><i class="fa-solid fa-house"></i> Dashboard</div>
+                <div class="side-nav-item" onclick="switchTab('appointments'); toggleMenu();"><i class="fa-solid fa-calendar-check"></i> Appointments</div>
+                <div class="side-nav-item" onclick="switchTab('patients'); toggleMenu();"><i class="fa-solid fa-hospital-user"></i> Patients</div>
+                <div class="side-nav-item" onclick="switchTab('therapists'); toggleMenu();"><i class="fa-solid fa-user-doctor"></i> Staff / Therapists</div>
+                <div class="side-nav-item" onclick="switchTab('attendance'); toggleMenu();"><i class="fa-solid fa-clipboard-user"></i> Attendance</div>
+                <div class="side-nav-item" onclick="switchTab('transactions'); toggleMenu();"><i class="fa-solid fa-file-invoice-dollar"></i> Transactions</div>
+                <div class="side-nav-item" onclick="switchTab('letterhead'); toggleMenu();"><i class="fa-solid fa-file-lines"></i> Letterhead Maker</div>
+                <div class="side-nav-item" onclick="switchTab('calculator'); toggleMenu();"><i class="fa-solid fa-calculator"></i> CM Cals</div>
+                
+                <!-- Admin Only Setup -->
+                <div id="nav-setup-opt" class="side-nav-item" onclick="switchTab('setup'); toggleMenu();" style="border-top: 1px solid var(--border); margin-top: 10px; padding-top: 20px;"><i class="fa-solid fa-gear"></i> App Setup</div>
+            </div>
+            <div style="padding: 20px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px;">
+                <button onclick="toggleModal('modal-info'); toggleMenu();" class="btn-primary" style="background: var(--bg); color: var(--text-main); box-shadow: none;"><i class="fa-solid fa-circle-info"></i> App Info</button>
+                <button onclick="handleLogout()" class="btn-primary" style="background: #FEE2E2; color: var(--accent); box-shadow: none;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+            </div>
+        </div>
+
+        <main id="app-content" style="padding: 16px;">
+            
+            <!-- DASHBOARD -->
+            <div id="view-dashboard" class="section" style="padding:0; margin:0;">
+                <div class="corp-card" style="background: var(--secondary); color: white;">
+                    <h4 class="comp-name-disp" style="color: #93C5FD; font-size: 13px; margin-bottom: 4px;">STRA CARE</h4>
+                    <h1 style="font-size: 28px; margin-bottom: 16px;">Overview <span id="dash-branch-name" style="font-size:14px; opacity:0.8;"></span></h1>
+                    <div style="display: flex; gap: 12px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px;">
+                        <div style="flex: 1;">
+                            <span style="font-size: 12px; color: #93C5FD;">Today's Appts</span>
+                            <h3 id="dash-today-appts" style="font-size: 24px;">0</h3>
+                        </div>
+                        <div style="flex: 1;">
+                            <span style="font-size: 12px; color: #93C5FD;">Total Patients</span>
+                            <h3 id="dash-tot-patients" style="font-size: 24px;">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="quick-grid">
+                    <div class="quick-card" onclick="switchTab('appointments')"><div class="icon-circle"><i class="fa-solid fa-calendar-plus"></i></div><span>Book</span></div>
+                    <div class="quick-card" onclick="switchTab('patients')"><div class="icon-circle"><i class="fa-solid fa-hospital-user"></i></div><span>Patients</span></div>
+                    <div class="quick-card" onclick="switchTab('transactions')"><div class="icon-circle"><i class="fa-solid fa-indian-rupee-sign"></i></div><span>Voucher</span></div>
+                    <div class="quick-card" onclick="switchTab('calculator')"><div class="icon-circle"><i class="fa-solid fa-calculator"></i></div><span>Calc</span></div>
+                </div>
+                
+                <h3 style="font-size: 16px; color: var(--secondary); margin-bottom: 12px;">Live Appointments (Today)</h3>
+                <div id="dash-live-appts"></div>
+            </div>
+
+            <!-- APPOINTMENTS -->
+            <div id="view-appointments" class="hide section" style="padding:0; margin:0;">
+                <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+                    <input type="date" id="filter-apt-date" class="corp-input" style="flex:1; margin:0;" onchange="renderAppointments()">
+                    <input type="text" id="filter-apt-mob" class="corp-input" style="flex:1; margin:0;" placeholder="Search Mobile/Name..." onkeyup="renderAppointments()">
+                    <!-- Hidden for Branch users, populated for Admin -->
+                    <select id="filter-apt-branch" class="corp-input" style="width:100%; margin-top:8px;" onchange="renderAppointments()">
+                        <option value="All">All Branches</option>
+                        <option value="B1 Mahe">B1 Mahe</option><option value="B2 Chokli">B2 Chokli</option><option value="B3 Panoor">B3 Panoor</option>
+                        <option value="B4 Koothuparamba">B4 Koothuparamba (Head)</option><option value="B5 Nadapuram">B5 Nadapuram</option><option value="B6 Home Care">B6 Home Care</option>
+                    </select>
+                </div>
+                <button onclick="openApptModal()" class="btn-primary" style="margin-bottom: 16px;"><i class="fa-solid fa-plus"></i> New Appointment</button>
+                <div id="appointments-list"></div>
+            </div>
+
+            <!-- PATIENTS DICTIONARY -->
+            <div id="view-patients" class="hide section" style="padding:0; margin:0;">
+                <input type="text" id="filter-pat-mob" class="corp-input" placeholder="Search Patient by Mobile or Name..." onkeyup="renderPatients()">
+                <div id="patients-list"></div>
+            </div>
+
+            <!-- THERAPISTS -->
+            <div id="view-therapists" class="hide section" style="padding:0; margin:0;">
+                <button onclick="openTherapistModal()" class="btn-primary" style="margin-bottom: 16px;"><i class="fa-solid fa-plus"></i> Add Staff/Therapist</button>
+                <div id="therapists-list"></div>
+            </div>
+
+            <!-- ATTENDANCE -->
+            <div id="view-attendance" class="hide section" style="padding:0; margin:0;">
+                <div class="corp-card">
+                    <h3 style="color: var(--secondary); margin-bottom: 16px;">Daily Attendance</h3>
+                    <input type="date" id="att-date" class="corp-input" onchange="loadAttendance()">
+                    <select id="att-branch" class="corp-input" onchange="loadAttendance()">
+                        <option value="All">All Branches</option>
+                        <option value="B1 Mahe">B1 Mahe</option><option value="B2 Chokli">B2 Chokli</option><option value="B3 Panoor">B3 Panoor</option>
+                        <option value="B4 Koothuparamba">B4 Koothuparamba</option><option value="B5 Nadapuram">B5 Nadapuram</option><option value="B6 Home Care">B6 Home Care</option>
+                    </select>
+                    <div class="table-responsive"><table id="att-table"><thead><tr><th>Therapist</th><th>Status</th></tr></thead><tbody id="att-tbody"></tbody></table></div>
+                    <button onclick="saveAttendance()" class="btn-primary"><i class="fa-solid fa-check"></i> Save Attendance</button>
+                </div>
+            </div>
+
+            <!-- TRANSACTIONS -->
+            <div id="view-transactions" class="hide section" style="padding:0; margin:0;">
+                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                    <button onclick="openVoucherModal()" class="btn-primary"><i class="fa-solid fa-plus"></i> Add Voucher</button>
+                    <button onclick="exportToPDF('tx-export', 'Financial_Report')" class="btn-primary" style="background:var(--secondary); width:56px;"><i class="fa-solid fa-file-pdf"></i></button>
+                </div>
+                <div id="tx-export" style="background:white; padding:10px; border-radius:8px;">
+                    <div class="pdf-export-header hide" data-html2canvas-show="true">
+                        <div style="display:flex; align-items:center; gap:10px;"><img class="comp-logo-img" src="" style="height:40px; display:none;"><h2 class="comp-name-disp" style="color:var(--secondary);"></h2></div>
+                        <h3 style="color:var(--primary); font-size:14px;">Ledger Report</h3>
+                    </div>
+                    <div class="table-responsive"><table id="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Desc</th><th>Amount</th></tr></thead><tbody id="tx-tbody"></tbody></table></div>
+                    <div class="hide" data-html2canvas-show="true" style="text-align:center; font-size:10px; color:var(--text-muted); margin-top:20px;">GENERATED BY BIZZE</div>
+                </div>
+            </div>
+
+            <!-- ESTIMATE / A4 GENERATOR (Hidden Template for PDF) -->
+            <div id="estimate-export" class="hide a4-print">
+                <div class="a4-header">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <img class="comp-logo-img" src="" style="height:60px; display:none;">
+                        <div>
+                            <h1 class="comp-name-disp" style="color:var(--secondary); font-size:28px; margin:0;">STRA CARE</h1>
+                            <p class="comp-tagline-disp" style="color:var(--primary); font-weight:600; font-size:14px; margin:0;">Rebuild Your Health</p>
+                        </div>
+                    </div>
+                    <div style="text-align:right; font-size:12px; color:var(--text-main); line-height:1.6;">
+                        <strong class="comp-phone-disp"></strong><br>
+                        <span class="comp-email-disp"></span><br>
+                        <span class="comp-web-disp"></span>
+                    </div>
+                </div>
+                <h2 style="text-align:center; color:var(--secondary); margin-bottom:30px; font-size:22px; text-transform:uppercase; letter-spacing:1px;">Estimate / Receipt</h2>
+                
+                <div style="display:flex; justify-content:space-between; margin-bottom:30px; font-size:14px; line-height:1.6;">
+                    <div>
+                        <strong>Patient Name:</strong> <span id="est-pname"></span><br>
+                        <strong>Mobile:</strong> <span id="est-pmob"></span><br>
+                        <strong>Age/Gender:</strong> <span id="est-pagegen"></span>
+                    </div>
+                    <div style="text-align:right;">
+                        <strong>Date:</strong> <span id="est-date"></span><br>
+                        <strong>Branch:</strong> <span id="est-branch"></span><br>
+                        <strong>Therapist:</strong> <span id="est-therapist"></span>
+                    </div>
+                </div>
+
+                <table style="width:100%; border-collapse:collapse; margin-bottom:40px;">
+                    <thead><tr style="background:var(--bg); border-bottom:2px solid var(--secondary);"><th style="padding:12px; text-align:left;">Description</th><th style="padding:12px; text-align:right;">Amount (₹)</th></tr></thead>
+                    <tbody>
+                        <tr><td style="padding:16px 12px; border-bottom:1px solid var(--border);">Consultation / Therapy Session Fee</td><td style="padding:16px 12px; border-bottom:1px solid var(--border); text-align:right;" id="est-fee">0</td></tr>
+                        <tr><td style="padding:16px 12px; border-bottom:1px solid var(--border);">Advance Received</td><td style="padding:16px 12px; border-bottom:1px solid var(--border); text-align:right; color:green;" id="est-adv">0</td></tr>
+                        <tr style="background:#F8FAFC; font-weight:bold; font-size:16px;"><td style="padding:16px 12px;">Balance Due</td><td style="padding:16px 12px; text-align:right; color:var(--accent);" id="est-bal">0</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- Bank Details Block -->
+                <div style="background:#F8FAFC; padding:20px; border-radius:8px; border:1px solid var(--border); margin-bottom:40px;">
+                    <h4 style="color:var(--secondary); margin-bottom:12px; font-size:14px;">Bank & Payment Details</h4>
+                    <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--text-main); line-height:1.6;">
+                        <div>
+                            <strong>Account Name:</strong> <span id="est-bname"></span><br>
+                            <strong>Bank:</strong> <span id="est-bank"></span><br>
+                            <strong>Account No:</strong> <span id="est-acc"></span><br>
+                            <strong>IFSC:</strong> <span id="est-ifsc"></span>
+                        </div>
+                        <div style="text-align:right;">
+                            <strong>UPI ID:</strong> <span id="est-upiid"></span><br>
+                            <strong>UPI No:</strong> <span id="est-upino"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:50px; text-align:right;">
+                    <p style="font-weight:700; margin-bottom:40px;">For <span class="comp-name-disp"></span>,</p>
+                    <p style="font-weight:700; margin:0;" class="comp-auth-disp"></p>
+                    <p style="font-size:12px; color:var(--text-muted); margin:0;" class="comp-desig-disp"></p>
+                </div>
+                <div style="margin-top:40px; text-align:center; font-size:10px; color:var(--text-muted);">GENERATED BY BIZZE</div>
+            </div>
+
+            <!-- LETTERHEAD -->
+            <div id="view-letterhead" class="hide section" style="padding:0; margin:0;">
+                <div class="corp-card">
+                    <input type="text" id="lh-subject" class="corp-input" placeholder="Subject">
+                    <textarea id="lh-content" class="corp-input" rows="8" placeholder="Material / Content" style="resize:vertical; padding:12px;"></textarea>
+                    <button onclick="exportLetterhead()" class="btn-primary"><i class="fa-solid fa-print"></i> Generate PDF Letter</button>
+                </div>
+                <div id="lh-export" class="hide a4-print">
+                    <div class="a4-header">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <img class="comp-logo-img" src="" style="height:60px; display:none;">
+                            <div>
+                                <h1 class="comp-name-disp" style="color:var(--secondary); font-size:28px; margin:0;">STRA CARE</h1>
+                                <p class="comp-tagline-disp" style="color:var(--primary); font-weight:600; font-size:14px; margin:0;">Rebuild Your Health</p>
+                            </div>
+                        </div>
+                        <div style="text-align:right; font-size:12px; color:var(--text-main); line-height:1.6;">
+                            <strong class="comp-phone-disp"></strong><br>
+                            <span class="comp-email-disp"></span><br>
+                            <span class="comp-web-disp"></span>
+                        </div>
+                    </div>
+                    <div style="font-size:14px; margin-bottom:20px;"><strong>Date:</strong> <span id="lh-out-date"></span></div>
+                    <div style="font-size:16px; margin-bottom:30px;"><strong>Subject:</strong> <span id="lh-out-sub"></span></div>
+                    <div id="lh-out-body" style="font-size:15px; line-height:1.6; color:var(--text-main); min-height:300px; white-space:pre-wrap;"></div>
+                    <div style="margin-top:50px; text-align:right;">
+                        <p style="font-weight:700; margin-bottom:40px;">For <span class="comp-name-disp"></span>,</p>
+                        <p style="font-weight:700; margin:0;" class="comp-auth-disp"></p>
+                        <p style="font-size:12px; color:var(--text-muted); margin:0;" class="comp-desig-disp"></p>
+                    </div>
+                    <div style="margin-top:40px; text-align:center; font-size:10px; color:var(--text-muted);">GENERATED BY BIZZE</div>
+                </div>
+            </div>
+
+            <!-- CALCULATOR -->
+            <div id="view-calculator" class="hide section" style="padding:0; margin:0;">
+                <input type="text" id="calc-display" disabled class="corp-input" style="font-size: 40px; text-align: right; background: var(--bg); font-family: monospace; padding: 20px; font-weight: 800; color: var(--secondary); margin-bottom: 10px; border: none;" value="0">
+                <div class="calc-grid">
+                    <div class="calc-btn calc-clear" onclick="cInp('C')">C</div><div class="calc-btn calc-op" onclick="cInp('/')">/</div><div class="calc-btn calc-op" onclick="cInp('*')">x</div><div class="calc-btn calc-op" onclick="cInp('-')">-</div>
+                    <div class="calc-btn" onclick="cInp('7')">7</div><div class="calc-btn" onclick="cInp('8')">8</div><div class="calc-btn" onclick="cInp('9')">9</div><div class="calc-btn calc-op" style="grid-row: span 2;" onclick="cInp('+')">+</div>
+                    <div class="calc-btn" onclick="cInp('4')">4</div><div class="calc-btn" onclick="cInp('5')">5</div><div class="calc-btn" onclick="cInp('6')">6</div>
+                    <div class="calc-btn" onclick="cInp('1')">1</div><div class="calc-btn" onclick="cInp('2')">2</div><div class="calc-btn" onclick="cInp('3')">3</div><div class="calc-btn calc-eq" style="grid-row: span 2;" onclick="cInp('=')">=</div>
+                    <div class="calc-btn" style="grid-column: span 2;" onclick="cInp('0')">0</div><div class="calc-btn" onclick="cInp('.')">.</div>
+                </div>
+            </div>
+
+            <!-- SETUP -->
+            <div id="view-setup" class="hide section" style="padding:0; margin:0;">
+                <div class="corp-card">
+                    <h3 style="color:var(--secondary); margin-bottom:16px;">1. Company Setup</h3>
+                    <input type="file" id="setup-logo" accept="image/*" class="corp-input" style="padding:10px;">
+                    <img id="setup-logo-prev" src="" style="height:50px; display:none; margin-bottom:10px;">
+                    <input type="text" id="set-name" class="corp-input" placeholder="Company Name (STRA CARE)">
+                    <input type="text" id="set-tag" class="corp-input" placeholder="Tagline (Rebuild Your Health)">
+                    <input type="text" id="set-auth" class="corp-input" placeholder="Authorised Signatory Name">
+                    <input type="text" id="set-desig" class="corp-input" placeholder="Designation">
+                    <input type="text" id="set-phone" class="corp-input" placeholder="Phone">
+                    <input type="email" id="set-email" class="corp-input" placeholder="Email">
+                    <input type="text" id="set-web" class="corp-input" placeholder="Website">
+                    
+                    <h3 style="color:var(--secondary); margin:24px 0 16px 0;">2. Bank Account</h3>
+                    <input type="text" id="set-bname" class="corp-input" placeholder="Banking Name">
+                    <input type="text" id="set-bank" class="corp-input" placeholder="Bank Name">
+                    <input type="text" id="set-acc" class="corp-input" placeholder="Account No">
+                    <input type="text" id="set-ifsc" class="corp-input" placeholder="IFSC Code">
+                    <input type="text" id="set-bbranch" class="corp-input" placeholder="Branch">
+                    <input type="text" id="set-upiid" class="corp-input" placeholder="UPI ID">
+                    <input type="text" id="set-upino" class="corp-input" placeholder="UPI No">
+                    
+                    <button onclick="saveSetup()" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Setup</button>
+                </div>
+            </div>
+        </main>
+
+        <div class="bottom-nav">
+            <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')"><i class="fa-solid fa-house"></i><span>Home</span></button>
+            <button class="nav-item" id="nav-appointments" onclick="switchTab('appointments')"><i class="fa-solid fa-calendar-check"></i><span>Appts</span></button>
+            <button class="fab" onclick="openApptModal()"><i class="fa-solid fa-plus"></i></button>
+            <button class="nav-item" id="nav-transactions" onclick="switchTab('transactions')"><i class="fa-solid fa-indian-rupee-sign"></i><span>Ledger</span></button>
+            <button class="nav-item" id="nav-calculator" onclick="switchTab('calculator')"><i class="fa-solid fa-calculator"></i><span>Calc</span></button>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <!-- Appointment Modal -->
+    <div id="modal-appt" class="modal-overlay hide">
+        <div class="modal-content">
+            <div class="modal-header"><h3 id="appt-title">Appointment</h3><button onclick="closeMod('modal-appt')" class="modal-close"><i class="fa-solid fa-xmark"></i></button></div>
+            <div style="display:flex; gap:10px;"><input type="date" id="ap-date" class="corp-input"><input type="time" id="ap-time" class="corp-input"></div>
+            <input type="tel" id="ap-mob" class="corp-input" placeholder="Mobile No (Required)" required>
+            <input type="text" id="ap-name" class="corp-input" placeholder="Patient Name">
+            <div style="display:flex; gap:10px;"><input type="number" id="ap-age" class="corp-input" placeholder="Age"><select id="ap-gen" class="corp-input"><option value="M">Male</option><option value="F">Female</option><option value="O">Other</option></select></div>
+            <select id="ap-branch" class="corp-input">
+                <option value="B1 Mahe">B1 Mahe</option><option value="B2 Chokli">B2 Chokli</option><option value="B3 Panoor">B3 Panoor</option>
+                <option value="B4 Koothuparamba">B4 Koothuparamba (Head)</option><option value="B5 Nadapuram">B5 Nadapuram</option><option value="B6 Home Care">B6 Home Care</option>
+            </select>
+            <textarea id="ap-pnotes" class="corp-input" rows="2" placeholder="Patient Notes"></textarea>
+            
+            <div style="background:#F8FAFC; padding:16px; border-radius:8px; border:1px solid var(--border); margin-bottom:16px;">
+                <h4 style="font-size:12px; color:var(--secondary); margin-bottom:10px; text-transform:uppercase;">Admin / Billing Section</h4>
+                <select id="ap-status" class="corp-input"><option>Booked</option><option>Reported</option><option>Scheduled</option><option>Completed</option><option>Cancelled</option></select>
+                <select id="ap-therapist" class="corp-input"><option value="">Select Therapist...</option></select>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="ap-fee" class="corp-input" placeholder="Fee" onkeyup="calcBal()">
+                    <input type="number" id="ap-adv" class="corp-input" placeholder="Advance" onkeyup="calcBal()">
+                    <input type="number" id="ap-bal" class="corp-input" placeholder="Balance" readonly style="background:#E2E8F0;">
+                </div>
+                <textarea id="ap-anotes" class="corp-input" rows="2" placeholder="Admin/Diagnosis Notes"></textarea>
+                <label style="font-size:11px; color:var(--text-muted); font-weight:600;">Next Scheduled Date & Time</label>
+                <div style="display:flex; gap:10px;"><input type="date" id="ap-ndate" class="corp-input"><input type="time" id="ap-ntime" class="corp-input"></div>
+            </div>
+            <button onclick="saveAppt()" id="btn-save-apt" class="btn-primary"><i class="fa-solid fa-check"></i> Save Record</button>
+        </div>
+    </div>
+
+    <!-- Therapist Modal -->
+    <div id="modal-ther" class="modal-overlay hide">
+        <div class="modal-content">
+            <div class="modal-header"><h3 id="ther-title">Staff</h3><button onclick="closeMod('modal-ther')" class="modal-close"><i class="fa-solid fa-xmark"></i></button></div>
+            <input type="text" id="th-name" class="corp-input" placeholder="Name">
+            <input type="text" id="th-spec" class="corp-input" placeholder="Specialization">
+            <input type="tel" id="th-phone" class="corp-input" placeholder="Phone">
+            <select id="th-branch" class="corp-input">
+                <option value="B1 Mahe">B1 Mahe</option><option value="B2 Chokli">B2 Chokli</option><option value="B3 Panoor">B3 Panoor</option>
+                <option value="B4 Koothuparamba">B4 Koothuparamba (Head)</option><option value="B5 Nadapuram">B5 Nadapuram</option><option value="B6 Home Care">B6 Home Care</option>
+            </select>
+            <button onclick="saveTherapist()" class="btn-primary"><i class="fa-solid fa-check"></i> Save</button>
+        </div>
+    </div>
+
+    <!-- Voucher Modal -->
+    <div id="modal-vouch" class="modal-overlay hide">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Add Voucher</h3><button onclick="closeMod('modal-vouch')" class="modal-close"><i class="fa-solid fa-xmark"></i></button></div>
+            <input type="date" id="tx-date" class="corp-input">
+            <select id="tx-type" class="corp-input"><option>Receipt</option><option>Payment</option><option>Sales</option><option>Estimates</option><option>Cash</option><option>Bank</option><option>Op Balance</option></select>
+            <input type="number" id="tx-amt" class="corp-input" placeholder="Amount">
+            <input type="text" id="tx-desc" class="corp-input" placeholder="Description / Particulars">
+            <select id="tx-branch" class="corp-input">
+                <option value="B1 Mahe">B1 Mahe</option><option value="B2 Chokli">B2 Chokli</option><option value="B3 Panoor">B3 Panoor</option>
+                <option value="B4 Koothuparamba">B4 Koothuparamba</option><option value="B5 Nadapuram">B5 Nadapuram</option><option value="B6 Home Care">B6 Home Care</option>
+            </select>
+            <button onclick="saveVoucher()" class="btn-primary"><i class="fa-solid fa-check"></i> Save Voucher</button>
+        </div>
+    </div>
+
+    <!-- App Info Modal -->
+    <div id="modal-info" class="modal-overlay hide">
+        <div class="modal-content" style="text-align: center;">
+            <img src="assets/name.png" style="height: 28px; filter: brightness(0) invert(0.15) sepia(1) hue-rotate(200deg) saturate(200%); margin-bottom: 20px;" onerror="this.style.display='none';">
+            <p style="font-size:14px; margin-bottom:10px;"><b>bizze app by cmfilings</b></p>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:4px;">www.cmfilings.com</p>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:4px;">Support: 9946151111</p>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Email: support@cmeg.in</p>
+            <div style="background:#F8FAFC; padding:12px; border-radius:8px; font-size:12px; color:var(--secondary); margin-bottom:20px;">
+                <b>License Category:</b> Basic<br><b>Validity till:</b> 20.06.2027
+            </div>
+            <button onclick="closeMod('modal-info')" class="btn-primary">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // CORE DB / STATE
+        const SUPABASE_URL = "https://gzmodvyaxuvscemzsvrr.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_5PdCG4YheAQ-jX42GJ7uag_C5mOrFE7"; 
+        let db;
+        let gApts = [], gThers = [], gAtts = [], gTxs = [];
+        let editAptId = null, editTherId = null;
+        let cRole = 'Admin'; 
+
+        // INDIAN DATE (DD/MM/YYYY)
+        function formatIndianDate(dateString) {
+            if(!dateString) return "";
+            const parts = dateString.split('-');
+            if(parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            return new Date(dateString).toLocaleDateString('en-IN');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            document.getElementById('filter-apt-date').valueAsDate = new Date();
+            document.getElementById('att-date').valueAsDate = new Date();
+            document.getElementById('tx-date').valueAsDate = new Date();
+            document.getElementById('ap-date').valueAsDate = new Date();
+            
+            document.getElementById('setup-logo').addEventListener('change', e => {
+                if(e.target.files[0]){
+                    const r = new FileReader();
+                    r.onload = ev => { 
+                        document.getElementById('setup-logo-prev').src = ev.target.result; 
+                        document.getElementById('setup-logo-prev').style.display = 'block'; 
+                    };
+                    r.readAsDataURL(e.target.files[0]);
+                }
+            });
+
+            loadSettings();
+            setTimeout(checkAuth, 3000);
+        });
+
+        // AUTH & RBAC
+        async function checkAuth() {
+            const { data: { session } } = await db.auth.getSession();
+            if (session) {
+                document.getElementById('login-screen').classList.add('hide');
+                document.getElementById('main-app').classList.remove('hide');
+                applyRoleFilters();
+                fetchData();
+            } else {
+                document.getElementById('login-screen').classList.remove('hide');
+            }
+            document.getElementById('splash-screen').style.opacity = '0';
+            setTimeout(() => document.getElementById('splash-screen').style.display = 'none', 500);
+        }
+        
+        async function handleLogin() {
+            const btn = document.getElementById('btn-login'); btn.innerHTML = 'Wait...';
+            cRole = document.getElementById('login-role').value; // Save role based on dropdown
+            
+            const { error } = await db.auth.signInWithPassword({ email: document.getElementById('login-email').value, password: document.getElementById('login-pass').value });
+            if (error) { alert(error.message); btn.innerHTML = 'Login'; } else { checkAuth(); }
+        }
+        async function handleLogout() { await db.auth.signOut(); location.reload(); }
+
+        function applyRoleFilters() {
+            document.getElementById('menu-role-disp').innerText = cRole;
+            if(cRole !== 'Admin') {
+                // Hide global options for branch users
+                document.getElementById('nav-setup-opt').style.display = 'none';
+                
+                // Force Branch selectors
+                document.getElementById('filter-apt-branch').value = cRole;
+                document.getElementById('filter-apt-branch').disabled = true;
+                
+                document.getElementById('ap-branch').value = cRole;
+                document.getElementById('ap-branch').disabled = true;
+
+                document.getElementById('att-branch').value = cRole;
+                document.getElementById('att-branch').disabled = true;
+
+                document.getElementById('th-branch').value = cRole;
+                document.getElementById('th-branch').disabled = true;
+
+                document.getElementById('tx-branch').value = cRole;
+                document.getElementById('tx-branch').disabled = true;
+
+                document.getElementById('dash-branch-name').innerText = `(${cRole})`;
+            }
+        }
+
+        // UTILS
+        function toggleMenu() { document.getElementById('side-menu').classList.toggle('active'); document.getElementById('menu-overlay').classList.toggle('active'); }
+        function switchTab(id) {
+            document.querySelectorAll('main > div').forEach(el => el.classList.add('hide'));
+            document.getElementById('view-' + id).classList.remove('hide');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.side-nav-item').forEach(el => el.classList.remove('active'));
+            if(document.getElementById('nav-' + id)) document.getElementById('nav-' + id).classList.add('active');
+            if(document.getElementById('side-' + id)) document.getElementById('side-' + id).classList.add('active');
+        }
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hide'); }
+        function closeMod(id) { document.getElementById(id).classList.add('hide'); }
+
+        // SETTINGS
+        function loadSettings() {
+            let s = JSON.parse(localStorage.getItem('bizzeClinic')) || { name:'STRA CARE', tag:'Rebuild Your Health' };
+            ['name','tag','auth','desig','phone','email','web','bname','bank','acc','ifsc','bbranch','upiid','upino'].forEach(k => {
+                if(document.getElementById('set-'+k)) document.getElementById('set-'+k).value = s[k]||'';
+            });
+            if(s.logo) { document.getElementById('setup-logo-prev').src = s.logo; document.getElementById('setup-logo-prev').style.display = 'block'; }
+            applySettings(s);
+        }
+        function saveSetup() {
+            let s = {};
+            ['name','tag','auth','desig','phone','email','web','bname','bank','acc','ifsc','bbranch','upiid','upino'].forEach(k => s[k] = document.getElementById('set-'+k).value);
+            s.logo = document.getElementById('setup-logo-prev').src;
+            localStorage.setItem('bizzeClinic', JSON.stringify(s));
+            applySettings(s); alert("Setup Saved");
+        }
+        function applySettings(s) {
+            document.querySelectorAll('.comp-name-disp').forEach(el => el.innerText = s.name || 'STRA CARE');
+            document.querySelectorAll('.comp-tagline-disp').forEach(el => el.innerText = s.tag || '');
+            document.querySelectorAll('.comp-phone-disp').forEach(el => el.innerText = s.phone || '');
+            document.querySelectorAll('.comp-email-disp').forEach(el => el.innerText = s.email || '');
+            document.querySelectorAll('.comp-web-disp').forEach(el => el.innerText = s.web || '');
+            document.querySelectorAll('.comp-auth-disp').forEach(el => el.innerText = s.auth || '');
+            document.querySelectorAll('.comp-desig-disp').forEach(el => el.innerText = s.desig || '');
+            document.querySelectorAll('.comp-logo-img').forEach(el => {
+                if(s.logo && s.logo.length>100) { el.src = s.logo; el.style.display='block'; } else el.style.display='none';
+            });
+        }
+
+        // FETCH DATA
+        async function fetchData() {
+            const [apRes, thRes, atRes, txRes] = await Promise.all([
+                db.from('pt_appointments').select('*').order('date', {ascending:false}),
+                db.from('pt_therapists').select('*'),
+                db.from('pt_attendance').select('*'),
+                db.from('pt_transactions').select('*').order('date', {ascending:false})
+            ]);
+            gApts = apRes.data || []; gThers = thRes.data || []; gAtts = atRes.data || []; gTxs = txRes.data || [];
+            
+            // Filter global arrays if branch user
+            if(cRole !== 'Admin') {
+                gApts = gApts.filter(a => a.branch === cRole);
+                gThers = gThers.filter(t => t.branch === cRole);
+                gAtts = gAtts.filter(a => a.branch === cRole);
+                gTxs = gTxs.filter(t => t.branch === cRole);
+            }
+
+            document.getElementById('ap-therapist').innerHTML = '<option value="">Select Therapist...</option>' + gThers.map(t=>`<option>${t.name}</option>`).join('');
+            
+            renderDash(); renderAppointments(); renderPatients(); renderTherapists(); renderTransactions();
+        }
+
+        function renderDash() {
+            let todayStr = new Date().toISOString().split('T')[0];
+            let todays = gApts.filter(a => a.date === todayStr);
+            let uniquePats = new Set(gApts.map(a => a.mobile)).size;
+            document.getElementById('dash-today-appts').innerText = todays.length;
+            document.getElementById('dash-tot-patients').innerText = uniquePats;
+
+            const dashFeed = document.getElementById('dash-live-appts');
+            dashFeed.innerHTML = '';
+            if(todays.length === 0) {
+                dashFeed.innerHTML = '<p style="font-size:13px; color:var(--text-muted);">No appointments today.</p>'; return;
+            }
+            todays.forEach(a => {
+                dashFeed.innerHTML += `
+                    <div class="list-card" style="padding:12px; margin-bottom:8px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                            <strong style="color:var(--secondary); font-size:14px;">${a.patient_name}</strong>
+                            <span style="font-size:12px; color:var(--primary); font-weight:700;">${a.time||''}</span>
+                        </div>
+                        <div style="font-size:11px; color:var(--text-muted);">${a.mobile} | Dr. ${a.therapist_name||'Unassigned'}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // APPOINTMENTS
+        function calcBal() {
+            let f = Number(document.getElementById('ap-fee').value||0);
+            let a = Number(document.getElementById('ap-adv').value||0);
+            document.getElementById('ap-bal').value = f - a;
+        }
+        function renderAppointments() {
+            const dFilt = document.getElementById('filter-apt-date').value;
+            const mFilt = document.getElementById('filter-apt-mob').value.toLowerCase();
+            const bFilt = document.getElementById('filter-apt-branch').value;
+            const list = document.getElementById('appointments-list'); list.innerHTML = '';
+            
+            let f = gApts.filter(a => (!dFilt || a.date === dFilt) && (!mFilt || a.mobile.includes(mFilt) || a.patient_name.toLowerCase().includes(mFilt)) && (bFilt==='All' || a.branch === bFilt));
+            f.forEach(a => {
+                let stCol = a.status==='Completed'?'#16A34A':a.status==='Cancelled'?'#EF4444':'#3B82F6';
+                list.innerHTML += `
+                    <div class="list-card">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <strong style="color:var(--secondary);">${a.patient_name} (${a.age}${a.gender})</strong>
+                            <span class="status-badge" style="background:${stCol}20; color:${stCol};">${a.status}</span>
+                        </div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+                            <div><i class="fa-solid fa-phone"></i> ${a.mobile} | <i class="fa-solid fa-location-dot"></i> ${a.branch}</div>
+                            <div><i class="fa-solid fa-calendar"></i> ${formatIndianDate(a.date)} ${a.time||''}</div>
+                            <div style="color:var(--primary); font-weight:600; margin-top:4px;">Dr. ${a.therapist_name||'Unassigned'}</div>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <button onclick="openEditAppt(${a.id})" class="action-btn btn-edit"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="copyToNext(${a.id})" class="action-btn" style="background:#DBEAFE; color:#2563EB; width:auto; padding:0 10px; font-size:11px; font-weight:700;"><i class="fa-solid fa-copy"></i> Next Sch</button>
+                            <button onclick="generateEstimate(${a.id})" class="action-btn" style="background:#DCFCE7; color:#16A34A; width:auto; padding:0 10px; font-size:11px; font-weight:700;"><i class="fa-solid fa-file-invoice"></i> Print Estimate</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function openApptModal() { 
+            editAptId=null; 
+            document.querySelectorAll('#modal-appt input, #modal-appt textarea').forEach(el=>el.value=''); 
+            document.getElementById('ap-status').value='Booked'; 
+            if(cRole !== 'Admin') document.getElementById('ap-branch').value = cRole;
+            toggleModal('modal-appt'); 
+        }
+
+        function openEditAppt(id) {
+            editAptId = id; let a = gApts.find(x=>x.id==id);
+            ['date','time','mobile','age','gen','branch','pnotes','status','therapist','fee','adv','bal','anotes','ndate','ntime'].forEach(k => {
+                let el = document.getElementById('ap-'+k);
+                if(el && a[k.replace('gen','gender').replace('pnotes','patient_notes').replace('adv','advance').replace('bal','balance').replace('anotes','admin_notes').replace('ndate','next_date').replace('ntime','next_time').replace('therapist','therapist_name')]) {
+                    el.value = a[k.replace('gen','gender').replace('pnotes','patient_notes').replace('adv','advance').replace('bal','balance').replace('anotes','admin_notes').replace('ndate','next_date').replace('ntime','next_time').replace('therapist','therapist_name')];
+                }
+            });
+            document.getElementById('ap-name').value = a.patient_name;
+            if(cRole !== 'Admin') document.getElementById('ap-branch').value = cRole;
+            toggleModal('modal-appt');
+        }
+
+        async function saveAppt() {
+            if(!document.getElementById('ap-mob').value) return alert("Mobile No Required");
+            let p = {
+                date: document.getElementById('ap-date').value, time: document.getElementById('ap-time').value,
+                patient_name: document.getElementById('ap-name').value, mobile: document.getElementById('ap-mob').value,
+                age: document.getElementById('ap-age').value, gender: document.getElementById('ap-gen').value,
+                branch: document.getElementById('ap-branch').value, patient_notes: document.getElementById('ap-pnotes').value,
+                status: document.getElementById('ap-status').value, therapist_name: document.getElementById('ap-therapist').value,
+                fee: document.getElementById('ap-fee').value||0, advance: document.getElementById('ap-adv').value||0,
+                balance: document.getElementById('ap-bal').value||0, admin_notes: document.getElementById('ap-anotes').value,
+                next_date: document.getElementById('ap-ndate').value, next_time: document.getElementById('ap-ntime').value
+            };
+            if(editAptId) await db.from('pt_appointments').update(p).eq('id', editAptId); else await db.from('pt_appointments').insert([p]);
+            
+            // Auto ledger fee -> Sales
+            if(!editAptId && p.fee > 0) {
+                await db.from('pt_transactions').insert([{ date: p.date, voucher_type: 'Sales', amount: p.fee, description: `Fee - ${p.patient_name}`, branch: p.branch }]);
+            }
+            if(!editAptId && p.advance > 0) {
+                await db.from('pt_transactions').insert([{ date: p.date, voucher_type: 'Receipt', amount: p.advance, description: `Adv - ${p.patient_name}`, branch: p.branch }]);
+            }
+
+            closeMod('modal-appt'); fetchData();
+        }
+
+        function copyToNext(id) {
+            let a = gApts.find(x=>x.id==id);
+            if(!a.next_date) return alert("No Next Date assigned to copy to!");
+            openApptModal();
+            document.getElementById('ap-date').value = a.next_date; document.getElementById('ap-time').value = a.next_time||'';
+            document.getElementById('ap-name').value = a.patient_name; document.getElementById('ap-mob').value = a.mobile;
+            document.getElementById('ap-age').value = a.age; document.getElementById('ap-gen').value = a.gender;
+            document.getElementById('ap-branch').value = a.branch; document.getElementById('ap-pnotes').value = a.patient_notes;
+            document.getElementById('ap-therapist').value = a.therapist_name;
+            document.getElementById('ap-status').value = 'Booked';
+        }
+
+        // GENERATE A4 ESTIMATE
+        function generateEstimate(id) {
+            let a = gApts.find(x=>x.id==id);
+            if(!a) return;
+
+            // Load Bank Details from Settings
+            let s = JSON.parse(localStorage.getItem('bizzeClinic')) || {};
+            document.getElementById('est-bname').innerText = s.bname || '';
+            document.getElementById('est-bank').innerText = s.bank || '';
+            document.getElementById('est-acc').innerText = s.acc || '';
+            document.getElementById('est-ifsc').innerText = s.ifsc || '';
+            document.getElementById('est-upiid').innerText = s.upiid || '';
+            document.getElementById('est-upino').innerText = s.upino || '';
+
+            // Populate Patient Details
+            document.getElementById('est-pname').innerText = a.patient_name;
+            document.getElementById('est-pmob').innerText = a.mobile;
+            document.getElementById('est-pagegen').innerText = `${a.age} / ${a.gender}`;
+            document.getElementById('est-date').innerText = formatIndianDate(a.date);
+            document.getElementById('est-branch').innerText = a.branch;
+            document.getElementById('est-therapist').innerText = a.therapist_name || 'N/A';
+            
+            document.getElementById('est-fee').innerText = Number(a.fee).toLocaleString('en-IN');
+            document.getElementById('est-adv').innerText = Number(a.advance).toLocaleString('en-IN');
+            document.getElementById('est-bal').innerText = Number(a.balance).toLocaleString('en-IN');
+
+            document.getElementById('estimate-export').classList.remove('hide');
+            const opt = { margin: 0, filename: `Estimate_${a.patient_name.replace(/ /g,'_')}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+            html2pdf().set(opt).from(document.getElementById('estimate-export')).save().then(() => document.getElementById('estimate-export').classList.add('hide'));
+        }
+
+        // PATIENTS DB
+        function renderPatients() {
+            const mFilt = document.getElementById('filter-pat-mob').value.toLowerCase();
+            const list = document.getElementById('patients-list'); list.innerHTML = '';
+            
+            // Group unique by mobile
+            let patMap = {};
+            gApts.forEach(a => {
+                if(!patMap[a.mobile]) {
+                    patMap[a.mobile] = { name: a.patient_name, mobile: a.mobile, age: a.age, gen: a.gender, visits: 0, lastDate: a.date, totalFee: 0 };
+                }
+                patMap[a.mobile].visits++;
+                patMap[a.mobile].totalFee += Number(a.fee);
+                if(new Date(a.date) > new Date(patMap[a.mobile].lastDate)) patMap[a.mobile].lastDate = a.date;
+            });
+
+            let pats = Object.values(patMap).filter(p => p.mobile.includes(mFilt) || p.name.toLowerCase().includes(mFilt));
+
+            pats.forEach(p => {
+                list.innerHTML += `
+                    <div class="list-card">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <strong style="color:var(--secondary);">${p.name} (${p.age}${p.gen})</strong>
+                            <span class="status-badge" style="background:#E2E8F0; color:var(--text-main);"><i class="fa-solid fa-phone"></i> ${p.mobile}</span>
+                        </div>
+                        <div style="font-size:12px; color:var(--text-muted); display:flex; justify-content:space-between;">
+                            <span>Visits: <strong style="color:var(--primary);">${p.visits}</strong></span>
+                            <span>Last: <strong>${formatIndianDate(p.lastDate)}</strong></span>
+                            <span>Total Billed: <strong style="color:#16A34A;">₹${p.totalFee.toLocaleString('en-IN')}</strong></span>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        // THERAPISTS
+        function renderTherapists() {
+            const list = document.getElementById('therapists-list'); list.innerHTML = '';
+            gThers.forEach(t => {
+                list.innerHTML += `
+                    <div class="list-card" style="display:flex; justify-content:space-between;">
+                        <div>
+                            <strong style="color:var(--secondary); font-size:15px;">Dr. ${t.name}</strong>
+                            <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${t.specialization} | ${t.branch}</div>
+                            <div style="font-size:12px; font-family:monospace; margin-top:4px;">${t.phone}</div>
+                        </div>
+                        <button onclick="editTherId=${t.id}; document.getElementById('th-name').value='${t.name}'; document.getElementById('th-spec').value='${t.specialization}'; document.getElementById('th-phone').value='${t.phone}'; document.getElementById('th-branch').value='${t.branch}'; toggleModal('modal-ther');" class="action-btn btn-edit"><i class="fa-solid fa-pen"></i></button>
+                    </div>`;
+            });
+        }
+        function openTherapistModal() { 
+            editTherId=null; document.querySelectorAll('#modal-ther input').forEach(el=>el.value=''); 
+            if(cRole !== 'Admin') document.getElementById('th-branch').value = cRole;
+            toggleModal('modal-ther'); 
+        }
+        async function saveTherapist() {
+            let p = { name: document.getElementById('th-name').value, specialization: document.getElementById('th-spec').value, phone: document.getElementById('th-phone').value, branch: document.getElementById('th-branch').value };
+            if(editTherId) await db.from('pt_therapists').update(p).eq('id', editTherId); else await db.from('pt_therapists').insert([p]);
+            closeMod('modal-ther'); fetchData();
+        }
+
+        // ATTENDANCE
+        function loadAttendance() {
+            let d = document.getElementById('att-date').value; let b = document.getElementById('att-branch').value;
+            let tb = document.getElementById('att-tbody'); tb.innerHTML = '';
+            let thers = b === 'All' ? gThers : gThers.filter(t=>t.branch===b);
+            let atts = gAtts.filter(a=>a.date===d);
+            
+            thers.forEach(t => {
+                let rec = atts.find(a=>a.therapist_name===t.name);
+                let st = rec ? rec.status : 'Present';
+                tb.innerHTML += `<tr><td><b>${t.name}</b><br><span style="font-size:10px; color:var(--text-muted);">${t.branch}</span></td>
+                <td><select class="corp-input att-sel" data-tname="${t.name}" data-br="${t.branch}" style="margin:0; padding:8px;"><option ${st==='Present'?'selected':''}>Present</option><option ${st==='Absent'?'selected':''}>Absent</option><option ${st==='Half-Day'?'selected':''}>Half-Day</option></select></td></tr>`;
+            });
+        }
+        async function saveAttendance() {
+            let d = document.getElementById('att-date').value;
+            let p = [];
+            document.querySelectorAll('.att-sel').forEach(sel => { p.push({ date: d, therapist_name: sel.getAttribute('data-tname'), branch: sel.getAttribute('data-br'), status: sel.value }); });
+            if(p.length===0) return;
+            
+            // Delete old for date and branch (if admin, delete all for date)
+            if(cRole === 'Admin') await db.from('pt_attendance').delete().eq('date', d);
+            else await db.from('pt_attendance').delete().eq('date', d).eq('branch', cRole);
+
+            await db.from('pt_attendance').insert(p); alert("Saved!"); fetchData();
+        }
+
+        // TRANSACTIONS
+        function renderTransactions() {
+            let tb = document.getElementById('tx-tbody'); tb.innerHTML = '';
+            gTxs.forEach(t => {
+                let col = t.voucher_type==='Receipt'||t.voucher_type==='Sales'||t.voucher_type==='Op Balance'?'#16A34A':'#EF4444';
+                tb.innerHTML += `<tr><td>${formatIndianDate(t.date)}</td><td><span class="status-badge" style="background:${col}20; color:${col};">${t.voucher_type}</span></td><td>${t.description||''} <span style="font-size:10px;color:var(--text-muted);">(${t.branch})</span></td><td style="text-align:right; font-weight:700;">₹${t.amount}</td></tr>`;
+            });
+        }
+        function openVoucherModal() { 
+            document.getElementById('tx-amt').value=''; document.getElementById('tx-desc').value=''; 
+            if(cRole !== 'Admin') document.getElementById('tx-branch').value = cRole;
+            toggleModal('modal-vouch'); 
+        }
+        async function saveVoucher() {
+            let p = { date: document.getElementById('tx-date').value, voucher_type: document.getElementById('tx-type').value, amount: document.getElementById('tx-amt').value, description: document.getElementById('tx-desc').value, branch: document.getElementById('tx-branch').value };
+            await db.from('pt_transactions').insert([p]); closeMod('modal-vouch'); fetchData();
+        }
+
+        // LETTERHEAD
+        function exportLetterhead() {
+            document.getElementById('lh-out-date').innerText = formatIndianDate(new Date().toISOString().split('T')[0]);
+            document.getElementById('lh-out-sub').innerText = document.getElementById('lh-subject').value;
+            document.getElementById('lh-out-body').innerText = document.getElementById('lh-content').value;
+            document.getElementById('lh-export').classList.remove('hide');
+            const opt = { margin: 0, filename: 'Letterhead.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+            html2pdf().set(opt).from(document.getElementById('lh-export')).save().then(() => document.getElementById('lh-export').classList.add('hide'));
+        }
+
+        // EXPORT GENERIC
+        function exportToPDF(elId, name) {
+            document.querySelectorAll(`#${elId} .hide[data-html2canvas-show="true"]`).forEach(el => el.classList.remove('hide'));
+            html2pdf().set({ margin: 0.2, filename: name+'.pdf', jsPDF: { format: 'a4' } }).from(document.getElementById(elId)).save().then(() => {
+                document.querySelectorAll(`#${elId} [data-html2canvas-show="true"]`).forEach(el => el.classList.add('hide'));
+            });
+        }
+
+        // CALCULATOR
+        let cV="0"; function cInp(v){ if(v==='C')cV="0"; else if(v==='='){ try{cV=eval(cV).toString();}catch(e){cV="Err";} } else { if(cV==="0"&&v!=='.')cV=""; cV+=v; } document.getElementById('calc-display').value=cV; }
+    </script>
+</body>
+</html>
