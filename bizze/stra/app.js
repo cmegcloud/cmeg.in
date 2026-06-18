@@ -16,6 +16,73 @@ document.addEventListener('DOMContentLoaded', () => {
         return; // Stop running the rest of the script
     }
 
+import { collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+// --- 4. LIVE APPOINTMENT BOARD (Real-time updates) ---
+const liveAppointmentsList = document.getElementById('live-appointments-list');
+
+if (liveAppointmentsList) {
+    // Determine the date to query (e.g., today's date). Hardcoded here to match our booking mockup.
+    const todayStr = "24 Nov 2025"; 
+    
+    // Build query: Filter by today's date. If user is Staff, also filter by their specific Branch.
+    let baseQuery;
+    if (userRole === "Staff") {
+        baseQuery = query(
+            collection(db, "appointments"), 
+            where("PreferredDate", "==", todayStr),
+            where("Branch", "==", userBranch)
+        );
+    } else {
+        // Admin sees all branches
+        baseQuery = query(
+            collection(db, "appointments"), 
+            where("PreferredDate", "==", todayStr)
+        );
+    }
+
+    // Set up the real-time listener
+    onSnapshot(baseQuery, (snapshot) => {
+        liveAppointmentsList.innerHTML = ''; // Clear loading text
+        
+        if (snapshot.empty) {
+            liveAppointmentsList.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--text-light);">No appointments scheduled for today.</td></tr>`;
+            return;
+        }
+
+        snapshot.forEach((doc) => {
+            const apt = doc.data();
+            
+            // Determine status badge color
+            let statusColor = "#8c93a1"; // Default Pending
+            if (apt.Status === "Confirmed") statusColor = "#5b84e3";
+            if (apt.Status === "Checked In") statusColor = "#faad14";
+            if (apt.Status === "Completed") statusColor = "#52c41a";
+            if (apt.Status === "Cancelled") statusColor = "#ff4d4f";
+
+            const row = document.createElement('tr');
+            row.style.borderBottom = "1px solid #edf1f7";
+            row.innerHTML = `
+                <td style="padding: 12px 10px; font-weight: 500;">${apt.PreferredTime}</td>
+                <td style="padding: 12px 10px;">
+                    ${apt.PatientName}<br>
+                    <span style="font-size: 10px; color: var(--text-light);">${apt.Branch}</span>
+                </td>
+                <td style="padding: 12px 10px;">${apt.Therapist}</td>
+                <td style="padding: 12px 10px;">
+                    <span style="background: ${statusColor}20; color: ${statusColor}; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 600;">
+                        ${apt.Status}
+                    </span>
+                </td>
+            `;
+            liveAppointmentsList.appendChild(row);
+        });
+    }, (error) => {
+        console.error("Error fetching live appointments:", error);
+        liveAppointmentsList.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 20px; color: #ff4d4f;">Error loading data.</td></tr>`;
+    });
+}
+
     // --- 2. UPDATE UI BASED ON USER DATA ---
     // Update the "Good morning!" name based on the logged-in user
     const greetingNameEl = document.querySelector('.greeting h2');
