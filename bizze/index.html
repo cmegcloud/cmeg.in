@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CM bizzE - Sales Order System</title>
+    <title>bizze - Sales Order System</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1E3A8A">
-    <!-- Updated to logo.png -->
     <link rel="icon" type="image/png" href="assets/logo.png">
     <link rel="apple-touch-icon" href="assets/logo.png">
 
@@ -113,7 +112,8 @@
         .nav-item i { font-size: 20px; margin-bottom: 4px; transition: 0.2s; }
         .nav-item.active { color: var(--primary); }
         
-        .fab { width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 26px; margin-top: -35px; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); border: 4px solid white; cursor: pointer; transition: transform 0.2s; }
+        /* NEW FAB DESIGN - Prominent Rounded Square */
+        .fab { width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 24px; margin-top: -25px; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); border: none; cursor: pointer; transition: transform 0.2s; }
         .fab:active { transform: scale(0.92); }
 
         .cart-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
@@ -122,43 +122,40 @@
         .qty-input { width: 55px; padding: 8px; border-radius: 6px; border: 1px solid var(--border); text-align: center; font-weight: 700; color: var(--text-main); background: #F8FAFC; }
         
         .pdf-export-area { background: white; border-radius: 8px; padding: 10px; }
+        
+        /* Utility class for injecting Company Headers into all PDFs */
+        .pdf-export-header { margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 
 <body>
 
-    <!-- SPLASH SCREEN -->
     <div id="splash-screen">
-        <!-- Updated to logo.png and name-white.png -->
-        <img src="assets/logo.png" class="splash-logo" alt="CM Logo" onerror="this.style.display='none';">
-        <img src="assets/name-white.png" style="height: 30px; object-fit: contain;" alt="CM bizzE" onerror="this.style.display='none';">
+        <img src="assets/logo-white.png" class="splash-logo" alt="Logo" onerror="this.style.display='none';">
+        <img src="assets/name-white.png" style="height: 30px; object-fit: contain;" alt="bizze" onerror="this.style.display='none';">
     </div>
 
-    <!-- Header -->
     <div class="header">
         <div class="left-head">
             <button onclick="toggleMenu()" style="background:none; border:none; color:white; font-size: 22px; cursor: pointer; padding-right: 10px;">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 4px;">
-                <!-- Updated to logo.png and name-white.png -->
-                <img src="assets/logo.png" alt="CM" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none';">
+            <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                <img src="assets/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none';">
             </div>
-            <img src="assets/name-white.png" alt="CM bizzE" style="height: 32px; object-fit: contain; margin-left: 4px;" onerror="this.style.display='none';">
+            <img src="assets/name-white.png" alt="bizze" style="height: 28px; object-fit: contain; margin-left: 4px;" onerror="this.style.display='none';">
         </div>
         <div class="right-head">
             <button onclick="fetchData()" style="background:none; border:none; color:inherit; cursor: pointer;"><i class="fa-solid fa-arrows-rotate" id="sync-icon"></i></button>
         </div>
     </div>
 
-    <!-- Side Menu -->
     <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
     <div class="side-menu" id="side-menu">
         <div class="side-menu-header">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                <!-- Updated to logo.png and name-white.png -->
-                <img src="assets/logo.png" style="width: 44px; height: 44px;" onerror="this.style.display='none';">
-                <img src="assets/name-white.png" style="height: 36px; object-fit: contain;" onerror="this.style.display='none';">
+                <img src="assets/logo.png" style="width: 40px; height: 40px; object-fit: contain;" onerror="this.style.display='none';">
+                <img src="assets/name-white.png" style="height: 30px; object-fit: contain;" onerror="this.style.display='none';">
             </div>
             <p style="font-size: 13px; opacity: 0.9; font-weight: 500;">Sales Order System</p>
         </div>
@@ -192,10 +189,8 @@
         </div>
     </div>
 
-    <!-- MAIN VIEWS -->
     <main id="app-content">
 
-        <!-- DASHBOARD -->
         <div id="view-dashboard">
             <div class="hero">
                 <h4>Total Revenue</h4>
@@ -236,20 +231,21 @@
             </div>
         </div>
 
-        <!-- SALES ORDER -->
         <div id="view-orders" class="hide section">
             <div class="corp-card pdf-export-area" id="invoice-area">
                 
                 <div style="display: flex; justify-content: space-between; border-bottom: 2px solid var(--border); padding-bottom: 16px; margin-bottom: 20px;">
-                    <div>
-                        <h2 id="invoice-comp-name" style="color: var(--secondary); font-size: 22px; font-weight: 800; margin-bottom: 4px;">YUMMY</h2>
-                        <p id="invoice-comp-details" style="color: var(--text-muted); font-size: 11px; line-height: 1.5;">
-                            Setup your company details<br>in the Company Profile menu.
-                        </p>
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <img class="invoice-comp-logo-img" src="" style="max-height: 50px; border-radius: 8px; display: none;">
+                        <div>
+                            <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 22px; font-weight: 800; margin-bottom: 4px;">YUMMY</h2>
+                            <p id="invoice-comp-details" style="color: var(--text-muted); font-size: 11px; line-height: 1.5;">
+                                Setup your company details<br>in the Company Profile menu.
+                            </p>
+                        </div>
                     </div>
                     <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end;">
                         <h3 style="color: var(--primary); font-size: 18px; font-weight: 800;">SALES ORDER</h3>
-                        <span style="font-size: 10px; color: var(--text-muted); font-weight: 600; margin-top: 6px; padding: 2px 6px; background: var(--bg); border-radius: 4px;">CM bizzE</span>
                     </div>
                 </div>
                 
@@ -280,19 +276,17 @@
                     </table>
                 </div>
 
-                <!-- WATERMARK FOOTER (Text Only) -->
                 <div style="margin-top: 40px; text-align: center; opacity: 0.4;">
-                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by CM bizzE</span>
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span>
                 </div>
             </div>
 
             <div style="display: flex; gap: 12px; margin-bottom: 30px;">
-                <button onclick="exportToPDF('invoice-area', 'CM_Sales_Order')" class="btn-primary" style="background: white; color: var(--accent); flex: 0.3; border: 1px solid var(--border); box-shadow: none;"><i class="fa-solid fa-file-pdf" style="font-size: 18px;"></i></button>
+                <button onclick="exportToPDF('invoice-area', 'Sales_Order')" class="btn-primary" style="background: white; color: var(--accent); flex: 0.3; border: 1px solid var(--border); box-shadow: none;"><i class="fa-solid fa-file-pdf" style="font-size: 18px;"></i></button>
                 <button onclick="saveAndSendOrder()" class="btn-primary" style="flex: 1;"><i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> Save & Send</button>
             </div>
         </div>
 
-        <!-- ITEMS -->
         <div id="view-items" class="hide section">
             <div style="display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
                 <input type="text" id="search-items" onkeyup="renderItems()" placeholder="Search Items..." class="corp-input" style="margin:0; flex: 1; min-width: 120px;">
@@ -303,15 +297,24 @@
                 <button onclick="exportToPDF('pdf-items-wrapper', 'Item_Master')" class="btn-primary" style="width: 46px; height: 46px; padding: 0; background: var(--secondary);"><i class="fa-solid fa-file-pdf"></i></button>
                 <button onclick="openAddItemModal()" class="btn-primary" style="width: 46px; height: 46px; padding: 0;"><i class="fa-solid fa-plus"></i></button>
             </div>
+            
             <div id="pdf-items-wrapper" class="pdf-export-area">
+                <div class="pdf-export-header hide" data-html2canvas-show="true">
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <img class="invoice-comp-logo-img" src="" style="max-height: 40px; border-radius: 6px; display: none;">
+                        <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 18px; font-weight: 800;"></h2>
+                    </div>
+                    <h3 style="font-size: 16px; color: var(--primary);">Item Master</h3>
+                </div>
+                
                 <div id="items-container"></div>
+                
                 <div style="margin-top: 30px; text-align: center; opacity: 0.4;" data-html2canvas-show="true" class="hide">
-                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by CM bizzE</span>
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span>
                 </div>
             </div>
         </div>
 
-        <!-- CUSTOMERS / PARTIES -->
         <div id="view-customers" class="hide section">
             <div style="display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
                 <input type="text" id="search-customers" onkeyup="renderCustomers()" placeholder="Search Parties..." class="corp-input" style="margin:0; flex: 1; min-width: 120px;">
@@ -322,15 +325,24 @@
                 <button onclick="exportToPDF('pdf-cust-wrapper', 'Party_Directory')" class="btn-primary" style="width: 46px; height: 46px; padding: 0; background: var(--secondary);"><i class="fa-solid fa-file-pdf"></i></button>
                 <button onclick="openAddCustomerModal()" class="btn-primary" style="width: 46px; height: 46px; padding: 0;"><i class="fa-solid fa-user-plus"></i></button>
             </div>
+            
             <div id="pdf-cust-wrapper" class="pdf-export-area">
+                <div class="pdf-export-header hide" data-html2canvas-show="true">
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <img class="invoice-comp-logo-img" src="" style="max-height: 40px; border-radius: 6px; display: none;">
+                        <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 18px; font-weight: 800;"></h2>
+                    </div>
+                    <h3 style="font-size: 16px; color: var(--primary);">Party Directory</h3>
+                </div>
+
                 <div id="customers-container"></div>
+                
                 <div style="margin-top: 30px; text-align: center; opacity: 0.4;" data-html2canvas-show="true" class="hide">
-                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by CM bizzE</span>
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span>
                 </div>
             </div>
         </div>
 
-        <!-- REPORTS -->
         <div id="view-reports" class="hide section">
             
             <div class="corp-card" style="margin-bottom: 20px;">
@@ -352,12 +364,18 @@
                 </div>
             </div>
 
-            <!-- PDF wrapper for the generated report table -->
             <div id="pdf-report-wrapper" class="pdf-export-area hide">
-                <div style="text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border);">
-                    <h2 style="color: var(--secondary); font-size: 20px;">Sales Order Report</h2>
-                    <p id="report-date-range" style="font-size: 12px; color: var(--text-muted); margin-top: 5px;"></p>
+                <div class="pdf-export-header">
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <img class="invoice-comp-logo-img" src="" style="max-height: 40px; border-radius: 6px; display: none;">
+                        <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 18px; font-weight: 800;"></h2>
+                    </div>
+                    <div style="text-align: right;">
+                        <h3 style="font-size: 16px; color: var(--primary);">Sales Report</h3>
+                        <p id="report-date-range" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;"></p>
+                    </div>
                 </div>
+
                 <div style="overflow-x: auto;">
                     <table class="cart-table">
                         <thead><tr><th>Date</th><th>Party</th><th style="text-align:right;">Total</th></tr></thead>
@@ -371,13 +389,11 @@
                     </table>
                 </div>
                 <div style="margin-top: 40px; text-align: center; opacity: 0.4;" data-html2canvas-show="true" class="hide">
-                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by CM bizzE</span>
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span>
                 </div>
             </div>
-
         </div>
 
-        <!-- COMPANY PROFILE -->
         <div id="view-company" class="hide section">
             <div class="corp-card">
                 <div style="text-align: center; margin-bottom: 20px;">
@@ -386,6 +402,12 @@
                     <p style="font-size: 12px; color: var(--text-muted);">Details saved here will reflect on generated PDFs.</p>
                 </div>
                 
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Company Logo</label>
+                    <input type="file" id="comp-logo-input" accept="image/*" class="corp-input" style="padding: 10px; margin-bottom: 8px;">
+                    <img id="comp-logo-preview" src="" style="max-height: 60px; border-radius: 8px; display: none;">
+                </div>
+
                 <input type="text" id="comp-name" placeholder="Company Name (e.g. YUMMY)" class="corp-input">
                 <input type="text" id="comp-tagline" placeholder="Tagline" class="corp-input">
                 <input type="text" id="comp-gst" placeholder="GST / Tax Number" class="corp-input">
@@ -398,7 +420,6 @@
             </div>
         </div>
 
-        <!-- CALCULATOR -->
         <div id="view-calculator" class="hide section">
             <div class="corp-card" style="max-width: 360px; margin: 0 auto;">
                 <input type="text" id="calc-display" disabled class="corp-input" style="font-size: 32px; text-align: right; background: var(--bg); font-family: monospace; padding: 20px; font-weight: 800; color: var(--secondary); margin-bottom: 20px; border: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);" value="0">
@@ -430,24 +451,16 @@
 
     </main>
 
-    <!-- MODALS -->
-
-    <!-- App Info Modal -->
     <div id="modal-info" class="modal-overlay hide">
         <div class="modal-content" style="text-align: center;">
-            <div style="background: var(--primary); width: 80px; height: 80px; border-radius: 16px; margin: 0 auto 16px auto; display: flex; align-items: center; justify-content: center; padding: 10px;">
-                <!-- Updated to logo.png -->
-                <img src="assets/logo.png" alt="CM Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none';">
-            </div>
-            <!-- Updated to name-white.png, keeping the inversion filter to make it dark against the white modal background -->
-            <img src="assets/name-white.png" alt="CM bizzE" style="height: 28px; object-fit: contain; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto; filter: brightness(0) invert(0.15) sepia(1) hue-rotate(200deg) saturate(200%);" onerror="this.style.display='none';">
+            <img src="assets/logo.png" alt="Logo" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 12px;" onerror="this.style.display='none';">
+            <img src="assets/name-white.png" alt="bizze" style="height: 28px; object-fit: contain; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto; filter: brightness(0) invert(0.15) sepia(1) hue-rotate(200deg) saturate(200%);" onerror="this.style.display='none';">
             <p style="color: var(--primary); font-weight: 700; margin-bottom: 16px;">Demo Version</p>
             <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">App Contact: <a href="http://www.cmfilings.com" style="color: var(--primary); text-decoration: underline;">www.cmfilings.com</a></p>
             <button onclick="toggleModal('modal-info')" class="btn-primary" style="background: var(--bg); color: var(--text-main); box-shadow: none; border: 1px solid var(--border);">Close</button>
         </div>
     </div>
     
-    <!-- Item Modal -->
     <div id="modal-item" class="modal-overlay hide">
         <div class="modal-content">
             <div class="modal-header">
@@ -465,7 +478,6 @@
         </div>
     </div>
 
-    <!-- Party Modal -->
     <div id="modal-customer" class="modal-overlay hide">
         <div class="modal-content">
             <div class="modal-header">
@@ -486,7 +498,6 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
             <i class="fa-solid fa-house"></i><span>Home</span>
@@ -547,13 +558,14 @@
         let globalItems = [], globalCustomers = [], globalOrders = [], cart = [];
         let editingItemId = null; let editingCustId = null;
         let calcVal = "0";
+        let currentCompanyLogoBase64 = "";
 
         // --- COMPANY SETTINGS ---
         function loadCompanySettings() {
             let comp = JSON.parse(localStorage.getItem('cmBizCompany')) || {
                 name: 'YUMMY', tagline: '', gst: '32ABCDE1234A1B2', 
                 phone: '9746608090', email: 'yummy@gmail.com', web: '', 
-                address: 'Kannur, Kerala 670672'
+                address: 'Kannur, Kerala 670672', logo: ''
             };
             
             document.getElementById('comp-name').value = comp.name || '';
@@ -563,6 +575,12 @@
             document.getElementById('comp-email').value = comp.email || '';
             document.getElementById('comp-web').value = comp.web || '';
             document.getElementById('comp-address').value = comp.address || '';
+            
+            if (comp.logo) {
+                currentCompanyLogoBase64 = comp.logo;
+                document.getElementById('comp-logo-preview').src = comp.logo;
+                document.getElementById('comp-logo-preview').style.display = 'block';
+            }
 
             updateInvoiceHeader(comp);
         }
@@ -575,7 +593,8 @@
                 phone: document.getElementById('comp-phone').value,
                 email: document.getElementById('comp-email').value,
                 web: document.getElementById('comp-web').value,
-                address: document.getElementById('comp-address').value
+                address: document.getElementById('comp-address').value,
+                logo: currentCompanyLogoBase64
             };
             localStorage.setItem('cmBizCompany', JSON.stringify(comp));
             updateInvoiceHeader(comp);
@@ -583,7 +602,19 @@
         }
 
         function updateInvoiceHeader(comp) {
-            document.getElementById('invoice-comp-name').innerText = comp.name || 'COMPANY NAME';
+            // Update all headers dynamically
+            document.querySelectorAll('.invoice-comp-name-disp').forEach(el => el.innerText = comp.name || 'COMPANY NAME');
+            
+            // Apply logo to all header image containers
+            document.querySelectorAll('.invoice-comp-logo-img').forEach(img => {
+                if(comp.logo) {
+                    img.src = comp.logo;
+                    img.style.display = 'block';
+                } else {
+                    img.style.display = 'none';
+                }
+            });
+
             let detailsHtml = [];
             if(comp.tagline) detailsHtml.push(comp.tagline);
             if(comp.address) detailsHtml.push(comp.address.replace(/\n/g, ', '));
@@ -596,7 +627,8 @@
             if(comp.web) webRow.push(`Web: ${comp.web}`);
             if(webRow.length) detailsHtml.push(webRow.join(' | '));
 
-            document.getElementById('invoice-comp-details').innerHTML = detailsHtml.join('<br>');
+            const detailsEl = document.getElementById('invoice-comp-details');
+            if(detailsEl) detailsEl.innerHTML = detailsHtml.join('<br>');
         }
 
         // --- INIT ---
@@ -604,6 +636,20 @@
             db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             document.getElementById('order-date').valueAsDate = new Date();
             
+            // Set base64 listener for company logo
+            document.getElementById('comp-logo-input').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if(file) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        currentCompanyLogoBase64 = evt.target.result;
+                        document.getElementById('comp-logo-preview').src = currentCompanyLogoBase64;
+                        document.getElementById('comp-logo-preview').style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
             let today = new Date();
             let firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
             document.getElementById('report-start').valueAsDate = firstDay;
@@ -614,7 +660,7 @@
         });
 
         function switchTab(tabId) {
-            document.querySelectorAll('main > div').forEach(el => el.classList.add('hide'));
+            document.querySelectorAll('main > div.section, main > div#view-dashboard').forEach(el => el.classList.add('hide'));
             document.getElementById('view-' + tabId).classList.remove('hide');
             
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -1001,9 +1047,9 @@
             if (error) { alert("Database Error saving order: " + error.message); return; }
 
             let comp = JSON.parse(localStorage.getItem('cmBizCompany'));
-            let compName = comp ? comp.name : 'CM bizzE';
+            let compNameLine = (comp && comp.name) ? `*${comp.name}*\n` : '';
 
-            let msg = `*${compName}*\n_Sales Order_\n\n*Date:* ${formatIndianDate(orderDate)}\n*Party:* ${custName}\n\n*Items:*\n`;
+            let msg = `${compNameLine}_Sales Order_\n\n*Date:* ${formatIndianDate(orderDate)}\n*Party:* ${custName}\n\n*Items:*\n`;
             cart.forEach(i => { msg += `▪ ${i.name} (x${i.qty}) - ₹${i.qty*i.price}\n`; });
             msg += `\n*Grand Total: ₹${total.toLocaleString('en-IN')}*`;
             
@@ -1045,7 +1091,7 @@
             globalOrders.forEach(o => { csv += `${formatIndianDate(o.order_date)},${o.customer_name},${o.customer_phone},${o.order_total},"${(o.order_details||"").replace(/"/g, '""')}"\n`; });
             let a = document.createElement('a');
             a.href = window.URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-            a.download = 'CM_bizzE_Report.csv'; a.click();
+            a.download = 'bizze_Report.csv'; a.click();
         }
     </script>
 </body>
