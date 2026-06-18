@@ -1,0 +1,81 @@
+:root {
+    --bg-color: #f4f7fb;
+    --primary-blue: #5b84e3;
+    --text-dark: #1a1a1a;
+    --text-light: #8c93a1;
+    --white: #ffffff;
+    --card-radius: 24px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: #e6ecf5; /* Outer background to simulate mobile frame */
+    display: flex;
+    justify-content: center;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--bg-color);
+    min-height: 100vh;
+    position: relative;
+    padding: 20px 20px 80px 20px;
+    overflow-x: hidden;
+}
+
+/* Header */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.user-info { display: flex; align-items: center; gap: 12px; }
+.profile-pic { border-radius: 50%; width: 45px; height: 45px; }
+.greeting .sub-text { font-size: 12px; color: var(--text-light); }
+.greeting h2 { font-size: 16px; color: var(--text-dark); }
+.icon-btn { background: var(--white); border: none; padding: 10px; border-radius: 50%; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
+/* Typography & Search */
+.main-heading { font-size: 28px; color: var(--text-dark); margin-bottom: 20px; line-height: 1.2; }
+.search-bar { background: var(--white); padding: 14px 20px; border-radius: 16px; display: flex; gap: 10px; margin-bottom: 24px; box-shadow: 0 2px 15px rgba(0,0,0,0.03); }
+.search-bar input { border: none; outline: none; width: 100%; font-size: 14px; }
+
+/* Sections */
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.section-header h3 { font-size: 16px; color: var(--text-dark); }
+.view-all { font-size: 12px; color: var(--text-light); text-decoration: none; }
+
+/* Appointment Card */
+.appointment-card { background: var(--primary-blue); border-radius: var(--card-radius); padding: 20px; color: var(--white); margin-bottom: 24px; }
+.doctor-info-light { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+.doctor-info-light .doc-pic { border-radius: 50%; width: 50px; height: 50px; }
+.doctor-info-light h4 { font-size: 16px; margin-bottom: 4px; }
+.doctor-info-light p { font-size: 12px; opacity: 0.8; }
+
+.appointment-time { background: rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; display: flex; justify-content: space-between; margin-bottom: 20px; }
+.time-block { display: flex; gap: 10px; align-items: center; }
+.time-block .label { font-size: 11px; opacity: 0.8; }
+.time-block .value { font-size: 13px; font-weight: 500; }
+
+.card-actions { display: flex; gap: 10px; }
+.btn-secondary { flex: 1; padding: 12px; border-radius: 12px; border: none; background: var(--white); color: var(--primary-blue); font-weight: 600; cursor: pointer;}
+.btn-primary-ghost { flex: 1; padding: 12px; border-radius: 12px; border: none; background: rgba(255,255,255,0.2); color: var(--white); font-weight: 600; cursor: pointer;}
+
+/* Pills */
+.category-pills { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 16px; padding-bottom: 5px; }
+.pill { padding: 8px 16px; border-radius: 20px; border: none; background: var(--white); color: var(--text-light); font-size: 13px; cursor: pointer; white-space: nowrap; }
+.pill.active { background: var(--primary-blue); color: var(--white); }
+
+/* Bottom Nav */
+.bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; background: var(--white); padding: 15px 30px; display: flex; justify-content: space-between; border-radius: 30px 30px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
+.nav-item { text-decoration: none; color: var(--text-light); padding: 10px 20px; border-radius: 20px; }
+.nav-item.active { background: var(--primary-blue); color: var(--white); }
