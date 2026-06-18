@@ -64,6 +64,32 @@
                 </div>
             </section>
 
+<section class="live-board-section" style="margin-top: 30px;">
+    <div class="section-header">
+        <h3>Live Appointment Board</h3>
+        <span class="live-indicator" style="color: #ff4d4f; font-size: 12px; font-weight: bold;">● LIVE</span>
+    </div>
+    
+    <div class="table-responsive" style="overflow-x: auto; background: var(--white); border-radius: 16px; padding: 15px; box-shadow: 0 2px 15px rgba(0,0,0,0.03);">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+            <thead>
+                <tr style="border-bottom: 1px solid #edf1f7; color: var(--text-light);">
+                    <th style="padding: 10px;">Time</th>
+                    <th style="padding: 10px;">Patient</th>
+                    <th style="padding: 10px;">Therapist</th>
+                    <th style="padding: 10px;">Status</th>
+                </tr>
+            </thead>
+            <tbody id="live-appointments-list">
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 20px; color: var(--text-light);">Loading live appointments...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
             <section class="doctors-section">
                 <div class="section-header">
                     <h3>Popular Doctors</h3>
