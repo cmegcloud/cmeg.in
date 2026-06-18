@@ -71,6 +71,30 @@
             </div>
         </div>
     </div>
+
+<div id="whatsapp-modal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); justify-content: center; align-items: flex-end; z-index: 1000;">
+    <div class="action-sheet" style="background: var(--white); width: 100%; max-width: 400px; border-radius: 24px 24px 0 0; padding: 25px 20px;">
+        <div class="section-header" style="margin-bottom: 20px;">
+            <h3>Message Patient</h3>
+            <button class="icon-btn close-modal-btn" style="background: #edf1f7;">✕</button>
+        </div>
+        
+        <div class="whatsapp-options" style="display: flex; flex-direction: column; gap: 12px;">
+            <button class="btn-primary-ghost wa-action-btn" data-type="confirmation" style="text-align: left; padding: 15px; border: 1px solid #edf1f7;">
+                🟢 Send Appointment Confirmation
+            </button>
+            <button class="btn-primary-ghost wa-action-btn" data-type="reminder" style="text-align: left; padding: 15px; border: 1px solid #edf1f7;">
+                📅 Send Appointment Reminder
+            </button>
+            <button class="btn-primary-ghost wa-action-btn" data-type="payment" style="text-align: left; padding: 15px; border: 1px solid #edf1f7;">
+                💳 Send Payment Reminder
+            </button>
+            <button class="btn-primary-ghost wa-action-btn" data-type="followup" style="text-align: left; padding: 15px; border: 1px solid #edf1f7;">
+                🩺 Send Follow-up Reminder
+            </button>
+        </div>
+    </div>
+</div>
     
     <script type="module" src="booking.js"></script>
 </body>
