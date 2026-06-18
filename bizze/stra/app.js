@@ -317,3 +317,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // Example: Attaching the dialer to dynamically generated buttons
+    const callButtons = document.querySelectorAll('.direct-call-btn');
+
+    callButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // Retrieve the phone number and call target (Patient, Therapist, Branch) from data attributes
+            const phoneNumber = e.currentTarget.getAttribute('data-phone');
+            const callTarget = e.currentTarget.getAttribute('data-target');
+
+            if (!phoneNumber) {
+                alert(`No phone number registered for this ${callTarget}.`);
+                return;
+            }
+
+            // Confirm action (optional, prevents accidental dials)
+            const confirmCall = confirm(`Initiate call to ${callTarget} at ${phoneNumber}?`);
+            
+            if (confirmCall) {
+                // Trigger the native phone dialer
+                window.location.href = `tel:${phoneNumber}`;
+            }
+        });
+    });
+});
+
+
