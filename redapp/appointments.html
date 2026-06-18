@@ -283,7 +283,7 @@
             if(!dateStr) return '';
             const p = dateStr.split('-');
             if(p.length !== 3) return dateStr;
-            [cite_start]return `${p[2][cite_start]}/${p[1]}/${p}`;
+            return `${p[2]}/${p[1]}/${p[0]}`;
         }
 
         // --- 0. SAFE DYNAMIC LOADERS ---
@@ -375,7 +375,7 @@
             try {
                 const pSnap = await getDocs(query(collection(db, "patients"), where("mobile", "==", mobile)));
                 if (!pSnap.empty) {
-                    const pData = pSnap.docs.data();
+                    const pData = pSnap.docs[0].data();
                     document.getElementById('aptName').value = pData.name || '';
                     document.getElementById('aptAge').value = pData.age || '';
                     document.getElementById('aptPatientNotes').value = pData.notes || '';
