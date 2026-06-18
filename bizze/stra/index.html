@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bizze - Clinic Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="top-nav">
+            <div class="user-info">
+                <img src="https://via.placeholder.com/40" alt="User Profile" class="profile-pic">
+                <div class="greeting">
+                    <span class="sub-text">Good morning!</span>
+                    <h2>Sajibur Rahman</h2>
+                </div>
+            </div>
+            <button class="icon-btn notification-btn">🔔</button>
+        </header>
+
+        <main>
+            <h1 class="main-heading">How are you feeling today?</h1>
+            
+            <div class="search-bar">
+                <span>🔍</span>
+                <input type="text" placeholder="Search a doctor, medicines, etc...">
+            </div>
+
+            <section class="appointments-section">
+                <div class="section-header">
+                    <h3>Upcoming Appointments</h3>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                
+                <div class="appointment-card primary-card">
+                    <div class="doctor-info-light">
+                        <img src="https://via.placeholder.com/50" alt="Dr. Ali Khan" class="doc-pic">
+                        <div>
+                            <h4>Dr. Ali Khan</h4>
+                            <p>Cardiology</p>
+                        </div>
+                    </div>
+                    <div class="appointment-time">
+                        <div class="time-block">
+                            <span class="icon">📅</span>
+                            <div>
+                                <p class="label">Date</p>
+                                <p class="value">18 Nov, Monday</p>
+                            </div>
+                        </div>
+                        <div class="time-block">
+                            <span class="icon">🕒</span>
+                            <div>
+                                <p class="label">Time</p>
+                                <p class="value">8pm - 8:30 pm</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-secondary">Re-Schedule</button>
+                        <button class="btn-primary-ghost">View Profile</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="doctors-section">
+                <div class="section-header">
+                    <h3>Popular Doctors</h3>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                <div class="category-pills">
+                    <button class="pill active">All</button>
+                    <button class="pill">Cardiology</button>
+                    <button class="pill">Dermatology</button>
+                </div>
+                
+                <div class="doctor-list-card">
+                    <img src="https://via.placeholder.com/60" alt="Dr. Ali Khan" class="doc-pic-large">
+                    <div class="doc-details">
+                        <h4>Dr. Ali Khan</h4>
+                        <p>Cardiology</p>
+                        <div class="rating">⭐ 4.9 | 190 Reviews</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active">🏠 Home</a>
+            <a href="#" class="nav-item">📅</a>
+            <a href="#" class="nav-item">💬</a>
+            <a href="#" class="nav-item">⚙️</a>
+        </nav>
+    </div>
+    
+    <script type="module" src="app.js"></script>
+</body>
+</html>
