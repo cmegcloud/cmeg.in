@@ -130,3 +130,59 @@ if (liveAppointmentsList) {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const waModal = document.getElementById('whatsapp-modal');
+    const closeBtn = document.querySelector('.close-modal-btn');
+    const waActionBtns = document.querySelectorAll('.wa-action-btn');
+
+    // Mock patient data (In reality, you'd pass this dynamically when clicking the specific appointment row)
+    const activePatient = {
+        name: "Sajibur Rahman",
+        phone: "919876543210", // Must include country code, no "+" or spaces
+        date: "24 Nov 2025",
+        time: "9:30 AM",
+        doctor: "Dr. Ali Khan",
+        amountDue: "2,000.00"
+    };
+
+    // Close Modal Logic
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            waModal.style.display = 'none';
+        });
+    }
+
+    // Handle One-Click Send Actions
+    waActionBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const messageType = e.target.getAttribute('data-type');
+            let messageText = "";
+
+            // Construct prefilled messages based on type
+            switch (messageType) {
+                case "confirmation":
+                    messageText = `Hello ${activePatient.name}, your appointment with ${activePatient.doctor} at Bizze Clinic is confirmed for ${activePatient.date} at ${activePatient.time}. We look forward to seeing you!`;
+                    break;
+                case "reminder":
+                    messageText = `Reminder: Hi ${activePatient.name}, you have an upcoming appointment with ${activePatient.doctor} tomorrow at ${activePatient.time}. Please reply with 'YES' to confirm.`;
+                    break;
+                case "payment":
+                    messageText = `Hello ${activePatient.name}, this is a gentle reminder from Bizze Clinic regarding an outstanding payment of ₹${activePatient.amountDue}. Please clear the dues at your earliest convenience.`;
+                    break;
+                case "followup":
+                    messageText = `Hi ${activePatient.name}, ${activePatient.doctor} requested a follow-up consultation. Please let us know a convenient time to schedule your next visit to Bizze Clinic.`;
+                    break;
+            }
+
+            // Encode the text for URL and open WhatsApp
+            const encodedMessage = encodeURIComponent(messageText);
+            const whatsappUrl = `https://wa.me/${activePatient.phone}?text=${encodedMessage}`;
+            
+            // Open in new tab
+            window.open(whatsappUrl, '_blank');
+            waModal.style.display = 'none'; // Close modal after click
+        });
+    });
+});
+
