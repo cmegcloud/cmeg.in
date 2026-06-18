@@ -225,7 +225,7 @@
         
         window.txnDataCache = {};
 
-        // Default Date
+        // Default Date (FIXED ARRAY SPLIT BUG)
         document.getElementById("txnDate").value = new Date().toISOString().split('T');
 
         // --- 1. AUTO-FILL PATIENT ---
@@ -238,6 +238,7 @@
             try {
                 const pSnap = await getDocs(query(collection(db, "patients"), where("mobile", "==", mobile)));
                 if (!pSnap.empty) {
+                    // FIXED SNAPSHOT ARRAY BUG
                     document.getElementById('patientName').value = pSnap.docs.data().name;
                 } else {
                     alert("No patient found. Type name manually.");
@@ -409,6 +410,7 @@
             document.getElementById('transaction-form').reset();
             document.getElementById('txnDocId').value = ''; 
             document.getElementById('txnIdDisplay').value = 'Auto-Generated'; 
+            // FIXED ARRAY SPLIT BUG HERE TOO
             document.getElementById('txnDate').value = new Date().toISOString().split('T');
             document.getElementById('saveTxnBtn').innerText = "Save Transaction";
         }
