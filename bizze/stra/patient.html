@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Module - Bizze</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="top-nav">
+            <button class="icon-btn back-btn" onclick="history.back()">←</button>
+            <h2 class="main-heading" style="margin: 0; font-size: 20px;">Patient Profiles</h2>
+        </header>
+
+        <main>
+            <section class="search-section" style="margin-bottom: 25px;">
+                <div class="search-bar">
+                    <span>📞</span>
+                    <input type="tel" id="search-mobile" placeholder="Enter Mobile Number...">
+                    <button class="btn-primary-ghost" id="search-btn" style="padding: 8px 15px;">Search</button>
+                </div>
+            </section>
+
+            <section class="patient-form-section" id="patient-details-section" style="display: none;">
+                <div class="section-header">
+                    <h3>Patient Details</h3>
+                    <span id="patient-id-badge" class="pill active">ID: Pending</span>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="font-size: 12px; color: var(--text-light);">Full Name</label>
+                    <input type="text" id="patient-name" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #edf1f7;">
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label style="font-size: 12px; color: var(--text-light);">Age</label>
+                        <input type="number" id="patient-age" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #edf1f7;">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label style="font-size: 12px; color: var(--text-light);">Gender</label>
+                        <select id="patient-gender" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #edf1f7; background: var(--white);">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-primary-large" id="save-patient-btn" style="width: 100%; padding: 15px; margin-top: 10px;">Save & Continue to Booking</button>
+            </section>
+
+            <section id="patient-history" style="display: none; margin-top: 30px;">
+                <div class="section-header">
+                    <h3>Treatment History</h3>
+                </div>
+                <div id="history-list">
+                    </div>
+            </section>
+        </main>
+    </div>
+    
+    <script type="module" src="patient.js"></script>
+</body>
+</html>
