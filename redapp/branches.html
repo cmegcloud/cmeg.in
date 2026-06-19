@@ -186,8 +186,9 @@
             
             let isEditing = forceEnable; 
 
+            // FIXED NODELIST BUG
             if(forceEnable === undefined || forceEnable === null) {
-                isEditing = inputs.hasAttribute('readonly'); 
+                isEditing = inputs.length > 0 && inputs.hasAttribute('readonly'); 
             }
             
             inputs.forEach(input => {
