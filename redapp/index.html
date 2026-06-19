@@ -14,7 +14,7 @@
             const errDiv = document.getElementById('dash-error-banner');
             if(errDiv) {
                 errDiv.style.display = 'flex';
-                document.getElementById('dash-error-text').innerText = `Syntax Error at Line ${lineno}: ${message}`;
+                document.getElementById('dash-error-text').innerText = `Error at Line ${lineno}: ${message}`;
             }
             return false;
         };
@@ -246,7 +246,6 @@
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // 1. Core Config
         const firebaseConfig = {
             apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
             authDomain: "cmf001stra.firebaseapp.com",
@@ -256,10 +255,11 @@
             appId: "1:763958641347:web:316876bc2340b26bd21876",
             measurementId: "G-770FBR88LJ"
         };
+
         const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
         const db = getFirestore(app);
 
-        // 2. Global State Variables
+        // Safe global variable declarations
         window.allApts = [];
         window.aptDatesSet = new Set();
         window.apptChartInstance = null; 
@@ -269,7 +269,7 @@
         window.calMonth = window.currentDate.getMonth(); 
         window.selectedDateStr = window.currentDate.toISOString().split('T'); 
         
-        window.fileMap = {
+        window.cmAppFileMap = {
             "view-patients": "patients.html",
             "view-appointments": "appointments.html",
             "view-transaction": "transaction.html",
@@ -286,7 +286,6 @@
             "view-seal": "seal.html"
         };
 
-        // 3. Routing & UI Utilities
         window.toggleMenu = function() {
             const sidebar = document.getElementById('sidebar-container');
             if(sidebar) sidebar.classList.toggle('open');
@@ -300,7 +299,6 @@
             return `${p}/${p}/${p}`; 
         };
 
-        // 4. Component Loaders
         window.loadComponent = async function(elementId, filename) {
             try {
                 const response = await fetch(filename);
@@ -329,7 +327,7 @@
                 targetDiv.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--primary);">Loading module...</div>';
                 targetDiv.classList.add('active');
                 try {
-                    const response = await fetch(window.fileMap[targetId]);
+                    const response = await fetch(window.cmAppFileMap[targetId]);
                     if (!response.ok) throw new Error('File fetch failed');
                     
                     const htmlText = await response.text();
@@ -349,7 +347,7 @@
                 } catch (error) {
                     targetDiv.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--danger); background: #FEF2F2; border-radius: 12px; border: 1px solid #FEE2E2;">
                         <span class="material-symbols-rounded" style="font-size: 32px; margin-bottom: 8px;">error</span><br>
-                        <b>Module Not Found.</b><br> Ensure the file <b>${window.fileMap[targetId]}</b> exists in your repository!
+                        <b>Module Not Found.</b><br> Ensure the file <b>${window.cmAppFileMap[targetId]}</b> exists in your repository!
                     </div>`;
                 }
             } else {
@@ -361,7 +359,6 @@
             }
         };
 
-        // 5. Dashboard Data Fetch
         window.fetchDashboardData = async function() {
             try {
                 const q = query(collection(db, "appointments")); 
@@ -406,7 +403,6 @@
             }
         };
 
-        // 6. Chart Renderer
         window.renderChart = function(pending, completed, rescheduled, cancelled) {
             try {
                 if (typeof Chart === 'undefined') return; 
@@ -426,7 +422,6 @@
             } catch (e) { console.warn("Chart rendering skipped", e); }
         };
 
-        // 7. Calendar Controllers
         window.renderCalendar = function() {
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             document.getElementById('calMonthDisplay').innerText = `${monthNames[window.calMonth]} ${window.calYear}`;
@@ -467,7 +462,6 @@
             window.selectDate(today.toISOString().split('T'));
         };
 
-        // 8. Live Table Renderer
         window.renderLiveTable = function() {
             const tableBody = document.getElementById('dashAptTableBody');
             const todayStr = new Date().toISOString().split('T');
@@ -509,7 +503,6 @@
             tableBody.innerHTML = rowsHtml;
         };
 
-        // 9. Clock Engine
         window.updateGlobalClock = function() {
             const ddVal = document.getElementById('dd-val');
             if (!ddVal) return; 
@@ -537,7 +530,7 @@
             document.getElementById('min-arc').style.strokeDashoffset = circumference - (circumference * (now.getMinutes() / 60));
         };
 
-        // 10. Boot Process
+        // --- DOM Boot Sequence ---
         window.addEventListener('DOMContentLoaded', () => {
             window.loadComponent('header-container', 'header.html');
             window.loadComponent('sidebar-container', 'sidebar.html');
