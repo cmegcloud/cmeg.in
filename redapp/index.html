@@ -12,10 +12,9 @@
     <script>
         window.onerror = function(message, source, lineno, colno, error) {
             const errDiv = document.getElementById('dash-error-banner');
-            const errText = document.getElementById('dash-error-text');
-            if(errDiv && errText) {
+            if(errDiv) {
                 errDiv.style.display = 'flex';
-                errText.innerText = `Crash detected: ${message} (Line: ${lineno})`;
+                document.getElementById('dash-error-text').innerText = `Syntax Error at Line ${lineno}: ${message}`;
             }
             return false;
         };
@@ -199,7 +198,7 @@
                 <div class="dash-table-wrapper">
                     <div style="padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #FAFAFA;">
                         <h4 style="font-size: 14px; font-weight: 700; margin: 0; color: var(--text-main);">Schedule for: <span id="dashListTitle" style="color: var(--primary);">Today</span></h4>
-                        <button style="background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-main); display: flex; align-items: center; gap: 6px; transition: 0.2s;" onclick="switchView('view-appointments', null)" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+                        <button style="background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-main); display: flex; align-items: center; gap: 6px; transition: 0.2s;" onclick="window.switchView('view-appointments', null)" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
                             View Full Module <span class="material-symbols-rounded" style="font-size: 16px;">arrow_forward</span>
                         </button>
                     </div>
@@ -235,7 +234,6 @@
             <div id="view-attendance" class="view-section"></div>
             <div id="view-users" class="view-section"></div>
             <div id="view-clinic-details" class="view-section"></div>
-            
             <div id="view-company" class="view-section"></div>
             <div id="view-letterhead" class="view-section"></div>
             <div id="view-seal" class="view-section"></div>
@@ -248,6 +246,7 @@
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+        // 1. Core Config
         const firebaseConfig = {
             apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
             authDomain: "cmf001stra.firebaseapp.com",
@@ -257,26 +256,112 @@
             appId: "1:763958641347:web:316876bc2340b26bd21876",
             measurementId: "G-770FBR88LJ"
         };
-
         const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
         const db = getFirestore(app);
 
+        // 2. Global State Variables
         window.allApts = [];
         window.aptDatesSet = new Set();
         window.apptChartInstance = null; 
         
-        let currentDate = new Date();
-        window.calYear = currentDate.getFullYear();
-        window.calMonth = currentDate.getMonth(); 
-        window.selectedDateStr = currentDate.toISOString().split('T'); 
+        window.currentDate = new Date();
+        window.calYear = window.currentDate.getFullYear();
+        window.calMonth = window.currentDate.getMonth(); 
+        window.selectedDateStr = window.currentDate.toISOString().split('T'); 
+        
+        window.fileMap = {
+            "view-patients": "patients.html",
+            "view-appointments": "appointments.html",
+            "view-transaction": "transaction.html",
+            "view-billing": "estimate.html",
+            "view-branches": "branches.html",
+            "view-therapist": "therapist.html",
+            "view-calender": "calender.html",
+            "view-staff": "staff.html",
+            "view-attendance": "attendance.html",
+            "view-users": "users.html",
+            "view-clinic-details": "settings.html",
+            "view-company": "company.html",
+            "view-letterhead": "letterhead.html",
+            "view-seal": "seal.html"
+        };
+
+        // 3. Routing & UI Utilities
+        window.toggleMenu = function() {
+            const sidebar = document.getElementById('sidebar-container');
+            if(sidebar) sidebar.classList.toggle('open');
+        };
+        window.toggleSidebar = window.toggleMenu;
 
         window.formatIndianDate = function(dateStr) {
             if(!dateStr) return '';
             const p = dateStr.split('-');
             if(p.length !== 3) return dateStr;
             return `${p}/${p}/${p}`; 
-        }
+        };
 
+        // 4. Component Loaders
+        window.loadComponent = async function(elementId, filename) {
+            try {
+                const response = await fetch(filename);
+                if (response.ok) {
+                    document.getElementById(elementId).innerHTML = await response.text();
+                    if(filename === 'header.html') window.updateGlobalClock();
+                }
+            } catch (error) { console.error(`Error loading ${filename}`); }
+        };
+
+        window.switchView = async function(targetId, navElement) {
+            document.querySelectorAll('.nav-link, .nav-item, .bottom-nav-item').forEach(el => el.classList.remove('active'));
+            if(navElement && !navElement.classList.contains('close-menu-btn')) navElement.classList.add('active');
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+
+            const targetDiv = document.getElementById(targetId);
+
+            if(targetId === 'view-dashboard') {
+                targetDiv.classList.add('active');
+                if(window.fetchDashboardData) window.fetchDashboardData(); 
+                if(window.innerWidth <= 768) window.toggleMenu(); 
+                return;
+            }
+
+            if(targetDiv.innerHTML.trim() === '') {
+                targetDiv.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--primary);">Loading module...</div>';
+                targetDiv.classList.add('active');
+                try {
+                    const response = await fetch(window.fileMap[targetId]);
+                    if (!response.ok) throw new Error('File fetch failed');
+                    
+                    const htmlText = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlText, 'text/html');
+                    const moduleContent = doc.querySelector('.module-container') || doc.body;
+
+                    targetDiv.innerHTML = ''; 
+                    targetDiv.appendChild(moduleContent);
+
+                    targetDiv.querySelectorAll('script').forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+                } catch (error) {
+                    targetDiv.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--danger); background: #FEF2F2; border-radius: 12px; border: 1px solid #FEE2E2;">
+                        <span class="material-symbols-rounded" style="font-size: 32px; margin-bottom: 8px;">error</span><br>
+                        <b>Module Not Found.</b><br> Ensure the file <b>${window.fileMap[targetId]}</b> exists in your repository!
+                    </div>`;
+                }
+            } else {
+                targetDiv.classList.add('active'); 
+            }
+
+            if(window.innerWidth <= 768 && document.getElementById('sidebar-container').classList.contains('open')) {
+                window.toggleMenu();
+            }
+        };
+
+        // 5. Dashboard Data Fetch
         window.fetchDashboardData = async function() {
             try {
                 const q = query(collection(db, "appointments")); 
@@ -287,13 +372,11 @@
 
                 window.allApts = [];
                 window.aptDatesSet.clear();
-                
                 document.getElementById('dash-error-banner').style.display = 'none';
 
                 snap.forEach(doc => {
                     const data = doc.data();
                     window.allApts.push(data);
-                    
                     if(data.date) window.aptDatesSet.add(data.date);
 
                     let bal = parseFloat(data.balance) || 0;
@@ -318,25 +401,15 @@
                 window.renderChart(cPending, cCompleted, cRescheduled, cCancelled);
                 window.renderCalendar();
                 window.renderLiveTable();
-
             } catch (error) {
-                console.error("Dashboard Data Load Error", error);
-                const errorBanner = document.getElementById('dash-error-banner');
-                if (errorBanner) {
-                    errorBanner.style.display = 'flex';
-                    document.getElementById('dash-error-text').innerText = "Data Sync Error: " + error.message;
-                }
-                
-                // If it fails, update UI so it doesn't stay frozen on "Loading" forever
-                document.getElementById('calMonthDisplay').innerText = "Error";
-                document.getElementById('dashAptTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--danger); font-size: 13px; display: block; width: 100%;">Failed to load data. Check console.</td></tr>`;
+                console.error("Dashboard Load Error:", error);
             }
         };
 
+        // 6. Chart Renderer
         window.renderChart = function(pending, completed, rescheduled, cancelled) {
             try {
                 if (typeof Chart === 'undefined') return; 
-
                 const ctx = document.getElementById('apptDonutChart').getContext('2d');
                 if (window.apptChartInstance) window.apptChartInstance.destroy();
 
@@ -347,59 +420,30 @@
 
                 window.apptChartInstance = new Chart(ctx, {
                     type: 'doughnut',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            data: dataValues,
-                            backgroundColor: bgColors,
-                            borderWidth: 0,
-                            hoverOffset: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '75%', 
-                        plugins: {
-                            legend: { display: false }, 
-                            tooltip: { enabled: total > 0 }
-                        }
-                    }
+                    data: { labels: labels, datasets: [{ data: dataValues, backgroundColor: bgColors, borderWidth: 0, hoverOffset: 4 }] },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: total > 0 } } }
                 });
-            } catch (e) {
-                console.warn("Chart rendering skipped", e);
-            }
+            } catch (e) { console.warn("Chart rendering skipped", e); }
         };
 
+        // 7. Calendar Controllers
         window.renderCalendar = function() {
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             document.getElementById('calMonthDisplay').innerText = `${monthNames[window.calMonth]} ${window.calYear}`;
-
             const grid = document.getElementById('calendarGrid');
-            let html = `
-                <div class="cal-day-name">Sun</div><div class="cal-day-name">Mon</div><div class="cal-day-name">Tue</div>
-                <div class="cal-day-name">Wed</div><div class="cal-day-name">Thu</div><div class="cal-day-name">Fri</div><div class="cal-day-name">Sat</div>
-            `;
+            let html = `<div class="cal-day-name">Sun</div><div class="cal-day-name">Mon</div><div class="cal-day-name">Tue</div><div class="cal-day-name">Wed</div><div class="cal-day-name">Thu</div><div class="cal-day-name">Fri</div><div class="cal-day-name">Sat</div>`;
 
             const firstDay = new Date(window.calYear, window.calMonth, 1).getDay();
             const daysInMonth = new Date(window.calYear, window.calMonth + 1, 0).getDate();
 
-            for(let i = 0; i < firstDay; i++) {
-                html += `<div class="cal-day empty"></div>`;
-            }
-
+            for(let i = 0; i < firstDay; i++) html += `<div class="cal-day empty"></div>`;
             for(let i = 1; i <= daysInMonth; i++) {
-                const mStr = String(window.calMonth + 1).padStart(2, '0');
-                const dStr = String(i).padStart(2, '0');
-                const loopDateStr = `${window.calYear}-${mStr}-${dStr}`;
-
+                const loopDateStr = `${window.calYear}-${String(window.calMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
                 let classes = 'cal-day';
                 if(loopDateStr === window.selectedDateStr) classes += ' active';
                 if(window.aptDatesSet.has(loopDateStr)) classes += ' has-event';
-
                 html += `<div class="${classes}" onclick="window.selectDate('${loopDateStr}')">${i}</div>`;
             }
-
             grid.innerHTML = html;
         };
 
@@ -423,19 +467,13 @@
             window.selectDate(today.toISOString().split('T'));
         };
 
+        // 8. Live Table Renderer
         window.renderLiveTable = function() {
             const tableBody = document.getElementById('dashAptTableBody');
-            
             const todayStr = new Date().toISOString().split('T');
-            const titleSpan = document.getElementById('dashListTitle');
-            if(window.selectedDateStr === todayStr) {
-                titleSpan.innerText = "Today";
-            } else {
-                titleSpan.innerText = window.formatIndianDate(window.selectedDateStr);
-            }
+            document.getElementById('dashListTitle').innerText = (window.selectedDateStr === todayStr) ? "Today" : window.formatIndianDate(window.selectedDateStr);
 
             const dayApts = window.allApts.filter(a => a.date === window.selectedDateStr);
-
             if(dayApts.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted); font-size: 13px; display: block; width: 100%;">No appointments scheduled for this date.</td></tr>`;
                 return;
@@ -468,165 +506,46 @@
                     </tr>
                 `;
             });
-
             tableBody.innerHTML = rowsHtml;
         };
-    </script>
 
-    <script>
-        // ROUTING MAP (Includes the new Company, Seal, and Letterhead pages)
-        const fileMap = {
-            'view-patients': 'patients.html',
-            'view-appointments': 'appointments.html', 
-            'view-transaction': 'transaction.html',
-            'view-billing': 'estimate.html', 
-            'view-branches': 'branches.html',
-            'view-therapist': 'therapist.html',
-            'view-calender': 'calender.html',
-            'view-staff': 'staff.html',
-            'view-attendance': 'attendance.html',
-            'view-users': 'users.html',
-            'view-clinic-details': 'settings.html',
-            'view-company': 'company.html',
-            'view-letterhead': 'letterhead.html',
-            'view-seal': 'seal.html'
-        };
-
-        window.toggleMenu = function() {
-            const sidebar = document.getElementById('sidebar-container');
-            if(sidebar) sidebar.classList.toggle('open');
-        };
-        window.toggleSidebar = window.toggleMenu;
-
-        window.addEventListener('DOMContentLoaded', () => {
-            loadComponent('header-container', 'header.html');
-            loadComponent('sidebar-container', 'sidebar.html');
-            loadComponent('bottomnav-container', 'bottomnav.html');
-            
-            // FIRE DASHBOARD ON LOAD
-            if(window.fetchDashboardData) {
-                setTimeout(() => window.fetchDashboardData(), 300);
-            }
-        });
-
-        // --- GLOBAL CLOCK ENGINE ---
-        function updateGlobalClock() {
+        // 9. Clock Engine
+        window.updateGlobalClock = function() {
             const ddVal = document.getElementById('dd-val');
             if (!ddVal) return; 
 
             const now = new Date();
             const circumference = 131.95; 
 
-            const date = now.getDate();
-            const monthIndex = now.getMonth(); 
-            const year = now.getFullYear();
-            const hours24 = now.getHours();
-            const minutes = now.getMinutes();
-
-            const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-            const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-
-            const isAm = hours24 < 12;
-            let hours12 = hours24 % 12;
+            const isAm = now.getHours() < 12;
+            let hours12 = now.getHours() % 12;
             if (hours12 === 0) hours12 = 12;
-            
             const pad = (n) => n < 10 ? '0' + n : n;
 
-            ddVal.innerText = pad(date);
-            document.getElementById('dd-context').innerText = dayNames[now.getDay()];
-            
-            document.getElementById('mm-val').innerText = monthNames[monthIndex];
-            document.getElementById('mm-context').innerText = year;
-
+            ddVal.innerText = pad(now.getDate());
+            document.getElementById('dd-context').innerText = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][now.getDay()];
+            document.getElementById('mm-val').innerText = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][now.getMonth()];
+            document.getElementById('mm-context').innerText = now.getFullYear();
             document.getElementById('hh-val').innerText = pad(hours12);
             document.getElementById('hh-context').innerText = isAm ? "AM" : "PM";
+            document.getElementById('min-val').innerText = pad(now.getMinutes());
 
-            document.getElementById('min-val').innerText = pad(minutes);
-
-            const daysInCurrentMonth = new Date(year, monthIndex + 1, 0).getDate();
-            
-            const dayProgress = date / daysInCurrentMonth;
-            const monthProgress = (monthIndex + 1) / 12;
-            const hourProgress = hours24 / 24; 
-            const minuteProgress = minutes / 60;
-
+            const dayProgress = now.getDate() / new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
             document.getElementById('dd-arc').style.strokeDashoffset = circumference - (circumference * dayProgress);
-            document.getElementById('mm-arc').style.strokeDashoffset = circumference - (circumference * monthProgress);
-            document.getElementById('hh-arc').style.strokeDashoffset = circumference - (circumference * hourProgress);
-            document.getElementById('min-arc').style.strokeDashoffset = circumference - (circumference * minuteProgress);
-        }
-        
-        setInterval(updateGlobalClock, 1000);
+            document.getElementById('mm-arc').style.strokeDashoffset = circumference - (circumference * ((now.getMonth() + 1) / 12));
+            document.getElementById('hh-arc').style.strokeDashoffset = circumference - (circumference * (now.getHours() / 24));
+            document.getElementById('min-arc').style.strokeDashoffset = circumference - (circumference * (now.getMinutes() / 60));
+        };
 
-        async function loadComponent(elementId, filename) {
-            try {
-                const response = await fetch(filename);
-                if (response.ok) {
-                    const htmlContent = await response.text();
-                    document.getElementById(elementId).innerHTML = htmlContent;
-                    
-                    if(filename === 'header.html') updateGlobalClock();
-                }
-            } catch (error) {
-                console.error(`Error loading ${filename}`);
-            }
-        }
-
-        async function switchView(targetId, navElement) {
-            document.querySelectorAll('.nav-item, .bottom-nav-item').forEach(el => el.classList.remove('active'));
-            if(navElement && !navElement.classList.contains('close-menu-btn')) navElement.classList.add('active');
-
-            document.querySelectorAll('.view-section').forEach(el => {
-                el.classList.remove('active');
-            });
-
-            const targetDiv = document.getElementById(targetId);
-
-            if(targetId === 'view-dashboard') {
-                targetDiv.classList.add('active');
-                if(window.fetchDashboardData) window.fetchDashboardData(); 
-                if(window.innerWidth <= 768) window.toggleMenu(); 
-                return;
-            }
-
-            if(targetDiv.innerHTML.trim() === '') {
-                targetDiv.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--primary);">Loading module...</div>';
-                targetDiv.classList.add('active');
-
-                try {
-                    const response = await fetch(fileMap[targetId]);
-                    if (!response.ok) throw new Error('File fetch failed');
-                    
-                    const htmlText = await response.text();
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(htmlText, 'text/html');
-                    const moduleContent = doc.querySelector('.module-container') || doc.body;
-
-                    targetDiv.innerHTML = ''; 
-                    targetDiv.appendChild(moduleContent);
-
-                    const scripts = targetDiv.querySelectorAll('script');
-                    scripts.forEach(oldScript => {
-                        const newScript = document.createElement('script');
-                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                        oldScript.parentNode.replaceChild(newScript, oldScript);
-                    });
-
-                } catch (error) {
-                    targetDiv.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--danger); background: #FEF2F2; border-radius: 12px; border: 1px solid #FEE2E2;">
-                        <span class="material-symbols-rounded" style="font-size: 32px; margin-bottom: 8px;">error</span><br>
-                        <b>Module Not Found.</b><br> Ensure the file <b>${fileMap[targetId]}</b> exists in your repository!
-                    </div>`;
-                }
-            } else {
-                targetDiv.classList.add('active'); 
-            }
-
-            if(window.innerWidth <= 768 && document.getElementById('sidebar-container').classList.contains('open')) {
-                window.toggleMenu();
-            }
-        }
+        // 10. Boot Process
+        window.addEventListener('DOMContentLoaded', () => {
+            window.loadComponent('header-container', 'header.html');
+            window.loadComponent('sidebar-container', 'sidebar.html');
+            window.loadComponent('bottomnav-container', 'bottomnav.html');
+            
+            setInterval(window.updateGlobalClock, 1000);
+            setTimeout(() => window.fetchDashboardData(), 300);
+        });
     </script>
 </body>
 </html>
