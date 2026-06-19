@@ -7,7 +7,8 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0"/>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" crossorigin="anonymous"></script>
 
     <script>
         window.onerror = function(message, source, lineno, colno, error) {
@@ -242,24 +243,8 @@
         <div id="bottomnav-container"></div>
     </div>
 
-    <script type="module">
-        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
-            authDomain: "cmf001stra.firebaseapp.com",
-            projectId: "cmf001stra",
-            storageBucket: "cmf001stra.firebasestorage.app",
-            messagingSenderId: "763958641347",
-            appId: "1:763958641347:web:316876bc2340b26bd21876",
-            measurementId: "G-770FBR88LJ"
-        };
-
-        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-        const db = getFirestore(app);
-
-        // Safe global variable declarations
+    <script>
+        // Global UI State
         window.allApts = [];
         window.aptDatesSet = new Set();
         window.apptChartInstance = null; 
@@ -286,6 +271,7 @@
             "view-seal": "seal.html"
         };
 
+        // Navigation Functions
         window.toggleMenu = function() {
             const sidebar = document.getElementById('sidebar-container');
             if(sidebar) sidebar.classList.toggle('open');
@@ -359,50 +345,7 @@
             }
         };
 
-        window.fetchDashboardData = async function() {
-            try {
-                const q = query(collection(db, "appointments")); 
-                const snap = await getDocs(q);
-                
-                let unpaidTotal = 0;
-                let cPending = 0, cCompleted = 0, cRescheduled = 0, cCancelled = 0;
-
-                window.allApts = [];
-                window.aptDatesSet.clear();
-                document.getElementById('dash-error-banner').style.display = 'none';
-
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    window.allApts.push(data);
-                    if(data.date) window.aptDatesSet.add(data.date);
-
-                    let bal = parseFloat(data.balance) || 0;
-                    if(bal > 0) unpaidTotal += bal;
-
-                    const status = (data.status || '').toLowerCase();
-                    if(status === 'pending') cPending++;
-                    else if(status === 'completed') cCompleted++;
-                    else if(status === 'rescheduled') cRescheduled++;
-                    else if(status === 'cancelled') cCancelled++;
-                });
-
-                window.allApts.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-
-                document.getElementById('dashUnpaidBills').innerText = `₹ ${unpaidTotal.toLocaleString('en-IN')}`;
-                document.getElementById('dashTotalApts').innerHTML = `${window.allApts.length} <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Bookings</span>`;
-                document.getElementById('dashPending').innerText = cPending;
-                document.getElementById('dashCompleted').innerText = cCompleted;
-                document.getElementById('dashRescheduled').innerText = cRescheduled;
-                document.getElementById('dashCancelled').innerText = cCancelled;
-
-                window.renderChart(cPending, cCompleted, cRescheduled, cCancelled);
-                window.renderCalendar();
-                window.renderLiveTable();
-            } catch (error) {
-                console.error("Dashboard Load Error:", error);
-            }
-        };
-
+        // Chart Rendering
         window.renderChart = function(pending, completed, rescheduled, cancelled) {
             try {
                 if (typeof Chart === 'undefined') return; 
@@ -422,6 +365,7 @@
             } catch (e) { console.warn("Chart rendering skipped", e); }
         };
 
+        // Calendar Logic
         window.renderCalendar = function() {
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             document.getElementById('calMonthDisplay').innerText = `${monthNames[window.calMonth]} ${window.calYear}`;
@@ -462,6 +406,7 @@
             window.selectDate(today.toISOString().split('T'));
         };
 
+        // Live Table Logic
         window.renderLiveTable = function() {
             const tableBody = document.getElementById('dashAptTableBody');
             const todayStr = new Date().toISOString().split('T');
@@ -503,6 +448,7 @@
             tableBody.innerHTML = rowsHtml;
         };
 
+        // Header Clock Logic
         window.updateGlobalClock = function() {
             const ddVal = document.getElementById('dd-val');
             if (!ddVal) return; 
@@ -530,15 +476,100 @@
             document.getElementById('min-arc').style.strokeDashoffset = circumference - (circumference * (now.getMinutes() / 60));
         };
 
-        // --- DOM Boot Sequence ---
-        window.addEventListener('DOMContentLoaded', () => {
+        // Page Boot Sequence (Fires securely when DOM is truly ready)
+        document.addEventListener('DOMContentLoaded', () => {
             window.loadComponent('header-container', 'header.html');
             window.loadComponent('sidebar-container', 'sidebar.html');
             window.loadComponent('bottomnav-container', 'bottomnav.html');
             
             setInterval(window.updateGlobalClock, 1000);
-            setTimeout(() => window.fetchDashboardData(), 300);
         });
+    </script>
+
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
+            authDomain: "cmf001stra.firebaseapp.com",
+            projectId: "cmf001stra",
+            storageBucket: "cmf001stra.firebasestorage.app",
+            messagingSenderId: "763958641347",
+            appId: "1:763958641347:web:316876bc2340b26bd21876",
+            measurementId: "G-770FBR88LJ"
+        };
+
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        const db = getFirestore(app);
+
+        // Fetch Dashboard Data from Firebase
+        window.fetchDashboardData = async function() {
+            try {
+                const q = query(collection(db, "appointments")); 
+                const snap = await getDocs(q);
+                
+                let unpaidTotal = 0;
+                let cPending = 0, cCompleted = 0, cRescheduled = 0, cCancelled = 0;
+
+                window.allApts = [];
+                window.aptDatesSet.clear();
+                
+                const errBanner = document.getElementById('dash-error-banner');
+                if(errBanner) errBanner.style.display = 'none';
+
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    window.allApts.push(data);
+                    
+                    if(data.date) window.aptDatesSet.add(data.date);
+
+                    let bal = parseFloat(data.balance) || 0;
+                    if(bal > 0) unpaidTotal += bal;
+
+                    const status = (data.status || '').toLowerCase();
+                    if(status === 'pending') cPending++;
+                    else if(status === 'completed') cCompleted++;
+                    else if(status === 'rescheduled') cRescheduled++;
+                    else if(status === 'cancelled') cCancelled++;
+                });
+
+                window.allApts.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+                const uBillObj = document.getElementById('dashUnpaidBills');
+                if(uBillObj) uBillObj.innerText = `₹ ${unpaidTotal.toLocaleString('en-IN')}`;
+                
+                const tAptObj = document.getElementById('dashTotalApts');
+                if(tAptObj) tAptObj.innerHTML = `${window.allApts.length} <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Bookings</span>`;
+                
+                const dPend = document.getElementById('dashPending');
+                if(dPend) dPend.innerText = cPending;
+                
+                const dComp = document.getElementById('dashCompleted');
+                if(dComp) dComp.innerText = cCompleted;
+                
+                const dResch = document.getElementById('dashRescheduled');
+                if(dResch) dResch.innerText = cRescheduled;
+                
+                const dCanc = document.getElementById('dashCancelled');
+                if(dCanc) dCanc.innerText = cCancelled;
+
+                if(window.renderChart) window.renderChart(cPending, cCompleted, cRescheduled, cCancelled);
+                if(window.renderCalendar) window.renderCalendar();
+                if(window.renderLiveTable) window.renderLiveTable();
+
+            } catch (error) {
+                console.error("Dashboard Load Error:", error);
+                const errorBanner = document.getElementById('dash-error-banner');
+                if (errorBanner) {
+                    errorBanner.style.display = 'flex';
+                    document.getElementById('dash-error-text').innerText = "Data Sync Error: " + error.message;
+                }
+            }
+        };
+
+        // Fire dashboard fetch immediately once Firebase module is loaded
+        window.fetchDashboardData();
     </script>
 </body>
 </html>
