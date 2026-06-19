@@ -117,3 +117,61 @@
         
     </div>
 </header>
+
+<script>
+    function updateClockMetrics() {
+        const now = new Date();
+        const circumference = 131.95; 
+
+        // 1. Get raw time data
+        const date = now.getDate();
+        const monthIndex = now.getMonth(); 
+        const year = now.getFullYear();
+        const hours24 = now.getHours();
+        const minutes = now.getMinutes();
+
+        // 2. Formatting arrays
+        const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+        const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+        // 3. Format strings
+        const isAm = hours24 < 12;
+        let hours12 = hours24 % 12;
+        if (hours12 === 0) hours12 = 12;
+        
+        const pad = (n) => n < 10 ? '0' + n : n;
+
+        // 4. Update the text in the DOM
+        document.getElementById('dd-val').innerText = pad(date);
+        document.getElementById('dd-context').innerText = dayNames[now.getDay()];
+        
+        document.getElementById('mm-val').innerText = monthNames[monthIndex];
+        document.getElementById('mm-context').innerText = year;
+
+        document.getElementById('hh-val').innerText = pad(hours12);
+        document.getElementById('hh-context').innerText = isAm ? "AM" : "PM";
+
+        document.getElementById('min-val').innerText = pad(minutes);
+
+        // 5. Calculate progress percentages
+        const daysInCurrentMonth = new Date(year, monthIndex + 1, 0).getDate();
+        
+        const dayProgress = date / daysInCurrentMonth;
+        const monthProgress = (monthIndex + 1) / 12;
+        const hourProgress = hours24 / 24; // Track progress over the full 24h day
+        const minuteProgress = minutes / 60;
+
+        // 6. Update the SVG stroke dashes
+        document.getElementById('dd-arc').style.strokeDashoffset = circumference - (circumference * dayProgress);
+        document.getElementById('mm-arc').style.strokeDashoffset = circumference - (circumference * monthProgress);
+        document.getElementById('hh-arc').style.strokeDashoffset = circumference - (circumference * hourProgress);
+        document.getElementById('min-arc').style.strokeDashoffset = circumference - (circumference * minuteProgress);
+    }
+
+    // Initialize immediately to prevent a blank state on load
+    updateClockMetrics();
+
+    // Use window assignment to prevent duplicate intervals if the SPA router re-injects the header
+    if (window.cmHeaderInterval) clearInterval(window.cmHeaderInterval);
+    window.cmHeaderInterval = setInterval(updateClockMetrics, 1000);
+</script>
