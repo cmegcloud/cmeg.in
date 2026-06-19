@@ -1,34 +1,11 @@
 <style>
   /* --- Progress Clock Header Styles --- */
-  .metric-round {
-    position: relative;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .clock-svg {
-    transform: rotate(-90deg);
-    position: absolute;
-  }
-  .clock-svg circle {
-    fill: none;
-    stroke-width: 4;
-    stroke-linecap: round;
-  }
+  .metric-round { position: relative; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; }
+  .clock-svg { transform: rotate(-90deg); position: absolute; }
+  .clock-svg circle { fill: none; stroke-width: 4; stroke-linecap: round; }
   .bg-track { stroke: #F0F0F0; }
-  .progress-arc {
-    transition: stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .center-text {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 1;
-    text-align: center;
-    line-height: 1;
-  }
+  .progress-arc { transition: stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+  .center-text { display: flex; flex-direction: column; align-items: center; z-index: 1; text-align: center; line-height: 1; }
   .main-val { font-size: 13px; font-weight: 700; color: #0a0a0a; margin-bottom: 2px; }
   .sub-label { font-size: 7px; font-weight: 700; color: #777777; text-transform: uppercase; }
 
@@ -49,7 +26,7 @@
 <header class="top-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: #FFFFFF; border-bottom: 1px solid #E8E5E1; position: sticky; top: 0; z-index: 100;">
     
     <div style="display: flex; align-items: center; gap: 16px;">
-        <button class="icon-action toggle-sidebar" onclick="toggleSidebar()" style="background: none; border: none; color: #0a0a0a; cursor: pointer; display: none;">
+        <button class="icon-action toggle-sidebar" onclick="window.toggleMenu()" style="background: none; border: none; color: #0a0a0a; cursor: pointer; display: none;">
             <span class="material-symbols-rounded" style="font-size: 28px;">menu</span>
         </button>
 
@@ -98,80 +75,16 @@
     </div>
 
     <div class="header-actions" style="display: flex; align-items: center; gap: 12px; margin-left: auto;">
-        
         <div class="search-container" style="width: 192px; background: #FAFAFA; border: 1px solid #E8E5E1; border-radius: 8px; display: flex; align-items: center; padding: 8px 12px;">
             <span class="material-symbols-rounded" style="font-size: 20px; color: #777777;">search</span>
             <input type="text" class="search-input" placeholder="Search..." style="border: none; background: transparent; outline: none; width: 100%; font-size: 13px; margin-left: 8px; color: #0a0a0a;">
         </div>
-
         <div class="notification-wrapper" style="position: relative; cursor: pointer; display: flex; align-items: center;">
             <span class="material-symbols-rounded" style="color: #777777; font-size: 24px;">notifications</span>
             <span style="position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: #e16349; border-radius: 50%; border: 2px solid #FFF;"></span>
         </div>
-
         <div class="profile-menu" style="display: flex; align-items: center; cursor: pointer; padding-left: 12px; border-left: 1px solid #E8E5E1;">
-            <div style="width: 34px; height: 34px; background: #fef5e8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #e16349; font-weight: 700; font-size: 14px;">
-                A
-            </div>
+            <div style="width: 34px; height: 34px; background: #fef5e8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #e16349; font-weight: 700; font-size: 14px;">A</div>
         </div>
-        
     </div>
 </header>
-
-<script>
-    function updateClockMetrics() {
-        const now = new Date();
-        const circumference = 131.95; 
-
-        // 1. Get raw time data
-        const date = now.getDate();
-        const monthIndex = now.getMonth(); 
-        const year = now.getFullYear();
-        const hours24 = now.getHours();
-        const minutes = now.getMinutes();
-
-        // 2. Formatting arrays
-        const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-        const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-
-        // 3. Format strings
-        const isAm = hours24 < 12;
-        let hours12 = hours24 % 12;
-        if (hours12 === 0) hours12 = 12;
-        
-        const pad = (n) => n < 10 ? '0' + n : n;
-
-        // 4. Update the text in the DOM
-        document.getElementById('dd-val').innerText = pad(date);
-        document.getElementById('dd-context').innerText = dayNames[now.getDay()];
-        
-        document.getElementById('mm-val').innerText = monthNames[monthIndex];
-        document.getElementById('mm-context').innerText = year;
-
-        document.getElementById('hh-val').innerText = pad(hours12);
-        document.getElementById('hh-context').innerText = isAm ? "AM" : "PM";
-
-        document.getElementById('min-val').innerText = pad(minutes);
-
-        // 5. Calculate progress percentages
-        const daysInCurrentMonth = new Date(year, monthIndex + 1, 0).getDate();
-        
-        const dayProgress = date / daysInCurrentMonth;
-        const monthProgress = (monthIndex + 1) / 12;
-        const hourProgress = hours24 / 24; // Track progress over the full 24h day
-        const minuteProgress = minutes / 60;
-
-        // 6. Update the SVG stroke dashes
-        document.getElementById('dd-arc').style.strokeDashoffset = circumference - (circumference * dayProgress);
-        document.getElementById('mm-arc').style.strokeDashoffset = circumference - (circumference * monthProgress);
-        document.getElementById('hh-arc').style.strokeDashoffset = circumference - (circumference * hourProgress);
-        document.getElementById('min-arc').style.strokeDashoffset = circumference - (circumference * minuteProgress);
-    }
-
-    // Initialize immediately to prevent a blank state on load
-    updateClockMetrics();
-
-    // Use window assignment to prevent duplicate intervals if the SPA router re-injects the header
-    if (window.cmHeaderInterval) clearInterval(window.cmHeaderInterval);
-    window.cmHeaderInterval = setInterval(updateClockMetrics, 1000);
-</script>
