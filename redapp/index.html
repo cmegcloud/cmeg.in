@@ -9,6 +9,19 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0"/>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            const errDiv = document.getElementById('dash-error-banner');
+            const errText = document.getElementById('dash-error-text');
+            if(errDiv && errText) {
+                errDiv.style.display = 'flex';
+                errText.innerText = `Crash detected: ${message} (Line: ${lineno})`;
+            }
+            console.error("Global Catch:", error);
+            return false;
+        };
+    </script>
     
     <style>
         /* --- Corporate Theme Variables --- */
@@ -242,7 +255,6 @@
     </div>
 
     <script type="module">
-        // IMPORT getApps TO FIX THE "APP ALREADY EXISTS" SPA CRASH BUG
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
@@ -256,11 +268,9 @@
             measurementId: "G-770FBR88LJ"
         };
 
-        // SAFE INITIALIZATION
         const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
         const db = getFirestore(app);
 
-        // State Variables
         window.allApts = [];
         window.aptDatesSet = new Set();
         window.apptChartInstance = null; 
@@ -277,10 +287,8 @@
             return `${p}/${p}/${p}`; 
         }
 
-        // --- 1. FETCH ALL DASHBOARD DATA ---
         window.fetchDashboardData = async function() {
             try {
-                // REMOVED 'orderBy' to prevent hidden Firestore Index Limit crashes
                 const q = query(collection(db, "appointments")); 
                 const snap = await getDocs(q);
                 
@@ -298,7 +306,6 @@
                     
                     if(data.date) window.aptDatesSet.add(data.date);
 
-                    // Calculations
                     let bal = parseFloat(data.balance) || 0;
                     if(bal > 0) unpaidTotal += bal;
 
@@ -309,10 +316,8 @@
                     else if(status === 'cancelled') cCancelled++;
                 });
 
-                // Manually sort by date descending (replacing Firebase orderBy)
                 window.allApts.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
-                // Update Text Indicators
                 document.getElementById('dashUnpaidBills').innerText = `₹ ${unpaidTotal.toLocaleString('en-IN')}`;
                 document.getElementById('dashTotalApts').innerHTML = `${window.allApts.length} <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Bookings</span>`;
                 document.getElementById('dashPending').innerText = cPending;
@@ -320,7 +325,6 @@
                 document.getElementById('dashRescheduled').innerText = cRescheduled;
                 document.getElementById('dashCancelled').innerText = cCancelled;
 
-                // Render UI components
                 window.renderChart(cPending, cCompleted, cRescheduled, cCancelled);
                 window.renderCalendar();
                 window.renderLiveTable();
@@ -328,17 +332,16 @@
             } catch (error) {
                 console.error("Dashboard Data Load Error", error);
                 const errorBanner = document.getElementById('dash-error-banner');
-                errorBanner.style.display = 'flex';
-                document.getElementById('dash-error-text').innerText = "Data Sync Error: " + error.message;
-                
-                document.getElementById('dashAptTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--danger); font-size: 13px; display: block; width: 100%;">Failed to load schedule due to database permissions.</td></tr>`;
+                if (errorBanner) {
+                    errorBanner.style.display = 'flex';
+                    document.getElementById('dash-error-text').innerText = "Data Sync Error: " + error.message;
+                }
             }
         };
 
-        // --- 2. RENDER CHART.JS DONUT ---
         window.renderChart = function(pending, completed, rescheduled, cancelled) {
             try {
-                if (typeof Chart === 'undefined') return; // Fail gracefully if CDN blocked
+                if (typeof Chart === 'undefined') return; 
 
                 const ctx = document.getElementById('apptDonutChart').getContext('2d');
                 if (window.apptChartInstance) window.apptChartInstance.destroy();
@@ -374,7 +377,6 @@
             }
         };
 
-        // --- 3. INTERACTIVE CALENDAR ENGINE ---
         window.renderCalendar = function() {
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             document.getElementById('calMonthDisplay').innerText = `${monthNames[window.calMonth]} ${window.calYear}`;
@@ -427,7 +429,6 @@
             window.selectDate(today.toISOString().split('T'));
         };
 
-        // --- 4. LIVE BOTTOM DIRECTORY ENGINE ---
         window.renderLiveTable = function() {
             const tableBody = document.getElementById('dashAptTableBody');
             
@@ -477,7 +478,8 @@
             tableBody.innerHTML = rowsHtml;
         };
 
-        setTimeout(() => window.fetchDashboardData(), 200);
+        // Fire dashboard fetch with a slight delay to ensure everything is parsed
+        setTimeout(() => window.fetchDashboardData(), 300);
 
     </script>
 
@@ -498,13 +500,10 @@
             'view-letterhead': 'letterhead.html'
         };
 
-        // --- THE MENU TOGGLE FIX ---
-        // Bound to window so it always works regardless of where the click comes from
         window.toggleMenu = function() {
             const sidebar = document.getElementById('sidebar-container');
             if(sidebar) sidebar.classList.toggle('open');
         };
-        // This alias fixes your Bottom Nav button bug automatically!
         window.toggleSidebar = window.toggleMenu;
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -513,11 +512,65 @@
             loadComponent('bottomnav-container', 'bottomnav.html');
         });
 
+        // --- GLOBAL CLOCK ENGINE ---
+        function updateGlobalClock() {
+            const ddVal = document.getElementById('dd-val');
+            if (!ddVal) return; // Header hasn't injected yet, skip this tick
+
+            const now = new Date();
+            const circumference = 131.95; 
+
+            const date = now.getDate();
+            const monthIndex = now.getMonth(); 
+            const year = now.getFullYear();
+            const hours24 = now.getHours();
+            const minutes = now.getMinutes();
+
+            const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+            const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+            const isAm = hours24 < 12;
+            let hours12 = hours24 % 12;
+            if (hours12 === 0) hours12 = 12;
+            
+            const pad = (n) => n < 10 ? '0' + n : n;
+
+            ddVal.innerText = pad(date);
+            document.getElementById('dd-context').innerText = dayNames[now.getDay()];
+            
+            document.getElementById('mm-val').innerText = monthNames[monthIndex];
+            document.getElementById('mm-context').innerText = year;
+
+            document.getElementById('hh-val').innerText = pad(hours12);
+            document.getElementById('hh-context').innerText = isAm ? "AM" : "PM";
+
+            document.getElementById('min-val').innerText = pad(minutes);
+
+            const daysInCurrentMonth = new Date(year, monthIndex + 1, 0).getDate();
+            
+            const dayProgress = date / daysInCurrentMonth;
+            const monthProgress = (monthIndex + 1) / 12;
+            const hourProgress = hours24 / 24; 
+            const minuteProgress = minutes / 60;
+
+            document.getElementById('dd-arc').style.strokeDashoffset = circumference - (circumference * dayProgress);
+            document.getElementById('mm-arc').style.strokeDashoffset = circumference - (circumference * monthProgress);
+            document.getElementById('hh-arc').style.strokeDashoffset = circumference - (circumference * hourProgress);
+            document.getElementById('min-arc').style.strokeDashoffset = circumference - (circumference * minuteProgress);
+        }
+        
+        // Start the clock engine permanently for the SPA
+        setInterval(updateGlobalClock, 1000);
+
         async function loadComponent(elementId, filename) {
             try {
                 const response = await fetch(filename);
                 if (response.ok) {
-                    document.getElementById(elementId).innerHTML = await response.text();
+                    const htmlContent = await response.text();
+                    document.getElementById(elementId).innerHTML = htmlContent;
+                    
+                    // Immediately trigger clock update if header just loaded
+                    if(filename === 'header.html') updateGlobalClock();
                 }
             } catch (error) {
                 console.error(`Error loading ${filename}`);
@@ -557,7 +610,7 @@
                     targetDiv.innerHTML = ''; 
                     targetDiv.appendChild(moduleContent);
 
-                    // Re-execute scripts for injected HTML
+                    // Re-execute scripts for injected HTML securely
                     const scripts = targetDiv.querySelectorAll('script');
                     scripts.forEach(oldScript => {
                         const newScript = document.createElement('script');
