@@ -77,6 +77,35 @@
             #appointment-module .saas-table th { background: white; color: black; border-bottom: 1px solid #000; }
             #appointment-module .saas-table td { border-bottom: 1px solid #E8E5E1; }
         }
+@media (max-width: 767px) {
+    /* Stop the heavy card-style layout */
+    #appointment-module .saas-table tr, 
+    #patient-module .saas-table tr, 
+    #attendance-module .saas-table tr { 
+        display: flex !important; 
+        flex-direction: row !important; 
+        padding: 10px 5px !important; 
+        align-items: center !important; 
+        border-bottom: 1px solid var(--border) !important;
+    }
+    
+    /* Hide the long label text that forces stacking */
+    #appointment-module .saas-table td::before,
+    #patient-module .saas-table td::before,
+    #attendance-module .saas-table td::before { 
+        display: none !important; 
+    }
+
+    /* Force cells to be small and in one row */
+    #appointment-module .saas-table td,
+    #patient-module .saas-table td,
+    #attendance-module .saas-table td { 
+        display: block !important; 
+        padding: 4px !important; 
+        font-size: 11px !important; 
+        width: 100% !important; 
+    }
+}
     </style>
 
     <div class="section-title">
@@ -790,3 +819,4 @@
 </div>
 </body>
 </html>
+
