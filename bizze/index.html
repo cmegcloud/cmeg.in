@@ -18,18 +18,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        :root {
-            --primary: #3B82F6;       
-            --primary-hover: #2563EB; 
-            --secondary: #1E3A8A;     
-            --accent: #EF4444;        
-            --bg: #F0F4F8;            
-            --surface: #FFFFFF;       
-            --text-main: #0F172A;     
-            --text-muted: #64748B;    
-            --border: #E2E8F0;        
-        }
-
+        :root { --primary: #3B82F6; --primary-hover: #2563EB; --secondary: #1E3A8A; --accent: #EF4444; --bg: #F0F4F8; --surface: #FFFFFF; --text-main: #0F172A; --text-muted: #64748B; --border: #E2E8F0; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); padding-bottom: 90px; color: var(--text-main); }
         .hide { display: none !important; }
@@ -40,21 +29,23 @@
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
         /* HEADER */
-        .header { height: 65px; background: linear-gradient(135deg, #172554, #3B82F6); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2); }
+        .header { height: 65px; background: linear-gradient(135deg, #172554, #3B82F6); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2); }
         .left-head { display: flex; align-items: center; gap: 8px; }
-        .right-head { display: flex; gap: 15px; font-size: 18px; }
+        .right-head { display: flex; align-items: center; gap: 12px; flex: 1; justify-content: flex-end; }
+        .head-search { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 6px 12px; color: white; outline: none; font-size: 13px; width: 140px; transition: 0.3s; }
+        .head-search::placeholder { color: rgba(255,255,255,0.7); }
+        .head-search:focus { width: 180px; background: rgba(255,255,255,0.25); border-color: white; }
 
         /* SIDE MENU */
-        .menu-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(2px); }
+        .menu-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 1000; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(2px); }
         .menu-overlay.active { opacity: 1; pointer-events: auto; }
-        .side-menu { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: var(--surface); z-index: 1001; transition: left 0.3s ease; box-shadow: 4px 0 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .side-menu { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: var(--surface); z-index: 1001; transition: 0.3s; display: flex; flex-direction: column; }
         .side-menu.active { left: 0; }
         .side-menu-header { background: linear-gradient(135deg, #172554, #3B82F6); padding: 30px 20px; color: white; }
         .side-menu-links { flex: 1; overflow-y: auto; padding: 20px 0; }
-        .side-nav-item { padding: 16px 24px; display: flex; align-items: center; gap: 16px; color: var(--text-main); font-weight: 600; font-size: 15px; border-left: 4px solid transparent; transition: background 0.2s; cursor: pointer; }
-        .side-nav-item:active { background: #F8FAFC; }
+        .side-nav-item { padding: 16px 24px; display: flex; align-items: center; gap: 16px; color: var(--text-main); font-weight: 600; font-size: 15px; border-left: 4px solid transparent; cursor: pointer; }
         .side-nav-item.active { background: #EFF6FF; color: var(--primary); border-left-color: var(--primary); }
-        .side-nav-item i { font-size: 18px; width: 24px; text-align: center; color: var(--text-muted); }
+        .side-nav-item i { width: 24px; text-align: center; color: var(--text-muted); font-size: 18px; }
         .side-nav-item.active i { color: var(--primary); }
 
         /* CARDS & CONTAINERS */
@@ -69,39 +60,41 @@
         .section { padding: 0 16px; margin-top: 24px; }
         .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--secondary); }
 
-        /* GRIDS & LISTS */
+        /* GRIDS & ROWS (Edge to Edge) */
         .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .quick-card { background: var(--surface); padding: 16px 8px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); cursor: pointer; }
         .icon-circle { width: 44px; height: 44px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: auto; margin-bottom: 8px; color: white; }
         .icon-circle i { font-size: 18px; }
-        .quick-card span { font-size: 12px; font-weight: 600; color: var(--text-main); }
-        .list-card { background: var(--surface); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); }
+        
+        .list-container { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 16px; }
+        .list-row { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border); transition: background 0.2s; }
+        .list-row:last-child { border-bottom: none; }
+        .list-row:active { background: #F8FAFC; }
         .list-title { font-weight: 700; margin-bottom: 4px; font-size: 15px; color: var(--text-main); }
         .list-sub { font-size: 13px; color: var(--text-muted); font-weight: 500; }
         .list-price { font-size: 18px; font-weight: 800; color: var(--primary); text-align: right; }
 
+        /* MASTER ACCORDION */
+        .master-row { background: var(--bg); font-weight: 700; color: var(--secondary); font-size: 15px; display: flex; align-items: center; padding: 16px; cursor: pointer; border-bottom: 1px solid var(--border); }
+        .master-row img { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; margin-right: 12px; background: white; border: 1px solid var(--border); }
+        .master-row i { margin-left: auto; color: var(--text-muted); transition: transform 0.3s; }
+        .master-row.open i { transform: rotate(180deg); }
+        .master-content { display: none; background: white; }
+        .master-content.open { display: block; border-bottom: 1px solid var(--border); }
+
         /* BUTTONS & INPUTS */
-        .action-btn { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; text-decoration: none; border: none; cursor: pointer;}
+        .action-btn { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; border: none; cursor: pointer;}
         .btn-call { background: #DCFCE7; color: #16A34A; }
         .btn-map { background: #DBEAFE; color: #2563EB; }
         .btn-edit { background: #F1F5F9; color: var(--secondary); width: 32px; height: 32px; font-size: 12px; }
         .btn-delete { background: #FEE2E2; color: var(--accent); width: 32px; height: 32px; font-size: 12px; }
-        .corp-input { width: 100%; background: #F8FAFC; border: 1px solid var(--border); padding: 14px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; outline: none; font-weight: 500; color: var(--text-main); transition: 0.2s; }
+        .corp-input { width: 100%; background: #F8FAFC; border: 1px solid var(--border); padding: 14px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; outline: none; font-weight: 500; color: var(--text-main); }
         .corp-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
         select.corp-input { -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231E3A8A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px top 50%; background-size: 10px auto; }
         .btn-primary { width: 100%; padding: 14px; border: none; border-radius: 8px; background: var(--primary); color: #FFFFFF; font-size: 15px; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; }
-        .btn-primary:active { background: var(--primary-hover); }
-
-        /* CALCULATOR */
-        .calc-btn { background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-size: 18px; font-weight: 700; color: var(--text-main); text-align: center; cursor: pointer; transition: background 0.2s; }
-        .calc-btn:active { background: #E2E8F0; }
-        .calc-op { background: var(--primary); color: white; border-color: var(--primary); }
-        .calc-op:active { background: var(--primary-hover); }
-        .calc-eq { background: var(--secondary); color: white; border-color: var(--secondary); grid-column: span 2; }
-        .calc-clear { background: var(--accent); color: white; border-color: var(--accent); }
 
         /* MODALS */
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); }
         .modal-content { background: var(--surface); width: 100%; max-height: 90vh; overflow-y: auto; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
         .modal-header h3 { font-size: 18px; color: var(--secondary); font-weight: 700; }
@@ -110,45 +103,43 @@
         /* BOTTOM NAV */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--border); z-index: 100; padding: 0 10px; }
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; font-weight: 600; color: var(--text-muted); background: none; border: none; cursor: pointer; flex: 1;}
-        .nav-item i { font-size: 20px; margin-bottom: 4px; transition: 0.2s; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
         .nav-item.active { color: var(--primary); }
-        
-        .fab { width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 24px; margin-top: -25px; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); border: none; cursor: pointer; transition: transform 0.2s; }
-        .fab:active { transform: scale(0.92); }
+        .fab { width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 24px; margin-top: -25px; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); border: none; cursor: pointer; }
 
         .cart-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
         .cart-table th { text-align: left; padding: 12px; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--border); background: #F8FAFC; }
         .cart-table td { padding: 16px 12px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--text-main); }
         .qty-input { width: 55px; padding: 8px; border-radius: 6px; border: 1px solid var(--border); text-align: center; font-weight: 700; color: var(--text-main); background: #F8FAFC; }
-        
-        .pdf-export-area { background: white; border-radius: 8px; padding: 10px; }
-        .pdf-export-header { margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* Chart Container */
         .chart-container { position: relative; height: 250px; width: 100%; margin-top: 20px; }
+
+        /* PROFESSIONAL A4 PDF LAYOUT */
+        .a4-print { background: white; width: 800px; max-width: 100%; padding: 40px; box-sizing: border-box; color: black; font-family: 'Inter', sans-serif; }
+        .a4-header { display: flex; justify-content: space-between; border-bottom: 3px solid var(--secondary); padding-bottom: 20px; margin-bottom: 30px; }
+        .a4-title { text-align: center; color: var(--secondary); margin-bottom: 30px; font-size: 22px; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; }
+        .a4-info-grid { display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 14px; line-height: 1.6; }
+        .a4-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .a4-table th { background: var(--bg); padding: 12px; text-align: left; border-bottom: 2px solid var(--secondary); font-size: 13px; text-transform: uppercase; }
+        .a4-table td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
     </style>
 </head>
 
 <body>
 
     <div id="splash-screen">
-        <img src="assets/logo-white.png" class="splash-logo" alt="Logo" onerror="this.style.display='none';">
-        <img src="assets/name-white.png" style="height: 30px; object-fit: contain;" alt="bizze" onerror="this.style.display='none';">
+        <img src="assets/logo-white.png" class="splash-logo" onerror="this.style.display='none';">
+        <img src="assets/name-white.png" style="height: 30px; object-fit: contain;" onerror="this.style.display='none';">
     </div>
 
     <div id="main-app" class="hide">
-
         <div class="header">
             <div class="left-head">
-                <button onclick="toggleMenu()" style="background:none; border:none; color:white; font-size: 22px; cursor: pointer; padding-right: 10px;">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                    <img src="assets/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none';">
-                </div>
-                <img src="assets/name-white.png" alt="bizze" style="height: 28px; object-fit: contain; margin-left: 4px;" onerror="this.style.display='none';">
+                <button onclick="toggleMenu()" style="background:none; border:none; color:white; font-size: 22px; cursor: pointer; padding-right: 10px;"><i class="fa-solid fa-bars"></i></button>
+                <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;"><img src="assets/logo.png" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none';"></div>
             </div>
             <div class="right-head">
+                <input type="text" id="global-search" class="head-search" placeholder="Search..." onkeyup="handleGlobalSearch()">
                 <button onclick="fetchData()" style="background:none; border:none; color:inherit; cursor: pointer;"><i class="fa-solid fa-arrows-rotate" id="sync-icon"></i></button>
             </div>
         </div>
@@ -163,65 +154,37 @@
                 <p style="font-size: 13px; opacity: 0.9; font-weight: 500;">Sales Order System</p>
             </div>
             <div class="side-menu-links">
-                <div class="side-nav-item active" id="side-dashboard" onclick="switchTab('dashboard'); toggleMenu();">
-                    <i class="fa-solid fa-house"></i> Dashboard
-                </div>
-                <div class="side-nav-item" id="side-customers" onclick="switchTab('customers'); toggleMenu();">
-                    <i class="fa-solid fa-users"></i> Party Directory
-                </div>
-                <div class="side-nav-item" id="side-staff" onclick="switchTab('staff'); toggleMenu();">
-                    <i class="fa-solid fa-user-tag"></i> Staff Management
-                </div>
-                <div class="side-nav-item" id="side-master" onclick="switchTab('master'); toggleMenu();">
-                    <i class="fa-solid fa-layer-group"></i> Master Items
-                </div>
-                <div class="side-nav-item" id="side-items" onclick="switchTab('items'); toggleMenu();">
-                    <i class="fa-solid fa-box"></i> Items
-                </div>
-                <div class="side-nav-item" id="side-orders" onclick="switchTab('orders'); toggleMenu();">
-                    <i class="fa-solid fa-file-invoice-dollar"></i> Generate Order
-                </div>
-                <div class="side-nav-item" id="side-reports" onclick="switchTab('reports'); toggleMenu();">
-                    <i class="fa-solid fa-chart-pie"></i> Reports & Export
-                </div>
-                <div class="side-nav-item" id="side-calculator" onclick="switchTab('calculator'); toggleMenu();">
-                    <i class="fa-solid fa-calculator"></i> Calculator
-                </div>
-                <div class="side-nav-item" id="side-company" onclick="switchTab('company'); toggleMenu();" style="border-top: 1px solid var(--border); margin-top: 10px; padding-top: 20px;">
-                    <i class="fa-solid fa-building"></i> Company Profile
-                </div>
+                <div class="side-nav-item active" id="side-dashboard" onclick="switchTab('dashboard'); toggleMenu();"><i class="fa-solid fa-house"></i> Dashboard</div>
+                <div class="side-nav-item" id="side-customers" onclick="switchTab('customers'); toggleMenu();"><i class="fa-solid fa-users"></i> Party Directory</div>
+                <div class="side-nav-item" id="side-staff" onclick="switchTab('staff'); toggleMenu();"><i class="fa-solid fa-user-tag"></i> Staff Management</div>
+                <div class="side-nav-item" id="side-master" onclick="switchTab('master'); toggleMenu();"><i class="fa-solid fa-layer-group"></i> Master Items</div>
+                <div class="side-nav-item" id="side-orders" onclick="switchTab('orders'); toggleMenu();"><i class="fa-solid fa-file-invoice-dollar"></i> Generate Order</div>
+                <div class="side-nav-item" id="side-reports" onclick="switchTab('reports'); toggleMenu();"><i class="fa-solid fa-chart-pie"></i> Reports & Export</div>
+                <div class="side-nav-item" id="side-calculator" onclick="switchTab('calculator'); toggleMenu();"><i class="fa-solid fa-calculator"></i> Calculator</div>
+                <div class="side-nav-item" id="side-company" onclick="switchTab('company'); toggleMenu();" style="border-top: 1px solid var(--border); margin-top: 10px; padding-top: 20px;"><i class="fa-solid fa-building"></i> Company Profile</div>
             </div>
             <div style="padding: 20px; border-top: 1px solid var(--border);">
-                <button onclick="toggleModal('modal-info'); toggleMenu();" class="btn-primary" style="background: var(--bg); color: var(--text-main); border: 1px solid var(--border); box-shadow: none;">
-                    <i class="fa-solid fa-circle-info"></i> App Information
-                </button>
+                <button onclick="toggleModal('modal-info'); toggleMenu();" class="btn-primary" style="background: var(--bg); color: var(--text-main); border: 1px solid var(--border); box-shadow: none;"><i class="fa-solid fa-circle-info"></i> App Information</button>
             </div>
         </div>
 
         <main id="app-content">
 
+            <!-- DASHBOARD -->
             <div id="view-dashboard">
                 <div class="hero">
                     <h4>Total Order Value</h4>
                     <h1 id="dash-revenue">₹0</h1>
                     <div class="stats">
-                        <div class="stat">
-                            <span>Orders Generated</span>
-                            <h3 id="dash-orders">0</h3>
-                        </div>
-                        <div class="stat">
-                            <span>Active Parties</span>
-                            <h3 id="dash-customers">0</h3>
-                        </div>
+                        <div class="stat"><span>Orders Generated</span><h3 id="dash-orders">0</h3></div>
+                        <div class="stat"><span>Active Parties</span><h3 id="dash-customers">0</h3></div>
                     </div>
                 </div>
 
                 <div class="section">
                     <div class="corp-card">
                         <h3 style="font-size: 16px; color: var(--secondary); margin-bottom: 12px;"><i class="fa-solid fa-chart-bar"></i> Orders by Staff</h3>
-                        <div class="chart-container">
-                            <canvas id="staffChart"></canvas>
-                        </div>
+                        <div class="chart-container"><canvas id="staffChart"></canvas></div>
                     </div>
                 </div>
 
@@ -229,7 +192,7 @@
                     <div class="section-title">Quick Actions</div>
                     <div class="quick-grid">
                         <div class="quick-card" onclick="switchTab('customers')"><div class="icon-circle"><i class="fa-solid fa-users"></i></div><span>Parties</span></div>
-                        <div class="quick-card" onclick="switchTab('items')"><div class="icon-circle"><i class="fa-solid fa-box"></i></div><span>Items</span></div>
+                        <div class="quick-card" onclick="switchTab('master')"><div class="icon-circle"><i class="fa-solid fa-layer-group"></i></div><span>Master</span></div>
                         <div class="quick-card" onclick="switchTab('orders')"><div class="icon-circle"><i class="fa-solid fa-cart-shopping"></i></div><span>Order</span></div>
                         <div class="quick-card" onclick="switchTab('reports')"><div class="icon-circle"><i class="fa-solid fa-file-csv"></i></div><span>Report</span></div>
                     </div>
@@ -237,37 +200,26 @@
 
                 <div class="section">
                     <div class="section-title">Recent Transactions</div>
-                    <div id="recent-orders-list"></div>
+                    <div class="list-container" id="recent-orders-list"></div>
                 </div>
             </div>
 
+            <!-- GENERATE ORDER -->
             <div id="view-orders" class="hide section">
-                <div class="corp-card pdf-export-area" id="invoice-area">
-                    <div style="display: flex; justify-content: space-between; border-bottom: 2px solid var(--border); padding-bottom: 16px; margin-bottom: 20px;">
-                        <div style="display: flex; gap: 15px; align-items: center;">
-                            <img class="invoice-comp-logo-img" src="" style="max-height: 50px; border-radius: 8px; display: none;">
-                            <div>
-                                <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 22px; font-weight: 800; margin-bottom: 4px;">YUMMY</h2>
-                                <p id="invoice-comp-details" style="color: var(--text-muted); font-size: 11px; line-height: 1.5;">Setup your company details<br>in the Company Profile menu.</p>
-                            </div>
-                        </div>
-                        <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end;">
-                            <h3 style="color: var(--primary); font-size: 18px; font-weight: 800;">SALES ORDER</h3>
-                        </div>
-                    </div>
-                    
+                <div class="corp-card">
+                    <h3 style="color:var(--secondary); margin-bottom:16px;">New Sales Order</h3>
                     <input type="date" id="order-date" class="corp-input">
                     <select id="order-customer" class="corp-input"><option value="">Select Party...</option></select>
                     <select id="order-staff" class="corp-input"><option value="">Select Order Person (Staff)...</option></select>
 
-                    <div style="margin: 24px 0;" data-html2canvas-ignore>
+                    <div style="margin: 24px 0;">
                         <input type="text" id="order-search" onkeyup="filterOrderGrid()" placeholder="Search items to add..." class="corp-input">
                         <div id="order-item-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-height: 220px; overflow-y: auto;"></div>
                     </div>
 
                     <div style="overflow-x: auto; border: 1px solid var(--border); border-radius: 8px;">
                         <table class="cart-table" style="margin-bottom: 0;">
-                            <thead><tr><th>Item</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Total</th><th data-html2canvas-ignore></th></tr></thead>
+                            <thead><tr><th>Item</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Total</th><th></th></tr></thead>
                             <tbody id="order-list"></tbody>
                             <tfoot>
                                 <tr style="background: #F8FAFC;">
@@ -281,83 +233,46 @@
                             </tfoot>
                         </table>
                     </div>
-                    <div style="margin-top: 40px; text-align: center; opacity: 0.4;"><span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span></div>
                 </div>
 
                 <div style="display: flex; gap: 12px; margin-bottom: 30px;">
-                    <button onclick="exportToPDF('invoice-area', 'Sales_Order')" class="btn-primary" style="background: white; color: var(--accent); flex: 0.3; border: 1px solid var(--border); box-shadow: none;"><i class="fa-solid fa-file-pdf" style="font-size: 18px;"></i></button>
-                    <button onclick="saveAndSendOrder()" class="btn-primary" style="flex: 1;"><i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> Save & Send</button>
+                    <button onclick="saveAndSendOrder(true)" class="btn-primary" style="background: white; color: var(--accent); flex: 0.3; border: 1px solid var(--border); box-shadow: none;" title="Save & Print PDF"><i class="fa-solid fa-file-pdf" style="font-size: 18px;"></i></button>
+                    <button onclick="saveAndSendOrder(false)" class="btn-primary" style="flex: 1;"><i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> Save & Send WhatsApp</button>
                 </div>
             </div>
 
+            <!-- MASTER ITEMS -->
             <div id="view-master" class="hide section">
-                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-                    <input type="text" id="add-master-name" class="corp-input" style="margin:0;" placeholder="Add New Master Item...">
-                    <button onclick="saveMasterItem()" class="btn-primary" style="width: 56px; padding:0;"><i class="fa-solid fa-plus"></i></button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 class="section-title" style="margin:0;">Master Categories</h2>
+                    <button onclick="openAddMasterModal()" class="btn-primary" style="width: auto; padding: 8px 16px; font-size: 13px;"><i class="fa-solid fa-plus"></i> New Master</button>
                 </div>
-                <div id="master-items-list"></div>
+                
+                <div style="display:flex; justify-content: space-between; margin-bottom: 16px;">
+                    <button onclick="openAddItemModal()" class="btn-primary" style="background:var(--secondary);"><i class="fa-solid fa-box-open"></i> Add Item to Master</button>
+                </div>
+
+                <div class="list-container" id="master-items-container"></div>
             </div>
 
+            <!-- STAFF -->
             <div id="view-staff" class="hide section">
                 <div style="display: flex; gap: 8px; margin-bottom: 16px;">
                     <input type="text" id="add-staff-name" class="corp-input" style="margin:0;" placeholder="Add Staff (e.g. Staff 1)...">
                     <button onclick="saveStaff()" class="btn-primary" style="width: 56px; padding:0;"><i class="fa-solid fa-plus"></i></button>
                 </div>
-                <div id="staff-list"></div>
+                <div class="list-container" id="staff-list"></div>
             </div>
 
-            <div id="view-items" class="hide section">
-                <div style="display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
-                    <input type="text" id="search-items" onkeyup="renderItems()" placeholder="Search Items..." class="corp-input" style="margin:0; flex: 1; min-width: 120px;">
-                    <select id="sort-items" onchange="renderItems()" class="corp-input" style="margin:0; width: auto; padding: 12px;">
-                        <option value="newest">Newest</option>
-                        <option value="name">Name A-Z</option>
-                    </select>
-                    <button onclick="exportToPDF('pdf-items-wrapper', 'Item_Master')" class="btn-primary" style="width: 46px; height: 46px; padding: 0; background: var(--secondary);"><i class="fa-solid fa-file-pdf"></i></button>
-                    <button onclick="openAddItemModal()" class="btn-primary" style="width: 46px; height: 46px; padding: 0;"><i class="fa-solid fa-plus"></i></button>
-                </div>
-                
-                <div id="pdf-items-wrapper" class="pdf-export-area">
-                    <div class="pdf-export-header hide" data-html2canvas-show="true">
-                        <div style="display: flex; gap: 12px; align-items: center;">
-                            <img class="invoice-comp-logo-img" src="" style="max-height: 40px; border-radius: 6px; display: none;">
-                            <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 18px; font-weight: 800;"></h2>
-                        </div>
-                        <h3 style="font-size: 16px; color: var(--primary);">Item Master</h3>
-                    </div>
-                    
-                    <div id="items-container"></div>
-                    
-                    <div style="margin-top: 30px; text-align: center; opacity: 0.4;" data-html2canvas-show="true" class="hide">
-                        <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span>
-                    </div>
-                </div>
-            </div>
-
+            <!-- CUSTOMERS / PARTIES -->
             <div id="view-customers" class="hide section">
-                <div style="display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
-                    <input type="text" id="search-customers" onkeyup="renderCustomers()" placeholder="Search Parties..." class="corp-input" style="margin:0; flex: 1; min-width: 120px;">
-                    <select id="sort-customers" onchange="renderCustomers()" class="corp-input" style="margin:0; width: auto; padding: 12px;">
-                        <option value="name">Name A-Z</option>
-                        <option value="newest">Newest</option>
-                    </select>
-                    <button onclick="exportToPDF('pdf-cust-wrapper', 'Party_Directory')" class="btn-primary" style="width: 46px; height: 46px; padding: 0; background: var(--secondary);"><i class="fa-solid fa-file-pdf"></i></button>
-                    <button onclick="openAddCustomerModal()" class="btn-primary" style="width: 46px; height: 46px; padding: 0;"><i class="fa-solid fa-user-plus"></i></button>
+                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                    <button onclick="openAddCustomerModal()" class="btn-primary"><i class="fa-solid fa-user-plus"></i> Register New Party</button>
                 </div>
-                
-                <div id="pdf-cust-wrapper" class="pdf-export-area">
-                    <div class="pdf-export-header hide" data-html2canvas-show="true">
-                        <div style="display: flex; gap: 12px; align-items: center;">
-                            <img class="invoice-comp-logo-img" src="" style="max-height: 40px; border-radius: 6px; display: none;">
-                            <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 18px; font-weight: 800;"></h2>
-                        </div>
-                        <h3 style="font-size: 16px; color: var(--primary);">Party Directory</h3>
-                    </div>
-                    <div id="customers-container"></div>
-                    <div style="margin-top: 30px; text-align: center; opacity: 0.4;" data-html2canvas-show="true" class="hide"><span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span></div>
-                </div>
+                <div class="list-container" id="customers-container"></div>
             </div>
 
+            <!-- REPORTS -->
             <div id="view-reports" class="hide section">
                 <div class="corp-card" style="margin-bottom: 20px;">
                     <h3 style="color: var(--secondary); margin-bottom: 15px; font-size: 16px;">Filter Orders</h3>
@@ -366,39 +281,21 @@
                         <div style="flex: 1;"><label style="font-size: 11px; color: var(--text-muted); font-weight: 600;">To Date</label><input type="date" id="report-end" class="corp-input" style="margin-bottom: 0;"></div>
                     </div>
                     <div style="display: flex; gap: 10px;">
-                        <button onclick="renderReportsTable()" class="btn-primary" style="flex: 1;"><i class="fa-solid fa-filter"></i> Apply Filter</button>
-                        <button onclick="exportToPDF('pdf-report-wrapper', 'Sales_Report')" class="btn-primary" style="background: var(--secondary); width: auto; padding: 0 20px;" title="Export to PDF"><i class="fa-solid fa-file-pdf"></i></button>
+                        <button onclick="renderReportsTable()" class="btn-primary" style="flex: 1;"><i class="fa-solid fa-filter"></i> Filter</button>
                         <button onclick="downloadCSV()" class="btn-primary" style="background: #16A34A; width: auto; padding: 0 20px;" title="Export CSV"><i class="fa-solid fa-file-csv"></i></button>
                     </div>
                 </div>
 
-                <div id="pdf-report-wrapper" class="pdf-export-area hide">
-                    <div class="pdf-export-header">
-                        <div style="display: flex; gap: 12px; align-items: center;">
-                            <img class="invoice-comp-logo-img" src="" style="max-height: 40px; border-radius: 6px; display: none;">
-                            <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 18px; font-weight: 800;"></h2>
-                        </div>
-                        <div style="text-align: right;">
-                            <h3 style="font-size: 16px; color: var(--primary);">Sales Report</h3>
-                            <p id="report-date-range" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;"></p>
-                        </div>
+                <div class="list-container">
+                    <div style="padding:16px; background:#F8FAFC; border-bottom:1px solid var(--border); display:flex; justify-content:space-between;">
+                        <span style="font-size:13px; font-weight:700; color:var(--text-muted);" id="report-date-range">Date Range</span>
+                        <span style="font-size:15px; font-weight:800; color:var(--primary);" id="reports-grand-total">₹0</span>
                     </div>
-                    <div style="overflow-x: auto;">
-                        <table class="cart-table">
-                            <thead><tr><th>Date</th><th>Party</th><th>Staff</th><th style="text-align:right;">Total</th></tr></thead>
-                            <tbody id="reports-tbody"></tbody>
-                            <tfoot>
-                                <tr style="background: #F8FAFC;">
-                                    <td colspan="3" style="text-align: right; font-weight: 700; color: var(--text-muted); font-size: 13px;">Total:</td>
-                                    <td id="reports-grand-total" style="text-align: right; font-weight: 800; color: var(--primary); font-size: 16px;">₹0</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    <div style="margin-top: 40px; text-align: center; opacity: 0.4;" data-html2canvas-show="true" class="hide"><span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span></div>
+                    <div id="reports-list"></div>
                 </div>
             </div>
 
+            <!-- COMPANY PROFILE -->
             <div id="view-company" class="hide section">
                 <div class="corp-card">
                     <div style="text-align: center; margin-bottom: 20px;">
@@ -412,11 +309,15 @@
                     </div>
                     <input type="text" id="comp-name" placeholder="Company Name (e.g. YUMMY)" class="corp-input">
                     <input type="text" id="comp-tagline" placeholder="Tagline" class="corp-input">
+                    <input type="text" id="comp-phone" placeholder="Mobile / Phone Number" class="corp-input">
+                    <input type="email" id="comp-email" placeholder="Email Address" class="corp-input">
+                    <input type="text" id="comp-web" placeholder="Website" class="corp-input">
                     <textarea id="comp-address" placeholder="Full Address" class="corp-input" rows="3" style="resize:none; padding:12px;"></textarea>
                     <button onclick="saveCompanySettings()" class="btn-primary"><i class="fa-solid fa-check"></i> Save Profile</button>
                 </div>
             </div>
 
+            <!-- CALCULATOR -->
             <div id="view-calculator" class="hide section">
                 <div class="corp-card" style="max-width: 360px; margin: 0 auto;">
                     <input type="text" id="calc-display" disabled class="corp-input" style="font-size: 32px; text-align: right; background: var(--bg); font-family: monospace; padding: 20px; font-weight: 800; color: var(--secondary); margin-bottom: 20px; border: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);" value="0">
@@ -433,24 +334,111 @@
         </main>
 
         <div class="bottom-nav">
-            <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
-                <i class="fa-solid fa-house"></i><span>Home</span>
-            </button>
-            <button class="nav-item" id="nav-customers" onclick="switchTab('customers')">
-                <i class="fa-solid fa-users"></i><span>Parties</span>
-            </button>
-            <button class="fab" onclick="switchTab('orders')">
-                <i class="fa-solid fa-plus"></i>
-            </button>
-            <button class="nav-item" id="nav-items" onclick="switchTab('items')">
-                <i class="fa-solid fa-box"></i><span>Items</span>
-            </button>
-            <button class="nav-item" id="nav-reports" onclick="switchTab('reports')">
-                <i class="fa-solid fa-chart-line"></i><span>Reports</span>
-            </button>
+            <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')"><i class="fa-solid fa-house"></i><span>Home</span></button>
+            <button class="nav-item" id="nav-customers" onclick="switchTab('customers')"><i class="fa-solid fa-users"></i><span>Parties</span></button>
+            <button class="fab" onclick="switchTab('orders')"><i class="fa-solid fa-plus"></i></button>
+            <button class="nav-item" id="nav-master" onclick="switchTab('master')"><i class="fa-solid fa-layer-group"></i><span>Master</span></button>
+            <button class="nav-item" id="nav-reports" onclick="switchTab('reports')"><i class="fa-solid fa-chart-line"></i><span>Reports</span></button>
         </div>
     </div>
 
+    <!-- HIDDEN A4 PDF ORDER TEMPLATE -->
+    <div id="order-pdf-export" class="hide a4-print">
+        <div class="a4-header">
+            <div style="display:flex; align-items:center; gap:15px;">
+                <img class="comp-logo-img" src="" style="height:60px; display:none;">
+                <div>
+                    <h1 class="comp-name-disp" style="color:var(--secondary); font-size:28px; margin:0;">COMPANY NAME</h1>
+                    <p class="comp-tagline-disp" style="color:var(--primary); font-weight:600; font-size:14px; margin:0;"></p>
+                </div>
+            </div>
+            <div style="text-align:right; font-size:12px; color:var(--text-main); line-height:1.6;">
+                <div class="comp-address-disp" style="font-weight:600; margin-bottom:4px; max-width: 250px; margin-left: auto; white-space:pre-wrap;"></div>
+                <strong class="comp-phone-disp"></strong><br>
+                <span class="comp-email-disp"></span><br>
+                <span class="comp-web-disp"></span>
+            </div>
+        </div>
+        
+        <h2 class="a4-title">SALES ORDER</h2>
+        
+        <div class="a4-info-grid">
+            <div>
+                <strong>Billed To:</strong><br>
+                <span id="pdf-party-name" style="font-size:16px; font-weight:700; color:var(--secondary);"></span><br>
+                <span id="pdf-party-phone"></span>
+            </div>
+            <div style="text-align:right;">
+                <strong>Order No:</strong> <span id="pdf-order-no"></span><br>
+                <strong>Date:</strong> <span id="pdf-order-date"></span><br>
+                <strong>Sales Person:</strong> <span id="pdf-order-staff"></span>
+            </div>
+        </div>
+
+        <table class="a4-table">
+            <thead><tr><th>Sl No</th><th>Description of Goods</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Amount (₹)</th></tr></thead>
+            <tbody id="pdf-order-items"></tbody>
+            <tfoot>
+                <tr style="background:#F8FAFC;">
+                    <td colspan="3" style="text-align:right; font-weight:700; padding:12px;">Total Order Value:</td>
+                    <td id="pdf-order-total" style="text-align:right; font-weight:800; font-size:16px; color:var(--primary); padding:12px;">₹0</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div style="margin-bottom: 40px; font-size:13px;">
+            <strong>Amount in Words: </strong><br>
+            <span id="pdf-order-words" style="color:var(--text-muted); font-style:italic;"></span>
+        </div>
+
+        <div style="margin-top:60px; text-align:right;">
+            <p style="font-weight:700; margin-bottom:50px;">For <span class="comp-name-disp"></span>,</p>
+            <p style="font-weight:700; margin:0; border-top:1px solid var(--text-main); display:inline-block; padding-top:6px;">Authorised Signatory</p>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Master Modal -->
+    <div id="modal-master" class="modal-overlay hide">
+        <div class="modal-content">
+            <div class="modal-header"><h3 id="modal-master-title">New Master Category</h3><button onclick="toggleModal('modal-master')" class="modal-close"><i class="fa-solid fa-xmark"></i></button></div>
+            <input type="text" id="add-master-input" placeholder="Category Name (e.g. Electronics)" class="corp-input">
+            <label style="color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase;">Attach Image</label>
+            <input type="file" id="add-master-photo" accept="image/*" class="corp-input" style="padding: 10px; background: white;">
+            <button onclick="submitMasterModal()" id="btn-save-master" class="btn-primary"><i class="fa-solid fa-check"></i> Save Category</button>
+        </div>
+    </div>
+
+    <!-- Item Modal -->
+    <div id="modal-item" class="modal-overlay hide">
+        <div class="modal-content">
+            <div class="modal-header"><h3 id="modal-item-title">Add New Item</h3><button onclick="closeItemModal()" class="modal-close"><i class="fa-solid fa-xmark"></i></button></div>
+            <label style="color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase;">Master Item Category</label>
+            <select id="add-item-master" class="corp-input"><option value="">Select Master Item...</option></select>
+            <input type="text" id="add-item-name" placeholder="Item Name" class="corp-input">
+            <div style="display: flex; gap: 12px;">
+                <input type="number" id="add-item-buy" placeholder="Buy Price (₹)" class="corp-input">
+                <input type="number" id="add-item-sell" placeholder="Sell Price (₹)" class="corp-input">
+            </div>
+            <label style="color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase;">Product Photo</label>
+            <input type="file" id="add-item-photo" accept="image/*" class="corp-input" style="padding: 10px; background: white;">
+            <button onclick="submitItem()" id="btn-save-item" class="btn-primary" style="margin-top: 10px;"><i class="fa-solid fa-check"></i> Save Item</button>
+        </div>
+    </div>
+
+    <!-- Party Modal -->
+    <div id="modal-customer" class="modal-overlay hide">
+        <div class="modal-content">
+            <div class="modal-header"><h3 id="modal-customer-title">Register Party</h3><button onclick="closeCustomerModal()" class="modal-close"><i class="fa-solid fa-xmark"></i></button></div>
+            <input type="text" id="add-cust-name" placeholder="Party / Business Name" class="corp-input">
+            <input type="text" id="add-cust-person" placeholder="Contact Person" class="corp-input">
+            <input type="tel" id="add-cust-phone" placeholder="WhatsApp Number" class="corp-input">
+            <button onclick="submitCustomer()" id="btn-save-cust" class="btn-primary"><i class="fa-solid fa-check"></i> Save Party</button>
+        </div>
+    </div>
+
+    <!-- App Info Modal -->
     <div id="modal-info" class="modal-overlay hide">
         <div class="modal-content" style="text-align: center;">
             <img src="assets/logo.png" alt="Logo" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 12px;" onerror="this.style.display='none';">
@@ -458,45 +446,6 @@
             <p style="color: var(--primary); font-weight: 700; margin-bottom: 16px;">Demo Version</p>
             <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">App Contact: <a href="http://www.cmfilings.com" style="color: var(--primary); text-decoration: underline;">www.cmfilings.com</a></p>
             <button onclick="toggleModal('modal-info')" class="btn-primary" style="background: var(--bg); color: var(--text-main); box-shadow: none;">Close</button>
-        </div>
-    </div>
-    
-    <div id="modal-item" class="modal-overlay hide">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-item-title">Add New Item</h3>
-                <button onclick="closeItemModal()" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            
-            <label style="color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase;">Master Item Category</label>
-            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                <select id="add-item-master" class="corp-input" style="margin:0; flex: 1;">
-                    <option value="">Select Master Item...</option>
-                </select>
-                <button onclick="promptCreateMaster()" class="btn-primary" style="width: 46px; padding:0; background: var(--secondary);" title="Create Master"><i class="fa-solid fa-plus"></i></button>
-            </div>
-
-            <input type="text" id="add-item-name" placeholder="Item Name" class="corp-input">
-            <div style="display: flex; gap: 12px;">
-                <input type="number" id="add-item-buy" placeholder="Buy Price (₹)" class="corp-input">
-                <input type="number" id="add-item-sell" placeholder="Sell Price (₹)" class="corp-input">
-            </div>
-            <label style="color: var(--text-muted); font-size: 12px; font-weight: 600; margin-bottom: 8px; display: block; text-transform: uppercase;">Product Photo</label>
-            <input type="file" id="add-item-photo" accept="image/*" class="corp-input" style="padding: 10px; background: white;">
-            <button onclick="submitItem()" id="btn-save-item" class="btn-primary" style="margin-top: 10px;"><i class="fa-solid fa-check"></i> Save Item</button>
-        </div>
-    </div>
-
-    <div id="modal-customer" class="modal-overlay hide">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-customer-title">Register Party</h3>
-                <button onclick="closeCustomerModal()" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <input type="text" id="add-cust-name" placeholder="Party / Business Name" class="corp-input">
-            <input type="text" id="add-cust-person" placeholder="Contact Person" class="corp-input">
-            <input type="tel" id="add-cust-phone" placeholder="WhatsApp Number" class="corp-input">
-            <button onclick="submitCustomer()" id="btn-save-cust" class="btn-primary"><i class="fa-solid fa-check"></i> Save Party</button>
         </div>
     </div>
 
@@ -517,6 +466,23 @@
             return d.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
         }
 
+        // NUMBER TO WORDS CONVERTER
+        function numberToWords(num) {
+            if(num === 0) return "Zero Rupees Only";
+            const a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
+            const b = ['', '', 'Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety'];
+            if ((num = num.toString()).length > 9) return 'Overflow';
+            let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+            if (!n) return;
+            let str = '';
+            str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
+            str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
+            str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
+            str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
+            str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + 'Rupees Only' : 'Rupees Only';
+            return str;
+        }
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(e => console.log(e)));
         }
@@ -535,17 +501,29 @@
             
             document.querySelectorAll('.side-nav-item').forEach(el => el.classList.remove('active'));
             if(document.getElementById('side-' + tabId)) document.getElementById('side-' + tabId).classList.add('active');
+            
+            document.getElementById('global-search').value = ''; // Reset search on tab switch
             window.scrollTo(0,0);
         }
 
         function toggleModal(id) { document.getElementById(id).classList.toggle('hide'); }
 
+        // HEADER GLOBAL SEARCH
+        function handleGlobalSearch() {
+            const term = document.getElementById('global-search').value.toLowerCase();
+            // Call render functions which will now respect the global search value if applicable
+            renderMasterItems(term);
+            renderCustomers(term);
+            renderReportsTable(term);
+            filterOrderGrid(term);
+        }
+
         // COMPANY PROFILE
         function loadCompanySettings() {
-            let comp = JSON.parse(localStorage.getItem('cmBizCompany')) || { name: 'YUMMY', tagline: '', address: '', logo: '' };
-            document.getElementById('comp-name').value = comp.name || '';
-            document.getElementById('comp-tagline').value = comp.tagline || '';
-            document.getElementById('comp-address').value = comp.address || '';
+            let comp = JSON.parse(localStorage.getItem('cmBizCompany')) || { name: 'YUMMY', tagline: '', address: '', logo: '', phone: '', email: '', web: '' };
+            ['comp-name','comp-tagline','comp-address','comp-phone','comp-email','comp-web'].forEach(id => {
+                if(document.getElementById(id)) document.getElementById(id).value = comp[id.split('-')[1]] || '';
+            });
             
             if (comp.logo) {
                 currentCompanyLogoBase64 = comp.logo;
@@ -556,23 +534,25 @@
         }
 
         function saveCompanySettings() {
-            let comp = {
-                name: document.getElementById('comp-name').value,
-                tagline: document.getElementById('comp-tagline').value,
-                address: document.getElementById('comp-address').value,
-                logo: currentCompanyLogoBase64
-            };
+            let comp = { logo: currentCompanyLogoBase64 };
+            ['name','tagline','address','phone','email','web'].forEach(k => { comp[k] = document.getElementById('comp-'+k).value; });
             localStorage.setItem('cmBizCompany', JSON.stringify(comp));
             updateInvoiceHeader(comp);
             alert("Company Profile Saved!");
         }
 
         function updateInvoiceHeader(comp) {
-            document.querySelectorAll('.invoice-comp-name-disp').forEach(el => el.innerText = comp.name || 'COMPANY NAME');
-            document.querySelectorAll('.invoice-comp-logo-img').forEach(img => {
+            document.querySelectorAll('.invoice-comp-name-disp, .comp-name-disp').forEach(el => el.innerText = comp.name || 'COMPANY NAME');
+            document.querySelectorAll('.invoice-comp-logo-img, .comp-logo-img').forEach(img => {
                 if(comp.logo) { img.src = comp.logo; img.style.display = 'block'; } 
                 else { img.style.display = 'none'; }
             });
+            document.querySelectorAll('.comp-tagline-disp').forEach(el => el.innerText = comp.tagline || '');
+            document.querySelectorAll('.comp-address-disp').forEach(el => el.innerText = comp.address ? comp.address.replace(/\n/g, ', ') : '');
+            document.querySelectorAll('.comp-phone-disp').forEach(el => el.innerText = comp.phone || '');
+            document.querySelectorAll('.comp-email-disp').forEach(el => el.innerText = comp.email || '');
+            document.querySelectorAll('.comp-web-disp').forEach(el => el.innerText = comp.web || '');
+
             let dHtml = [];
             if(comp.tagline) dHtml.push(comp.tagline);
             if(comp.address) dHtml.push(comp.address.replace(/\n/g, ', '));
@@ -600,13 +580,9 @@
             });
             loadCompanySettings();
 
-            // Direct load sequence (No Authentication required)
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
-                if (splash) {
-                    splash.style.opacity = '0';
-                    setTimeout(() => splash.style.display = 'none', 500);
-                }
+                if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 500); }
                 document.getElementById('main-app').classList.remove('hide');
                 fetchData();
             }, 3000);
@@ -635,27 +611,23 @@
 
                 populateDropdowns();
                 renderDashboard();
-                renderItems();
+                renderMasterItems();
                 renderCustomers();
                 renderOrderGrid();
-                renderMasterItems();
                 renderStaff();
             } catch (err) { console.error(err); }
             if(icon) icon.classList.remove('fa-spin');
         }
 
         function populateDropdowns() {
-            // Master Items mapping
             const mastSel = document.getElementById('add-item-master');
             mastSel.innerHTML = '<option value="">Select Master Item...</option>';
             globalMasterItems.forEach(m => mastSel.innerHTML += `<option value="${m.name}">${m.name}</option>`);
 
-            // Staff mapping for Orders
             const stfSel = document.getElementById('order-staff');
             stfSel.innerHTML = '<option value="">Select Order Person (Staff)...</option>';
             globalStaff.forEach(s => stfSel.innerHTML += `<option value="${s.name}">${s.name}</option>`);
 
-            // Party mapping
             const cSel = document.getElementById('order-customer');
             cSel.innerHTML = '<option value="">Select Party...</option>';
             [...globalCustomers].sort((a,b)=>a.business_name.localeCompare(b.business_name)).forEach(c => { 
@@ -663,31 +635,89 @@
             });
         }
 
-        // MASTER ITEMS CRUD
-        async function promptCreateMaster() {
-            let n = prompt("Enter new Master Item name:");
-            if(!n || !n.trim()) return;
-            const { error } = await db.from('master_items').insert([{name: n.trim()}]);
-            if(error) alert(error.message); else fetchData();
+        // MASTER ITEMS CRUD & ACCORDION
+        function openAddMasterModal() {
+            document.getElementById('add-master-input').value = '';
+            document.getElementById('add-master-photo').value = '';
+            toggleModal('modal-master');
         }
-        async function saveMasterItem() {
-            let n = document.getElementById('add-master-name').value.trim();
-            if(!n) return;
-            const { error } = await db.from('master_items').insert([{name: n}]);
-            if(!error) { document.getElementById('add-master-name').value = ''; fetchData(); }
+
+        async function submitMasterModal() {
+            let n = document.getElementById('add-master-input').value.trim();
+            if(!n) return alert("Category Name is required");
+
+            const btn = document.getElementById('btn-save-master'); btn.innerHTML = 'Saving...';
+            let photo_url = ""; const fInput = document.getElementById('add-master-photo');
+            if(fInput.files.length > 0) {
+                const file = fInput.files[0]; const fName = Date.now() + '-master-' + file.name.replace(/[^a-zA-Z0-9.\-_]/g, '');
+                const { error: uErr } = await db.storage.from('item-photos').upload(fName, file);
+                if(uErr) { alert("Upload Failed: " + uErr.message); btn.innerHTML = '<i class="fa-solid fa-check"></i> Save Category'; return; }
+                photo_url = db.storage.from('item-photos').getPublicUrl(fName).data.publicUrl;
+            }
+
+            let payload = { name: n };
+            if(photo_url) payload.photo_url = photo_url;
+
+            const { error } = await db.from('master_items').insert([payload]);
+            if(error) alert(error.message); 
+            else { toggleModal('modal-master'); fetchData(); }
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Save Category';
         }
+
         async function deleteMaster(id) {
-            if(!confirm("Delete this Master Category?")) return;
+            if(!confirm("Delete this Master Category? Items under it will remain but lose their master link.")) return;
             await db.from('master_items').delete().eq('id', id); fetchData();
         }
-        function renderMasterItems() {
-            const list = document.getElementById('master-items-list'); list.innerHTML = '';
-            globalMasterItems.forEach(m => {
-                list.innerHTML += `<div class="list-card" style="padding:12px 16px;">
-                    <strong style="color:var(--secondary); font-size:14px;">${m.name}</strong>
-                    <button onclick="deleteMaster(${m.id})" class="action-btn btn-delete"><i class="fa-solid fa-trash"></i></button>
-                </div>`;
+
+        function renderMasterItems(search = '') {
+            const list = document.getElementById('master-items-container'); list.innerHTML = '';
+            
+            let filteredMasters = globalMasterItems;
+            if(search) filteredMasters = globalMasterItems.filter(m => m.name.toLowerCase().includes(search));
+
+            filteredMasters.forEach((m, idx) => {
+                let imgHtml = m.photo_url ? `<img src="${m.photo_url}">` : '<div style="width:36px; height:36px; border-radius:6px; background:var(--border); margin-right:12px; display:flex; align-items:center; justify-content:center; color:var(--text-muted);"><i class="fa-solid fa-image"></i></div>';
+                
+                // Get items belonging to this master
+                let subItems = globalItems.filter(i => i.master_item === m.name);
+                let subHtml = '';
+                if(subItems.length === 0) {
+                    subHtml = `<div style="padding:16px; text-align:center; font-size:12px; color:var(--text-muted);">No items in this category.</div>`;
+                } else {
+                    subItems.forEach(item => {
+                        let iImg = item.photo_url ? `<img src="${item.photo_url}" style="width:32px; height:32px; border-radius:4px; object-fit:cover; margin-right:12px;">` : '';
+                        subHtml += `
+                            <div class="list-row" style="padding-left:32px; background:#F8FAFC;">
+                                <div style="display:flex; align-items:center; flex:1;">
+                                    ${iImg}
+                                    <div>
+                                        <div style="font-weight:600; font-size:13px; color:var(--text-main);">${item.item_name}</div>
+                                        <div style="font-size:11px; color:var(--text-muted);">₹${item.sell_price}</div>
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:6px;">
+                                    <button onclick="openEditItemModal(${item.id})" class="action-btn btn-edit" style="width:28px; height:28px;"><i class="fa-solid fa-pen"></i></button>
+                                    <button onclick="deleteItem(${item.id})" class="action-btn btn-delete" style="width:28px; height:28px;"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                list.innerHTML += `
+                    <div class="master-row" onclick="toggleAccordion('m-acc-${idx}', this)">
+                        ${imgHtml} <span style="flex:1;">${m.name} <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:6px;">(${subItems.length} items)</span></span> 
+                        <button onclick="event.stopPropagation(); deleteMaster(${m.id})" style="background:none; border:none; color:var(--accent); margin-right:16px; font-size:14px;"><i class="fa-solid fa-trash"></i></button>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div id="m-acc-${idx}" class="master-content">${subHtml}</div>
+                `;
             });
+        }
+
+        function toggleAccordion(id, el) {
+            document.getElementById(id).classList.toggle('open');
+            el.classList.toggle('open');
         }
 
         // STAFF CRUD
@@ -704,8 +734,8 @@
         function renderStaff() {
             const list = document.getElementById('staff-list'); list.innerHTML = '';
             globalStaff.forEach(s => {
-                list.innerHTML += `<div class="list-card" style="padding:12px 16px;">
-                    <strong style="color:var(--secondary); font-size:14px;">${s.name}</strong>
+                list.innerHTML += `<div class="list-row">
+                    <strong style="color:var(--secondary); font-size:14px;"><i class="fa-solid fa-user" style="color:var(--text-muted); margin-right:8px;"></i> ${s.name}</strong>
                     <button onclick="deleteStaff(${s.id})" class="action-btn btn-delete"><i class="fa-solid fa-trash"></i></button>
                 </div>`;
             });
@@ -721,12 +751,12 @@
             const rList = document.getElementById('recent-orders-list'); rList.innerHTML = '';
             globalOrders.slice(0, 5).forEach(o => {
                 rList.innerHTML += `
-                    <div class="list-card">
+                    <div class="list-row">
                         <div>
                             <div class="list-title">${o.customer_name}</div>
                             <div class="list-sub">${formatIndianDate(o.order_date)} | <i class="fa-solid fa-user"></i> ${o.staff_name||'N/A'}</div>
                         </div>
-                        <div class="list-price">₹${o.order_total}</div>
+                        <div class="list-price" style="font-size:15px;">₹${Number(o.order_total).toLocaleString('en-IN')}</div>
                     </div>`;
             });
 
@@ -751,37 +781,6 @@
         }
 
         // ITEMS
-        function renderItems() {
-            const term = document.getElementById('search-items').value.toLowerCase();
-            const sortVal = document.getElementById('sort-items').value;
-            const container = document.getElementById('items-container'); container.innerHTML = '';
-            
-            let f = globalItems.filter(i => i.item_name.toLowerCase().includes(term));
-            if(sortVal === 'name') f.sort((a,b) => a.item_name.localeCompare(b.item_name));
-            else f.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-
-            f.forEach(item => {
-                let imgHtml = item.photo_url ? `<img src="${item.photo_url}" style="width:40px; height:40px; border-radius:8px; object-fit:cover; margin-right:12px;">` : '';
-                container.innerHTML += `
-                    <div class="list-card">
-                        <div style="flex: 1; display:flex; align-items:center;">
-                            ${imgHtml}
-                            <div>
-                                <div class="list-title">${item.item_name}</div>
-                                <div style="font-size:11px; font-weight:700; color:var(--primary); text-transform:uppercase; margin-bottom:4px;">${item.master_item||'No Master'}</div>
-                                <div class="list-sub" style="display:inline-block; background: var(--bg); padding: 4px 8px; border-radius: 6px;">Buy: ₹${item.buy_price}</div>
-                            </div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div class="list-price">₹${item.sell_price}</div>
-                            <div style="display:flex; flex-direction: column; gap:6px; border-left: 1px solid var(--border); padding-left: 12px;" data-html2canvas-ignore>
-                                <button onclick="openEditItemModal(${item.id})" class="action-btn btn-edit"><i class="fa-solid fa-pen"></i></button>
-                                <button onclick="deleteItem(${item.id})" class="action-btn btn-delete"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </div>
-                    </div>`;
-            });
-        }
         function openAddItemModal() {
             editingItemId = null;
             document.getElementById('modal-item-title').innerText = "Add New Item";
@@ -825,23 +824,26 @@
         }
         async function deleteItem(id) { if(confirm("Delete item?")) { await db.from('items').delete().eq('id', id); fetchData(); } }
 
-        // CUSTOMERS
-        function renderCustomers() {
-            const term = document.getElementById('search-customers').value.toLowerCase();
-            const sortVal = document.getElementById('sort-customers').value;
+        // CUSTOMERS / PARTIES
+        function renderCustomers(search = '') {
+            const term = search || document.getElementById('search-customers')?.value.toLowerCase() || '';
             const container = document.getElementById('customers-container'); container.innerHTML = '';
             let f = globalCustomers.filter(c => c.business_name.toLowerCase().includes(term) || (c.phone && c.phone.includes(term)));
-            if(sortVal === 'newest') f.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-            else f.sort((a,b) => a.business_name.localeCompare(b.business_name));
+            f.sort((a,b) => a.business_name.localeCompare(b.business_name));
+            
+            if(f.length === 0) container.innerHTML = `<div style="padding:16px; text-align:center; color:var(--text-muted); font-size:13px;">No parties found.</div>`;
+
             f.forEach(c => {
+                let callBtn = c.phone ? `<a href="tel:${c.phone.replace(/[^0-9+]/g, '')}" class="action-btn btn-call"><i class="fa-solid fa-phone"></i></a>` : '';
                 container.innerHTML += `
-                    <div class="list-card" style="align-items: flex-start;">
+                    <div class="list-row">
                         <div style="flex: 1;">
                             <div class="list-title">${c.business_name}</div>
                             <div class="list-sub" style="margin-bottom:4px;"><i class="fa-solid fa-user"></i> ${c.contact_person || 'N/A'}</div>
                             <div class="list-sub" style="font-family:monospace;">${c.phone || ''}</div>
                         </div>
-                        <div style="display:flex; flex-direction: column; gap:6px; border-left: 1px solid var(--border); padding-left: 12px;" data-html2canvas-ignore>
+                        <div style="display:flex; gap:8px; margin-right:12px;">${callBtn}</div>
+                        <div style="display:flex; flex-direction: column; gap:6px; border-left: 1px solid var(--border); padding-left: 12px;">
                             <button onclick="openEditCustomerModal(${c.id})" class="action-btn btn-edit"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="deleteCustomer(${c.id})" class="action-btn btn-delete"><i class="fa-solid fa-trash"></i></button>
                         </div>
@@ -859,9 +861,11 @@
         async function deleteCustomer(id) { if(confirm("Delete party?")) { await db.from('customers').delete().eq('id', id); fetchData(); } }
 
         // ORDERS
-        function renderOrderGrid() {
-            const term = document.getElementById('order-search').value.toLowerCase();
-            const grid = document.getElementById('order-item-grid'); grid.innerHTML = '';
+        function renderOrderGrid(search = '') {
+            const term = search || document.getElementById('order-search')?.value.toLowerCase() || '';
+            const grid = document.getElementById('order-item-grid'); 
+            if(!grid) return;
+            grid.innerHTML = '';
             let f = globalItems.filter(i => i.item_name.toLowerCase().includes(term)).sort((a,b) => a.item_name.localeCompare(b.item_name));
             f.forEach(item => {
                 grid.innerHTML += `
@@ -881,7 +885,8 @@
             });
             document.getElementById('order-total').innerText = `₹${tot.toLocaleString('en-IN')}`; return tot;
         }
-        async function saveAndSendOrder() {
+
+        async function saveAndSendOrder(printPDF = false) {
             const sel = document.getElementById('order-customer');
             const staffSel = document.getElementById('order-staff');
             if(!sel.value) return alert("Select a Party.");
@@ -893,30 +898,114 @@
             let phone = sel.value; let dt = document.getElementById('order-date').value;
             let det = cart.map(i => `${i.name} x${i.qty}`).join(", ");
 
-            const { error } = await db.from('orders').insert([{ customer_name: cName, customer_phone: phone, order_total: total, order_details: det, order_date: dt, staff_name: staffSel.value }]);
+            const { data, error } = await db.from('orders').insert([{ customer_name: cName, customer_phone: phone, order_total: total, order_details: det, order_date: dt, staff_name: staffSel.value }]).select();
             if (error) { alert("Error: " + error.message); return; }
 
-            let c = JSON.parse(localStorage.getItem('cmBizCompany'));
-            let msg = `${c&&c.name?`*${c.name}*\n`:''}_Sales Order_\n\n*Date:* ${formatIndianDate(dt)}\n*Party:* ${cName}\n*Staff:* ${staffSel.value}\n\n*Items:*\n`;
-            cart.forEach(i => { msg += `▪ ${i.name} (x${i.qty}) - ₹${i.qty*i.price}\n`; });
-            msg += `\n*Total Order Value: ₹${total.toLocaleString('en-IN')}*`;
-            
-            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+            let generatedId = data[0].id; // Get the generated DB ID for the order number
+
+            if(printPDF) {
+                generateOrderPDF({ id: generatedId, date: dt, party: cName, phone: phone, staff: staffSel.value, total: total, items: cart });
+            } else {
+                let c = JSON.parse(localStorage.getItem('cmBizCompany'));
+                let msg = `${c&&c.name?`*${c.name}*\n`:''}_Sales Order_\n\n*Order No:* ORD-${generatedId}\n*Date:* ${formatIndianDate(dt)}\n*Party:* ${cName}\n*Sales Person:* ${staffSel.value}\n\n*Items:*\n`;
+                cart.forEach(i => { msg += `▪ ${i.name} (x${i.qty}) - ₹${i.qty*i.price}\n`; });
+                msg += `\n*Total Order Value: ₹${total.toLocaleString('en-IN')}*`;
+                window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+
             cart = []; sel.value = ""; staffSel.value = ""; renderCart(); fetchData(); switchTab('dashboard');
         }
 
+        // PROFESSIONAL ORDER A4 PDF
+        function generateOrderPDF(orderData) {
+            // Populate data into the hidden A4 template
+            document.getElementById('pdf-party-name').innerText = orderData.party;
+            document.getElementById('pdf-party-phone').innerText = orderData.phone;
+            document.getElementById('pdf-order-no').innerText = `ORD-${orderData.id}`;
+            document.getElementById('pdf-order-date').innerText = formatIndianDate(orderData.date);
+            document.getElementById('pdf-order-staff').innerText = orderData.staff;
+
+            const tb = document.getElementById('pdf-order-items'); tb.innerHTML = '';
+            orderData.items.forEach((itm, idx) => {
+                tb.innerHTML += `<tr>
+                    <td>${idx + 1}</td>
+                    <td style="font-weight:600;">${itm.name}</td>
+                    <td style="text-align:center;">${itm.qty}</td>
+                    <td style="text-align:right;">${(itm.qty * itm.price).toLocaleString('en-IN')}</td>
+                </tr>`;
+            });
+
+            document.getElementById('pdf-order-total').innerText = `₹${orderData.total.toLocaleString('en-IN')}`;
+            document.getElementById('pdf-order-words').innerText = numberToWords(orderData.total);
+
+            document.getElementById('order-pdf-export').classList.remove('hide');
+            const opt = { margin: 0, filename: `Sales_Order_ORD-${orderData.id}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+            html2pdf().set(opt).from(document.getElementById('order-pdf-export')).save().then(() => {
+                document.getElementById('order-pdf-export').classList.add('hide');
+            });
+        }
+
+        // Trigger PDF generation from Reports history
+        function printHistoricalOrder(id) {
+            let o = globalOrders.find(x => x.id === id);
+            if(!o) return;
+            
+            // Reconstruct items array from string (approximate for display)
+            // Stored format: "Item A x2, Item B x1"
+            let reconstructedCart = [];
+            if(o.order_details) {
+                let parts = o.order_details.split(', ');
+                parts.forEach(p => {
+                    let match = p.match(/(.+) x(\d+)/);
+                    if(match) reconstructedCart.push({ name: match[1], qty: match[2], price: "" }); // Price lost in string compression, but we have total.
+                    else reconstructedCart.push({ name: p, qty: "-", price: ""});
+                });
+            }
+
+            generateOrderPDF({ id: o.id, date: o.order_date, party: o.customer_name, phone: o.customer_phone, staff: o.staff_name, total: o.order_total, items: reconstructedCart });
+        }
+
+
         // REPORTS
-        function renderReportsTable() {
-            const s = document.getElementById('report-start').value; const e = document.getElementById('report-end').value;
-            const tb = document.getElementById('reports-tbody');
-            if(!s || !e) return alert("Select dates.");
-            let f = globalOrders.filter(o => { let d = new Date(o.order_date).toISOString().split('T')[0]; return d >= s && d <= e; });
-            document.getElementById('report-date-range').innerText = `${formatIndianDate(s)} to ${formatIndianDate(e)}`;
+        function renderReportsTable(search = '') {
+            const term = search || document.getElementById('global-search')?.value.toLowerCase() || '';
+            const s = document.getElementById('report-start')?.value; 
+            const e = document.getElementById('report-end')?.value;
+            const tb = document.getElementById('reports-list');
+            if(!tb) return;
+
+            let f = globalOrders;
+            if(s && e) f = f.filter(o => { let d = new Date(o.order_date).toISOString().split('T')[0]; return d >= s && d <= e; });
+            if(term) f = f.filter(o => o.customer_name.toLowerCase().includes(term) || (o.staff_name && o.staff_name.toLowerCase().includes(term)));
+
+            document.getElementById('report-date-range').innerText = (s && e) ? `${formatIndianDate(s)} to ${formatIndianDate(e)}` : 'All Data';
+            
             tb.innerHTML = ''; let t = 0;
-            if(f.length === 0) { tb.innerHTML = '<tr><td colspan="4" style="text-align:center;">No orders found.</td></tr>'; }
-            else { f.forEach(o => { t += Number(o.order_total); tb.innerHTML += `<tr><td>${formatIndianDate(o.order_date)}</td><td>${o.customer_name}</td><td>${o.staff_name||''}</td><td style="text-align:right;">₹${Number(o.order_total).toLocaleString('en-IN')}</td></tr>`; }); }
+            if(f.length === 0) { tb.innerHTML = '<div style="padding:16px; text-align:center; color:var(--text-muted); font-size:13px;">No orders found.</div>'; }
+            else { 
+                f.forEach(o => { 
+                    t += Number(o.order_total); 
+                    tb.innerHTML += `
+                        <div class="list-row">
+                            <div style="flex:1;">
+                                <div class="list-title">${o.customer_name}</div>
+                                <div class="list-sub">${formatIndianDate(o.order_date)} | <i class="fa-solid fa-user"></i> ${o.staff_name||'N/A'}</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div class="list-price" style="font-size:16px;">₹${Number(o.order_total).toLocaleString('en-IN')}</div>
+                                <button onclick="printHistoricalOrder(${o.id})" class="action-btn" style="background:#DCFCE7; color:#16A34A; height:24px; width:auto; padding:0 8px; font-size:10px; font-weight:700; margin-top:6px; margin-left:auto;"><i class="fa-solid fa-file-pdf"></i> Print</button>
+                            </div>
+                        </div>`; 
+                }); 
+            }
             document.getElementById('reports-grand-total').innerText = `₹${t.toLocaleString('en-IN')}`;
-            document.getElementById('pdf-report-wrapper').classList.remove('hide');
+            
+            // Re-render hidden PDF table (keep basic tabular format for full export)
+            const pdfTb = document.getElementById('reports-tbody');
+            if(pdfTb) {
+                pdfTb.innerHTML = '';
+                f.forEach(o => { pdfTb.innerHTML += `<tr><td>${formatIndianDate(o.order_date)}</td><td>${o.customer_name}</td><td>${o.staff_name||''}</td><td style="text-align:right;">₹${Number(o.order_total).toLocaleString('en-IN')}</td></tr>`; });
+            }
         }
         function exportToPDF(elId, name) {
             document.querySelectorAll(`#${elId} .hide[data-html2canvas-show="true"]`).forEach(el => el.classList.remove('hide'));
