@@ -301,13 +301,11 @@
             measurementId: "G-770FBR88LJ"
         };
 
-        // SAFE FIREBASE INITIALIZATION TO PREVENT SPA CRASHES
         const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
         const db = getFirestore(app);
 
         window.appointmentsDataCache = {};
 
-        // --- INDIAN DATE FORMAT HELPER ---
         window.formatIndianDate = function(dateStr) {
             if(!dateStr) return '';
             const p = dateStr.split('-');
@@ -315,10 +313,26 @@
             return `${p[2]}/${p[1]}/${p[0]}`;
         }
 
-        // --- 0. SAFE DYNAMIC LOADERS ---
+        // --- 0. SAFE DYNAMIC LOADERS (UPDATED FOR BRANCH USERS) ---
         window.loadBranchesForApt = async function() {
             const branchSelect = document.getElementById('aptBranch');
             const filterSelect = document.getElementById('filterBranch');
+            
+            // SECURITY: If standard user, lock the dropdowns to their branch only
+            if (window.currentUser && window.currentUser.role !== 'admin') {
+                const userBranch = window.currentUser.branch;
+                branchSelect.innerHTML = `<option value="${userBranch}">${userBranch}</option>`;
+                filterSelect.innerHTML = `<option value="${userBranch}">${userBranch}</option>`;
+                
+                // Visually lock the inputs so they can't be clicked
+                branchSelect.style.pointerEvents = 'none';
+                branchSelect.style.background = 'var(--grey-med)';
+                filterSelect.style.pointerEvents = 'none';
+                filterSelect.style.background = 'var(--grey-med)';
+                return; // Stop executing, no need to fetch other branches
+            }
+
+            // Normal flow for Admin (Load all branches)
             try {
                 const snap = await getDocs(collection(db, "branches"));
                 let branchList = [];
@@ -385,6 +399,11 @@
             document.getElementById('aptDocId').value = ''; 
             document.getElementById('saveAptBtn').innerText = "Save Appointment";
             document.getElementById('reschedule-container').classList.remove('active');
+            
+            // Ensure branch stays locked if user is not admin
+            if (window.currentUser && window.currentUser.role !== 'admin') {
+                document.getElementById('aptBranch').value = window.currentUser.branch;
+            }
         }
 
         function isPastDateTime(dateStr, timeStr) {
@@ -420,25 +439,39 @@
             btn.innerText = "Check";
         }
 
-        // --- 3. LOAD APPOINTMENTS ---
+        // --- 3. LOAD APPOINTMENTS (UPDATED FOR BRANCH FILTERING) ---
         window.loadAppointments = async function() {
             const tableBody = document.getElementById('aptTableBody');
             tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;">Loading appointments...</td></tr>';
 
             try {
-                const q = query(collection(db, "appointments"), orderBy("date", "desc"));
+                let q;
+                // Admin gets all, Branch users get only their branch
+                if (window.currentUser && window.currentUser.role !== 'admin') {
+                    q = query(collection(db, "appointments"), where("branch", "==", window.currentUser.branch));
+                } else {
+                    q = query(collection(db, "appointments"));
+                }
+                
                 const querySnapshot = await getDocs(q);
                 tableBody.innerHTML = ''; 
                 window.appointmentsDataCache = {}; 
                 
                 if (querySnapshot.empty) {
-                    tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: var(--text-muted);">No appointments booked yet.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: var(--text-muted);">No appointments found.</td></tr>';
                     return;
                 }
 
-                querySnapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    const docId = docSnap.id; 
+                // Sorting client-side to prevent missing Firebase index errors
+                let aptsList = [];
+                querySnapshot.forEach(docSnap => {
+                    aptsList.push({ id: docSnap.id, data: docSnap.data() });
+                });
+                aptsList.sort((a, b) => new Date(b.data.date || 0) - new Date(a.data.date || 0));
+
+                aptsList.forEach((item) => {
+                    const data = item.data;
+                    const docId = item.id; 
                     window.appointmentsDataCache[docId] = data;
                     
                     let statusBadge = '';
@@ -530,7 +563,9 @@
         }
 
         window.clearFilters = function() {
-            document.getElementById("filterBranch").value = "";
+            if (window.currentUser && window.currentUser.role === 'admin') {
+                document.getElementById("filterBranch").value = "";
+            }
             document.getElementById("filterStatus").value = "";
             document.getElementById("filterPayment").value = "";
             document.getElementById("filterDate").value = "";
@@ -566,7 +601,7 @@
             else window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // --- 6. MOVE TO NEXT SCHEDULE (COPY & CLEAN NOTES) ---
+        // --- 6. MOVE TO NEXT SCHEDULE ---
         window.toggleAllCheckboxes = function(masterCheckbox) {
             const checkboxes = document.querySelectorAll('.apt-checkbox');
             checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
@@ -694,14 +729,12 @@
             };
 
             try {
-                // Auto-Register Patient if they are completely new, including new age and medical history notes
                 const pSnap = await getDocs(query(collection(db, "patients"), where("mobile", "==", mobile)));
                 if (pSnap.empty) {
                     const genId = "P" + Math.floor(Math.random() * 90000 + 10000);
                     await addDoc(collection(db, "patients"), { patientId: genId, mobile: mobile, name: name, age: age, notes: patientNotes, branch: branch, createdAt: new Date() });
                 }
 
-                // Save/Update Appointment & Trigger Auto-Transactions
                 if(docId) {
                     await updateDoc(doc(db, "appointments", docId), payload);
                     await window.syncTransactions(docId, payload);
@@ -815,7 +848,6 @@
 
         window.exportAptPDF = function() { window.print(); }
     </script>
-
 </div>
 </body>
 </html>
