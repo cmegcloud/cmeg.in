@@ -81,7 +81,7 @@
         .list-price { font-size: 18px; font-weight: 800; color: var(--primary); text-align: right; }
 
         /* BUTTONS & INPUTS */
-        .action-btn { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; border: none; cursor: pointer;}
+        .action-btn { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; text-decoration: none; border: none; cursor: pointer;}
         .btn-call { background: #DCFCE7; color: #16A34A; }
         .btn-map { background: #DBEAFE; color: #2563EB; }
         .btn-edit { background: #F1F5F9; color: var(--secondary); width: 32px; height: 32px; font-size: 12px; }
@@ -90,9 +90,18 @@
         .corp-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
         select.corp-input { -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231E3A8A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px top 50%; background-size: 10px auto; }
         .btn-primary { width: 100%; padding: 14px; border: none; border-radius: 8px; background: var(--primary); color: #FFFFFF; font-size: 15px; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; }
+        .btn-primary:active { background: var(--primary-hover); }
+
+        /* CALCULATOR */
+        .calc-btn { background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-size: 18px; font-weight: 700; color: var(--text-main); text-align: center; cursor: pointer; transition: background 0.2s; }
+        .calc-btn:active { background: #E2E8F0; }
+        .calc-op { background: var(--primary); color: white; border-color: var(--primary); }
+        .calc-op:active { background: var(--primary-hover); }
+        .calc-eq { background: var(--secondary); color: white; border-color: var(--secondary); grid-column: span 2; }
+        .calc-clear { background: var(--accent); color: white; border-color: var(--accent); }
 
         /* MODALS */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); }
         .modal-content { background: var(--surface); width: 100%; max-height: 90vh; overflow-y: auto; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
         .modal-header h3 { font-size: 18px; color: var(--secondary); font-weight: 700; }
@@ -101,9 +110,11 @@
         /* BOTTOM NAV */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--border); z-index: 100; padding: 0 10px; }
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; font-weight: 600; color: var(--text-muted); background: none; border: none; cursor: pointer; flex: 1;}
-        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; transition: 0.2s; }
         .nav-item.active { color: var(--primary); }
-        .fab { width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 24px; margin-top: -25px; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); border: none; cursor: pointer; }
+        
+        .fab { width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 24px; margin-top: -25px; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); border: none; cursor: pointer; transition: transform 0.2s; }
+        .fab:active { transform: scale(0.92); }
 
         .cart-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
         .cart-table th { text-align: left; padding: 12px; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--border); background: #F8FAFC; }
@@ -121,303 +132,324 @@
 <body>
 
     <div id="splash-screen">
-        <img src="assets/logo.png" class="splash-logo" alt="Logo" onerror="this.style.display='none';">
+        <img src="assets/logo-white.png" class="splash-logo" alt="Logo" onerror="this.style.display='none';">
         <img src="assets/name-white.png" style="height: 30px; object-fit: contain;" alt="bizze" onerror="this.style.display='none';">
     </div>
 
-    <div class="header">
-        <div class="left-head">
-            <button onclick="toggleMenu()" style="background:none; border:none; color:white; font-size: 22px; cursor: pointer; padding-right: 10px;">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                <img src="assets/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none';">
-            </div>
-            <img src="assets/name-white.png" alt="bizze" style="height: 28px; object-fit: contain; margin-left: 4px;" onerror="this.style.display='none';">
-        </div>
-        <div class="right-head">
-            <button onclick="fetchData()" style="background:none; border:none; color:inherit; cursor: pointer;"><i class="fa-solid fa-arrows-rotate" id="sync-icon"></i></button>
-        </div>
-    </div>
+    <div id="main-app" class="hide">
 
-    <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
-    <div class="side-menu" id="side-menu">
-        <div class="side-menu-header">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                <img src="assets/logo.png" style="width: 40px; height: 40px; object-fit: contain;" onerror="this.style.display='none';">
-                <img src="assets/name-white.png" style="height: 30px; object-fit: contain;" onerror="this.style.display='none';">
+        <div class="header">
+            <div class="left-head">
+                <button onclick="toggleMenu()" style="background:none; border:none; color:white; font-size: 22px; cursor: pointer; padding-right: 10px;">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                    <img src="assets/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none';">
+                </div>
+                <img src="assets/name-white.png" alt="bizze" style="height: 28px; object-fit: contain; margin-left: 4px;" onerror="this.style.display='none';">
             </div>
-            <p style="font-size: 13px; opacity: 0.9; font-weight: 500;">Sales Order System</p>
-        </div>
-        <div class="side-menu-links">
-            <div class="side-nav-item active" id="side-dashboard" onclick="switchTab('dashboard'); toggleMenu();">
-                <i class="fa-solid fa-house"></i> Dashboard
-            </div>
-            <div class="side-nav-item" id="side-customers" onclick="switchTab('customers'); toggleMenu();">
-                <i class="fa-solid fa-users"></i> Party Directory
-            </div>
-            <div class="side-nav-item" id="side-staff" onclick="switchTab('staff'); toggleMenu();">
-                <i class="fa-solid fa-user-tag"></i> Staff Management
-            </div>
-            <div class="side-nav-item" id="side-master" onclick="switchTab('master'); toggleMenu();">
-                <i class="fa-solid fa-layer-group"></i> Master Items
-            </div>
-            <div class="side-nav-item" id="side-items" onclick="switchTab('items'); toggleMenu();">
-                <i class="fa-solid fa-box"></i> Items
-            </div>
-            <div class="side-nav-item" id="side-orders" onclick="switchTab('orders'); toggleMenu();">
-                <i class="fa-solid fa-file-invoice-dollar"></i> Generate Order
-            </div>
-            <div class="side-nav-item" id="side-reports" onclick="switchTab('reports'); toggleMenu();">
-                <i class="fa-solid fa-chart-pie"></i> Reports & Export
-            </div>
-            <div class="side-nav-item" id="side-calculator" onclick="switchTab('calculator'); toggleMenu();">
-                <i class="fa-solid fa-calculator"></i> Calculator
-            </div>
-            <div class="side-nav-item" id="side-company" onclick="switchTab('company'); toggleMenu();" style="border-top: 1px solid var(--border); margin-top: 10px; padding-top: 20px;">
-                <i class="fa-solid fa-building"></i> Company Profile
+            <div class="right-head">
+                <button onclick="fetchData()" style="background:none; border:none; color:inherit; cursor: pointer;"><i class="fa-solid fa-arrows-rotate" id="sync-icon"></i></button>
             </div>
         </div>
-        <div style="padding: 20px; border-top: 1px solid var(--border);">
-            <button onclick="toggleModal('modal-info'); toggleMenu();" class="btn-primary" style="background: var(--bg); color: var(--text-main); border: 1px solid var(--border); box-shadow: none;">
-                <i class="fa-solid fa-circle-info"></i> App Information
-            </button>
-        </div>
-    </div>
 
-    <main id="app-content">
-
-        <div id="view-dashboard">
-            <div class="hero">
-                <h4>Total Order Value</h4>
-                <h1 id="dash-revenue">₹0</h1>
-                <div class="stats">
-                    <div class="stat">
-                        <span>Orders Generated</span>
-                        <h3 id="dash-orders">0</h3>
-                    </div>
-                    <div class="stat">
-                        <span>Active Parties</span>
-                        <h3 id="dash-customers">0</h3>
-                    </div>
+        <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+        <div class="side-menu" id="side-menu">
+            <div class="side-menu-header">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <img src="assets/logo.png" style="width: 40px; height: 40px; object-fit: contain;" onerror="this.style.display='none';">
+                    <img src="assets/name-white.png" style="height: 30px; object-fit: contain;" onerror="this.style.display='none';">
+                </div>
+                <p style="font-size: 13px; opacity: 0.9; font-weight: 500;">Sales Order System</p>
+            </div>
+            <div class="side-menu-links">
+                <div class="side-nav-item active" id="side-dashboard" onclick="switchTab('dashboard'); toggleMenu();">
+                    <i class="fa-solid fa-house"></i> Dashboard
+                </div>
+                <div class="side-nav-item" id="side-customers" onclick="switchTab('customers'); toggleMenu();">
+                    <i class="fa-solid fa-users"></i> Party Directory
+                </div>
+                <div class="side-nav-item" id="side-staff" onclick="switchTab('staff'); toggleMenu();">
+                    <i class="fa-solid fa-user-tag"></i> Staff Management
+                </div>
+                <div class="side-nav-item" id="side-master" onclick="switchTab('master'); toggleMenu();">
+                    <i class="fa-solid fa-layer-group"></i> Master Items
+                </div>
+                <div class="side-nav-item" id="side-items" onclick="switchTab('items'); toggleMenu();">
+                    <i class="fa-solid fa-box"></i> Items
+                </div>
+                <div class="side-nav-item" id="side-orders" onclick="switchTab('orders'); toggleMenu();">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> Generate Order
+                </div>
+                <div class="side-nav-item" id="side-reports" onclick="switchTab('reports'); toggleMenu();">
+                    <i class="fa-solid fa-chart-pie"></i> Reports & Export
+                </div>
+                <div class="side-nav-item" id="side-calculator" onclick="switchTab('calculator'); toggleMenu();">
+                    <i class="fa-solid fa-calculator"></i> Calculator
+                </div>
+                <div class="side-nav-item" id="side-company" onclick="switchTab('company'); toggleMenu();" style="border-top: 1px solid var(--border); margin-top: 10px; padding-top: 20px;">
+                    <i class="fa-solid fa-building"></i> Company Profile
                 </div>
             </div>
-
-            <div class="section">
-                <div class="corp-card">
-                    <h3 style="font-size: 16px; color: var(--secondary); margin-bottom: 12px;"><i class="fa-solid fa-chart-bar"></i> Orders by Staff</h3>
-                    <div class="chart-container">
-                        <canvas id="staffChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Quick Actions</div>
-                <div class="quick-grid">
-                    <div class="quick-card" onclick="switchTab('customers')"><div class="icon-circle"><i class="fa-solid fa-users"></i></div><span>Parties</span></div>
-                    <div class="quick-card" onclick="switchTab('items')"><div class="icon-circle"><i class="fa-solid fa-box"></i></div><span>Items</span></div>
-                    <div class="quick-card" onclick="switchTab('orders')"><div class="icon-circle"><i class="fa-solid fa-cart-shopping"></i></div><span>Order</span></div>
-                    <div class="quick-card" onclick="switchTab('reports')"><div class="icon-circle"><i class="fa-solid fa-file-csv"></i></div><span>Report</span></div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Recent Transactions</div>
-                <div id="recent-orders-list"></div>
+            <div style="padding: 20px; border-top: 1px solid var(--border);">
+                <button onclick="toggleModal('modal-info'); toggleMenu();" class="btn-primary" style="background: var(--bg); color: var(--text-main); border: 1px solid var(--border); box-shadow: none;">
+                    <i class="fa-solid fa-circle-info"></i> App Information
+                </button>
             </div>
         </div>
 
-        <div id="view-orders" class="hide section">
-            <div class="corp-card pdf-export-area" id="invoice-area">
-                <div style="display: flex; justify-content: space-between; border-bottom: 2px solid var(--border); padding-bottom: 16px; margin-bottom: 20px;">
-                    <div style="display: flex; gap: 15px; align-items: center;">
-                        <img class="invoice-comp-logo-img" src="" style="max-height: 50px; border-radius: 8px; display: none;">
-                        <div>
-                            <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 22px; font-weight: 800; margin-bottom: 4px;">YUMMY</h2>
-                            <p id="invoice-comp-details" style="color: var(--text-muted); font-size: 11px; line-height: 1.5;">Setup your company details<br>in the Company Profile menu.</p>
+        <main id="app-content">
+
+            <div id="view-dashboard">
+                <div class="hero">
+                    <h4>Total Order Value</h4>
+                    <h1 id="dash-revenue">₹0</h1>
+                    <div class="stats">
+                        <div class="stat">
+                            <span>Orders Generated</span>
+                            <h3 id="dash-orders">0</h3>
+                        </div>
+                        <div class="stat">
+                            <span>Active Parties</span>
+                            <h3 id="dash-customers">0</h3>
                         </div>
                     </div>
-                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end;">
-                        <h3 style="color: var(--primary); font-size: 18px; font-weight: 800;">SALES ORDER</h3>
+                </div>
+
+                <div class="section">
+                    <div class="corp-card">
+                        <h3 style="font-size: 16px; color: var(--secondary); margin-bottom: 12px;"><i class="fa-solid fa-chart-bar"></i> Orders by Staff</h3>
+                        <div class="chart-container">
+                            <canvas id="staffChart"></canvas>
+                        </div>
                     </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Quick Actions</div>
+                    <div class="quick-grid">
+                        <div class="quick-card" onclick="switchTab('customers')"><div class="icon-circle"><i class="fa-solid fa-users"></i></div><span>Parties</span></div>
+                        <div class="quick-card" onclick="switchTab('items')"><div class="icon-circle"><i class="fa-solid fa-box"></i></div><span>Items</span></div>
+                        <div class="quick-card" onclick="switchTab('orders')"><div class="icon-circle"><i class="fa-solid fa-cart-shopping"></i></div><span>Order</span></div>
+                        <div class="quick-card" onclick="switchTab('reports')"><div class="icon-circle"><i class="fa-solid fa-file-csv"></i></div><span>Report</span></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Recent Transactions</div>
+                    <div id="recent-orders-list"></div>
+                </div>
+            </div>
+
+            <div id="view-orders" class="hide section">
+                <div class="corp-card pdf-export-area" id="invoice-area">
+                    <div style="display: flex; justify-content: space-between; border-bottom: 2px solid var(--border); padding-bottom: 16px; margin-bottom: 20px;">
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <img class="invoice-comp-logo-img" src="" style="max-height: 50px; border-radius: 8px; display: none;">
+                            <div>
+                                <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 22px; font-weight: 800; margin-bottom: 4px;">YUMMY</h2>
+                                <p id="invoice-comp-details" style="color: var(--text-muted); font-size: 11px; line-height: 1.5;">Setup your company details<br>in the Company Profile menu.</p>
+                            </div>
+                        </div>
+                        <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end;">
+                            <h3 style="color: var(--primary); font-size: 18px; font-weight: 800;">SALES ORDER</h3>
+                        </div>
+                    </div>
+                    
+                    <input type="date" id="order-date" class="corp-input">
+                    <select id="order-customer" class="corp-input"><option value="">Select Party...</option></select>
+                    <select id="order-staff" class="corp-input"><option value="">Select Order Person (Staff)...</option></select>
+
+                    <div style="margin: 24px 0;" data-html2canvas-ignore>
+                        <input type="text" id="order-search" onkeyup="filterOrderGrid()" placeholder="Search items to add..." class="corp-input">
+                        <div id="order-item-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-height: 220px; overflow-y: auto;"></div>
+                    </div>
+
+                    <div style="overflow-x: auto; border: 1px solid var(--border); border-radius: 8px;">
+                        <table class="cart-table" style="margin-bottom: 0;">
+                            <thead><tr><th>Item</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Total</th><th data-html2canvas-ignore></th></tr></thead>
+                            <tbody id="order-list"></tbody>
+                            <tfoot>
+                                <tr style="background: #F8FAFC;">
+                                    <td colspan="4">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
+                                            <span style="color:var(--text-muted); font-weight: 600; font-size: 13px; text-transform: uppercase;">Total Order Value</span>
+                                            <span style="color:var(--primary); font-size: 20px; font-weight:800;" id="order-total">₹0</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div style="margin-top: 40px; text-align: center; opacity: 0.4;"><span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span></div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-bottom: 30px;">
+                    <button onclick="exportToPDF('invoice-area', 'Sales_Order')" class="btn-primary" style="background: white; color: var(--accent); flex: 0.3; border: 1px solid var(--border); box-shadow: none;"><i class="fa-solid fa-file-pdf" style="font-size: 18px;"></i></button>
+                    <button onclick="saveAndSendOrder()" class="btn-primary" style="flex: 1;"><i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> Save & Send</button>
+                </div>
+            </div>
+
+            <div id="view-master" class="hide section">
+                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                    <input type="text" id="add-master-name" class="corp-input" style="margin:0;" placeholder="Add New Master Item...">
+                    <button onclick="saveMasterItem()" class="btn-primary" style="width: 56px; padding:0;"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <div id="master-items-list"></div>
+            </div>
+
+            <div id="view-staff" class="hide section">
+                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                    <input type="text" id="add-staff-name" class="corp-input" style="margin:0;" placeholder="Add Staff (e.g. Staff 1)...">
+                    <button onclick="saveStaff()" class="btn-primary" style="width: 56px; padding:0;"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <div id="staff-list"></div>
+            </div>
+
+            <div id="view-items" class="hide section">
+                <div style="display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
+                    <input type="text" id="search-items" onkeyup="renderItems()" placeholder="Search Items..." class="corp-input" style="margin:0; flex: 1; min-width: 120px;">
+                    <select id="sort-items" onchange="renderItems()" class="corp-input" style="margin:0; width: auto; padding: 12px;">
+                        <option value="newest">Newest</option>
+                        <option value="name">Name A-Z</option>
+                    </select>
+                    <button onclick="exportToPDF('pdf-items-wrapper', 'Item_Master')" class="btn-primary" style="width: 46px; height: 46px; padding: 0; background: var(--secondary);"><i class="fa-solid fa-file-pdf"></i></button>
+                    <button onclick="openAddItemModal()" class="btn-primary" style="width: 46px; height: 46px; padding: 0;"><i class="fa-solid fa-plus"></i></button>
                 </div>
                 
-                <input type="date" id="order-date" class="corp-input">
-                <select id="order-customer" class="corp-input"><option value="">Select Party...</option></select>
-                <select id="order-staff" class="corp-input"><option value="">Select Order Person (Staff)...</option></select>
-
-                <div style="margin: 24px 0;" data-html2canvas-ignore>
-                    <input type="text" id="order-search" onkeyup="filterOrderGrid()" placeholder="Search items to add..." class="corp-input">
-                    <div id="order-item-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-height: 220px; overflow-y: auto;"></div>
-                </div>
-
-                <div style="overflow-x: auto; border: 1px solid var(--border); border-radius: 8px;">
-                    <table class="cart-table" style="margin-bottom: 0;">
-                        <thead><tr><th>Item</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Total</th><th data-html2canvas-ignore></th></tr></thead>
-                        <tbody id="order-list"></tbody>
-                        <tfoot>
-                            <tr style="background: #F8FAFC;">
-                                <td colspan="4">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
-                                        <span style="color:var(--text-muted); font-weight: 600; font-size: 13px; text-transform: uppercase;">Total Order Value</span>
-                                        <span style="color:var(--primary); font-size: 20px; font-weight:800;" id="order-total">₹0</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                <div style="margin-top: 40px; text-align: center; opacity: 0.4;"><span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span></div>
-            </div>
-
-            <div style="display: flex; gap: 12px; margin-bottom: 30px;">
-                <button onclick="exportToPDF('invoice-area', 'Sales_Order')" class="btn-primary" style="background: white; color: var(--accent); flex: 0.3; border: 1px solid var(--border); box-shadow: none;"><i class="fa-solid fa-file-pdf" style="font-size: 18px;"></i></button>
-                <button onclick="saveAndSendOrder()" class="btn-primary" style="flex: 1;"><i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> Save & Send</button>
-            </div>
-        </div>
-
-        <div id="view-master" class="hide section">
-            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-                <input type="text" id="add-master-name" class="corp-input" style="margin:0;" placeholder="Add New Master Item...">
-                <button onclick="saveMasterItem()" class="btn-primary" style="width: 56px; padding:0;"><i class="fa-solid fa-plus"></i></button>
-            </div>
-            <div id="master-items-list"></div>
-        </div>
-
-        <div id="view-staff" class="hide section">
-            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-                <input type="text" id="add-staff-name" class="corp-input" style="margin:0;" placeholder="Add Staff (e.g. Staff 1)...">
-                <button onclick="saveStaff()" class="btn-primary" style="width: 56px; padding:0;"><i class="fa-solid fa-plus"></i></button>
-            </div>
-            <div id="staff-list"></div>
-        </div>
-
-        <div id="view-items" class="hide section">
-            <div style="display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
-                <input type="text" id="search-items" onkeyup="renderItems()" placeholder="Search Items..." class="corp-input" style="margin:0; flex: 1; min-width: 120px;">
-                <select id="sort-items" onchange="renderItems()" class="corp-input" style="margin:0; width: auto; padding: 12px;">
-                    <option value="newest">Newest</option>
-                    <option value="name">Name A-Z</option>
-                </select>
-                <button onclick="exportToPDF('pdf-items-wrapper', 'Item_Master')" class="btn-primary" style="width: 46px; height: 46px; padding: 0; background: var(--secondary);"><i class="fa-solid fa-file-pdf"></i></button>
-                <button onclick="openAddItemModal()" class="btn-primary" style="width: 46px; height: 46px; padding: 0;"><i class="fa-solid fa-plus"></i></button>
-            </div>
-            
-            <div id="pdf-items-wrapper" class="pdf-export-area">
-                <div class="pdf-export-header hide" data-html2canvas-show="true">
-                    <div style="display: flex; gap: 12px; align-items: center;">
-                        <img class="invoice-comp-logo-img" src="" style="max-height: 40px; border-radius: 6px; display: none;">
-                        <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 18px; font-weight: 800;"></h2>
+                <div id="pdf-items-wrapper" class="pdf-export-area">
+                    <div class="pdf-export-header hide" data-html2canvas-show="true">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <img class="invoice-comp-logo-img" src="" style="max-height: 40px; border-radius: 6px; display: none;">
+                            <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 18px; font-weight: 800;"></h2>
+                        </div>
+                        <h3 style="font-size: 16px; color: var(--primary);">Item Master</h3>
                     </div>
-                    <h3 style="font-size: 16px; color: var(--primary);">Item Master</h3>
+                    
+                    <div id="items-container"></div>
+                    
+                    <div style="margin-top: 30px; text-align: center; opacity: 0.4;" data-html2canvas-show="true" class="hide">
+                        <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-customers" class="hide section">
+                <div style="display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
+                    <input type="text" id="search-customers" onkeyup="renderCustomers()" placeholder="Search Parties..." class="corp-input" style="margin:0; flex: 1; min-width: 120px;">
+                    <select id="sort-customers" onchange="renderCustomers()" class="corp-input" style="margin:0; width: auto; padding: 12px;">
+                        <option value="name">Name A-Z</option>
+                        <option value="newest">Newest</option>
+                    </select>
+                    <button onclick="exportToPDF('pdf-cust-wrapper', 'Party_Directory')" class="btn-primary" style="width: 46px; height: 46px; padding: 0; background: var(--secondary);"><i class="fa-solid fa-file-pdf"></i></button>
+                    <button onclick="openAddCustomerModal()" class="btn-primary" style="width: 46px; height: 46px; padding: 0;"><i class="fa-solid fa-user-plus"></i></button>
                 </div>
                 
-                <div id="items-container"></div>
-                
-                <div style="margin-top: 30px; text-align: center; opacity: 0.4;" data-html2canvas-show="true" class="hide">
-                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span>
-                </div>
-            </div>
-        </div>
-
-        <div id="view-customers" class="hide section">
-            <div style="display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
-                <input type="text" id="search-customers" onkeyup="renderCustomers()" placeholder="Search Parties..." class="corp-input" style="margin:0; flex: 1; min-width: 120px;">
-                <select id="sort-customers" onchange="renderCustomers()" class="corp-input" style="margin:0; width: auto; padding: 12px;">
-                    <option value="name">Name A-Z</option>
-                    <option value="newest">Newest</option>
-                </select>
-                <button onclick="exportToPDF('pdf-cust-wrapper', 'Party_Directory')" class="btn-primary" style="width: 46px; height: 46px; padding: 0; background: var(--secondary);"><i class="fa-solid fa-file-pdf"></i></button>
-                <button onclick="openAddCustomerModal()" class="btn-primary" style="width: 46px; height: 46px; padding: 0;"><i class="fa-solid fa-user-plus"></i></button>
-            </div>
-            
-            <div id="pdf-cust-wrapper" class="pdf-export-area">
-                <div class="pdf-export-header hide" data-html2canvas-show="true">
-                    <div style="display: flex; gap: 12px; align-items: center;">
-                        <img class="invoice-comp-logo-img" src="" style="max-height: 40px; border-radius: 6px; display: none;">
-                        <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 18px; font-weight: 800;"></h2>
+                <div id="pdf-cust-wrapper" class="pdf-export-area">
+                    <div class="pdf-export-header hide" data-html2canvas-show="true">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <img class="invoice-comp-logo-img" src="" style="max-height: 40px; border-radius: 6px; display: none;">
+                            <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 18px; font-weight: 800;"></h2>
+                        </div>
+                        <h3 style="font-size: 16px; color: var(--primary);">Party Directory</h3>
                     </div>
-                    <h3 style="font-size: 16px; color: var(--primary);">Party Directory</h3>
-                </div>
-                <div id="customers-container"></div>
-                <div style="margin-top: 30px; text-align: center; opacity: 0.4;" data-html2canvas-show="true" class="hide"><span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span></div>
-            </div>
-        </div>
-
-        <div id="view-reports" class="hide section">
-            <div class="corp-card" style="margin-bottom: 20px;">
-                <h3 style="color: var(--secondary); margin-bottom: 15px; font-size: 16px;">Filter Orders</h3>
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <div style="flex: 1;"><label style="font-size: 11px; color: var(--text-muted); font-weight: 600;">From Date</label><input type="date" id="report-start" class="corp-input" style="margin-bottom: 0;"></div>
-                    <div style="flex: 1;"><label style="font-size: 11px; color: var(--text-muted); font-weight: 600;">To Date</label><input type="date" id="report-end" class="corp-input" style="margin-bottom: 0;"></div>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="renderReportsTable()" class="btn-primary" style="flex: 1;"><i class="fa-solid fa-filter"></i> Apply Filter</button>
-                    <button onclick="exportToPDF('pdf-report-wrapper', 'Sales_Report')" class="btn-primary" style="background: var(--secondary); width: auto; padding: 0 20px;" title="Export to PDF"><i class="fa-solid fa-file-pdf"></i></button>
-                    <button onclick="downloadCSV()" class="btn-primary" style="background: #16A34A; width: auto; padding: 0 20px;" title="Export CSV"><i class="fa-solid fa-file-csv"></i></button>
+                    <div id="customers-container"></div>
+                    <div style="margin-top: 30px; text-align: center; opacity: 0.4;" data-html2canvas-show="true" class="hide"><span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span></div>
                 </div>
             </div>
 
-            <div id="pdf-report-wrapper" class="pdf-export-area hide">
-                <div class="pdf-export-header">
-                    <div style="display: flex; gap: 12px; align-items: center;">
-                        <img class="invoice-comp-logo-img" src="" style="max-height: 40px; border-radius: 6px; display: none;">
-                        <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 18px; font-weight: 800;"></h2>
+            <div id="view-reports" class="hide section">
+                <div class="corp-card" style="margin-bottom: 20px;">
+                    <h3 style="color: var(--secondary); margin-bottom: 15px; font-size: 16px;">Filter Orders</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <div style="flex: 1;"><label style="font-size: 11px; color: var(--text-muted); font-weight: 600;">From Date</label><input type="date" id="report-start" class="corp-input" style="margin-bottom: 0;"></div>
+                        <div style="flex: 1;"><label style="font-size: 11px; color: var(--text-muted); font-weight: 600;">To Date</label><input type="date" id="report-end" class="corp-input" style="margin-bottom: 0;"></div>
                     </div>
-                    <div style="text-align: right;">
-                        <h3 style="font-size: 16px; color: var(--primary);">Sales Report</h3>
-                        <p id="report-date-range" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;"></p>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="renderReportsTable()" class="btn-primary" style="flex: 1;"><i class="fa-solid fa-filter"></i> Apply Filter</button>
+                        <button onclick="exportToPDF('pdf-report-wrapper', 'Sales_Report')" class="btn-primary" style="background: var(--secondary); width: auto; padding: 0 20px;" title="Export to PDF"><i class="fa-solid fa-file-pdf"></i></button>
+                        <button onclick="downloadCSV()" class="btn-primary" style="background: #16A34A; width: auto; padding: 0 20px;" title="Export CSV"><i class="fa-solid fa-file-csv"></i></button>
                     </div>
                 </div>
-                <div style="overflow-x: auto;">
-                    <table class="cart-table">
-                        <thead><tr><th>Date</th><th>Party</th><th>Staff</th><th style="text-align:right;">Total</th></tr></thead>
-                        <tbody id="reports-tbody"></tbody>
-                        <tfoot>
-                            <tr style="background: #F8FAFC;">
-                                <td colspan="3" style="text-align: right; font-weight: 700; color: var(--text-muted); font-size: 13px;">Total:</td>
-                                <td id="reports-grand-total" style="text-align: right; font-weight: 800; color: var(--primary); font-size: 16px;">₹0</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                <div style="margin-top: 40px; text-align: center; opacity: 0.4;" data-html2canvas-show="true" class="hide"><span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span></div>
-            </div>
-        </div>
 
-        <div id="view-company" class="hide section">
-            <div class="corp-card">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <div class="icon-circle" style="width: 60px; height: 60px; font-size: 24px; margin-bottom: 12px; background: var(--secondary);"><i class="fa-solid fa-building"></i></div>
-                    <h2 style="font-size: 20px; color: var(--secondary);">Company Profile</h2>
-                </div>
-                <div style="margin-bottom: 16px;">
-                    <label style="font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Company Logo</label>
-                    <input type="file" id="comp-logo-input" accept="image/*" class="corp-input" style="padding: 10px; margin-bottom: 8px;">
-                    <img id="comp-logo-preview" src="" style="max-height: 60px; border-radius: 8px; display: none;">
-                </div>
-                <input type="text" id="comp-name" placeholder="Company Name (e.g. YUMMY)" class="corp-input">
-                <input type="text" id="comp-tagline" placeholder="Tagline" class="corp-input">
-                <textarea id="comp-address" placeholder="Full Address" class="corp-input" rows="3" style="resize:none; padding:12px;"></textarea>
-                <button onclick="saveCompanySettings()" class="btn-primary"><i class="fa-solid fa-check"></i> Save Profile</button>
-            </div>
-        </div>
-
-        <div id="view-calculator" class="hide section">
-            <div class="corp-card" style="max-width: 360px; margin: 0 auto;">
-                <input type="text" id="calc-display" disabled class="corp-input" style="font-size: 32px; text-align: right; background: var(--bg); font-family: monospace; padding: 20px; font-weight: 800; color: var(--secondary); margin-bottom: 20px; border: none;" value="0">
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
-                    <div class="calc-btn calc-clear" onclick="calcClear()">C</div><div class="calc-btn calc-op" onclick="calcInput('/')">/</div><div class="calc-btn calc-op" onclick="calcInput('*')">x</div><div class="calc-btn calc-op" onclick="calcInput('-')">-</div>
-                    <div class="calc-btn" onclick="calcInput('7')">7</div><div class="calc-btn" onclick="calcInput('8')">8</div><div class="calc-btn" onclick="calcInput('9')">9</div><div class="calc-btn calc-op" style="grid-row: span 2; display: flex; align-items: center; justify-content: center;" onclick="calcInput('+')">+</div>
-                    <div class="calc-btn" onclick="calcInput('4')">4</div><div class="calc-btn" onclick="calcInput('5')">5</div><div class="calc-btn" onclick="calcInput('6')">6</div>
-                    <div class="calc-btn" onclick="calcInput('1')">1</div><div class="calc-btn" onclick="calcInput('2')">2</div><div class="calc-btn" onclick="calcInput('3')">3</div><div class="calc-btn calc-eq" style="grid-row: span 2; display: flex; align-items: center; justify-content: center;" onclick="calcCalculate()">=</div>
-                    <div class="calc-btn" style="grid-column: span 2;" onclick="calcInput('0')">0</div><div class="calc-btn" onclick="calcInput('.')">.</div>
+                <div id="pdf-report-wrapper" class="pdf-export-area hide">
+                    <div class="pdf-export-header">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <img class="invoice-comp-logo-img" src="" style="max-height: 40px; border-radius: 6px; display: none;">
+                            <h2 class="invoice-comp-name-disp" style="color: var(--secondary); font-size: 18px; font-weight: 800;"></h2>
+                        </div>
+                        <div style="text-align: right;">
+                            <h3 style="font-size: 16px; color: var(--primary);">Sales Report</h3>
+                            <p id="report-date-range" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;"></p>
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="cart-table">
+                            <thead><tr><th>Date</th><th>Party</th><th>Staff</th><th style="text-align:right;">Total</th></tr></thead>
+                            <tbody id="reports-tbody"></tbody>
+                            <tfoot>
+                                <tr style="background: #F8FAFC;">
+                                    <td colspan="3" style="text-align: right; font-weight: 700; color: var(--text-muted); font-size: 13px;">Total:</td>
+                                    <td id="reports-grand-total" style="text-align: right; font-weight: 800; color: var(--primary); font-size: 16px;">₹0</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div style="margin-top: 40px; text-align: center; opacity: 0.4;" data-html2canvas-show="true" class="hide"><span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--secondary);">Generated by bizze</span></div>
                 </div>
             </div>
-        </div>
 
-    </main>
+            <div id="view-company" class="hide section">
+                <div class="corp-card">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div class="icon-circle" style="width: 60px; height: 60px; font-size: 24px; margin-bottom: 12px; background: var(--secondary);"><i class="fa-solid fa-building"></i></div>
+                        <h2 style="font-size: 20px; color: var(--secondary);">Company Profile</h2>
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Company Logo</label>
+                        <input type="file" id="comp-logo-input" accept="image/*" class="corp-input" style="padding: 10px; margin-bottom: 8px;">
+                        <img id="comp-logo-preview" src="" style="max-height: 60px; border-radius: 8px; display: none;">
+                    </div>
+                    <input type="text" id="comp-name" placeholder="Company Name (e.g. YUMMY)" class="corp-input">
+                    <input type="text" id="comp-tagline" placeholder="Tagline" class="corp-input">
+                    <textarea id="comp-address" placeholder="Full Address" class="corp-input" rows="3" style="resize:none; padding:12px;"></textarea>
+                    <button onclick="saveCompanySettings()" class="btn-primary"><i class="fa-solid fa-check"></i> Save Profile</button>
+                </div>
+            </div>
+
+            <div id="view-calculator" class="hide section">
+                <div class="corp-card" style="max-width: 360px; margin: 0 auto;">
+                    <input type="text" id="calc-display" disabled class="corp-input" style="font-size: 32px; text-align: right; background: var(--bg); font-family: monospace; padding: 20px; font-weight: 800; color: var(--secondary); margin-bottom: 20px; border: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);" value="0">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+                        <div class="calc-btn calc-clear" onclick="calcClear()">C</div><div class="calc-btn calc-op" onclick="calcInput('/')">/</div><div class="calc-btn calc-op" onclick="calcInput('*')">x</div><div class="calc-btn calc-op" onclick="calcInput('-')">-</div>
+                        <div class="calc-btn" onclick="calcInput('7')">7</div><div class="calc-btn" onclick="calcInput('8')">8</div><div class="calc-btn" onclick="calcInput('9')">9</div><div class="calc-btn calc-op" style="grid-row: span 2; display: flex; align-items: center; justify-content: center;" onclick="calcInput('+')">+</div>
+                        <div class="calc-btn" onclick="calcInput('4')">4</div><div class="calc-btn" onclick="calcInput('5')">5</div><div class="calc-btn" onclick="calcInput('6')">6</div>
+                        <div class="calc-btn" onclick="calcInput('1')">1</div><div class="calc-btn" onclick="calcInput('2')">2</div><div class="calc-btn" onclick="calcInput('3')">3</div><div class="calc-btn calc-eq" style="grid-row: span 2; display: flex; align-items: center; justify-content: center;" onclick="calcCalculate()">=</div>
+                        <div class="calc-btn" style="grid-column: span 2;" onclick="calcInput('0')">0</div><div class="calc-btn" onclick="calcInput('.')">.</div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <div class="bottom-nav">
+            <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
+                <i class="fa-solid fa-house"></i><span>Home</span>
+            </button>
+            <button class="nav-item" id="nav-customers" onclick="switchTab('customers')">
+                <i class="fa-solid fa-users"></i><span>Parties</span>
+            </button>
+            <button class="fab" onclick="switchTab('orders')">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+            <button class="nav-item" id="nav-items" onclick="switchTab('items')">
+                <i class="fa-solid fa-box"></i><span>Items</span>
+            </button>
+            <button class="nav-item" id="nav-reports" onclick="switchTab('reports')">
+                <i class="fa-solid fa-chart-line"></i><span>Reports</span>
+            </button>
+        </div>
+    </div>
 
     <div id="modal-info" class="modal-overlay hide">
         <div class="modal-content" style="text-align: center;">
@@ -449,7 +481,7 @@
                 <input type="number" id="add-item-buy" placeholder="Buy Price (₹)" class="corp-input">
                 <input type="number" id="add-item-sell" placeholder="Sell Price (₹)" class="corp-input">
             </div>
-            <label style="color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase;">Product Photo</label>
+            <label style="color: var(--text-muted); font-size: 12px; font-weight: 600; margin-bottom: 8px; display: block; text-transform: uppercase;">Product Photo</label>
             <input type="file" id="add-item-photo" accept="image/*" class="corp-input" style="padding: 10px; background: white;">
             <button onclick="submitItem()" id="btn-save-item" class="btn-primary" style="margin-top: 10px;"><i class="fa-solid fa-check"></i> Save Item</button>
         </div>
@@ -466,14 +498,6 @@
             <input type="tel" id="add-cust-phone" placeholder="WhatsApp Number" class="corp-input">
             <button onclick="submitCustomer()" id="btn-save-cust" class="btn-primary"><i class="fa-solid fa-check"></i> Save Party</button>
         </div>
-    </div>
-
-    <div class="bottom-nav">
-        <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')"><i class="fa-solid fa-house"></i><span>Home</span></button>
-        <button class="nav-item" id="nav-customers" onclick="switchTab('customers')"><i class="fa-solid fa-users"></i><span>Parties</span></button>
-        <button class="fab" onclick="switchTab('orders')"><i class="fa-solid fa-plus"></i></button>
-        <button class="nav-item" id="nav-items" onclick="switchTab('items')"><i class="fa-solid fa-box"></i><span>Items</span></button>
-        <button class="nav-item" id="nav-reports" onclick="switchTab('reports')"><i class="fa-solid fa-chart-line"></i><span>Reports</span></button>
     </div>
 
     <script>
@@ -575,7 +599,17 @@
                 }
             });
             loadCompanySettings();
-            fetchData();
+
+            // Direct load sequence (No Authentication required)
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(() => splash.style.display = 'none', 500);
+                }
+                document.getElementById('main-app').classList.remove('hide');
+                fetchData();
+            }, 3000);
         });
 
         // FETCH DATA
