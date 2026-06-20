@@ -60,7 +60,7 @@
         .section { padding: 0 16px; margin-top: 24px; }
         .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--secondary); }
 
-        /* GRIDS & ROWS (Edge to Edge) */
+        /* GRIDS & ROWS */
         .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .quick-card { background: var(--surface); padding: 16px 8px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); cursor: pointer; }
         .icon-circle { width: 44px; height: 44px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: auto; margin-bottom: 8px; color: white; }
@@ -88,7 +88,7 @@
         .btn-map { background: #DBEAFE; color: #2563EB; }
         .btn-edit { background: #F1F5F9; color: var(--secondary); width: 32px; height: 32px; font-size: 12px; }
         .btn-delete { background: #FEE2E2; color: var(--accent); width: 32px; height: 32px; font-size: 12px; }
-        .corp-input { width: 100%; background: #F8FAFC; border: 1px solid var(--border); padding: 14px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; outline: none; font-weight: 500; color: var(--text-main); }
+        .corp-input { width: 100%; background: #F8FAFC; border: 1px solid var(--border); padding: 14px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; outline: none; font-weight: 500; color: var(--text-main); transition: 0.2s; }
         .corp-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
         select.corp-input { -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231E3A8A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px top 50%; background-size: 10px auto; }
         .btn-primary { width: 100%; padding: 14px; border: none; border-radius: 8px; background: var(--primary); color: #FFFFFF; font-size: 15px; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; }
@@ -111,7 +111,11 @@
         .cart-table th { text-align: left; padding: 12px; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--border); background: #F8FAFC; }
         .cart-table td { padding: 16px 12px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--text-main); }
         .qty-input { width: 55px; padding: 8px; border-radius: 6px; border: 1px solid var(--border); text-align: center; font-weight: 700; color: var(--text-main); background: #F8FAFC; }
+        
+        .pdf-export-area { background: white; border-radius: 8px; padding: 10px; }
+        .pdf-export-header { margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
 
+        /* Chart Container */
         .chart-container { position: relative; height: 250px; width: 100%; margin-top: 20px; }
 
         /* PROFESSIONAL A4 PDF LAYOUT */
@@ -158,6 +162,7 @@
                 <div class="side-nav-item" id="side-customers" onclick="switchTab('customers'); toggleMenu();"><i class="fa-solid fa-users"></i> Party Directory</div>
                 <div class="side-nav-item" id="side-staff" onclick="switchTab('staff'); toggleMenu();"><i class="fa-solid fa-user-tag"></i> Staff Management</div>
                 <div class="side-nav-item" id="side-master" onclick="switchTab('master'); toggleMenu();"><i class="fa-solid fa-layer-group"></i> Master Items</div>
+                <div class="side-nav-item" id="side-items" onclick="switchTab('items'); toggleMenu();"><i class="fa-solid fa-box"></i> Items Directory</div>
                 <div class="side-nav-item" id="side-orders" onclick="switchTab('orders'); toggleMenu();"><i class="fa-solid fa-file-invoice-dollar"></i> Generate Order</div>
                 <div class="side-nav-item" id="side-reports" onclick="switchTab('reports'); toggleMenu();"><i class="fa-solid fa-chart-pie"></i> Reports & Export</div>
                 <div class="side-nav-item" id="side-calculator" onclick="switchTab('calculator'); toggleMenu();"><i class="fa-solid fa-calculator"></i> Calculator</div>
@@ -214,7 +219,9 @@
 
                     <div style="margin: 24px 0;">
                         <input type="text" id="order-search" onkeyup="filterOrderGrid()" placeholder="Search items to add..." class="corp-input">
-                        <div id="order-item-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-height: 220px; overflow-y: auto;"></div>
+                        
+                        <!-- NEW ACCORDION MASTER GRID FOR ITEM SELECTION -->
+                        <div id="order-item-grid" style="max-height: 300px; overflow-y: auto; padding-right: 4px; margin-top: 12px;"></div>
                     </div>
 
                     <div style="overflow-x: auto; border: 1px solid var(--border); border-radius: 8px;">
@@ -247,11 +254,9 @@
                     <h2 class="section-title" style="margin:0;">Master Categories</h2>
                     <button onclick="openAddMasterModal()" class="btn-primary" style="width: auto; padding: 8px 16px; font-size: 13px;"><i class="fa-solid fa-plus"></i> New Master</button>
                 </div>
-                
                 <div style="display:flex; justify-content: space-between; margin-bottom: 16px;">
                     <button onclick="openAddItemModal()" class="btn-primary" style="background:var(--secondary);"><i class="fa-solid fa-box-open"></i> Add Item to Master</button>
                 </div>
-
                 <div class="list-container" id="master-items-container"></div>
             </div>
 
@@ -262,6 +267,15 @@
                     <button onclick="saveStaff()" class="btn-primary" style="width: 56px; padding:0;"><i class="fa-solid fa-plus"></i></button>
                 </div>
                 <div class="list-container" id="staff-list"></div>
+            </div>
+
+            <!-- ITEMS -->
+            <div id="view-items" class="hide section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 class="section-title" style="margin:0;">All Items Directory</h2>
+                    <button onclick="openAddItemModal()" class="btn-primary" style="width: auto; padding: 8px 16px; font-size: 13px;"><i class="fa-solid fa-plus"></i> New Item</button>
+                </div>
+                <div class="list-container" id="items-container"></div>
             </div>
 
             <!-- CUSTOMERS / PARTIES -->
@@ -434,6 +448,13 @@
             <input type="text" id="add-cust-name" placeholder="Party / Business Name" class="corp-input">
             <input type="text" id="add-cust-person" placeholder="Contact Person" class="corp-input">
             <input type="tel" id="add-cust-phone" placeholder="WhatsApp Number" class="corp-input">
+            
+            <div style="display: flex; gap: 12px;">
+                <input type="text" id="add-cust-loc" placeholder="Location GPS" class="corp-input" style="margin:0;">
+                <button onclick="getGPSLocation()" class="btn-primary" style="width: 52px; height: 52px; flex-shrink: 0; padding: 0;" title="Get Navigation Link"><i class="fa-solid fa-location-crosshairs"></i></button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 11px; margin: 6px 0 20px 0; font-weight: 500;">Tap icon to generate Google Maps Nav link.</p>
+
             <button onclick="submitCustomer()" id="btn-save-cust" class="btn-primary"><i class="fa-solid fa-check"></i> Save Party</button>
         </div>
     </div>
@@ -502,7 +523,7 @@
             document.querySelectorAll('.side-nav-item').forEach(el => el.classList.remove('active'));
             if(document.getElementById('side-' + tabId)) document.getElementById('side-' + tabId).classList.add('active');
             
-            document.getElementById('global-search').value = ''; // Reset search on tab switch
+            document.getElementById('global-search').value = ''; 
             window.scrollTo(0,0);
         }
 
@@ -511,11 +532,24 @@
         // HEADER GLOBAL SEARCH
         function handleGlobalSearch() {
             const term = document.getElementById('global-search').value.toLowerCase();
-            // Call render functions which will now respect the global search value if applicable
             renderMasterItems(term);
+            renderItems(term);
             renderCustomers(term);
             renderReportsTable(term);
             filterOrderGrid(term);
+        }
+
+        // GPS LOGIC for Navigation URL
+        function getGPSLocation() {
+            const locInput = document.getElementById('add-cust-loc');
+            locInput.value = "Fetching GPS...";
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => { locInput.value = `https://www.google.com/maps/dir/?api=1&destination=${pos.coords.latitude},${pos.coords.longitude}`; },
+                    (err) => { alert("GPS Error. Enable permissions."); locInput.value = ""; },
+                    { enableHighAccuracy: true }
+                );
+            } else { alert("Geolocation not supported."); locInput.value = ""; }
         }
 
         // COMPANY PROFILE
@@ -612,6 +646,7 @@
                 populateDropdowns();
                 renderDashboard();
                 renderMasterItems();
+                renderItems();
                 renderCustomers();
                 renderOrderGrid();
                 renderStaff();
@@ -678,7 +713,6 @@
             filteredMasters.forEach((m, idx) => {
                 let imgHtml = m.photo_url ? `<img src="${m.photo_url}">` : '<div style="width:36px; height:36px; border-radius:6px; background:var(--border); margin-right:12px; display:flex; align-items:center; justify-content:center; color:var(--text-muted);"><i class="fa-solid fa-image"></i></div>';
                 
-                // Get items belonging to this master
                 let subItems = globalItems.filter(i => i.master_item === m.name);
                 let subHtml = '';
                 if(subItems.length === 0) {
@@ -760,7 +794,6 @@
                     </div>`;
             });
 
-            // CHART RENDERING
             const ctx = document.getElementById('staffChart').getContext('2d');
             const stTot = {};
             globalOrders.forEach(o => {
@@ -780,7 +813,37 @@
             });
         }
 
-        // ITEMS
+        // ITEMS DIRECTORY
+        function renderItems(search = '') {
+            const term = search || document.getElementById('search-items')?.value.toLowerCase() || '';
+            const container = document.getElementById('items-container'); container.innerHTML = '';
+            
+            let f = globalItems.filter(i => i.item_name.toLowerCase().includes(term) || (i.master_item && i.master_item.toLowerCase().includes(term)));
+            f.sort((a,b) => a.item_name.localeCompare(b.item_name));
+
+            f.forEach(item => {
+                let imgHtml = item.photo_url ? `<img src="${item.photo_url}" style="width:40px; height:40px; border-radius:8px; object-fit:cover; margin-right:12px;">` : '';
+                container.innerHTML += `
+                    <div class="list-row">
+                        <div style="flex: 1; display:flex; align-items:center;">
+                            ${imgHtml}
+                            <div>
+                                <div class="list-title">${item.item_name}</div>
+                                <div style="font-size:11px; font-weight:700; color:var(--primary); text-transform:uppercase; margin-bottom:4px;">${item.master_item||'No Master'}</div>
+                                <div class="list-sub" style="display:inline-block; background: var(--bg); padding: 4px 8px; border-radius: 6px;">Buy: ₹${item.buy_price}</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="list-price">₹${item.sell_price}</div>
+                            <div style="display:flex; flex-direction: column; gap:6px; border-left: 1px solid var(--border); padding-left: 12px;" data-html2canvas-ignore>
+                                <button onclick="openEditItemModal(${item.id})" class="action-btn btn-edit" style="width:28px; height:28px;"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteItem(${item.id})" class="action-btn btn-delete" style="width:28px; height:28px;"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
         function openAddItemModal() {
             editingItemId = null;
             document.getElementById('modal-item-title').innerText = "Add New Item";
@@ -834,7 +897,9 @@
             if(f.length === 0) container.innerHTML = `<div style="padding:16px; text-align:center; color:var(--text-muted); font-size:13px;">No parties found.</div>`;
 
             f.forEach(c => {
-                let callBtn = c.phone ? `<a href="tel:${c.phone.replace(/[^0-9+]/g, '')}" class="action-btn btn-call"><i class="fa-solid fa-phone"></i></a>` : '';
+                let callBtn = c.phone ? `<a href="tel:${c.phone.replace(/[^0-9+]/g, '')}" class="action-btn btn-call" title="Call"><i class="fa-solid fa-phone"></i></a>` : '';
+                let mapBtn = c.location && c.location.startsWith('http') ? `<a href="${c.location}" target="_blank" class="action-btn btn-map" title="Map"><i class="fa-solid fa-location-dot"></i></a>` : '';
+                
                 container.innerHTML += `
                     <div class="list-row">
                         <div style="flex: 1;">
@@ -842,37 +907,72 @@
                             <div class="list-sub" style="margin-bottom:4px;"><i class="fa-solid fa-user"></i> ${c.contact_person || 'N/A'}</div>
                             <div class="list-sub" style="font-family:monospace;">${c.phone || ''}</div>
                         </div>
-                        <div style="display:flex; gap:8px; margin-right:12px;">${callBtn}</div>
+                        <div style="display:flex; gap:8px; margin-right:12px;">${mapBtn}${callBtn}</div>
                         <div style="display:flex; flex-direction: column; gap:6px; border-left: 1px solid var(--border); padding-left: 12px;">
-                            <button onclick="openEditCustomerModal(${c.id})" class="action-btn btn-edit"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteCustomer(${c.id})" class="action-btn btn-delete"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="openEditCustomerModal(${c.id})" class="action-btn btn-edit" style="width:28px; height:28px;"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteCustomer(${c.id})" class="action-btn btn-delete" style="width:28px; height:28px;"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>`;
             });
         }
-        function openAddCustomerModal() { editingCustId = null; document.getElementById('modal-customer-title').innerText="Register Party"; ['add-cust-name','add-cust-person','add-cust-phone'].forEach(id=>document.getElementById(id).value=''); toggleModal('modal-customer'); }
-        function openEditCustomerModal(id) { editingCustId = id; let c = globalCustomers.find(x=>x.id==id); if(!c) return; document.getElementById('modal-customer-title').innerText="Edit Party"; document.getElementById('add-cust-name').value=c.business_name; document.getElementById('add-cust-person').value=c.contact_person; document.getElementById('add-cust-phone').value=c.phone; toggleModal('modal-customer'); }
+        function openAddCustomerModal() { editingCustId = null; document.getElementById('modal-customer-title').innerText="Register Party"; ['add-cust-name','add-cust-person','add-cust-phone', 'add-cust-loc'].forEach(id=>document.getElementById(id).value=''); toggleModal('modal-customer'); }
+        function openEditCustomerModal(id) { editingCustId = id; let c = globalCustomers.find(x=>x.id==id); if(!c) return; document.getElementById('modal-customer-title').innerText="Edit Party"; document.getElementById('add-cust-name').value=c.business_name; document.getElementById('add-cust-person').value=c.contact_person; document.getElementById('add-cust-phone').value=c.phone; document.getElementById('add-cust-loc').value=c.location || ''; toggleModal('modal-customer'); }
         function closeCustomerModal() { document.getElementById('modal-customer').classList.add('hide'); }
         async function submitCustomer() {
-            let payload = { business_name: document.getElementById('add-cust-name').value, contact_person: document.getElementById('add-cust-person').value, phone: document.getElementById('add-cust-phone').value };
+            let payload = { business_name: document.getElementById('add-cust-name').value, contact_person: document.getElementById('add-cust-person').value, phone: document.getElementById('add-cust-phone').value, location: document.getElementById('add-cust-loc').value };
             let err = editingCustId ? (await db.from('customers').update(payload).eq('id', editingCustId)).error : (await db.from('customers').insert([payload])).error;
             if(err) alert(err.message); closeCustomerModal(); fetchData();
         }
         async function deleteCustomer(id) { if(confirm("Delete party?")) { await db.from('customers').delete().eq('id', id); fetchData(); } }
 
-        // ORDERS
+        // ORDERS (MASTER ACCORDION SELECTION)
         function renderOrderGrid(search = '') {
             const term = search || document.getElementById('order-search')?.value.toLowerCase() || '';
             const grid = document.getElementById('order-item-grid'); 
             if(!grid) return;
             grid.innerHTML = '';
-            let f = globalItems.filter(i => i.item_name.toLowerCase().includes(term)).sort((a,b) => a.item_name.localeCompare(b.item_name));
-            f.forEach(item => {
+            
+            let fItems = globalItems.filter(i => i.item_name.toLowerCase().includes(term) || (i.master_item && i.master_item.toLowerCase().includes(term)));
+            fItems.sort((a,b) => a.item_name.localeCompare(b.item_name));
+
+            let grouped = {};
+            fItems.forEach(i => {
+                let mName = i.master_item || 'Uncategorized';
+                if(!grouped[mName]) grouped[mName] = [];
+                grouped[mName].push(i);
+            });
+
+            Object.keys(grouped).sort().forEach((mName, mIdx) => {
+                let mObj = globalMasterItems.find(m => m.name === mName);
+                let mImg = mObj && mObj.photo_url ? `<img src="${mObj.photo_url}" style="width:36px; height:36px; border-radius:6px; object-fit:cover; margin-right:12px; border:1px solid var(--border);">` : '<div style="width:36px; height:36px; border-radius:6px; background:white; border:1px solid var(--border); margin-right:12px; display:flex; align-items:center; justify-content:center; color:var(--text-muted);"><i class="fa-solid fa-layer-group"></i></div>';
+                
+                let itemsHtml = '';
+                grouped[mName].forEach(item => {
+                    let iImg = item.photo_url ? `<img src="${item.photo_url}" style="width:40px; height:40px; border-radius:6px; object-fit:cover; margin-bottom:8px;">` : '<div style="width:40px; height:40px; border-radius:6px; background:var(--bg); margin-bottom:8px; display:flex; align-items:center; justify-content:center; color:var(--text-muted);"><i class="fa-solid fa-box"></i></div>';
+                    
+                    itemsHtml += `
+                        <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; cursor: pointer; display:flex; flex-direction:column; align-items:center; box-shadow:0 2px 4px rgba(0,0,0,0.02);" onclick="addToOrder('${item.item_name}', ${item.sell_price})">
+                            ${iImg}
+                            <div style="font-weight: 600; font-size: 12px; margin-bottom: 4px; line-height: 1.2;">${item.item_name}</div>
+                            <div style="color: var(--primary); font-weight: 800; font-size: 14px;">₹${item.sell_price}</div>
+                        </div>
+                    `;
+                });
+
                 grid.innerHTML += `
-                    <div style="background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 12px 8px; text-align: center; cursor: pointer;" onclick="addToOrder('${item.item_name}', ${item.sell_price})">
-                        <div style="font-weight: 600; font-size: 13px; margin-bottom: 6px; line-height: 1.3;">${item.item_name}</div>
-                        <div style="color: var(--primary); font-weight: 800; font-size: 15px;">₹${item.sell_price}</div>
-                    </div>`;
+                    <div style="margin-bottom: 8px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+                        <div onclick="document.getElementById('ord-m-acc-${mIdx}').classList.toggle('hide')" style="background: #F8FAFC; padding: 12px; display: flex; align-items: center; cursor: pointer;">
+                            ${mImg}
+                            <span style="font-weight: 700; color: var(--secondary); font-size: 14px; flex: 1;">${mName}</span>
+                            <i class="fa-solid fa-chevron-down" style="color:var(--text-muted);"></i>
+                        </div>
+                        <div id="ord-m-acc-${mIdx}" class="hide" style="background: var(--bg); padding: 12px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                ${itemsHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
         }
         function filterOrderGrid() { renderOrderGrid(); }
@@ -901,7 +1001,7 @@
             const { data, error } = await db.from('orders').insert([{ customer_name: cName, customer_phone: phone, order_total: total, order_details: det, order_date: dt, staff_name: staffSel.value }]).select();
             if (error) { alert("Error: " + error.message); return; }
 
-            let generatedId = data[0].id; // Get the generated DB ID for the order number
+            let generatedId = data[0].id;
 
             if(printPDF) {
                 generateOrderPDF({ id: generatedId, date: dt, party: cName, phone: phone, staff: staffSel.value, total: total, items: cart });
@@ -918,7 +1018,6 @@
 
         // PROFESSIONAL ORDER A4 PDF
         function generateOrderPDF(orderData) {
-            // Populate data into the hidden A4 template
             document.getElementById('pdf-party-name').innerText = orderData.party;
             document.getElementById('pdf-party-phone').innerText = orderData.phone;
             document.getElementById('pdf-order-no').innerText = `ORD-${orderData.id}`;
@@ -939,25 +1038,22 @@
             document.getElementById('pdf-order-words').innerText = numberToWords(orderData.total);
 
             document.getElementById('order-pdf-export').classList.remove('hide');
-            const opt = { margin: 0, filename: `Sales_Order_ORD-${orderData.id}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+            const opt = { margin: 0, filename: `Sales_Order_ORD-${orderData.id}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
             html2pdf().set(opt).from(document.getElementById('order-pdf-export')).save().then(() => {
                 document.getElementById('order-pdf-export').classList.add('hide');
             });
         }
 
-        // Trigger PDF generation from Reports history
         function printHistoricalOrder(id) {
             let o = globalOrders.find(x => x.id === id);
             if(!o) return;
             
-            // Reconstruct items array from string (approximate for display)
-            // Stored format: "Item A x2, Item B x1"
             let reconstructedCart = [];
             if(o.order_details) {
                 let parts = o.order_details.split(', ');
                 parts.forEach(p => {
                     let match = p.match(/(.+) x(\d+)/);
-                    if(match) reconstructedCart.push({ name: match[1], qty: match[2], price: "" }); // Price lost in string compression, but we have total.
+                    if(match) reconstructedCart.push({ name: match[1], qty: match[2], price: "" }); 
                     else reconstructedCart.push({ name: p, qty: "-", price: ""});
                 });
             }
@@ -1000,7 +1096,6 @@
             }
             document.getElementById('reports-grand-total').innerText = `₹${t.toLocaleString('en-IN')}`;
             
-            // Re-render hidden PDF table (keep basic tabular format for full export)
             const pdfTb = document.getElementById('reports-tbody');
             if(pdfTb) {
                 pdfTb.innerHTML = '';
