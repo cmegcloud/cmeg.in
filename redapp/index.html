@@ -113,6 +113,25 @@
 </head>
 <body>
 
+    <!-- NEW: Login Screen -->
+<div id="login-container" style="display: flex; height: 100vh; width: 100vw; align-items: center; justify-content: center; background: var(--bg); z-index: 9999; position: fixed; top: 0; left: 0;">
+    <div style="background: var(--surface); padding: 40px; border-radius: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); width: 100%; max-width: 400px; text-align: center;">
+        <h2 style="color: var(--primary); margin-bottom: 24px;">Stra Care Login</h2>
+        <input type="text" id="loginUsername" placeholder="Username (e.g., admin, B1)" style="width: 100%; padding: 12px; margin-bottom: 16px; border-radius: 8px; border: 1px solid var(--border);">
+        <input type="password" id="loginPassword" placeholder="Password" style="width: 100%; padding: 12px; margin-bottom: 24px; border-radius: 8px; border: 1px solid var(--border);">
+        <button onclick="window.handleLogin()" style="width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer;">Access Dashboard</button>
+        <div id="login-error" style="color: var(--danger); margin-top: 16px; display: none; font-size: 13px;">Invalid credentials!</div>
+    </div>
+</div>
+
+<!-- EXISTING APP WRAPPER: Hidden by default -->
+<div id="app-container" style="display: none; height: 100vh; width: 100vw; overflow: hidden;">
+    <div id="sidebar-container"></div>
+    <div class="main-wrapper">
+        <!-- ... (Keep all your existing main-wrapper content here) ... -->
+    </div>
+</div>
+    
     <div id="sidebar-container"></div>
 
     <div class="main-wrapper">
@@ -487,8 +506,27 @@
     </script>
 
     <script type="module">
-        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+// ... (keep your firebaseConfig initialization) ...
+
+window.fetchDashboardData = async function() {
+    // SECURITY CHECK: Ensure someone is logged in
+    if (!window.currentUser) return; 
+
+    try {
+        let q;
+        // ADMIN gets everything. USERS get only their branch.
+        if (window.currentUser.role === 'admin') {
+            q = query(collection(db, "appointments"));
+        } else {
+            q = query(collection(db, "appointments"), where("branch", "==", window.currentUser.branch));
+        }
+
+        const snap = await getDocs(q);
+        
+        // ... (Keep the rest of your existing data processing logic[cite: 1]) ...
 
         const firebaseConfig = {
             apiKey: "AIzaSyAcO1L2Za7dzILxylmMkRTSx0FBVu_EEoM",
@@ -571,5 +609,45 @@
         // Fire dashboard fetch immediately once Firebase module is loaded
         window.fetchDashboardData();
     </script>
+
+    <script>
+    // Define your users and their branch access
+    window.appUsers = {
+        "admin": { password: "adminPassword123", role: "admin", branch: "ALL" },
+        "userB1": { password: "passwordB1", role: "user", branch: "Branch 1" },
+        "userB2": { password: "passwordB2", role: "user", branch: "Branch 2" },
+        "userB3": { password: "passwordB3", role: "user", branch: "Branch 3" },
+        "userB4": { password: "passwordB4", role: "user", branch: "Branch 4" },
+        "userB5": { password: "passwordB5", role: "user", branch: "Branch 5" },
+        "userB6": { password: "passwordB6", role: "user", branch: "Branch 6" }
+    };
+
+    window.currentUser = null;
+
+    window.handleLogin = function() {
+        const userVal = document.getElementById('loginUsername').value.trim();
+        const passVal = document.getElementById('loginPassword').value.trim();
+        const errDiv = document.getElementById('login-error');
+
+        if (window.appUsers[userVal] && window.appUsers[userVal].password === passVal) {
+            // Successful Login
+            window.currentUser = window.appUsers[userVal];
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('app-container').style.display = 'flex';
+            
+            // Trigger dashboard data fetch with the new user context
+            if(window.fetchDashboardData) window.fetchDashboardData();
+            
+            // Restrict UI for non-admins (e.g., hide settings module)
+            if(window.currentUser.role !== 'admin') {
+                // You can add logic here to hide specific sidebar buttons
+                console.log("Logged in as standard user. Limited access applied.");
+            }
+        } else {
+            errDiv.style.display = 'block';
+        }
+    };
+</script>
+    
 </body>
 </html>
