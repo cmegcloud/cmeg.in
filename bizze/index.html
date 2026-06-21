@@ -143,8 +143,8 @@
 <body>
 
     <div id="splash-screen">
-        <img src="assets/logo-white.png" class="splash-logo" onerror="this.style.display='none';">
-        <img src="assets/name-white.png" style="height: 30px; object-fit: contain;" onerror="this.style.display='none';">
+        <img src="assets/logo.png" class="splash-logo" onerror="this.style.display='none';">
+        <img src="assets/name.png" style="height: 30px; object-fit: contain;" onerror="this.style.display='none';">
     </div>
 
     <div id="main-app" class="hide">
@@ -164,7 +164,7 @@
             <div class="side-menu-header">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
                     <img src="assets/logo.png" style="width: 40px; height: 40px; object-fit: contain;" onerror="this.style.display='none';">
-                    <img src="assets/name-white.png" style="height: 30px; object-fit: contain;" onerror="this.style.display='none';">
+                    <img src="assets/name.png" style="height: 30px; object-fit: contain;" onerror="this.style.display='none';">
                 </div>
                 <p style="font-size: 13px; opacity: 0.9; font-weight: 500;">Sales Order System</p>
             </div>
@@ -186,7 +186,6 @@
 
         <main id="app-content">
 
-            <!-- DASHBOARD -->
             <div id="view-dashboard">
                 <div class="hero">
                     <h4>Total Order Value</h4>
@@ -197,7 +196,6 @@
                     </div>
                 </div>
 
-                <!-- NEW DASHBOARD UI: MASTER CIRCLES & ITEM SQUARES -->
                 <div class="section">
                     <h3 style="font-size: 16px; color: var(--secondary); margin-bottom: 12px;"><i class="fa-solid fa-layer-group"></i> Master Categories</h3>
                     <div id="dash-master-circles" class="no-scroll" style="display: flex; gap: 16px; overflow-x: auto; padding-bottom: 12px;"></div>
@@ -227,7 +225,6 @@
                 </div>
             </div>
 
-            <!-- GENERATE ORDER -->
             <div id="view-orders" class="hide section">
                 <div class="corp-card">
                     <h3 style="color:var(--secondary); margin-bottom:16px;">New Sales Order</h3>
@@ -265,7 +262,6 @@
                 </div>
             </div>
 
-            <!-- MASTER ITEMS -->
             <div id="view-master" class="hide section">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <h2 class="section-title" style="margin:0;">Master Categories</h2>
@@ -277,7 +273,6 @@
                 <div class="list-container" id="master-items-container"></div>
             </div>
 
-            <!-- STAFF -->
             <div id="view-staff" class="hide section">
                 <div style="display: flex; gap: 8px; margin-bottom: 16px;">
                     <input type="text" id="add-staff-name" class="corp-input" style="margin:0;" placeholder="Add Staff (e.g. Staff 1)...">
@@ -286,7 +281,6 @@
                 <div class="list-container" id="staff-list"></div>
             </div>
 
-            <!-- ITEMS -->
             <div id="view-items" class="hide section">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <h2 class="section-title" style="margin:0;">All Items Directory</h2>
@@ -295,7 +289,6 @@
                 <div class="list-container" id="items-container"></div>
             </div>
 
-            <!-- CUSTOMERS / PARTIES -->
             <div id="view-customers" class="hide section">
                 <div style="display: flex; gap: 8px; margin-bottom: 16px;">
                     <button onclick="openAddCustomerModal()" class="btn-primary"><i class="fa-solid fa-user-plus"></i> Register New Party</button>
@@ -303,7 +296,6 @@
                 <div class="list-container" id="customers-container"></div>
             </div>
 
-            <!-- REPORTS -->
             <div id="view-reports" class="hide section">
                 <div class="corp-card" style="margin-bottom: 20px;">
                     <h3 style="color: var(--secondary); margin-bottom: 15px; font-size: 16px;">Filter Orders</h3>
@@ -326,7 +318,6 @@
                 </div>
             </div>
 
-            <!-- COMPANY PROFILE -->
             <div id="view-company" class="hide section">
                 <div class="corp-card">
                     <div style="text-align: center; margin-bottom: 20px;">
@@ -348,7 +339,6 @@
                 </div>
             </div>
 
-            <!-- CALCULATOR -->
             <div id="view-calculator" class="hide section">
                 <div class="corp-card" style="max-width: 360px; margin: 0 auto;">
                     <input type="text" id="calc-display" disabled class="corp-input" style="font-size: 32px; text-align: right; background: var(--bg); font-family: monospace; padding: 20px; font-weight: 800; color: var(--secondary); margin-bottom: 20px; border: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);" value="0">
@@ -373,7 +363,6 @@
         </div>
     </div>
 
-    <!-- HIDDEN A4 PDF ORDER TEMPLATE -->
     <div id="order-pdf-export" class="hide a4-print">
         <div class="a4-header">
             <div style="display:flex; align-items:center; gap:15px;">
@@ -428,9 +417,6 @@
         </div>
     </div>
 
-    <!-- MODALS -->
-
-    <!-- Master Modal -->
     <div id="modal-master" class="modal-overlay hide">
         <div class="modal-content">
             <div class="modal-header"><h3 id="modal-master-title">New Master Category</h3><button onclick="toggleModal('modal-master')" class="modal-close"><i class="fa-solid fa-xmark"></i></button></div>
@@ -441,7 +427,6 @@
         </div>
     </div>
 
-    <!-- Item Modal -->
     <div id="modal-item" class="modal-overlay hide">
         <div class="modal-content">
             <div class="modal-header"><h3 id="modal-item-title">Add New Item</h3><button onclick="closeItemModal()" class="modal-close"><i class="fa-solid fa-xmark"></i></button></div>
@@ -458,7 +443,6 @@
         </div>
     </div>
 
-    <!-- Party Modal -->
     <div id="modal-customer" class="modal-overlay hide">
         <div class="modal-content">
             <div class="modal-header"><h3 id="modal-customer-title">Register Party</h3><button onclick="closeCustomerModal()" class="modal-close"><i class="fa-solid fa-xmark"></i></button></div>
@@ -477,11 +461,10 @@
         </div>
     </div>
 
-    <!-- App Info Modal -->
     <div id="modal-info" class="modal-overlay hide">
         <div class="modal-content" style="text-align: center;">
             <img src="assets/logo.png" alt="Logo" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 12px;" onerror="this.style.display='none';">
-            <img src="assets/name-white.png" alt="bizze" style="height: 28px; object-fit: contain; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto; filter: brightness(0) invert(0.15) sepia(1) hue-rotate(200deg) saturate(200%);" onerror="this.style.display='none';">
+            <img src="assets/name.png" alt="bizze" style="height: 28px; object-fit: contain; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;" onerror="this.style.display='none';">
             <p style="color: var(--primary); font-weight: 700; margin-bottom: 16px;">Demo Version</p>
             <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">App Contact: <a href="http://www.cmfilings.com" style="color: var(--primary); text-decoration: underline;">www.cmfilings.com</a></p>
             <button onclick="toggleModal('modal-info')" class="btn-primary" style="background: var(--bg); color: var(--text-main); box-shadow: none;">Close</button>
