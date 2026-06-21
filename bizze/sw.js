@@ -1,15 +1,30 @@
-const CACHE_NAME = 'bizze-v1';
+const CACHE_NAME = 'bizze-v2';
 const urlsToCache = [
-  './index.html',
-  './manifest.json',
-  './assets/logo.png',
-  './assets/name.png'
+  '/bizze/index.html',
+  '/bizze/manifest.json',
+  '/bizze/assets/logo.png',
+  '/bizze/assets/name.png'
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cache => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
   );
 });
 
