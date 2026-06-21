@@ -1,7 +1,8 @@
 {
   "name": "bizze ERP",
   "short_name": "bizze",
-  "start_url": "./index.html",
+  "start_url": "/bizze/index.html",
+  "scope": "/bizze/",
   "display": "standalone",
   "background_color": "#1E3A8A",
   "theme_color": "#1E3A8A",
