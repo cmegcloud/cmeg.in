@@ -408,11 +408,11 @@
         </div>
 
         <table class="a4-table">
-            <thead><tr><th>Sl No</th><th>Description of Goods</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Amount (₹)</th></tr></thead>
+            <thead><tr><th>Sl No</th><th>Description of Goods</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Rate (₹)</th><th style="text-align:right;">Amount (₹)</th></tr></thead>
             <tbody id="pdf-order-items"></tbody>
             <tfoot>
                 <tr style="background:#F8FAFC;">
-                    <td colspan="3" style="text-align:right; font-weight:700; padding:12px;">Total Order Value:</td>
+                    <td colspan="4" style="text-align:right; font-weight:700; padding:12px;">Total Order Value:</td>
                     <td id="pdf-order-total" style="text-align:right; font-weight:800; font-size:16px; color:var(--primary); padding:12px;">₹0</td>
                 </tr>
             </tfoot>
@@ -1059,12 +1059,38 @@
             });
         }
         function filterOrderGrid() { renderOrderGrid(); }
-        function addToOrder(name, price) { let e = cart.find(i => i.name === name); if(e) e.qty++; else cart.push({ name, price, qty: 1 }); renderCart(); }
+        
+        function addToOrder(name, price) { 
+            let e = cart.find(i => i.name === name); 
+            if(e) e.qty++; else cart.push({ name, price, qty: 1 }); 
+            renderCart(); 
+        }
+
+        // REVISED renderCart() to support manual price override
         function renderCart() {
             const tb = document.getElementById('order-list'); tb.innerHTML = ''; let tot = 0;
             cart.forEach((itm, i) => {
-                tot += itm.qty * itm.price;
-                tb.innerHTML += `<tr><td style="font-size: 13px;">${itm.name}</td><td style="text-align:center;"><input type="number" min="1" value="${itm.qty}" onchange="cart[${i}].qty=this.value; renderCart()" class="qty-input" data-html2canvas-ignore="true"><span class="hide" data-html2canvas-show="true">${itm.qty}</span></td><td style="text-align:right; color:var(--primary); font-weight:800; font-size: 15px;">₹${itm.qty * itm.price}</td><td style="text-align:center; color:var(--accent); font-size: 18px; cursor: pointer;" onclick="cart.splice(${i},1); renderCart()" data-html2canvas-ignore><i class="fa-solid fa-circle-minus"></i></td></tr>`;
+                let lineTotal = itm.qty * itm.price;
+                tot += lineTotal;
+                tb.innerHTML += `
+                <tr>
+                    <td>
+                        <div style="font-size: 13px; font-weight: 600;">${itm.name}</div>
+                        <div style="margin-top: 6px; display: flex; align-items: center; gap: 4px;" data-html2canvas-ignore="true">
+                            <span style="font-size: 11px; color: var(--text-muted);">₹</span>
+                            <input type="number" value="${itm.price}" onchange="cart[${i}].price=Number(this.value); renderCart()" class="qty-input" style="width: 60px; padding: 4px; font-size: 12px;">
+                        </div>
+                        <div class="hide" data-html2canvas-show="true" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">₹${itm.price}</div>
+                    </td>
+                    <td style="text-align:center;">
+                        <input type="number" min="1" value="${itm.qty}" onchange="cart[${i}].qty=Number(this.value); renderCart()" class="qty-input" data-html2canvas-ignore="true">
+                        <span class="hide" data-html2canvas-show="true">${itm.qty}</span>
+                    </td>
+                    <td style="text-align:right; color:var(--primary); font-weight:800; font-size: 15px;">₹${lineTotal.toLocaleString('en-IN')}</td>
+                    <td style="text-align:center; color:var(--accent); font-size: 18px; cursor: pointer;" onclick="cart.splice(${i},1); renderCart()" data-html2canvas-ignore>
+                        <i class="fa-solid fa-circle-minus"></i>
+                    </td>
+                </tr>`;
             });
             document.getElementById('order-total').innerText = `₹${tot.toLocaleString('en-IN')}`; return tot;
         }
@@ -1079,7 +1105,6 @@
             let cName = sel.options[sel.selectedIndex].getAttribute('data-name');
             let phone = sel.value; 
             
-            // Check WA Group link validation if user clicked Group
             let cObj = globalCustomers.find(c => c.phone === phone && c.business_name === cName);
             if(type === 'group' && (!cObj || !cObj.wa_group)) {
                 return alert("No WhatsApp Group link saved for this Party. Add it in the Party Directory first.");
@@ -1087,7 +1112,8 @@
 
             let total = renderCart();
             let dt = document.getElementById('order-date').value;
-            let det = cart.map(i => `${i.name} x${i.qty}`).join(", ");
+            // Update details string to save the specific price attached to the item
+            let det = cart.map(i => `${i.name} x${i.qty} @₹${i.price}`).join(", ");
 
             const { data, error } = await db.from('orders').insert([{ customer_name: cName, customer_phone: phone, order_total: total, order_details: det, order_date: dt, staff_name: staffSel.value }]).select();
             if (error) { alert("Error: " + error.message); return; }
@@ -1099,7 +1125,10 @@
             } else {
                 let c = JSON.parse(localStorage.getItem('cmBizCompany'));
                 let msg = `${c&&c.name?`*${c.name}*\n`:''}_Sales Order_\n\n*Order No:* ORD-${generatedId}\n*Date:* ${formatIndianDate(dt)}\n*Party:* ${cName}\n*Sales Person:* ${staffSel.value}\n\n*Items:*\n`;
-                cart.forEach(i => { msg += `▪ ${i.name} (x${i.qty}) - ₹${i.qty*i.price}\n`; });
+                
+                // Detailed WhatsApp breakdown
+                cart.forEach(i => { msg += `▪ ${i.name}\n  Qty: ${i.qty} x ₹${i.price} = ₹${(i.qty*i.price).toLocaleString('en-IN')}\n`; });
+                
                 msg += `\n*Total Order Value: ₹${total.toLocaleString('en-IN')}*`;
                 
                 if (type === 'group') {
@@ -1128,11 +1157,14 @@
 
             const tb = document.getElementById('pdf-order-items'); tb.innerHTML = '';
             orderData.items.forEach((itm, idx) => {
+                let rateDisplay = itm.price !== "" ? parseFloat(itm.price).toLocaleString('en-IN') : "-";
+                let totalDisplay = (itm.qty !== "-" && itm.price !== "") ? (itm.qty * itm.price).toLocaleString('en-IN') : "-";
                 tb.innerHTML += `<tr>
                     <td>${idx + 1}</td>
                     <td style="font-weight:600;">${itm.name}</td>
                     <td style="text-align:center;">${itm.qty}</td>
-                    <td style="text-align:right;">${(itm.qty * itm.price).toLocaleString('en-IN')}</td>
+                    <td style="text-align:right;">${rateDisplay}</td>
+                    <td style="text-align:right;">${totalDisplay}</td>
                 </tr>`;
             });
 
@@ -1154,9 +1186,15 @@
             if(o.order_details) {
                 let parts = o.order_details.split(', ');
                 parts.forEach(p => {
-                    let match = p.match(/(.+) x(\d+)/);
-                    if(match) reconstructedCart.push({ name: match[1], qty: match[2], price: "" }); 
-                    else reconstructedCart.push({ name: p, qty: "-", price: ""});
+                    // Backwards compatible parsing
+                    let matchNew = p.match(/(.+) x(\d+) @₹([\d.]+)/);
+                    if(matchNew) {
+                        reconstructedCart.push({ name: matchNew[1], qty: Number(matchNew[2]), price: Number(matchNew[3]) });
+                    } else {
+                        let matchOld = p.match(/(.+) x(\d+)/);
+                        if(matchOld) reconstructedCart.push({ name: matchOld[1], qty: Number(matchOld[2]), price: "" }); 
+                        else reconstructedCart.push({ name: p, qty: "-", price: ""});
+                    }
                 });
             }
 
