@@ -1,24 +1,20 @@
 {
-  "name": "CM bizzE - Corporate ERP",
-  "short_name": "CM bizzE",
-  "description": "Sales Order and Management System for Yummy",
+  "name": "bizze ERP",
+  "short_name": "bizze",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#F0F4F8",
+  "background_color": "#1E3A8A",
   "theme_color": "#1E3A8A",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "assets/logo.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
       "src": "assets/logo.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
